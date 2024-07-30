@@ -89,7 +89,7 @@ export function call(httpMethod: ApiConstants.METHODE_HTTP, path: ApiConstants.S
             if (res.status >= 200 && res.status < 300) {
                 return res;
             } else if (res.status === 403) {
-                console.log("[WS traceId=" + traceId + "] < [Session expirée");
+                console.log("[WS traceId=" + traceId + "] < Session expirée");
             } else {
                 console.error("[WS traceId=" + traceId + "] < ", res);
                 throw new Error(res.statusText);

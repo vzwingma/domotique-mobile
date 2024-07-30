@@ -12,7 +12,7 @@ import { connectToDomoticz } from '@/app/controllers/index.controller';
 export default function HomeScreen() {
 
   const [isLoading, setIsLoading] = useState(true);
-  const [responseData, setResponseData] = useState<{ status: string, version: string } | null>(null); // State to store the response data
+  const [responseData, setResponseData] = useState<DomoticzConfig | null>(null); // State to store the response data
 
 
   // Lance la connexion à Domoticz
@@ -31,13 +31,11 @@ export default function HomeScreen() {
       }>
 
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome to Expo Domoticz App</ThemedText>
+        <ThemedText type="title">Expo Domoticz App</ThemedText>
       </ThemedView>
       <ThemedView style={styles.titleContainer}>
-            {isLoading && <ThemedText  type="defaultSemiBold">Loading...</ThemedText>}
-            </ThemedView>
-            <ThemedView style={styles.titleContainer}>
-            {!isLoading && <ThemedText  type="defaultSemiBold">Connecté à Domoticz : {responseData?.status} ( {responseData?.version} )</ThemedText>}
+            {isLoading && <ThemedText  type="defaultSemiBold">Chargement...</ThemedText>}
+            {!isLoading && <ThemedText  type="defaultSemiBold">Connecté à Domoticz : {responseData?.status} ( {responseData?.version} r{responseData?.Revision} )</ThemedText>}
             </ThemedView>            
     </ParallaxScrollView>
   );

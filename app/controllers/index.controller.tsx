@@ -13,6 +13,7 @@ export function connectToDomoticz(setIsLoading: Function, setResponseData: Funct
     Services.call(APIconstants.METHODE_HTTP.GET, APIconstants.SERVICES_URL.GET_CONFIG, [], '')
     .then(response => response != undefined ? response.json() : null) 
     .then(data => {
+      console.log("Connecté à Domoticz", data);
       setIsLoading(false);
       setResponseData(data); // Update the state with the response data
     })
