@@ -14,7 +14,8 @@ export const ROOT_URI = "json.htm?";
  * URLs pour différents services.
  */
 export enum SERVICES_URL {
-    GET_CONFIG = ROOT_URI+"type=command&param=getconfig"
+    GET_CONFIG = ROOT_URI+"type=command&param=getconfig",
+    GET_DEVICES = ROOT_URI+"type=command&param=getdevices&filter=all&used=true&order=Name",
 }
 
 /**
