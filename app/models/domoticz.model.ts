@@ -20,12 +20,16 @@ class DomoticzConfig {
  * Equipement Domoticz
  */
 class DomoticzEquipement {
+    idx: number;
+    rang: number;
     Name: string;
     Type: string;
     SubType: string;
     Status: string;
 
-    constructor(Name: string, Type: string, SubType: string, Status: string) {
+    constructor(idx: number, rang: number, Name: string, Type: string, SubType: string, Status: string) {
+        this.idx = idx;
+        this.rang = rang;
         this.Name = Name;
         this.Type = Type;
         this.SubType = SubType;

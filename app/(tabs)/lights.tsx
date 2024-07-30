@@ -11,6 +11,8 @@ export default function TabDomoticzLumieres() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [lightsData, setLightsData] = useState<DomoticzEquipement[]>([]); // State to store the response data
 
+
+
   // Lance la connexion à Domoticz
   useEffect(() => {
     loadEquipements(setIsLoaded, setLightsData);  
@@ -31,12 +33,15 @@ export default function TabDomoticzLumieres() {
       )}
       {isLoaded && lightsData.map((equipement: any, index: number) => (
           <ThemedView key={index}>
-            <ThemedText>{equipement.Name}</ThemedText>
+            <ThemedText>{equipement.idx} | {equipement.Name}</ThemedText>
           </ThemedView>
       ))}
     </ParallaxScrollView>
   );
 }
+
+
+
 
 const styles = StyleSheet.create({
   headerImage: {

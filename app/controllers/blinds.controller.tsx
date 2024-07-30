@@ -1,6 +1,6 @@
 import * as Services from '@/app/services/ClientHTTP.service';
 import * as APIconstants from '@/app/constants/APIconstants';
-
+import { sortVolets } from '@/app/services/DataUtils.service';
 
 /**
  * Charge les équipements Domoticz.
@@ -15,7 +15,10 @@ export function loadEquipements(setIsLoaded: Function, setVoletsData: Function) 
     Services.call(APIconstants.METHODE_HTTP.GET, APIconstants.SERVICES_URL.GET_DEVICES, [], '')
     .then(response => response != undefined ? response.json() : null) 
     .then(data => {
-        setVoletsData(data.result.filter((equipement: any) => equipement.Name.toLowerCase().includes("volet")));
+        console.log("Volets chargés", data.result);
+        setVoletsData(data.result
+                            .filter((equipement: any) => equipement.Name.toLowerCase().includes("volet"))
+                            .sort(sortVolets));
 
         setIsLoaded(true);
     })

@@ -31,7 +31,7 @@ export default function TabDomoticzVolets() {
       )}
       {isLoaded && voletsData.map((equipement: any, index: number) => (
           <ThemedView key={index}>
-            <ThemedText>{equipement.Name}</ThemedText>
+            <ThemedText>{equipement.idx} | {equipement.Name}</ThemedText>
           </ThemedView>
       ))}
     </ParallaxScrollView>
