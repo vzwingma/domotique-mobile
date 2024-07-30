@@ -34,9 +34,11 @@ export default function HomeScreen() {
         <ThemedText type="title">Expo Domoticz App</ThemedText>
       </ThemedView>
       <ThemedView style={styles.titleContainer}>
-            {isLoading && <ThemedText  type="defaultSemiBold">Chargement...</ThemedText>}
-            {!isLoading && <ThemedText  type="defaultSemiBold">Connecté à Domoticz : {responseData?.status} ( {responseData?.version} r{responseData?.Revision} )</ThemedText>}
-            </ThemedView>            
+            {isLoading ? 
+              ( <ThemedText  type="defaultSemiBold">Chargement...</ThemedText> ) : 
+              ( <ThemedText  type="defaultSemiBold">Connecté à Domoticz : {responseData?.status} ( {responseData?.version} r{responseData?.Revision} )</ThemedText>)
+            }
+      </ThemedView>            
     </ParallaxScrollView>
   );
 }

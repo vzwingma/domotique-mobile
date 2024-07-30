@@ -3,13 +3,9 @@ import * as APIconstants from '@/app/constants/APIconstants';
 
 
 /**
- * Charger les équipements Domoticz
- */
-/**
  * Charge les équipements Domoticz.
  * 
  * @param setIsLoaded - Fonction pour définir l'état de chargement.
- * @param setLightsData - Fonction pour définir les données des lumières.
  * @param setVoletsData - Fonction pour définir les données des volets.
  */
 export function loadEquipements(setIsLoaded: Function, setVoletsData: Function) {
@@ -19,7 +15,7 @@ export function loadEquipements(setIsLoaded: Function, setVoletsData: Function) 
     Services.call(APIconstants.METHODE_HTTP.GET, APIconstants.SERVICES_URL.GET_DEVICES, [], '')
     .then(response => response != undefined ? response.json() : null) 
     .then(data => {
-        setVoletsData(data.filter((equipement: any) => equipement.Name.toLowerCase().includes("volet")));
+        setVoletsData(data.result.filter((equipement: any) => equipement.Name.toLowerCase().includes("volet")));
 
         setIsLoaded(true);
     })

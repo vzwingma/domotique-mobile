@@ -15,7 +15,7 @@ export function loadEquipements(setIsLoaded: Function, setLightsData: Function) 
     Services.call(APIconstants.METHODE_HTTP.GET, APIconstants.SERVICES_URL.GET_DEVICES, [], '')
     .then(response => response != undefined ? response.json() : null) 
     .then(data => {
-        setLightsData(data.filter((equipement: any) => equipement.Name.toLowerCase().includes("lumière")));
+        setLightsData(data.result.filter((equipement: any) => equipement.Name.toLowerCase().includes("lumière")));
 
         setIsLoaded(true);
 

@@ -6,10 +6,10 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import loadEquipements from '../controllers/lights.controller';
 
-export default function TabDomoticzEquipements() {
+export default function TabDomoticzLumieres() {
 
   const [isLoaded, setIsLoaded] = useState(false);
-  const [lightsData, setLightsData] = useState<any[]>([]); // State to store the response data
+  const [lightsData, setLightsData] = useState<DomoticzEquipement[]>([]); // State to store the response data
 
   // Lance la connexion à Domoticz
   useEffect(() => {

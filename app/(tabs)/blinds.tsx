@@ -9,7 +9,7 @@ import loadEquipements from '../controllers/blinds.controller';
 export default function TabDomoticzVolets() {
 
   const [isLoaded, setIsLoaded] = useState(false);
-  const [voletsData, setVoletsData] = useState<any[]>([]); // State to store the response data
+  const [voletsData, setVoletsData] = useState<DomoticzEquipement[]>([]); // State to store the response data
 
   // Lance la connexion à Domoticz
   useEffect(() => {

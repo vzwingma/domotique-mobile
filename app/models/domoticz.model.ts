@@ -1,7 +1,7 @@
 
 
 /**
- * DomoticzConfig model
+ * Configuration de Domoticz
  */
 class DomoticzConfig {
     status: string;
@@ -12,5 +12,23 @@ class DomoticzConfig {
         this.status = status;
         this.version = version;
         this.Revision = Revision;
+    }
+}
+
+
+/**
+ * Equipement Domoticz
+ */
+class DomoticzEquipement {
+    Name: string;
+    Type: string;
+    SubType: string;
+    Status: string;
+
+    constructor(Name: string, Type: string, SubType: string, Status: string) {
+        this.Name = Name;
+        this.Type = Type;
+        this.SubType = SubType;
+        this.Status = Status;
     }
 }
