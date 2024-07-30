@@ -4,7 +4,7 @@
  * L'URL de l'API.
  */
 export const API_URL = "https://domatique.ddns.net:38243/";
-
+export const AUTH = '' ;
 /**
  * L'URI racine pour les requêtes API.
  */

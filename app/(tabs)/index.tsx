@@ -1,11 +1,25 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
+import { Image, StyleSheet } from 'react-native';
+import { useState , useEffect } from 'react';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { connectToDomoticz } from '@/app/controllers/index.controller';
 
+
+/**
+ * Ecran d'accueil
+ */
 export default function HomeScreen() {
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [responseData, setResponseData] = useState<{ status: string, version: string } | null>(null); // State to store the response data
+
+
+  // Lance la connexion à Domoticz
+  useEffect(() => {
+    connectToDomoticz(setIsLoading, setResponseData);
+    }, [])
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -15,37 +29,16 @@ export default function HomeScreen() {
           style={styles.reactLogo}
         />
       }>
+
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome to Expo</ThemedText>
-        <HelloWave />
+        <ThemedText type="title">Welcome to Expo Domoticz App</ThemedText>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 0 Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
+      <ThemedView style={styles.titleContainer}>
+            {isLoading && <ThemedText  type="defaultSemiBold">Loading...</ThemedText>}
+            </ThemedView>
+            <ThemedView style={styles.titleContainer}>
+            {!isLoading && <ThemedText  type="defaultSemiBold">Connecté à Domoticz : {responseData?.status} ( {responseData?.version} )</ThemedText>}
+            </ThemedView>            
     </ParallaxScrollView>
   );
 }
