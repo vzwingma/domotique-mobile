@@ -28,7 +28,7 @@ function evaluateURL(path: string, params: string[]): string {
  * @returns body en JSON si body n'est pas null ou undefined
  * @deprecated déprécié
  */
-function evaluateBody(body: string): any {
+function evaluateBody(body: string): string | null{
     let jsonBody = null;
     if (body !== undefined && body !== null && body !== "") {
         jsonBody = JSON.stringify(body);

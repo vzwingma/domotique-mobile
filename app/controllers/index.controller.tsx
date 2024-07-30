@@ -20,7 +20,8 @@ export function connectToDomoticz(setIsLoading: Function, setResponseData: Funct
     .catch((e) => {
         setIsLoading(false);
         console.error('Une erreur s\'est produite lors de l\'authentification');
-        setResponseData("ERROR"); // Update the state with the response data
+        let dataError = { status: "ERROR", version: "0.0", Revision: "0" };
+        setResponseData(dataError); // Update the state with the response data
     })
 }
 
