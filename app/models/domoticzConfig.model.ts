@@ -4,12 +4,12 @@
 class DomoticzConfig {
     status: string;
     version: string;
-    Revision: string;
+    revision: string;
 
-    constructor(status: string, version: string, Revision: string) {
+    constructor(status: string, version: string, revision: string) {
         this.status = status;
         this.version = version;
-        this.Revision = Revision;
+        this.revision = revision;
     }
 }
 export default DomoticzConfig;

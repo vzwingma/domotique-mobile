@@ -3,6 +3,7 @@ import { SERVICES_PARAMS, SERVICES_URL } from '@/app/constants/APIconstants';
 import { sortEquipements } from '@/app/services/DataUtils.service';
 import { DomoticzType } from '@/app/constants/DomoticzEnum';
 import DomoticzEquipement from '../models/domoticzEquipement.model';
+import { showToast, ToastDuration } from '@/hooks/AndroidToast';
 /**
  * Charge les équipements Domoticz.
  * 
@@ -55,6 +56,7 @@ export function loadDomoticzBlinds(setIsLoaded: Function, setVoletsData: Functio
     .catch((e) => {
         setIsLoaded(true);
         console.error('Une erreur s\'est produite lors du chargement des volets', e);
+        showToast("Erreur lors du chargement des volets", ToastDuration.SHORT);
     })
 }
 
@@ -79,6 +81,7 @@ export function updateBlindLevel(idx: number, level: number) {
             .then(() => console.log("Mise à jour du volet " + idx + " à " + level + "%"))
             .catch((e) => {
                 console.error('Une erreur s\'est produite lors de la mise à jour du volet', e);
+                showToast("Erreur lors de la commande du volet", ToastDuration.LONG);
             })
     }
 }
@@ -97,6 +100,7 @@ export function updateBlindStatus(idx: number, status: boolean) {
                 .then(() => console.log("Mise à jour du volet " + idx + " à " + status) )
                 .catch((e) => {
                     console.error('Une erreur s\'est produite lors de la mise à jour du volet', e);
+                    showToast("Erreur lors de la commande du volet", ToastDuration.LONG);
                 })
 }
 

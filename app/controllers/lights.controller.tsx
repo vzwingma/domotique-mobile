@@ -3,6 +3,7 @@ import * as APIconstants from '@/app/constants/APIconstants';
 import { sortEquipements } from '@/app/services/DataUtils.service';
 import DomoticzEquipement from '../models/domoticzEquipement.model';
 import { DomoticzType } from '@/app/constants/DomoticzEnum';
+import { showToast, ToastDuration } from '@/hooks/AndroidToast';
 
 /**
  * Charge les équipements Domoticz.
@@ -39,6 +40,7 @@ export function loadDomoticzLights(setIsLoaded: Function, setLightsData: Functio
     .catch((e) => {
         setIsLoaded(true);
         console.error('Une erreur s\'est produite lors du chargement des lumières', e);
+        showToast("Erreur lors du chargement des lumières", ToastDuration.SHORT);
     })
 }
 
