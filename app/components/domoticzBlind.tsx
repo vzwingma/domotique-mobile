@@ -15,13 +15,15 @@ type DomoticzBlindProps = {
  * Composant pour afficher un volet Domoticz.
  */
 export const DomoticzBlind: React.FC<DomoticzBlindProps> = ({ volet }) => {
-console.log("volet", volet);
+    let nextValue : number = 0;
+
     return (
       <View key={volet.idx} style={styles.viewBox}>
         <View key={volet.idx} style={styles.iconBox}>
             <MaterialCommunityIcons name={volet.status === "Off" ? "window-shutter" : "window-shutter-open" } 
                                     size={78} color="white"
-                                    onPress={() => updateBlindLevel(volet.idx, volet.status === "Off" ? volet.level : 0)} />
+                                    onPress={() => updateBlindLevel(volet.idx, volet.status === "Off" ? volet.level : 0)} 
+                                    />
         </View>
         <View style={{flexDirection: "column"}}>
           <View style={{flexDirection: "row", justifyContent: "space-between"}}>
@@ -37,7 +39,8 @@ console.log("volet", volet);
             minimumTrackTintColor="#FFFFFF"
             maximumTrackTintColor="#606060"
             thumbTintColor="#77B5FE"
-            onValueChange={(value) => updateBlindLevel(volet.idx, value)}
+            onValueChange={(value) => nextValue = value}
+            onResponderEnd={() => updateBlindLevel(volet.idx, nextValue)}
           />
         </View>
       </View>

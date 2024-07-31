@@ -13,7 +13,6 @@ export function loadDomoticzBlinds(setIsLoaded: Function, setVoletsData: Functio
 
     // Appel du service externe de connexion à Domoticz
     callDomoticz(SERVICES_URL.GET_DEVICES)
-        .then(response => response != undefined ? response.json() : null) 
         .then(data => {
             setVoletsData(data.result
                               .filter((equipement: any) => equipement.Name.toLowerCase().includes("volet"))
@@ -21,7 +20,7 @@ export function loadDomoticzBlinds(setIsLoaded: Function, setVoletsData: Functio
                                 return {
                                     idx: equipement.idx,
                                     name: String(equipement.Name).replaceAll("[Grp]", "").trim(),
-                                    status: String(equipement.Status).replaceAll("Set Level:", ""),
+                                    status: String(equipement.Status).replaceAll("Set Level: ", ""),
                                     type: equipement.Type,
                                     subType: DomoticzType.BLIND,
                                     level: equipement.Level,
@@ -77,6 +76,10 @@ export function updateBlindLevel(idx: number, level: number) {
                        { key: SERVICES_PARAMS.LEVEL, value: String(level) } ];
 
         callDomoticz(SERVICES_URL.CMD_BLINDS_SET_LEVEL, params)
+            .then(() => console.log("Mise à jour du volet " + idx + " à " + level + "%"))
+            .catch((e) => {
+                console.error('Une erreur s\'est produite lors de la mise à jour du volet', e);
+            })
     }
 }
 /**
@@ -91,7 +94,10 @@ export function updateBlindStatus(idx: number, status: boolean) {
                    { key: SERVICES_PARAMS.CMD, value: status ? "Open" : "Close" } ];
 
     callDomoticz(SERVICES_URL.CMD_BLINDS_SET_LEVEL, params)
-
+                .then(() => console.log("Mise à jour du volet " + idx + " à " + status) )
+                .catch((e) => {
+                    console.error('Une erreur s\'est produite lors de la mise à jour du volet', e);
+                })
 }
 
 

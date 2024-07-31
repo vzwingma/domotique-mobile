@@ -15,7 +15,6 @@ export function loadDomoticzLights(setIsLoaded: Function, setLightsData: Functio
 
     // Appel du service externe de connexion à Domoticz
     callDomoticz(APIconstants.SERVICES_URL.GET_DEVICES)
-        .then(response => response != undefined ? response.json() : null) 
         .then(data => {
             setLightsData(data.result
                         .filter((equipement: any) => 

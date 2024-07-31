@@ -53,7 +53,7 @@ function stopWatch(traceId: string, res: Response): number {
  * @param body body de la requête (optionnel)
  * @returns réponse
  */
-function callDomoticz(path: SERVICES_URL, params?: KeyValueParams[]): Promise<Response|undefined> {
+function callDomoticz(path: SERVICES_URL, params?: KeyValueParams[]): Promise<any> {
     // Calcul de l'URL complétée
     const fullURL = evaluateURL(path, params);
 
@@ -67,26 +67,27 @@ function callDomoticz(path: SERVICES_URL, params?: KeyValueParams[]): Promise<Re
         mode: "cors",
         headers: new Headers({
             'Content-Type': 'application/json',
-            'Authorization': 'Basic ' + AUTH,
-        }),
-       // body: evaluateBody(body),
-    })
+            'Authorization': 'Basic ' + AUTH }),
+        })
         .then(res => {
             // Fin du watch
             stopWatch(traceId, res);
-
             if (res.status >= 200 && res.status < 300) {
-                return res;
-            } else if (res.status === 403) {
-                console.log("[WS traceId=" + traceId + "] < Session expirée");
+                return res.json();
             } else {
-                console.error("[WS traceId=" + traceId + "] < ", res);
                 throw new Error(res.statusText);
             }
         })
+        .then(data => { 
+            // console.log("[WS traceId=" + traceId + "] < [data]", data);
+            if(data.status === "ERR") {
+                throw new Error(data.message);
+            }
+            return data; })
         .catch(e => {
-            console.error("[WS traceId=" + traceId + "] < [Erreur lors de l'appel HTTP [" + fullURL + "]", e);
+            console.error("[WS traceId=" + traceId + "] < Erreur lors de l'appel HTTP [" + fullURL + "]", e);
             throw new Error(e);
-        });
+        })
+
 }
 export default callDomoticz;
