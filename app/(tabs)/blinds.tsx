@@ -1,10 +1,11 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet } from 'react-native';
+import { FlatList, StyleSheet } from 'react-native';
 import { useState , useEffect } from 'react';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import loadEquipements from '../controllers/blinds.controller';
+import { DomoticzBlind } from '@/components/equipements/domoticzBlind';
 
 export default function TabDomoticzVolets() {
 
@@ -25,15 +26,15 @@ export default function TabDomoticzVolets() {
       {!isLoaded ? (
         <ThemedText>Chargement...</ThemedText>
       ) : (
-        <ThemedView style={styles.titleContainer}>
-          <ThemedText type="title">{ voletsData.length } volets</ThemedText>
-        </ThemedView>
-      )}
-      {isLoaded && voletsData.map((equipement: any, index: number) => (
-          <ThemedView key={index}>
-            <ThemedText>{equipement.idx} | {equipement.Name}</ThemedText>
+        <>
+          <ThemedView style={styles.titleContainer}>
+            <ThemedText type="title">{ voletsData.length } volets</ThemedText>
           </ThemedView>
-      ))}
+          <FlatList data={voletsData} 
+                    renderItem={({item}) => (<DomoticzBlind volet={item}/>)} 
+                    keyExtractor={(item, index) => index.toString()} />
+        </>
+      )}
     </ParallaxScrollView>
   );
 }

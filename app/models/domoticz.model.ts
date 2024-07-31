@@ -17,7 +17,7 @@ class DomoticzConfig {
 
 
 /**
- * Equipement Domoticz
+ * Equipement Domoticz (Lumières, volets)
  */
 class DomoticzEquipement {
     idx: number;

@@ -1,6 +1,6 @@
 import * as Services from '@/app/services/ClientHTTP.service';
 import * as APIconstants from '@/app/constants/APIconstants';
-import { sortVolets } from '@/app/services/DataUtils.service';
+import { sortEquipements } from '@/app/services/DataUtils.service';
 
 /**
  * Charge les équipements Domoticz.
@@ -15,11 +15,9 @@ export function loadEquipements(setIsLoaded: Function, setVoletsData: Function) 
     Services.call(APIconstants.METHODE_HTTP.GET, APIconstants.SERVICES_URL.GET_DEVICES, [], '')
     .then(response => response != undefined ? response.json() : null) 
     .then(data => {
-        console.log("Volets chargés", data.result);
         setVoletsData(data.result
                             .filter((equipement: any) => equipement.Name.toLowerCase().includes("volet"))
                             .sort(sortVolets));
-
         setIsLoaded(true);
     })
     .catch((e) => {
@@ -27,4 +25,16 @@ export function loadEquipements(setIsLoaded: Function, setVoletsData: Function) 
         console.error('Une erreur s\'est produite lors du chargement des volets', e);
     })
 }
+
+
+/**
+ * Tri des volets pour l'affichage
+ * @param volet1 volet 1
+ * @param volet2 volet 2
+ * @returns tri des équipements
+ */
+function sortVolets( volet1: DomoticzEquipement, volet2: DomoticzEquipement ) {
+    return sortEquipements( volet1, volet2, [85, 84, 55, 66, 86, 67, 68] );
+}
+
 export default loadEquipements;

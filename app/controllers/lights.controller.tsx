@@ -1,6 +1,6 @@
 import * as Services from '@/app/services/ClientHTTP.service';
 import * as APIconstants from '@/app/constants/APIconstants';
-import { sortLumieres } from '@/app/services/DataUtils.service';
+import { sortEquipements } from '@/app/services/DataUtils.service';
 
 
 /**
@@ -17,7 +17,9 @@ export function loadEquipements(setIsLoaded: Function, setLightsData: Function) 
     .then(response => response != undefined ? response.json() : null) 
     .then(data => {
         setLightsData(data.result
-                        .filter((equipement: any) => equipement.Name.toLowerCase().includes("lumière"))
+                        .filter((equipement: any) => 
+                            equipement.Name.toLowerCase().includes("lumière")
+                    || equipement.Name.toLowerCase().includes("veilleuse"))
                         .sort(sortLumieres));
 
         setIsLoaded(true);
@@ -28,6 +30,19 @@ export function loadEquipements(setIsLoaded: Function, setLightsData: Function) 
         console.error('Une erreur s\'est produite lors du chargement des lumières', e);
     })
 }
+
+
+
+/**
+ * Tri des lumières pour l'affichage
+ * @param light1 equipement 1
+ * @param light2 equipement 2
+ * @returns tri des équipements
+ */
+function sortLumieres( light1: DomoticzEquipement, light2: DomoticzEquipement ) {
+    return sortEquipements( light1, light2, [122, 117, 113, 114, 118, 128, 131, 72] );
+}
+
 export default loadEquipements;
 
 
