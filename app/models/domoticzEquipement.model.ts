@@ -12,6 +12,8 @@ class DomoticzEquipement {
     rang: number;
     // Nom de l'équipement
     name: string;
+    // Groupe d'équipements ?
+    isGroup: boolean = false;
     // Date de la dernière mise à jour
     lastUpdate: string;
     // Niveau de l'équipement
@@ -28,7 +30,8 @@ class DomoticzEquipement {
     /**
      * Constructeur
      */
-    constructor(idx: number, rang: number, name: string, lastUpdate: string, level: number, type: string, subType: DomoticzType, status: string, data: string) {
+    constructor(idx: number, rang: number, name: string, lastUpdate: string, level: number, 
+                type: string, subType: DomoticzType, status: string, data: string, isGroup: boolean = false) {
         this.idx = idx;
         this.rang = rang;
         this.name = name;
@@ -38,6 +41,7 @@ class DomoticzEquipement {
         this.subType = subType;
         this.status = status;
         this.data = data;
+        this.isGroup = isGroup;
     }
 }
 export default DomoticzEquipement;

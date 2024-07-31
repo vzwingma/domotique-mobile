@@ -4,8 +4,8 @@ import { useState , useEffect } from 'react';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import loadEquipements from '../controllers/blinds.controller';
-import { DomoticzBlind } from '@/components/equipements/domoticzBlind'; // Import the DomoticzEquipement type
+import { loadDomoticzBlinds } from '../controllers/blinds.controller';
+import { DomoticzBlind } from '@/app/components/domoticzBlind'; // Import the DomoticzEquipement type
 import DomoticzEquipement from '@/app/models/domoticzEquipement.model'; // Import the DomoticzEquipement type
 
 /**
@@ -18,7 +18,7 @@ export default function TabDomoticzVolets() {
 
   // Lance la connexion à Domoticz pour récupérer les volets
   useEffect(() => {
-    loadEquipements(setIsLoaded, setVoletsData);  
+    loadDomoticzBlinds(setIsLoaded, setVoletsData);  
   }, [])
 
 

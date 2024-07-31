@@ -1,4 +1,4 @@
-import * as Services from '@/app/services/ClientHTTP.service';
+import callDomoticz from '@/app/services/ClientHTTP.service';
 import * as APIconstants from '@/app/constants/APIconstants';
 import { sortEquipements } from '@/app/services/DataUtils.service';
 import DomoticzEquipement from '../models/domoticzEquipement.model';
@@ -10,14 +10,14 @@ import { DomoticzType } from '@/app/constants/DomoticzEnum';
  * @param setIsLoaded - Fonction pour définir l'état de chargement.
  * @param setLightsData - Fonction pour définir les données des lumières.
  */
-export function loadEquipements(setIsLoaded: Function, setLightsData: Function) {
+export function loadDomoticzLights(setIsLoaded: Function, setLightsData: Function) {
 
 
     // Appel du service externe de connexion à Domoticz
-    Services.call(APIconstants.METHODE_HTTP.GET, APIconstants.SERVICES_URL.GET_DEVICES, [], '')
-    .then(response => response != undefined ? response.json() : null) 
-    .then(data => {
-        setLightsData(data.result
+    callDomoticz(APIconstants.SERVICES_URL.GET_DEVICES)
+        .then(response => response != undefined ? response.json() : null) 
+        .then(data => {
+            setLightsData(data.result
                         .filter((equipement: any) => 
                             equipement.Name.toLowerCase().includes("lumière")
                          || equipement.Name.toLowerCase().includes("veilleuse"))
@@ -54,7 +54,3 @@ export function loadEquipements(setIsLoaded: Function, setLightsData: Function) 
 function sortLumieres( light1: DomoticzEquipement, light2: DomoticzEquipement ) {
     return sortEquipements( light1, light2, [122, 117, 113, 114, 118, 128, 131, 72] );
 }
-
-export default loadEquipements;
-
-

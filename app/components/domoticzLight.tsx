@@ -1,5 +1,5 @@
 import DomoticzEquipement from "@/app/models/domoticzEquipement.model";
-import { ThemedText } from "../ThemedText";
+import { ThemedText } from "../../components/ThemedText";
 import { StyleSheet, View } from "react-native";
 
 // Définition des propriétés d'une lumière Domoticz
