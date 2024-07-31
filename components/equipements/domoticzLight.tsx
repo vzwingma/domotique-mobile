@@ -2,19 +2,19 @@ import DomoticzEquipement from "@/app/models/domoticzEquipement.model";
 import { ThemedText } from "../ThemedText";
 import { StyleSheet, View } from "react-native";
 
-// Définition des propriétés d'un volet Domoticz
-type DomoticzBlindProps = {
-    volet: DomoticzEquipement;
+// Définition des propriétés d'une lumière Domoticz
+type DomoticzLightProps = {
+    lumiere: DomoticzEquipement;
   };
 
 /**
- * Composant pour afficher un volet Domoticz.
+ * Composant pour afficher une lumière Domoticz.
  */
-export const DomoticzBlind: React.FC<DomoticzBlindProps> = ({ volet }) => {
-  console.log('volet', volet);
+export const DomoticzLight: React.FC<DomoticzLightProps> = ({ lumiere }) => {
+  console.log('lumiere', lumiere);
     return (
-      <View key={volet.idx} style={styles.viewBox}>
-        <ThemedText>{volet.idx} | {volet.name}</ThemedText>
+      <View key={lumiere.idx} style={styles.viewBox}>
+        <ThemedText>{lumiere.idx} | {lumiere.name}</ThemedText>
       </View>
     );
   };

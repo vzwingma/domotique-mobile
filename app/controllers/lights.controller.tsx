@@ -1,7 +1,8 @@
 import * as Services from '@/app/services/ClientHTTP.service';
 import * as APIconstants from '@/app/constants/APIconstants';
 import { sortEquipements } from '@/app/services/DataUtils.service';
-
+import DomoticzEquipement from '../models/domoticzEquipement.model';
+import { DomoticzType } from '@/app/constants/DomoticzEnum';
 
 /**
  * Charge les équipements Domoticz.
@@ -19,7 +20,18 @@ export function loadEquipements(setIsLoaded: Function, setLightsData: Function) 
         setLightsData(data.result
                         .filter((equipement: any) => 
                             equipement.Name.toLowerCase().includes("lumière")
-                    || equipement.Name.toLowerCase().includes("veilleuse"))
+                         || equipement.Name.toLowerCase().includes("veilleuse"))
+                        .map((equipement: any) => {
+                            return {
+                                idx: equipement.idx,
+                                name: equipement.Name,
+                                status: equipement.Status,
+                                type: equipement.Type,
+                                subType: DomoticzType.LIGHT,
+                                level: equipement.Level,
+                                lastUpdate: equipement.LastUpdate,
+                                data: equipement.Data,
+                            }})
                         .sort(sortLumieres));
 
         setIsLoaded(true);

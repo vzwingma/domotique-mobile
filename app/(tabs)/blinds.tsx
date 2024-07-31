@@ -5,14 +5,18 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import loadEquipements from '../controllers/blinds.controller';
-import { DomoticzBlind } from '@/components/equipements/domoticzBlind';
+import { DomoticzBlind } from '@/components/equipements/domoticzBlind'; // Import the DomoticzEquipement type
+import DomoticzEquipement from '@/app/models/domoticzEquipement.model'; // Import the DomoticzEquipement type
 
+/**
+ * Ecran des volets
+ */
 export default function TabDomoticzVolets() {
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [voletsData, setVoletsData] = useState<DomoticzEquipement[]>([]); // State to store the response data
 
-  // Lance la connexion à Domoticz
+  // Lance la connexion à Domoticz pour récupérer les volets
   useEffect(() => {
     loadEquipements(setIsLoaded, setVoletsData);  
   }, [])

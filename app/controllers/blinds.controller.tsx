@@ -1,7 +1,8 @@
 import * as Services from '@/app/services/ClientHTTP.service';
 import * as APIconstants from '@/app/constants/APIconstants';
 import { sortEquipements } from '@/app/services/DataUtils.service';
-
+import { DomoticzType } from '@/app/constants/DomoticzEnum';
+import DomoticzEquipement from '../models/domoticzEquipement.model';
 /**
  * Charge les équipements Domoticz.
  * 
@@ -17,6 +18,38 @@ export function loadEquipements(setIsLoaded: Function, setVoletsData: Function) 
     .then(data => {
         setVoletsData(data.result
                             .filter((equipement: any) => equipement.Name.toLowerCase().includes("volet"))
+                            .map((equipement: any) => {
+                                return {
+                                    idx: equipement.idx,
+                                    name: equipement.Name,
+                                    status: equipement.Status,
+                                    type: equipement.Type,
+                                    subType: DomoticzType.BLIND,
+                                    level: equipement.Level,
+                                    //Image: equipement.Image,
+                                    //Favorite: equipement.Favorite,
+                                    //PlanID: equipement.PlanID,
+                                    //PlanName: equipement.PlanName,
+                                    lastUpdate: equipement.LastUpdate,
+                                    data: equipement.Data,
+                                    //HardwareName: equipement.HardwareName,
+                                    //HardwareType: equipement.HardwareType,
+                                    //HardwareID: equipement.HardwareID,
+                                    //HardwareTypeVal: equipement.HardwareTypeVal,
+                                    //BatteryLevel: equipement.BatteryLevel,
+                                    //SignalLevel: equipement.SignalLevel,
+                                    //MaxDimLevel: equipement.MaxDimLevel,
+                                    //Protected: equipement.Protected,
+                                    //UsedByCamera: equipement.UsedByCamera,
+                                    //TypeImg: equipement.TypeImg,
+                                    //SubTypeImg: equipement.SubTypeImg,
+                                    //SwitchType: equipement.SwitchType,
+                                    //SwitchTypeVal: equipement.SwitchTypeVal,
+                                    //Timers: equipement.Timers,
+                                    //LevelInt: equipement.LevelInt,
+                                    //LevelFloat: equipement.LevelFloat,
+                                    //SelectorStyle: equipement.SelectorStyle
+                                    }})
                             .sort(sortVolets));
         setIsLoaded(true);
     })
