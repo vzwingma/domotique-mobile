@@ -27,24 +27,24 @@ export default function HomeScreen() {
       headerImage={
         <Image
           source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+          style={tabStyles.reactLogo}
         />
       }>
 
-      <ThemedView style={styles.titleContainer}>
+      <ThemedView style={tabStyles.titleContainer}>
         <ThemedText type="title">Expo Domoticz App</ThemedText>
       </ThemedView>
-      <ThemedView style={styles.titleContainer}>
+      <ThemedView style={tabStyles.titleContainer}>
             {isLoading ? 
               ( <ThemedText  type="defaultSemiBold">Chargement...</ThemedText> ) : 
-              ( <ThemedText  type="defaultSemiBold">Connecté à Domoticz : {responseData?.status} ( {responseData?.version} r{responseData?.Revision} )</ThemedText>)
+              ( <ThemedText  type="defaultSemiBold">Connecté à Domoticz : {responseData?.status} ( {responseData?.version} r{responseData?.revision} )</ThemedText>)
             }
       </ThemedView>            
     </ParallaxScrollView>
   );
 }
 
-const styles = StyleSheet.create({
+export const tabStyles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -59,6 +59,12 @@ const styles = StyleSheet.create({
     width: 290,
     bottom: 0,
     left: 0,
+    position: 'absolute',
+  },
+  headerImage: {
+    color: '#808080',
+    bottom: -90,
+    left: -35,
     position: 'absolute',
   },
 });
