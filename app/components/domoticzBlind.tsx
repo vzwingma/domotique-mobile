@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
   viewBox: {
     flexDirection: 'row',
     height: 100,
-    width: 400,
+    width: '96%',
     padding: 10,
     margin: 5,
     borderColor: '#808080',
