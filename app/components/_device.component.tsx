@@ -5,8 +5,7 @@ import Slider from '@react-native-community/slider';
 import { updateDeviceLevel } from "../controllers/devices.controller";
 import { getGroupColor } from "../constants/Colors";
 import { DomoticzType } from "../constants/DomoticzEnum";
-import DeviceDomoticzIcon from "@/components/DeviceDomoticzIcon";
-import { red } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
+import DeviceDomoticzIcon, { getIcon } from "@/components/DeviceDomoticzIcon";
 
 
 // Définition des propriétés d'un équipement Domoticz
@@ -26,7 +25,9 @@ export const DomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDev
     return (
       <View key={device.idx} style={styles.viewBox}>
         <View key={device.idx} style={styles.iconBox}>
-            <DeviceDomoticzIcon device={device}
+            <DeviceDomoticzIcon name={getIcon(device)}
+                                size={78}
+                                color={getGroupColor(device)}
                                 onPress={() => updateDeviceLevel(device.idx, device.status === "Off" ? device.level : 0, storeDeviceData, device.subType)}  />
         </View>
         <View style={{flexDirection: "column"}}>

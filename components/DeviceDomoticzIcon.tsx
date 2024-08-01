@@ -1,4 +1,3 @@
-import { getGroupColor } from "@/app/constants/Colors";
 import { DomoticzType } from "@/app/constants/DomoticzEnum";
 import DomoticzDevice from "@/app/models/domoticzDevice.model";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -10,29 +9,27 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
  */
 class DeviceDomoticzIcon extends MaterialCommunityIcons {
 
-    constructor(props: any) {
-
-        const modifiedProps = { ...props };
-        const device: DomoticzDevice = modifiedProps.device;
-
-        if(device.subType === DomoticzType.BLIND) {
-            props.name = getBlindIcon(device);
-        }
-        else if(device.subType === DomoticzType.LIGHT) {
-            props.name = getLightIcon(device);
-        }
-        props.size=78;
-        props.color=getGroupColor(props.device);
+    constructor(props: { device: DomoticzDevice, name: any, size: number, color: string, onPress: () => void }) {
         super(props);
     }
 }
+
+/**
+ * Génère l'icone d'un équipement Domoticz
+ * @param device équipement Domoticz
+ * @returns nom de l'icone de l'équipement
+ */
+export function getIcon(device: DomoticzDevice) :any {
+    return device.subType === DomoticzType.LIGHT ? getLightIcon(device) : getBlindIcon(device);
+}  
+
 
 /**
  * Get the icon name of a light device
  * @param device équipement Domoticz
  * @returns nom de l'icone de l'équipement lumière
  */
-function getLightIcon(device: DomoticzDevice) {
+function getLightIcon(device: DomoticzDevice) :any {
 
     let iconName: string = "lightbulb";
     iconName += device.isGroup ? "-multiple" : "";
@@ -46,7 +43,7 @@ function getLightIcon(device: DomoticzDevice) {
  * @param device équipement Domoticz
  * @returns nom de l'icone de l'équipement volet
  */
-function getBlindIcon(device: DomoticzDevice) {
+function getBlindIcon(device: DomoticzDevice) :any{
 
     let iconName: string = "window-shutter";
     iconName += device.status === "Off" ? "" : "-open";
