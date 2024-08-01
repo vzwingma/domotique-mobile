@@ -3,9 +3,10 @@ import { ThemedText } from "../../components/ThemedText";
 import { StyleSheet, View } from "react-native";
 import Slider from '@react-native-community/slider';
 import { updateDeviceLevel } from "../controllers/devices.controller";
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { getGroupColor } from "../constants/Colors";
-import { DomoticzDeviceIcon, DomoticzType } from "../constants/DomoticzEnum";
+import { DomoticzType } from "../constants/DomoticzEnum";
+import DeviceDomoticzIcon from "@/components/DeviceDomoticzIcon";
+import { red } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
 
 
 // Définition des propriétés d'un équipement Domoticz
@@ -25,13 +26,8 @@ export const DomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDev
     return (
       <View key={device.idx} style={styles.viewBox}>
         <View key={device.idx} style={styles.iconBox}>
-          { /* Icone du volet : https://oblador.github.io/react-native-vector-icons/ */ }
-            <MaterialCommunityIcons name={((device.subType === DomoticzType.BLIND) ? 
-                                                  (device.status === "Off" ? "window-shutter" : "window-shutter-open") 
-                                                : (device.status === "Off" ? "lightbulb-off-outline" : "lightbulb-outline"))} 
-                                    size={78} color={getGroupColor(device)}
-                                    onPress={() => updateDeviceLevel(device.idx, device.status === "Off" ? device.level : 0, storeDeviceData, device.subType)} 
-                                    />
+            <DeviceDomoticzIcon device={device}
+                                onPress={() => updateDeviceLevel(device.idx, device.status === "Off" ? device.level : 0, storeDeviceData, device.subType)}  />
         </View>
         <View style={{flexDirection: "column"}}>
           <View style={{flexDirection: "row", justifyContent: "space-between"}}>
@@ -54,6 +50,7 @@ export const DomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDev
       </View>
     );
   };
+
 
 
 

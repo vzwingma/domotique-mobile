@@ -1,7 +1,7 @@
 import callDomoticz from '@/app/services/ClientHTTP.service';
 import { SERVICES_PARAMS, SERVICES_URL } from '@/app/constants/APIconstants';
 import { sortEquipements } from '@/app/services/DataUtils.service';
-import { DomoticzType } from '@/app/constants/DomoticzEnum';
+import { DomoticzBlindSort, DomoticzLightSort, DomoticzType } from '@/app/constants/DomoticzEnum';
 import DomoticzEquipement from '../models/domoticzDevice.model';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
 /**
@@ -155,9 +155,9 @@ function refreshEquipementState(setDeviceData: Function, typeEquipement: Domotic
 function sortDevices( device1: DomoticzEquipement, device2: DomoticzEquipement, typeEquipement: DomoticzType ) {
     switch(typeEquipement) {
         case DomoticzType.BLIND:
-            return sortEquipements( device1, device2, [85, 84, 55, 66, 86, 67, 68] );
+            return sortEquipements( device1, device2, DomoticzBlindSort);
         case DomoticzType.LIGHT:
-            return sortEquipements( device1, device2, [122, 117, 113, 114, 118, 128, 131, 72] );
+            return sortEquipements( device1, device2, DomoticzLightSort);
         default:
             return 0;
     }
