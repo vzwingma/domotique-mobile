@@ -2,7 +2,7 @@ import callDomoticz from '@/app/services/ClientHTTP.service';
 import { SERVICES_PARAMS, SERVICES_URL } from '@/app/constants/APIconstants';
 import { sortEquipements } from '@/app/services/DataUtils.service';
 import { DomoticzType } from '@/app/constants/DomoticzEnum';
-import DomoticzEquipement from '../models/domoticzEquipement.model';
+import DomoticzEquipement from '../models/domoticzDevice.model';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
 /**
  * Charge les équipements Domoticz.
@@ -11,7 +11,7 @@ import { showToast, ToastDuration } from '@/hooks/AndroidToast';
  * @param storeEquipementData - Fonction pour stocker les données des equipements volets/lumières dans l'état.
  * @param typeEquipement - Type d'équipement à charger
  */
-export function loadDomoticzEquipement(setIsLoaded: Function, storeEquipementData: Function, typeEquipement: DomoticzType) {
+export function loadDomoticzDevices(setIsLoaded: Function, storeEquipementData: Function, typeEquipement: DomoticzType) {
 
     // Appel du service externe de connexion à Domoticz
     callDomoticz(SERVICES_URL.GET_DEVICES)
@@ -143,8 +143,8 @@ export function updateDeviceState(idx: number, status: boolean, setDeviceData: F
  */
 function refreshEquipementState(setDeviceData: Function, typeEquipement: DomoticzType) {
     // Mise à jour des données
-    loadDomoticzEquipement(() => {}, setDeviceData, typeEquipement)
-    setTimeout(() => loadDomoticzEquipement(() => {}, setDeviceData, typeEquipement), 1000);
+    loadDomoticzDevices(() => {}, setDeviceData, typeEquipement)
+    setTimeout(() => loadDomoticzDevices(() => {}, setDeviceData, typeEquipement), 1000);
 }
 
 

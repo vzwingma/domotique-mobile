@@ -3,10 +3,10 @@ import { FlatList, StyleSheet } from 'react-native';
 import { useState , useEffect } from 'react';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
-import { loadDomoticzEquipement } from '../controllers/devices.controller';
-import DomoticzEquipement from '../models/domoticzEquipement.model';
-import { DomoticzLight } from '@/app/components/light.component';
+import { loadDomoticzDevices } from '../controllers/devices.controller';
+import DomoticzEquipement from '../models/domoticzDevice.model';
 import { DomoticzType } from '../constants/DomoticzEnum';
+import { DomoticzLight } from '../components/light.component';
 
 /**
  * Ecran des lumières
@@ -14,13 +14,13 @@ import { DomoticzType } from '../constants/DomoticzEnum';
 export default function TabDomoticzLumieres() {
 
   const [isLoaded, setIsLoaded] = useState(false);
-  const [lightsData, setLightsData] = useState<DomoticzEquipement[]>([]); // State to store the response data
+  const [lightsData, storeLumieretsData] = useState<DomoticzEquipement[]>([]); // State to store the response data
 
 
 
   // Lance la connexion à Domoticz pour récupérer les lumières
   useEffect(() => {
-    loadDomoticzEquipement(setIsLoaded, setLightsData, DomoticzType.LIGHT);  
+    loadDomoticzDevices(setIsLoaded, storeLumieretsData, DomoticzType.LIGHT);  
   }, [])
 
 
@@ -33,7 +33,7 @@ export default function TabDomoticzLumieres() {
         <ThemedText>Chargement...</ThemedText>
       ) : (
           <FlatList data={lightsData} 
-                    renderItem={({item}) => (<DomoticzLight lumiere={item}/>)} 
+                    renderItem={({item}) => (<DomoticzLight lumiere={item} storeLumieretsData={storeLumieretsData}/>)}
                     keyExtractor={(item, index) => index.toString()} />
       )}
     </ParallaxScrollView>

@@ -1,4 +1,4 @@
-import DomoticzEquipement from "../models/domoticzEquipement.model";
+import DomoticzEquipement from "../models/domoticzDevice.model";
 
 
 

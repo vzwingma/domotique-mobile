@@ -1,11 +1,10 @@
 import { DomoticzType } from "../constants/DomoticzEnum";
 
 
-
 /**
  * Equipement Domoticz (Lumières, volets)
  */
-class DomoticzEquipement {
+class DomoticzDevice {
     // Index de l'équipement
     idx: number;
     // Rang de l'équipement (affichage)
@@ -44,5 +43,5 @@ class DomoticzEquipement {
         this.isGroup = isGroup;
     }
 }
-export default DomoticzEquipement;
+export default DomoticzDevice;
 
