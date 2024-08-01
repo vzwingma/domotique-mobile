@@ -2,9 +2,10 @@ import DomoticzEquipement from "@/app/models/domoticzEquipement.model";
 import { ThemedText } from "../../components/ThemedText";
 import { StyleSheet, View } from "react-native";
 import Slider from '@react-native-community/slider';
-import { updateBlindLevel } from "../controllers/blinds.controller";
+import { updateDeviceLevel } from "../controllers/devices.controller";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { getGroupColor } from "../constants/Colors";
+import { DomoticzType } from "../constants/DomoticzEnum";
 
 
 // Définition des propriétés d'un volet Domoticz
@@ -18,7 +19,7 @@ type DomoticzBlindProps = {
 /**
  * Composant pour afficher un volet Domoticz.
  */
-export const DomoticzBlind: React.FC<DomoticzBlindProps> = ({ volet, setVoletsData }) => {
+export const DomoticzBlind: React.FC<DomoticzBlindProps> = ({ volet, setVoletsData: storeVoletsData }) => {
     let nextValue : number = 0;
 
     return (
@@ -27,7 +28,7 @@ export const DomoticzBlind: React.FC<DomoticzBlindProps> = ({ volet, setVoletsDa
           { /* Icone du volet : https://oblador.github.io/react-native-vector-icons/ */ }
             <MaterialCommunityIcons name={volet.status === "Off" ? "window-shutter" : "window-shutter-open" } 
                                     size={78} color={getGroupColor(volet)}
-                                    onPress={() => updateBlindLevel(volet.idx, volet.status === "Off" ? volet.level : 0, setVoletsData)} 
+                                    onPress={() => updateDeviceLevel(volet.idx, volet.status === "Off" ? volet.level : 0, storeVoletsData, DomoticzType.BLIND)} 
                                     />
         </View>
         <View style={{flexDirection: "column"}}>
@@ -45,7 +46,7 @@ export const DomoticzBlind: React.FC<DomoticzBlindProps> = ({ volet, setVoletsDa
             maximumTrackTintColor="#606060"
             thumbTintColor="#77B5FE"
             onValueChange={(value) => nextValue = value}
-            onResponderEnd={() => updateBlindLevel(volet.idx, nextValue, setVoletsData)}
+            onResponderEnd={() => updateDeviceLevel(volet.idx, nextValue, storeVoletsData, DomoticzType.BLIND)}
           />
         </View>
       </View>

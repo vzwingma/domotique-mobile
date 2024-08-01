@@ -1,3 +1,4 @@
+import DomoticzEquipement from "../models/domoticzEquipement.model";
 
 
 

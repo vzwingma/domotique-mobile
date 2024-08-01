@@ -3,9 +3,10 @@ import { FlatList, StyleSheet } from 'react-native';
 import { useState , useEffect } from 'react';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
-import { loadDomoticzLights } from '../controllers/lights.controller';
+import { loadDomoticzEquipement } from '../controllers/devices.controller';
 import DomoticzEquipement from '../models/domoticzEquipement.model';
 import { DomoticzLight } from '@/app/components/light.component';
+import { DomoticzType } from '../constants/DomoticzEnum';
 
 /**
  * Ecran des lumières
@@ -19,7 +20,7 @@ export default function TabDomoticzLumieres() {
 
   // Lance la connexion à Domoticz pour récupérer les lumières
   useEffect(() => {
-    loadDomoticzLights(setIsLoaded, setLightsData);  
+    loadDomoticzEquipement(setIsLoaded, setLightsData, DomoticzType.LIGHT);  
   }, [])
 
 

@@ -3,8 +3,9 @@ import { ThemedText } from "../../components/ThemedText";
 import { StyleSheet, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
-import { updateLightLevel } from "../controllers/lights.controller";
+import { updateDeviceLevel } from "../controllers/devices.controller";
 import { getGroupColor } from "../constants/Colors";
+import { DomoticzType } from "../constants/DomoticzEnum";
 
 // Définition des propriétés d'une lumière Domoticz
 type DomoticzLightProps = {
@@ -23,7 +24,7 @@ export const DomoticzLight: React.FC<DomoticzLightProps> = ({ lumiere }) => {
         { /* Icone de la lumière : https://oblador.github.io/react-native-vector-icons/ */ }
           <MaterialCommunityIcons name={lumiere.status === "Off" ? "lightbulb-off-outline" : "lightbulb-on-outline" } 
                                   size={78} color={getGroupColor(lumiere)}
-                                  onPress={() => updateLightLevel(lumiere.idx, lumiere.status === "Off" ? lumiere.level : 0)} 
+                           //       onPress={() => updateDeviceLevel(lumiere.idx, lumiere.status === "Off" ? lumiere.level : 0, DomoticzType.LIGHT)} 
                                   />
       </View>
       <View style={{flexDirection: "column"}}>
@@ -41,7 +42,7 @@ export const DomoticzLight: React.FC<DomoticzLightProps> = ({ lumiere }) => {
           maximumTrackTintColor="#606060"
           thumbTintColor="#77B5FE"
           onValueChange={(value) => nextValue = value}
-          onResponderEnd={() => updateLightLevel(lumiere.idx, nextValue)}
+ //         onResponderEnd={() => updateLightLevel(lumiere.idx, nextValue)}
         />
       </View>
     </View>
