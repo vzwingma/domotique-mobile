@@ -20,6 +20,7 @@ export const DomoticzBlind: React.FC<DomoticzBlindProps> = ({ volet }) => {
     return (
       <View key={volet.idx} style={styles.viewBox}>
         <View key={volet.idx} style={styles.iconBox}>
+          { /* Icone du volet : https://oblador.github.io/react-native-vector-icons/ */ }
             <MaterialCommunityIcons name={volet.status === "Off" ? "window-shutter" : "window-shutter-open" } 
                                     size={78} color="white"
                                     onPress={() => updateBlindLevel(volet.idx, volet.status === "Off" ? volet.level : 0)} 

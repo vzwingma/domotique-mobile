@@ -4,9 +4,10 @@ import { sortEquipements } from '@/app/services/DataUtils.service';
 import DomoticzEquipement from '../models/domoticzEquipement.model';
 import { DomoticzType } from '@/app/constants/DomoticzEnum';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
+import { SERVICES_PARAMS, SERVICES_URL } from '@/app/constants/APIconstants';
 
 /**
- * Charge les équipements Domoticz.
+ * Charge les lumières de Domoticz.
  * 
  * @param setIsLoaded - Fonction pour définir l'état de chargement.
  * @param setLightsData - Fonction pour définir les données des lumières.
@@ -14,7 +15,7 @@ import { showToast, ToastDuration } from '@/hooks/AndroidToast';
 export function loadDomoticzLights(setIsLoaded: Function, setLightsData: Function) {
 
 
-    // Appel du service externe de connexion à Domoticz
+    // Appel du service externe de connexion à Domoticz pour récupérer les équipements
     callDomoticz(APIconstants.SERVICES_URL.GET_DEVICES)
         .then(data => {
             setLightsData(data.result
@@ -24,8 +25,9 @@ export function loadDomoticzLights(setIsLoaded: Function, setLightsData: Functio
                         .map((equipement: any) => {
                             return {
                                 idx: equipement.idx,
-                                name: equipement.Name,
-                                status: equipement.Status,
+                                name: String(equipement.Name).replaceAll("[Grp]", "").replaceAll("Prise ", "").trim(),
+                                status: String(equipement.Status).replaceAll("Set Level: ", ""),
+                                isGroup: String(equipement.Name).indexOf("[Grp]") > -1,
                                 type: equipement.Type,
                                 subType: DomoticzType.LIGHT,
                                 level: equipement.Level,
@@ -44,6 +46,50 @@ export function loadDomoticzLights(setIsLoaded: Function, setLightsData: Functio
     })
 }
 
+
+/**
+ * mise à jour du niveau de la lumière
+ * @param idx idx du lumière
+ * @param level niveau du lumière
+ */
+export function updateLightLevel(idx: number, level: number) {
+    if(level < 0) level = 0;
+    if(level > 100) level = 100;
+    if(level == 0) {
+        updateLumiereStatus(idx, false);
+    }
+    else{
+        console.log("Mise à jour de la lumière " + idx + " à " + level + "%");
+
+        let params = [ { key: SERVICES_PARAMS.IDX,   value: String(idx) },
+                       { key: SERVICES_PARAMS.LEVEL, value: String(level) } ];
+
+        callDomoticz(SERVICES_URL.CMD_BLINDS_LIGHTS_SET_LEVEL, params)
+            .then(() => console.log("Mise à jour du volet " + idx + " à " + level + "%"))
+            .catch((e) => {
+                console.error('Une erreur s\'est produite lors de la mise à jour du volet', e);
+                showToast("Erreur lors de la commande du volet", ToastDuration.LONG);
+            })
+    }
+}
+/**
+ * mise à jour du niveau de la lumière
+ * @param idx idx de la lumière
+ * @param level niveau de la lumière
+ */
+export function updateLumiereStatus(idx: number, status: boolean) {
+    console.log("Mise à jour de la lumière " + idx + " à ", status ? "ON" : "OFF");
+    
+    let params = [ { key: SERVICES_PARAMS.IDX,   value: String(idx) },
+                   { key: SERVICES_PARAMS.CMD, value: status ? "Open" : "Close" } ];
+
+    callDomoticz(SERVICES_URL.CMD_BLINDS_LIGHTS_ON_OFF, params)
+                .then(() => console.log("Mise à jour de la lumière " + idx + " à " + status) )
+                .catch((e) => {
+                    console.error('Une erreur s\'est produite lors de la mise à jour de la lumière', e);
+                    showToast("Erreur lors de la commande des lumières", ToastDuration.LONG);
+                })
+}
 
 
 /**

@@ -77,7 +77,7 @@ export function updateBlindLevel(idx: number, level: number) {
         let params = [ { key: SERVICES_PARAMS.IDX,   value: String(idx) },
                        { key: SERVICES_PARAMS.LEVEL, value: String(level) } ];
 
-        callDomoticz(SERVICES_URL.CMD_BLINDS_SET_LEVEL, params)
+        callDomoticz(SERVICES_URL.CMD_BLINDS_LIGHTS_SET_LEVEL, params)
             .then(() => console.log("Mise à jour du volet " + idx + " à " + level + "%"))
             .catch((e) => {
                 console.error('Une erreur s\'est produite lors de la mise à jour du volet', e);
@@ -96,7 +96,7 @@ export function updateBlindStatus(idx: number, status: boolean) {
     let params = [ { key: SERVICES_PARAMS.IDX,   value: String(idx) },
                    { key: SERVICES_PARAMS.CMD, value: status ? "Open" : "Close" } ];
 
-    callDomoticz(SERVICES_URL.CMD_BLINDS_SET_LEVEL, params)
+    callDomoticz(SERVICES_URL.CMD_BLINDS_LIGHTS_ON_OFF, params)
                 .then(() => console.log("Mise à jour du volet " + idx + " à " + status) )
                 .catch((e) => {
                     console.error('Une erreur s\'est produite lors de la mise à jour du volet', e);
