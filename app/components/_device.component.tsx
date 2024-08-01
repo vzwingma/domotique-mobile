@@ -5,6 +5,7 @@ import Slider from '@react-native-community/slider';
 import { updateDeviceLevel } from "../controllers/devices.controller";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { getGroupColor } from "../constants/Colors";
+import { DomoticzDeviceIcon, DomoticzType } from "../constants/DomoticzEnum";
 
 
 // Définition des propriétés d'un équipement Domoticz
@@ -25,7 +26,9 @@ export const DomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDev
       <View key={device.idx} style={styles.viewBox}>
         <View key={device.idx} style={styles.iconBox}>
           { /* Icone du volet : https://oblador.github.io/react-native-vector-icons/ */ }
-            <MaterialCommunityIcons name={device.status === "Off" ? "window-shutter" : "window-shutter-open" } 
+            <MaterialCommunityIcons name={((device.subType === DomoticzType.BLIND) ? 
+                                                  (device.status === "Off" ? "window-shutter" : "window-shutter-open") 
+                                                : (device.status === "Off" ? "lightbulb-off-outline" : "lightbulb-outline"))} 
                                     size={78} color={getGroupColor(device)}
                                     onPress={() => updateDeviceLevel(device.idx, device.status === "Off" ? device.level : 0, storeDeviceData, device.subType)} 
                                     />
@@ -51,7 +54,9 @@ export const DomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDev
       </View>
     );
   };
-  
+
+
+
 const styles = StyleSheet.create({
   viewBox: {
     flexDirection: 'row',

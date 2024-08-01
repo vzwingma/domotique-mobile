@@ -8,31 +8,31 @@ import { showToast, ToastDuration } from '@/hooks/AndroidToast';
  * Charge les équipements Domoticz.
  * 
  * @param setIsLoaded - Fonction pour définir l'état de chargement.
- * @param storeEquipementData - Fonction pour stocker les données des equipements volets/lumières dans l'état.
- * @param typeEquipement - Type d'équipement à charger
+ * @param storeDevicesData - Fonction pour stocker les données des equipements volets/lumières dans l'état.
+ * @param typeDevice - Type d'équipement à charger
  */
-export function loadDomoticzDevices(setIsLoaded: Function, storeEquipementData: Function, typeEquipement: DomoticzType) {
+export function loadDomoticzDevices(setIsLoaded: Function, storeDevicesData: Function, typeDevice: DomoticzType) {
 
     // Appel du service externe de connexion à Domoticz
     callDomoticz(SERVICES_URL.GET_DEVICES)
         .then(data => {
-            storeEquipementData(data.result
-                              .filter((equipement:any) => filterEquipementByType(equipement, typeEquipement))
-                              .map((equipement: any) => {
+            storeDevicesData(data.result
+                              .filter((device:any) => filterDeviceByType(device, typeDevice))
+                              .map((device: any) => {
                                 return {
-                                    idx: equipement.idx,
-                                    name: String(equipement.Name).replaceAll("[Grp]", "").replaceAll("Prise ", "").trim(),
-                                    status: String(equipement.Status).replaceAll("Set Level: ", ""),
-                                    type: equipement.Type,
-                                    subType: typeEquipement,
-                                    level: equipement.Level,
-                                    isGroup: String(equipement.Name).indexOf("[Grp]") > -1,
+                                    idx: device.idx,
+                                    name: String(device.Name).replaceAll("[Grp]", "").replaceAll("Prise ", "").trim(),
+                                    status: String(device.Status).replaceAll("Set Level: ", ""),
+                                    type: device.Type,
+                                    subType: typeDevice,
+                                    level: device.Level,
+                                    isGroup: String(device.Name).indexOf("[Grp]") > -1,
                                     //Image: equipement.Image,
                                     //Favorite: equipement.Favorite,
                                     //PlanID: equipement.PlanID,
                                     //PlanName: equipement.PlanName,
-                                    lastUpdate: equipement.LastUpdate,
-                                    data: equipement.Data,
+                                    lastUpdate: device.LastUpdate,
+                                    data: device.Data,
                                     //HardwareName: equipement.HardwareName,
                                     //HardwareType: equipement.HardwareType,
                                     //HardwareID: equipement.HardwareID,
@@ -51,34 +51,30 @@ export function loadDomoticzDevices(setIsLoaded: Function, storeEquipementData: 
                                     //LevelFloat: equipement.LevelFloat,
                                     //SelectorStyle: equipement.SelectorStyle
                                     }})
-                                    .map((equipement: DomoticzEquipement) => {
-                                        console.log(typeEquipement + " : " + equipement.name + " - " + equipement.status + " - " + equipement.level);
-                                        return equipement;
-                                    })
-                            .sort((d1:DomoticzEquipement, d2:DomoticzEquipement) => sortDevices(d1, d2, typeEquipement)));
+                            .sort((d1:DomoticzEquipement, d2:DomoticzEquipement) => sortDevices(d1, d2, typeDevice)));
         setIsLoaded(true);
     })
     .catch((e) => {
         setIsLoaded(true);
-        console.error('Une erreur s\'est produite lors du chargement des ' + typeEquipement + 's', e);
-        showToast("Erreur lors du chargement des " + typeEquipement + 's', ToastDuration.SHORT);
+        console.error('Une erreur s\'est produite lors du chargement des ' + typeDevice + 's', e);
+        showToast("Erreur lors du chargement des " + typeDevice + 's', ToastDuration.SHORT);
     })
 }
 
 
 /**
  * Filtrage des équipements par type
- * @param equipement equipement à filtrer
- * @param typeEquipement type d'équipement
+ * @param device equipement à filtrer
+ * @param typeDevice type d'équipement
  * @returns true si l'équipement est du type recherché
  */
-function filterEquipementByType(equipement: any, typeEquipement: DomoticzType) : boolean {
-    switch(typeEquipement) {
+function filterDeviceByType(device: any, typeDevice: DomoticzType) : boolean {
+    switch(typeDevice) {
         case DomoticzType.BLIND:
-            return equipement.Name.toLowerCase().includes("volet")
+            return device.Name.toLowerCase().includes("volet")
         case DomoticzType.LIGHT:
-            return equipement.Name.toLowerCase().includes("lumière")
-            || equipement.Name.toLowerCase().includes("veilleuse")
+            return device.Name.toLowerCase().includes("lumière")
+            || device.Name.toLowerCase().includes("veilleuse")
         default:
             return false;
     }
