@@ -33,10 +33,10 @@ export function getGroupColor(volet: DomoticzEquipement) : string {
   if(volet.isGroup) {
     switch(volet.rang) {
       case 0: return "#5FACD3";
-      case 1: return "#4AA3A2";
+      case 1: return "#B19CD9";
       case 2: return "#BDFCC9";
       case 3: return "#FFDAB9";
-      case 4: return "#B19CD9";
+      case 4: return "#4AA3A2";
       default: return "white";
     }
   }

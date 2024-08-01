@@ -18,7 +18,7 @@ export function connectToDomoticz(setIsLoading: Function, storeConfigData: Funct
         config = {
           status: data.status,
           version: data.version,
-          revision: data.revision
+          revision: data.Revision
         };
         return config;
       })

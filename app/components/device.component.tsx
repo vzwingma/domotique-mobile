@@ -20,7 +20,7 @@ type DomoticzDeviceProps = {
  * Composant pour afficher un équipement Domoticz.
  */
 export const DomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDeviceData: storeDeviceData }) => {
-    let nextValue : number = 0;
+    let nextValue : number = device.level;
 
     return (
       <View key={device.idx} style={styles.viewBox}>
@@ -38,7 +38,7 @@ export const DomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDev
           <Slider
             style={styles.slider}
             minimumValue={0}
-            value={device.status === "Off" ? 0 : device.level}
+            value={nextValue}
             maximumValue={100}
             step={1}
             minimumTrackTintColor="#FFFFFF"
