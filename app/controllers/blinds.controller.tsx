@@ -87,9 +87,7 @@ export function updateBlindLevel(idx: number, level: number, setVoletsData: Func
                 console.error('Une erreur s\'est produite lors de la mise à jour du volet', e);
                 showToast("Erreur lors de la commande du volet", ToastDuration.LONG);
             })
-            
-        // Mise à jour des données
-        loadDomoticzBlinds(() => {}, setVoletsData);
+            .finally(() => refreshBlinds(setVoletsData));
     }
 }
 /**
@@ -109,12 +107,18 @@ export function updateBlindStatus(idx: number, status: boolean, setVoletsData: F
                     console.error('Une erreur s\'est produite lors de la mise à jour du volet', e);
                     showToast("Erreur lors de la commande du volet", ToastDuration.LONG);
                 })
-
-    // Mise à jour des données
-    loadDomoticzBlinds(() => {}, setVoletsData);
-                
+                .finally(() => refreshBlinds(setVoletsData));
 }
 
+/**
+ * Rafraichissement des volets
+ * @param setVoletsData fonction de mise à jour des données
+ */
+function refreshBlinds(setVoletsData: Function) {
+    // Mise à jour des données
+    loadDomoticzBlinds(() => {}, setVoletsData)
+    setTimeout(() => loadDomoticzBlinds(() => {}, setVoletsData), 1000);
+}
 
 /**
  * Tri des volets pour l'affichage
