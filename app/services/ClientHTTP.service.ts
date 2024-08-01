@@ -1,8 +1,8 @@
 import 'react-native-get-random-values';
 import { v7 as uuidGen } from 'uuid';
-import { API_URL, SERVICES_URL } from '../constants/APIconstants';
+import { API_AUTH, API_URL, SERVICES_URL } from '../constants/APIconstants';
 import { KeyValueParams } from '../constants/APIconstants';
-import { AUTH } from '../constants/APIAuth';
+
 
 /** Client HTTP **/
 
@@ -67,7 +67,7 @@ function callDomoticz(path: SERVICES_URL, params?: KeyValueParams[]): Promise<an
         mode: "cors",
         headers: new Headers({
             'Content-Type': 'application/json',
-            'Authorization': 'Basic ' + AUTH }),
+            'Authorization': 'Basic ' + API_AUTH }),
         })
         .then(res => {
             // Fin du watch
