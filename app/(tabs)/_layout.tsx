@@ -21,7 +21,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="lights"
+        name="lights.tab"
         options={{
           title: 'Lumères',
           tabBarIcon: ({ color, focused }) => (
@@ -30,7 +30,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="blinds"
+        name="blinds.tab"
         options={{
           title: 'Volets',
           tabBarIcon: ({ color, focused }) => (

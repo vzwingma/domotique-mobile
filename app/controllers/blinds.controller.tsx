@@ -50,6 +50,10 @@ export function loadDomoticzBlinds(setIsLoaded: Function, setVoletsData: Functio
                                     //LevelFloat: equipement.LevelFloat,
                                     //SelectorStyle: equipement.SelectorStyle
                                     }})
+                                    .map((equipement: DomoticzEquipement) => {
+                                        console.log("Volet : " + equipement.name + " - " + equipement.status + " - " + equipement.level);
+                                        return equipement;
+                                    })
                             .sort(sortVolets));
         setIsLoaded(true);
     })
@@ -65,11 +69,11 @@ export function loadDomoticzBlinds(setIsLoaded: Function, setVoletsData: Functio
  * @param idx idx du volet
  * @param level niveau du volet
  */
-export function updateBlindLevel(idx: number, level: number) {
+export function updateBlindLevel(idx: number, level: number, setVoletsData: Function) {
     if(level < 0) level = 0;
     if(level > 100) level = 100;
     if(level == 0) {
-        updateBlindStatus(idx, false);
+        updateBlindStatus(idx, false, setVoletsData);
     }
     else{
         console.log("Mise à jour du volet " + idx + " à " + level + "%");
@@ -83,6 +87,9 @@ export function updateBlindLevel(idx: number, level: number) {
                 console.error('Une erreur s\'est produite lors de la mise à jour du volet', e);
                 showToast("Erreur lors de la commande du volet", ToastDuration.LONG);
             })
+            
+        // Mise à jour des données
+        loadDomoticzBlinds(() => {}, setVoletsData);
     }
 }
 /**
@@ -90,7 +97,7 @@ export function updateBlindLevel(idx: number, level: number) {
  * @param idx idx du volet
  * @param level niveau du volet
  */
-export function updateBlindStatus(idx: number, status: boolean) {
+export function updateBlindStatus(idx: number, status: boolean, setVoletsData: Function) {
     console.log("Mise à jour du volet " + idx + " à ", status ? "ON" : "OFF");
     
     let params = [ { key: SERVICES_PARAMS.IDX,   value: String(idx) },
@@ -102,6 +109,10 @@ export function updateBlindStatus(idx: number, status: boolean) {
                     console.error('Une erreur s\'est produite lors de la mise à jour du volet', e);
                     showToast("Erreur lors de la commande du volet", ToastDuration.LONG);
                 })
+
+    // Mise à jour des données
+    loadDomoticzBlinds(() => {}, setVoletsData);
+                
 }
 
 

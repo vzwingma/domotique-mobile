@@ -4,6 +4,7 @@ import { StyleSheet, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import { updateLightLevel } from "../controllers/lights.controller";
+import { getGroupColor } from "../constants/Colors";
 
 // Définition des propriétés d'une lumière Domoticz
 type DomoticzLightProps = {
@@ -21,13 +22,13 @@ export const DomoticzLight: React.FC<DomoticzLightProps> = ({ lumiere }) => {
       <View key={lumiere.idx} style={styles.iconBox}>
         { /* Icone de la lumière : https://oblador.github.io/react-native-vector-icons/ */ }
           <MaterialCommunityIcons name={lumiere.status === "Off" ? "lightbulb-off-outline" : "lightbulb-on-outline" } 
-                                  size={78} color="white"
+                                  size={78} color={getGroupColor(lumiere)}
                                   onPress={() => updateLightLevel(lumiere.idx, lumiere.status === "Off" ? lumiere.level : 0)} 
                                   />
       </View>
       <View style={{flexDirection: "column"}}>
         <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-          <ThemedText style={lumiere.isGroup ? styles.textLabelGroup : styles.textLabel}>{lumiere.name}</ThemedText>
+          <ThemedText style={{fontSize: 20, color: getGroupColor(lumiere)}}>{lumiere.name}</ThemedText>
           <ThemedText style={styles.textLevel}>{lumiere.status}</ThemedText>
         </View>  
         <Slider
@@ -65,17 +66,6 @@ iconBox: {
 slider: {
   width: 260, 
   height: 40
-},
-
-
-textLabel: {
-  fontSize: 20,
-  color: '#FFFFFF',
-},
-textLabelGroup: {
-  fontSize: 20,
-  fontWeight: 'bold',
-  color: '#FFFFFF',
 },
 
 textLevel: {

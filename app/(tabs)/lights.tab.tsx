@@ -3,10 +3,9 @@ import { FlatList, StyleSheet } from 'react-native';
 import { useState , useEffect } from 'react';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 import { loadDomoticzLights } from '../controllers/lights.controller';
 import DomoticzEquipement from '../models/domoticzEquipement.model';
-import { DomoticzLight } from '@/app/components/domoticzLight';
+import { DomoticzLight } from '@/app/components/light.component';
 
 /**
  * Ecran des lumières
@@ -32,14 +31,9 @@ export default function TabDomoticzLumieres() {
       {!isLoaded ? (
         <ThemedText>Chargement...</ThemedText>
       ) : (
-        <>
-          <ThemedView style={styles.titleContainer}>
-            <ThemedText type="title">{ lightsData.length } lumières</ThemedText>
-          </ThemedView>
           <FlatList data={lightsData} 
                     renderItem={({item}) => (<DomoticzLight lumiere={item}/>)} 
                     keyExtractor={(item, index) => index.toString()} />
-        </>
       )}
     </ParallaxScrollView>
   );

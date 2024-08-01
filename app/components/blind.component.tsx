@@ -4,17 +4,21 @@ import { StyleSheet, View } from "react-native";
 import Slider from '@react-native-community/slider';
 import { updateBlindLevel } from "../controllers/blinds.controller";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { getGroupColor } from "../constants/Colors";
 
 
 // Définition des propriétés d'un volet Domoticz
 type DomoticzBlindProps = {
     volet: DomoticzEquipement;
+    setVoletsData: React.Dispatch<React.SetStateAction<DomoticzEquipement[]>>;
   };
+
+
 
 /**
  * Composant pour afficher un volet Domoticz.
  */
-export const DomoticzBlind: React.FC<DomoticzBlindProps> = ({ volet }) => {
+export const DomoticzBlind: React.FC<DomoticzBlindProps> = ({ volet, setVoletsData }) => {
     let nextValue : number = 0;
 
     return (
@@ -22,13 +26,13 @@ export const DomoticzBlind: React.FC<DomoticzBlindProps> = ({ volet }) => {
         <View key={volet.idx} style={styles.iconBox}>
           { /* Icone du volet : https://oblador.github.io/react-native-vector-icons/ */ }
             <MaterialCommunityIcons name={volet.status === "Off" ? "window-shutter" : "window-shutter-open" } 
-                                    size={78} color="white"
-                                    onPress={() => updateBlindLevel(volet.idx, volet.status === "Off" ? volet.level : 0)} 
+                                    size={78} color={getGroupColor(volet)}
+                                    onPress={() => updateBlindLevel(volet.idx, volet.status === "Off" ? volet.level : 0, setVoletsData)} 
                                     />
         </View>
         <View style={{flexDirection: "column"}}>
           <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-            <ThemedText style={volet.isGroup ? styles.textLabelGroup : styles.textLabel}>{volet.name}</ThemedText>
+            <ThemedText style={{fontSize: 20, color: getGroupColor(volet)}}>{volet.name}</ThemedText>
             <ThemedText style={styles.textLevel}>{volet.status}</ThemedText>
           </View>  
           <Slider
@@ -41,7 +45,7 @@ export const DomoticzBlind: React.FC<DomoticzBlindProps> = ({ volet }) => {
             maximumTrackTintColor="#606060"
             thumbTintColor="#77B5FE"
             onValueChange={(value) => nextValue = value}
-            onResponderEnd={() => updateBlindLevel(volet.idx, nextValue)}
+            onResponderEnd={() => updateBlindLevel(volet.idx, nextValue, setVoletsData)}
           />
         </View>
       </View>
@@ -66,17 +70,6 @@ const styles = StyleSheet.create({
   slider: {
     width: 260, 
     height: 40
-  },
-
-
-  textLabel: {
-    fontSize: 20,
-    color: '#FFFFFF',
-  },
-  textLabelGroup: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
   },
 
   textLevel: {

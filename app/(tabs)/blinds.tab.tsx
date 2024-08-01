@@ -3,9 +3,8 @@ import { FlatList, StyleSheet } from 'react-native';
 import { useState , useEffect } from 'react';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 import { loadDomoticzBlinds } from '../controllers/blinds.controller';
-import { DomoticzBlind } from '@/app/components/domoticzBlind'; // Import the DomoticzEquipement type
+import { DomoticzBlind } from '@/app/components/blind.component'; // Import the DomoticzEquipement type
 import DomoticzEquipement from '@/app/models/domoticzEquipement.model'; // Import the DomoticzEquipement type
 
 /**
@@ -30,14 +29,9 @@ export default function TabDomoticzVolets() {
       {!isLoaded ? (
         <ThemedText>Chargement...</ThemedText>
       ) : (
-        <>
-          <ThemedView style={styles.titleContainer}>
-            <ThemedText type="title">{ voletsData.length } volets</ThemedText>
-          </ThemedView>
           <FlatList data={voletsData} 
-                    renderItem={({item}) => (<DomoticzBlind volet={item}/>)} 
+                    renderItem={({item}) => (<DomoticzBlind volet={item} setVoletsData={setVoletsData}/>)} 
                     keyExtractor={(item, index) => index.toString()} />
-        </>
       )}
     </ParallaxScrollView>
   );
