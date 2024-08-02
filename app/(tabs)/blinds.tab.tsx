@@ -4,7 +4,7 @@
  */
 
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { FlatList, StyleSheet } from 'react-native';
+import { FlatList } from 'react-native';
 import { useState , useEffect } from 'react';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';

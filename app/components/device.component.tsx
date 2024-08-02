@@ -24,11 +24,13 @@ export const DomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDev
 
     return (
       <View key={device.idx} style={styles.viewBox}>
-        <View key={device.idx} style={styles.iconBox}>
+        <View key={device.idx} style={device.isActive ? styles.iconBox : styles.iconBoxDisabled}>
             <DeviceDomoticzIcon name={getIcon(device)}
                                 size={78}
                                 color={getGroupColor(device)}
-                                onPress={() => updateDeviceLevel(device.idx, device.status === "Off" ? device.level : 0, storeDeviceData, device.subType)}  />
+                                onPress={() => device.isActive ? 
+                                                  updateDeviceLevel(device.idx, device.status === "Off" ? device.level : 0, storeDeviceData, device.subType)
+                                                : {}}  />
         </View>
         <View style={{flexDirection: "column"}}>
           <View style={{flexDirection: "row", justifyContent: "space-between"}}>
@@ -36,7 +38,8 @@ export const DomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDev
             <ThemedText style={styles.textLevel}>{device.status}</ThemedText>
           </View>  
           <Slider
-            style={styles.slider}
+            disabled={!device.isActive}
+            style={device.isActive ? styles.slider : styles.sliderDisabled}
             minimumValue={0}
             value={nextValue}
             maximumValue={100}
@@ -70,11 +73,21 @@ const styles = StyleSheet.create({
     height: 80,
     width: 80
   },
+  iconBoxDisabled: {
+    marginRight: 10,
+    borderColor: '#FF0000',
+    borderWidth: 1,
+    opacity: 0.5
+  },
   slider: {
     width: 260, 
     height: 40
   },
-
+  sliderDisabled: {
+    width: 260, 
+    height: 40,
+    opacity: 0.5
+  },
   textLevel: {
     fontSize: 20,
     fontWeight: 'bold',

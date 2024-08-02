@@ -32,6 +32,7 @@ export function loadDomoticzDevices(setIsLoaded: Function, storeDevicesData: Fun
                                     //PlanID: equipement.PlanID,
                                     //PlanName: equipement.PlanName,
                                     lastUpdate: device.LastUpdate,
+                                    isActive: !device.HaveTimeout,
                                     data: device.Data,
                                     //HardwareName: equipement.HardwareName,
                                     //HardwareType: equipement.HardwareType,

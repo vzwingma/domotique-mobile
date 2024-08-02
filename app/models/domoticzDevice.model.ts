@@ -15,6 +15,8 @@ class DomoticzDevice {
     isGroup: boolean = false;
     // Date de la dernière mise à jour
     lastUpdate: string;
+    // Equipement actif ?
+    isActive: boolean = false;
     // Niveau de l'équipement
     level: number;
     // Type de l'équipement
