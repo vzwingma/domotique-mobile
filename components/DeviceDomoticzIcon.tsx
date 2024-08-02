@@ -1,53 +1,34 @@
 import { DomoticzType } from "@/app/constants/DomoticzEnum";
-import DomoticzDevice from "@/app/models/domoticzDevice.model";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-
+import LightDomoticzIcon, { getLightIcon } from "./LightDomoticzIcon";
+import { getGroupColor } from "@/app/constants/Colors";
+import { updateDeviceLevel } from "@/app/controllers/devices.controller";
+import BlindDomoticzIcon, { getBlindIcon } from "./BlindDomoticzIcon";
 
 /**
- * Icone d'un équipement Domoticz, suivant le type et le statut de l'équipement.
- *  >Icone du volet : https://oblador.github.io/react-native-vector-icons/ 
+ * Composant qui affiche une icône en fonction du type de périphérique Domoticz.
+ * 
+ * @param device - Les informations du périphérique.
+ * @param storeDeviceData - La fonction de mise à jour des données du périphérique.
+ * @param props - Les autres propriétés du composant.
+ * @returns Le composant d'icône correspondant au type de périphérique Domoticz.
  */
-class DeviceDomoticzIcon extends MaterialCommunityIcons {
+export function DeviceDomoticzIcon({ device, storeDeviceData }: any) {
 
-    constructor(props: { device: DomoticzDevice, name: any, size: number, color: string, onPress: () => void }) {
-        super(props);
+    switch(device.subType){
+        case DomoticzType.LIGHT:
+            return <LightDomoticzIcon name={getLightIcon(device)}
+                                      size={78}
+                                      color={getGroupColor(device)} 
+                                      onPress={() => device.isActive ? 
+                                                        updateDeviceLevel(device.idx, device.status === "Off" ? device.level : 0, storeDeviceData, device.subType)
+                                                        : {}}  />
+        case DomoticzType.BLIND:
+            return <BlindDomoticzIcon name={getBlindIcon(device)}
+                                      size={78}
+                                      color={getGroupColor(device)}
+                                      onPress={() => device.isActive ? 
+                                                        updateDeviceLevel(device.idx, device.status === "Off" ? device.level : 0, storeDeviceData, device.subType)
+                                                        : {}}  />
     }
+    return <>?</>
 }
-
-/**
- * Génère l'icone d'un équipement Domoticz
- * @param device équipement Domoticz
- * @returns nom de l'icone de l'équipement
- */
-export function getIcon(device: DomoticzDevice) :any {
-    return device.subType === DomoticzType.LIGHT ? getLightIcon(device) : getBlindIcon(device);
-}  
-
-
-/**
- * Get the icon name of a light device
- * @param device équipement Domoticz
- * @returns nom de l'icone de l'équipement lumière
- */
-function getLightIcon(device: DomoticzDevice) :any {
-
-    let iconName: string = "lightbulb";
-    iconName += device.isGroup ? "-multiple" : "";
-    iconName += device.status === "Off" ? "-off" : "";
-    iconName += "-outline";
-    return iconName;
-}
-
-/**
- * Génère le nom de l'icone d'un équipement volet
- * @param device équipement Domoticz
- * @returns nom de l'icone de l'équipement volet
- */
-function getBlindIcon(device: DomoticzDevice) :any{
-
-    let iconName: string = "window-shutter";
-    iconName += device.status === "Off" ? "" : "-open";
-    return iconName;
-}
-
-export default DeviceDomoticzIcon;

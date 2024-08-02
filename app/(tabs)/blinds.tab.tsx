@@ -33,7 +33,7 @@ export default function TabDomoticzVolets() {
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#353636', dark: '#353636' }}
-      headerImage={<Ionicons size={310} name="storefront" style={tabStyles.headerImage} />}>
+      headerImage={<Ionicons size={310} name="reorder-four" style={tabStyles.headerImage} />}>
 
       {!isLoaded ? (
         <ThemedText>Chargement...</ThemedText>

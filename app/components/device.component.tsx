@@ -4,8 +4,7 @@ import { StyleSheet, View } from "react-native";
 import Slider from '@react-native-community/slider';
 import { updateDeviceLevel } from "../controllers/devices.controller";
 import { getGroupColor } from "../constants/Colors";
-import { DomoticzType } from "../constants/DomoticzEnum";
-import DeviceDomoticzIcon, { getIcon } from "@/components/DeviceDomoticzIcon";
+import { DeviceDomoticzIcon } from "@/components/DeviceDomoticzIcon";
 
 
 // Définition des propriétés d'un équipement Domoticz
@@ -25,12 +24,7 @@ export const DomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDev
     return (
       <View key={device.idx} style={styles.viewBox}>
         <View key={device.idx} style={device.isActive ? styles.iconBox : styles.iconBoxDisabled}>
-            <DeviceDomoticzIcon name={getIcon(device)}
-                                size={78}
-                                color={getGroupColor(device)}
-                                onPress={() => device.isActive ? 
-                                                  updateDeviceLevel(device.idx, device.status === "Off" ? device.level : 0, storeDeviceData, device.subType)
-                                                : {}}  />
+            <DeviceDomoticzIcon device={device} storeDeviceData={storeDeviceData} />
         </View>
         <View style={{flexDirection: "column"}}>
           <View style={{flexDirection: "row", justifyContent: "space-between"}}>
@@ -70,8 +64,6 @@ const styles = StyleSheet.create({
   },
   iconBox: {
     marginRight: 10,
-    height: 80,
-    width: 80
   },
   iconBoxDisabled: {
     marginRight: 10,

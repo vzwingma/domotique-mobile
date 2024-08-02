@@ -40,10 +40,19 @@ export default function TabLayout() {
         options={{
           title: 'Volets',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'storefront' : 'storefront-outline'} color={color} />
+            <TabBarIcon name={focused ? 'reorder-four' : 'reorder-four-outline'} color={color} />
           ),
         }}
-      />      
+      />
+      <Tabs.Screen
+        name="temperatures.tab"
+        options={{
+          title: 'Températures',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'thermometer' : 'thermometer-outline'} color={color} />
+          ),
+        }}
+      />          
     </Tabs>
   );
 }
