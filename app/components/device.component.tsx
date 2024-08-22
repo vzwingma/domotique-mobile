@@ -21,7 +21,7 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
     let nextValue : number = device.level;
 
     return (
-      <View key={device.idx} style={styles.viewBox}>
+      <View key={device.idx} style={device.isActive ? styles.viewBox : styles.viewBoxDisabled }>
         <View key={device.idx} style={device.isActive ? styles.iconBox : styles.iconBoxDisabled}>
             <IconDomoticzDevice name={getDeviceIcon(device)}
                                       size={78}
@@ -33,7 +33,7 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
         <View style={{flexDirection: "column"}}>
           <View style={{flexDirection: "row", justifyContent: "space-between"}}>
             <ThemedText style={{fontSize: 20, color: getGroupColor(device)}}>{device.name}</ThemedText>
-            <ThemedText style={styles.textLevel}>{device.status}</ThemedText>
+            {device.isActive ? <ThemedText style={styles.textLevel}>{device.status}</ThemedText> : <></>}
           </View>  
           <Slider
             disabled={!device.isActive}
@@ -64,6 +64,16 @@ const styles = StyleSheet.create({
     borderColor: '#808080',
     borderWidth: 1,
   },
+  viewBoxDisabled: {
+    flexDirection: 'row',
+    height: 100,
+    width: '96%',
+    padding: 10,
+    margin: 5,
+    borderColor: '#808080',
+    borderWidth: 1,
+    opacity: 0.5,
+  },  
   iconBox: {
     marginRight: 10,
   },
@@ -81,7 +91,7 @@ const styles = StyleSheet.create({
   sliderDisabled: {
     width: 260, 
     height: 40,
-    opacity: 0.5
+    opacity: 0
   },
   textLevel: {
     fontSize: 20,
