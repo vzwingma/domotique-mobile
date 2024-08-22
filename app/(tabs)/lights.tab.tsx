@@ -14,11 +14,11 @@ import { tabStyles } from '.';
 export default function TabDomoticzLumieres() {
 
   const [isLoaded, setIsLoaded] = useState(false);
-  const [lightsData, storeLumieretsData] = useState<DomoticzEquipement[]>([]); // State to store the response data
+  const [lightsData, storeLumieresData] = useState<DomoticzEquipement[]>([]); // State to store the response data
 
   // Lance la connexion à Domoticz pour récupérer les lumières
   useEffect(() => {
-    loadDomoticzDevices(setIsLoaded, storeLumieretsData, DomoticzType.LIGHT);  
+    loadDomoticzDevices(setIsLoaded, storeLumieresData, DomoticzType.LIGHT);  
   }, [])
 
   return (
@@ -30,7 +30,7 @@ export default function TabDomoticzLumieres() {
         <ThemedText>Chargement...</ThemedText>
       ) : (
           <FlatList data={lightsData} 
-                    renderItem={({item}) => (<ViewDomoticzDevice device={item} storeDeviceData={storeLumieretsData}/>)}
+                    renderItem={({item}) => (<ViewDomoticzDevice device={item} storeDeviceData={storeLumieresData}/>)}
                     keyExtractor={(item, index) => index.toString()} />
       )}
     </ParallaxScrollView>

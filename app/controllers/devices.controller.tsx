@@ -2,7 +2,7 @@ import callDomoticz from '@/app/services/ClientHTTP.service';
 import { SERVICES_PARAMS, SERVICES_URL } from '@/app/constants/APIconstants';
 import { sortEquipements } from '@/app/services/DataUtils.service';
 import { DomoticzBlindSort, DomoticzLightSort, DomoticzType } from '@/app/constants/DomoticzEnum';
-import DomoticzEquipement from '../models/domoticzDevice.model';
+import DomoticzDevice from '../models/domoticzDevice.model';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
 /**
  * Charge les équipements Domoticz.
@@ -17,21 +17,21 @@ export function loadDomoticzDevices(setIsLoaded: Function, storeDevicesData: Fun
     callDomoticz(SERVICES_URL.GET_DEVICES)
         .then(data => {
             storeDevicesData(data.result
-                              .filter((device:any) => filterDeviceByType(device, typeDevice))
-                              .map((device: any) => {
-                                return {
-                                    idx: device.idx,
-                                    name: String(device.Name).replaceAll("[Grp]", "").replaceAll("Prise ", "").trim(),
-                                    status: String(device.Status).replaceAll("Set Level: ", ""),
-                                    type: device.Type,
-                                    subType: typeDevice,
-                                    level: device.Level,
-                                    isGroup: String(device.Name).indexOf("[Grp]") > -1,
-                                    lastUpdate: device.LastUpdate,
-                                    isActive: !device.HaveTimeout,
-                                    data: device.Data
+                                .map((device: any) => {
+                                    return {
+                                        idx: device.idx,
+                                        name: String(device.Name).replaceAll("[Grp]", "").replaceAll("Prise ", "").trim(),
+                                        status: String(device.Status).replaceAll("Set Level: ", ""),
+                                        type: device.Type,
+                                        subType: typeDevice,
+                                        level: device.Level,
+                                        isGroup: String(device.Name).indexOf("[Grp]") > -1,
+                                        lastUpdate: device.LastUpdate,
+                                        isActive: !device.HaveTimeout,
+                                        data: device.Data
                                     }})
-                            .sort((d1:DomoticzEquipement, d2:DomoticzEquipement) => sortDevices(d1, d2, typeDevice)));
+                                .filter((device:DomoticzDevice) => filterDeviceByType(device, typeDevice))
+                                .sort((d1:DomoticzDevice, d2:DomoticzDevice) => sortDevices(d1, d2, typeDevice)));
         setIsLoaded(true);
     })
     .catch((e) => {
@@ -48,13 +48,13 @@ export function loadDomoticzDevices(setIsLoaded: Function, storeDevicesData: Fun
  * @param typeDevice type d'équipement
  * @returns true si l'équipement est du type recherché
  */
-function filterDeviceByType(device: any, typeDevice: DomoticzType) : boolean {
+function filterDeviceByType(device: DomoticzDevice, typeDevice: DomoticzType) : boolean {
     switch(typeDevice) {
         case DomoticzType.BLIND:
-            return device.Name.toLowerCase().includes("volet")
+            return device.name.toLowerCase().includes("volet")
         case DomoticzType.LIGHT:
-            return device.Name.toLowerCase().includes("lumière")
-            || device.Name.toLowerCase().includes("veilleuse")
+            return device.name.toLowerCase().includes("lumière")
+            || device.name.toLowerCase().includes("veilleuse")
         default:
             return false;
     }
@@ -131,7 +131,7 @@ function refreshEquipementState(setDeviceData: Function, typeEquipement: Domotic
  * @param device2 device 2
  * @returns tri des équipements
  */
-function sortDevices( device1: DomoticzEquipement, device2: DomoticzEquipement, typeEquipement: DomoticzType ) {
+function sortDevices( device1: DomoticzDevice, device2: DomoticzDevice, typeEquipement: DomoticzType ) {
     switch(typeEquipement) {
         case DomoticzType.BLIND:
             return sortEquipements( device1, device2, DomoticzBlindSort);
