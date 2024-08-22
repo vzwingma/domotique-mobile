@@ -1,7 +1,4 @@
-import Device from "../models/domoticzDevice.model";
-
-
-
+import DomoticzDevice from "../models/domoticzDevice.model";
 
 
 /**
@@ -11,7 +8,7 @@ import Device from "../models/domoticzDevice.model";
  * @param devicesOrder ordre des équipements
  * @returns tri des équipements
  */
-export function sortEquipements( device1: Device, device2: Device, devicesOrder: number[] ) {
+export function sortEquipements( device1: DomoticzDevice, device2: DomoticzDevice, devicesOrder: number[] ) {
     devicesOrder.forEach((idx, index) => {
         if ( device1.idx == idx ){
             device1.rang = index;

@@ -34,13 +34,11 @@ export const DomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDev
           <Slider
             disabled={!device.isActive}
             style={device.isActive ? styles.slider : styles.sliderDisabled}
-            minimumValue={0}
+            minimumValue={0} 
             value={nextValue}
             maximumValue={100}
             step={1}
-            minimumTrackTintColor="#FFFFFF"
-            maximumTrackTintColor="#606060"
-            thumbTintColor="#77B5FE"
+            minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor="#77B5FE"
             onValueChange={(value) => nextValue = value}
             onResponderEnd={() => updateDeviceLevel(device.idx, nextValue, storeDeviceData, device.subType)}
           />
@@ -69,7 +67,8 @@ const styles = StyleSheet.create({
     marginRight: 10,
     borderColor: '#FF0000',
     borderWidth: 1,
-    opacity: 0.5
+    opacity: 0.5,
+    cursor: 'auto'
   },
   slider: {
     width: 260, 

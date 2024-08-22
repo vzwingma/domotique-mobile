@@ -27,30 +27,9 @@ export function loadDomoticzDevices(setIsLoaded: Function, storeDevicesData: Fun
                                     subType: typeDevice,
                                     level: device.Level,
                                     isGroup: String(device.Name).indexOf("[Grp]") > -1,
-                                    //Image: equipement.Image,
-                                    //Favorite: equipement.Favorite,
-                                    //PlanID: equipement.PlanID,
-                                    //PlanName: equipement.PlanName,
                                     lastUpdate: device.LastUpdate,
                                     isActive: !device.HaveTimeout,
-                                    data: device.Data,
-                                    //HardwareName: equipement.HardwareName,
-                                    //HardwareType: equipement.HardwareType,
-                                    //HardwareID: equipement.HardwareID,
-                                    //HardwareTypeVal: equipement.HardwareTypeVal,
-                                    //BatteryLevel: equipement.BatteryLevel,
-                                    //SignalLevel: equipement.SignalLevel,
-                                    //MaxDimLevel: equipement.MaxDimLevel,
-                                    //Protected: equipement.Protected,
-                                    //UsedByCamera: equipement.UsedByCamera,
-                                    //TypeImg: equipement.TypeImg,
-                                    //SubTypeImg: equipement.SubTypeImg,
-                                    //SwitchType: equipement.SwitchType,
-                                    //SwitchTypeVal: equipement.SwitchTypeVal,
-                                    //Timers: equipement.Timers,
-                                    //LevelInt: equipement.LevelInt,
-                                    //LevelFloat: equipement.LevelFloat,
-                                    //SelectorStyle: equipement.SelectorStyle
+                                    data: device.Data
                                     }})
                             .sort((d1:DomoticzEquipement, d2:DomoticzEquipement) => sortDevices(d1, d2, typeDevice)));
         setIsLoaded(true);

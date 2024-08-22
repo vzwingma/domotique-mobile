@@ -25,7 +25,8 @@ export const enum SERVICES_PARAMS {
  */
 export enum SERVICES_URL {
     GET_CONFIG = ROOT_URI+"getconfig",
-    GET_DEVICES = ROOT_URI+"getdevices&filter=all&used=true&order=Name",
+    GET_DEVICES = ROOT_URI+"getdevices&filter=lights&used=true&order=Name",
+    GET_TEMPS = ROOT_URI+"getdevices&filter=temp&used=true&order=Name",
     // idx=<IDX>&switchcmd=<Open|Close|Stop>  
     CMD_BLINDS_LIGHTS_ON_OFF = ROOT_URI+"switchlight&idx="+SERVICES_PARAMS.IDX+"&switchcmd="+ SERVICES_PARAMS.CMD,
     // idx=<IDX>&switchcmd=Set%20Level&level=<0..100>
