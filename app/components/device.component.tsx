@@ -1,16 +1,16 @@
-import DomoticzEquipement from "@/app/models/domoticzDevice.model";
+import DomoticzDevice from "@/app/models/domoticzDevice.model";
 import { ThemedText } from "../../components/ThemedText";
 import { StyleSheet, View } from "react-native";
 import Slider from '@react-native-community/slider';
 import { updateDeviceLevel } from "../controllers/devices.controller";
 import { getGroupColor } from "../constants/Colors";
-import { DeviceDomoticzIcon } from "@/components/DeviceDomoticzIcon";
+import { IconDomoticzDevice } from "@/components/IconDomoticzDevice";
 
 
 // Définition des propriétés d'un équipement Domoticz
 type DomoticzDeviceProps = {
-    device: DomoticzEquipement;
-    storeDeviceData: React.Dispatch<React.SetStateAction<DomoticzEquipement[]>>;
+    device: DomoticzDevice;
+    storeDeviceData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>;
   };
 
 
@@ -18,13 +18,13 @@ type DomoticzDeviceProps = {
 /**
  * Composant pour afficher un équipement Domoticz.
  */
-export const DomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDeviceData: storeDeviceData }) => {
+export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDeviceData: storeDeviceData }) => {
     let nextValue : number = device.level;
 
     return (
       <View key={device.idx} style={styles.viewBox}>
         <View key={device.idx} style={device.isActive ? styles.iconBox : styles.iconBoxDisabled}>
-            <DeviceDomoticzIcon device={device} storeDeviceData={storeDeviceData} />
+            <IconDomoticzDevice device={device} storeDeviceData={storeDeviceData} />
         </View>
         <View style={{flexDirection: "column"}}>
           <View style={{flexDirection: "row", justifyContent: "space-between"}}>

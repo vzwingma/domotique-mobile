@@ -6,7 +6,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { loadDomoticzDevices } from '../controllers/devices.controller';
 import DomoticzEquipement from '../models/domoticzDevice.model';
 import { DomoticzType } from '../constants/DomoticzEnum';
-import { DomoticzDevice } from '@/app/components/device.component'; 
+import { ViewDomoticzDevice } from '@/app/components/device.component'; 
 import { tabStyles } from '.';
 /**
  * Ecran des lumières
@@ -30,7 +30,7 @@ export default function TabDomoticzLumieres() {
         <ThemedText>Chargement...</ThemedText>
       ) : (
           <FlatList data={lightsData} 
-                    renderItem={({item}) => (<DomoticzDevice device={item} storeDeviceData={storeLumieretsData}/>)}
+                    renderItem={({item}) => (<ViewDomoticzDevice device={item} storeDeviceData={storeLumieretsData}/>)}
                     keyExtractor={(item, index) => index.toString()} />
       )}
     </ParallaxScrollView>

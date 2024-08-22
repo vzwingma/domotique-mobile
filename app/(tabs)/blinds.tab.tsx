@@ -9,7 +9,7 @@ import { useState , useEffect } from 'react';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { loadDomoticzDevices } from '@/app/controllers/devices.controller';
-import { DomoticzDevice } from '@/app/components/device.component'; 
+import { ViewDomoticzDevice } from '@/app/components/device.component'; 
 import DomoticzEquipement from '@/app/models/domoticzDevice.model'; // Importe le type domoticzDevice
 import { DomoticzType } from '@/app/constants/DomoticzEnum';
 import { tabStyles } from '.';
@@ -39,7 +39,7 @@ export default function TabDomoticzVolets() {
         <ThemedText>Chargement...</ThemedText>
       ) : (
           <FlatList data={voletsData} 
-                    renderItem={({item}) => (<DomoticzDevice device={item} storeDeviceData={storeVoletsData}/>)} 
+                    renderItem={({item}) => (<ViewDomoticzDevice device={item} storeDeviceData={storeVoletsData}/>)} 
                     keyExtractor={(item, index) => index.toString()} />
       )}
     </ParallaxScrollView>

@@ -1,8 +1,8 @@
 import { DomoticzType } from "@/app/constants/DomoticzEnum";
-import LightDomoticzIcon, { getLightIcon } from "./LightDomoticzIcon";
+import IconDomoticzLight, { getLightIcon } from "./IconDomoticzLight";
 import { getGroupColor } from "@/app/constants/Colors";
 import { updateDeviceLevel } from "@/app/controllers/devices.controller";
-import BlindDomoticzIcon, { getBlindIcon } from "./BlindDomoticzIcon";
+import IconDomoticzBlind, { getBlindIcon } from "./IconDomoticzBlind";
 
 /**
  * Composant qui affiche une icône en fonction du type de périphérique Domoticz.
@@ -12,18 +12,18 @@ import BlindDomoticzIcon, { getBlindIcon } from "./BlindDomoticzIcon";
  * @param props - Les autres propriétés du composant.
  * @returns Le composant d'icône correspondant au type de périphérique Domoticz.
  */
-export function DeviceDomoticzIcon({ device, storeDeviceData }: any) {
+export function IconDomoticzDevice({ device, storeDeviceData }: any) {
 
     switch(device.subType){
         case DomoticzType.LIGHT:
-            return <LightDomoticzIcon name={getLightIcon(device)}
+            return <IconDomoticzLight name={getLightIcon(device)}
                                       size={78}
                                       color={getGroupColor(device)} 
                                       onPress={() => device.isActive ? 
                                                         updateDeviceLevel(device.idx, device.status === "Off" ? device.level : 0, storeDeviceData, device.subType)
                                                         : {}}  />
         case DomoticzType.BLIND:
-            return <BlindDomoticzIcon name={getBlindIcon(device)}
+            return <IconDomoticzBlind name={getBlindIcon(device)}
                                       size={78}
                                       color={getGroupColor(device)}
                                       onPress={() => device.isActive ? 

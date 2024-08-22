@@ -6,7 +6,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
  * Icone d'un équipement Domoticz, suivant le type et le statut de l'équipement.
  *  >Icone du volet : https://oblador.github.io/react-native-vector-icons/ 
  */
-class BlindDomoticzIcon extends MaterialCommunityIcons {
+class IconDomoticzLight extends MaterialCommunityIcons {
 
     constructor(props: { device: DomoticzDevice, name: any, size: number, color: string, onPress: () => void }) {
         super(props);
@@ -14,15 +14,16 @@ class BlindDomoticzIcon extends MaterialCommunityIcons {
 }
 
 /**
- * Génère le nom de l'icone d'un équipement volet
+ * Get the icon name of a light device
  * @param device équipement Domoticz
- * @returns nom de l'icone de l'équipement volet
+ * @returns nom de l'icone de l'équipement lumière
  */
-export function getBlindIcon(device: DomoticzDevice) :any{
+export function getLightIcon(device: DomoticzDevice) :any {
 
-    let iconName: string = "window-shutter";
-    iconName += device.status === "Off" ? "" : "-open";
+    let iconName: string = "lightbulb";
+    iconName += device.isGroup ? "-multiple" : "";
+    iconName += device.status === "Off" ? "-off" : "";
+    iconName += "-outline";
     return iconName;
 }
-
-export default BlindDomoticzIcon;
+export default IconDomoticzLight;
