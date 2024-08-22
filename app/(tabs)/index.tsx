@@ -6,7 +6,6 @@ import { ThemedView } from '@/components/ThemedView';
 import { connectToDomoticz } from '@/app/controllers/index.controller';
 import DomoticzConfig from '../models/domoticzConfig.model';
 
-
 /**
  * Ecran d'accueil
  */
@@ -32,12 +31,18 @@ export default function HomeScreen() {
       }>
 
       <ThemedView style={tabStyles.titleContainer}>
-        <ThemedText type="title">Expo Domoticz App</ThemedText>
+        <ThemedText type="title">Mobile Domoticz App</ThemedText>
+      </ThemedView>
+      <ThemedView>
+        <ThemedText>{responseData?.version} r{responseData?.revision}</ThemedText>
       </ThemedView>
       <ThemedView style={tabStyles.titleContainer}>
             {isLoading ? 
               ( <ThemedText  type="defaultSemiBold">Chargement...</ThemedText> ) : 
-              ( <ThemedText  type="defaultSemiBold">Connecté à Domoticz : {responseData?.status} ( {responseData?.version} r{responseData?.revision} )</ThemedText>)
+              ( <>
+                  <ThemedText type="defaultSemiBold">Connecté à Domoticz : </ThemedText>
+                  <ThemedText type="default" style={responseData?.status ? {color: 'green'} : {color: 'red'}}>{responseData?.status}</ThemedText>
+                </> )
             }
       </ThemedView>            
     </ParallaxScrollView>
