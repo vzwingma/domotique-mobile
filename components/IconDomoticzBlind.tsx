@@ -8,7 +8,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
  */
 class IconDomoticzBlind extends MaterialCommunityIcons {
 
-    constructor(props: { device: DomoticzDevice, name: any, size: number, color: string, onPress: () => void }) {
+    constructor(props: { name: any, size: number, color: string, onPress: () => void }) {
         super(props);
     }
 }

@@ -9,8 +9,11 @@ import { useState , useEffect } from 'react';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 
-import DomoticzEquipement from '@/app/models/domoticzDevice.model'; // Importe le type domoticzDevice
+import DomoticzTemperature from '@/app/models/domoticzTemperature.model'; // Importe le type domoticzDevice
 import { tabStyles } from '.';
+import { loadDomoticzDevices as loadDomoticzTemperatures } from '../controllers/temperatures.controller';
+import { FlatList } from 'react-native-gesture-handler';
+import { ViewDomoticzTemperature } from '../components/temperature.component';
 
 /**
  * Composant de l'écran des mesures de températures.
@@ -20,11 +23,11 @@ import { tabStyles } from '.';
 export default function TabDomoticzTemperatures() {
 
   const [isLoaded, setIsLoaded] = useState(false);
-  const [temperaturesData, storeTemperaturesData] = useState<DomoticzEquipement[]>([]); // État pour stocker les données de réponse
+  const [temperaturesData, storeTemperaturesData] = useState<DomoticzTemperature[]>([]); // État pour stocker les données de réponse
 
   // Lance la connexion à Domoticz pour récupérer les volets
   useEffect(() => {
-    // loadDomoticzDevices(setIsLoaded, storeTemperaturesData, DomoticzType.BLIND);  
+     loadDomoticzTemperatures(setIsLoaded, storeTemperaturesData);  
   }, [])
 
 
@@ -33,10 +36,12 @@ export default function TabDomoticzTemperatures() {
       headerBackgroundColor={{ light: '#353636', dark: '#353636' }}
       headerImage={<Ionicons size={310} name="thermometer-sharp" style={tabStyles.headerImage} />}>
 
-      {!isLoaded ? (
+{!isLoaded ? (
         <ThemedText>Chargement...</ThemedText>
       ) : (
-          <></>
+          <FlatList data={temperaturesData} 
+                    renderItem={({item}) => (<ViewDomoticzTemperature temperature={item} storeTemperaturesData={storeTemperaturesData}/>)}
+                    keyExtractor={(item, index) => index.toString()} />
       )}
     </ParallaxScrollView>
   );
