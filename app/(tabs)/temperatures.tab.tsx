@@ -40,8 +40,8 @@ export default function TabDomoticzTemperatures() {
         <ThemedText>Chargement...</ThemedText>
       ) : (
           <FlatList data={temperaturesData} 
-                    renderItem={({item}) => (<ViewDomoticzTemperature temperature={item} storeTemperaturesData={storeTemperaturesData}/>)}
-                    keyExtractor={(item, index) => index.toString()} />
+                    renderItem={({item}) => (<ViewDomoticzTemperature temperature={item}/>)}
+                    keyExtractor={(index) => index.toString()} />
       )}
     </ParallaxScrollView>
   );

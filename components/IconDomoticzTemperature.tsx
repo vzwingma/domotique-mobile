@@ -9,7 +9,7 @@ import DomoticzTemperature from "@/app/models/domoticzTemperature.model";
  */
 class IconDomoticzTemperature extends MaterialCommunityIcons {
 
-    constructor(props: { temperature: DomoticzTemperature, name: any, size: number, color: string }) {
+    constructor(props: { name: any, size: number, color: string }) {
         super(props);
     }
 }
