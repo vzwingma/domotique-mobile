@@ -48,7 +48,7 @@ export default function HomeScreen() {
               : 
               ( 
                 <ThemedText type="title" style={ {color: responseData?.status === "OK" ? 'green' : 'red', marginTop: 50} }>
-                    {responseData?.status === "OK" ? "Connecté" : "Non connecté : " + JSON.stringify(responseData)  }
+                    {responseData?.status === "OK" ? "Connecté" : "Non connecté" }
                 </ThemedText> 
               )
             }
@@ -57,7 +57,7 @@ export default function HomeScreen() {
         { networkState ? 
         <ThemedView style={{alignItems: 'flex-end'}}>
           <ThemedText style={{fontStyle: 'italic', marginTop: 50}}>[{API_URL}]</ThemedText>
-          <ThemedText style={{fontStyle: 'italic'}}>Type : {networkState?.type}</ThemedText>
+          <ThemedText style={{fontStyle: 'italic'}}>Type     : {networkState?.type}</ThemedText>
           <ThemedText style={{fontStyle: 'italic'}}>Internet ? {networkState?.isInternetReachable ? "OUI" : "NON"}</ThemedText>
           <ThemedText style={{fontStyle: 'italic'}}>Connecté ? {networkState?.isConnected ? "OUI" : "NON"}</ThemedText>
         </ThemedView>
