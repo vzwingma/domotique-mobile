@@ -21,8 +21,8 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
     let nextValue : number = device.level;
 
     return (
-      <View key={device.idx} style={device.isActive ? styles.viewBox : styles.viewBoxDisabled }>
-        <View key={device.idx} style={device.isActive ? styles.iconBox : styles.iconBoxDisabled}>
+      <View key={device.idx} style={device.isActive ? stylesLists.viewBox : stylesLists.viewBoxDisabled }>
+        <View key={device.idx} style={device.isActive ? stylesLists.iconBox : stylesLists.iconBoxDisabled}>
             <IconDomoticzDevice name={getDeviceIcon(device)}
                                       size={78}
                                       color={getGroupColor(device)} 
@@ -33,11 +33,11 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
         <View style={{flexDirection: "column"}}>
           <View style={{flexDirection: "row", justifyContent: "space-between"}}>
             <ThemedText style={{fontSize: 20, color: getGroupColor(device)}}>{device.name}</ThemedText>
-            {device.isActive ? <ThemedText style={styles.textLevel}>{device.status}</ThemedText> : <></>}
+            {device.isActive ? <ThemedText style={stylesLists.textLevel}>{device.status}</ThemedText> : <></>}
           </View>  
           <Slider
             disabled={!device.isActive}
-            style={device.isActive ? styles.slider : styles.sliderDisabled}
+            style={device.isActive ? stylesLists.slider : stylesLists.sliderDisabled}
             minimumValue={0} 
             value={nextValue}
             maximumValue={100}
@@ -54,11 +54,11 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
 
 
 
-const styles = StyleSheet.create({
+export const stylesLists = StyleSheet.create({
   viewBox: {
     flexDirection: 'row',
     height: 100,
-    width: '96%',
+    width: '98%',
     padding: 10,
     margin: 5,
     borderColor: '#808080',
@@ -85,12 +85,12 @@ const styles = StyleSheet.create({
     cursor: 'auto'
   },
   slider: {
-    width: 260, 
-    height: 40
+    width: 360, 
+    height: 50
   },
   sliderDisabled: {
-    width: 260, 
-    height: 40,
+    width: 360, 
+    height: 50,
     opacity: 0
   },
   textLevel: {
@@ -98,4 +98,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#FFBB3F',
   },
+  textName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    width: 200,
+  },  
 });

@@ -4,9 +4,8 @@
  */
 
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { useState , useEffect } from 'react';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { loadDomoticzDevices } from '@/app/controllers/devices.controller';
 import { ViewDomoticzDevice } from '@/app/components/device.component'; 
