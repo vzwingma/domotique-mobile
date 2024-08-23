@@ -1,4 +1,3 @@
-import { View } from 'react-native';
 import { useState , useEffect } from 'react';
 import { ThemedText } from '@/components/ThemedText';
 import { loadDomoticzDevices } from '../controllers/devices.controller';

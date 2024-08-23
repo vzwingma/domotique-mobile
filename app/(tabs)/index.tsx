@@ -22,27 +22,29 @@ export default function HomeScreen() {
 
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#1D3D47', dark: '#1D3D47' }}
+      headerBackgroundColor={{ light: '#353636', dark: '#353636' }}
       headerImage={
         <Image
-          source={require('@/assets/images/partial-react-logo.png')}
+          source={require('@/assets/images/partial-dlogo.png')}
           style={tabStyles.reactLogo}
         />
       }>
 
       <ThemedView style={tabStyles.titleContainer}>
-        <ThemedText type="title">Mobile Domoticz App</ThemedText>
+        <ThemedText type="title">Domoticz mobile</ThemedText>
       </ThemedView>
-      <ThemedView>
+      <ThemedView style={{alignItems: 'flex-end'}}>
         { responseData?.status === "OK" ? <ThemedText>{responseData?.version} r{responseData?.revision}</ThemedText> : <></> }
       </ThemedView>
       <ThemedView style={tabStyles.titleContainer}>
             {isLoading ? 
-              ( <ThemedText  type="defaultSemiBold">Chargement...</ThemedText> ) : 
-              ( <>
-                  <ThemedText type="defaultSemiBold">Connecté à Domoticz : </ThemedText>
-                  <ThemedText type="default" style={responseData?.status === "OK" ? {color: 'green'} : {color: 'red'}}>{responseData?.status}</ThemedText>
-                </> )
+              ( <ThemedText  type="defaultSemiBold">Chargement...</ThemedText> )
+              : 
+              ( 
+                <ThemedText type="defaultSemiBold" style={ {color: responseData?.status === "OK" ? 'green' : 'red'} }>
+                  {responseData?.status === "OK" ? "Connecté" : "Non connecté"}
+                </ThemedText>
+              )
             }
       </ThemedView>            
     </ParallaxScrollView>
@@ -53,9 +55,7 @@ export default function HomeScreen() {
 export const tabStyles = StyleSheet.create({
   titleContainer: {
     alignItems: 'center',
-    gap: 8,
-    height: 190,
-    backgroundColor: '#353636',
+    gap: 8
   },
   headerImage: {
     color: '#808080',
@@ -73,10 +73,10 @@ export const tabStyles = StyleSheet.create({
     marginBottom: 8,
   },
   reactLogo: {
-    height: 178,
     width: 290,
     bottom: 0,
     left: 0,
     position: 'absolute',
+    backgroundColor: '#353636',
   }
 });
