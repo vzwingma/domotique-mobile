@@ -28,8 +28,9 @@ export function connectToDomoticz(setIsLoading: Function, storeConfigData: Funct
       })
       .catch((e) => {
           setIsLoading(false);
+          storeConfigData(e);
           console.error('Une erreur s\'est produite lors de la connexion à Domoticz', e);
-          showToast("Erreur de connexion à Domoticz", ToastDuration.SHORT);
+          showToast("Erreur de connexion à Domoticz " + JSON.stringify, ToastDuration.SHORT);
       })
 }
 

@@ -48,7 +48,7 @@ export default function HomeScreen() {
               : 
               ( 
                 <ThemedText type="title" style={ {color: responseData?.status === "OK" ? 'green' : 'red', marginTop: 50} }>
-                    {responseData?.status === "OK" ? "Connecté" : "Non connecté"}
+                    {responseData?.status === "OK" ? "Connecté" : "Non connecté : " + JSON.stringify(responseData)  }
                 </ThemedText> 
               )
             }
