@@ -80,13 +80,12 @@ export function updateDeviceLevel(idx: number, level: number, storeDevicesData: 
         updateDeviceState(idx, false, storeDevicesData, typeDevice);
     }
     else{
-        console.log("Mise à jour de " + typeDevice + " " + idx + " à " + level + "%");
+        console.log("Mise à jour de " + typeDevice + " " + idx , level + "%");
 
         let params = [ { key: SERVICES_PARAMS.IDX,   value: String(idx) },
                        { key: SERVICES_PARAMS.LEVEL, value: String(level) } ];
 
         callDomoticz(SERVICES_URL.CMD_BLINDS_LIGHTS_SET_LEVEL, params)
-            .then(() => console.log("Mise à jour de " + typeDevice + " " + idx + " à " + level + "%"))
             .catch((e) => {
                 console.error('Une erreur s\'est produite lors de la mise à jour de ' + typeDevice, e);
                 showToast("Erreur lors de la commande de " + typeDevice, ToastDuration.LONG);
@@ -103,7 +102,7 @@ export function updateDeviceLevel(idx: number, level: number, storeDevicesData: 
  * 
  */
 export function updateDeviceState(idx: number, status: boolean, setDeviceData: Function, typeDevice: DomoticzType) {
-    console.log("Mise à jour du " + typeDevice + " " + idx + " à ", status ? "ON" : "OFF");
+    console.log("Mise à jour du " + typeDevice + " " + idx , status ? "ON" : "OFF");
     
     let params = [ { key: SERVICES_PARAMS.IDX,   value: String(idx) },
                    { key: SERVICES_PARAMS.CMD, value: status ? "On" : "Off" } ];
