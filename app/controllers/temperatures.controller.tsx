@@ -15,7 +15,6 @@ export function loadDomoticzDevices(setIsLoaded: Function, storeTempsData: Funct
         .then(data => {
             storeTempsData(data.result
                               .map((device: any) => {
-                                console.log(device);
                                 return {
                                     idx: device.idx,
                                     name: String(device.Name).replaceAll("TempératureHumidité - ", "")
