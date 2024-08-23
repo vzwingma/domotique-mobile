@@ -19,7 +19,7 @@ type DomoticzDeviceProps = {
  * Composant pour afficher un équipement Domoticz.
  */
 export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDeviceData: storeDeviceData }) => {
-    let nextValue : number = device.level;
+    let nextValue : number = device.status === "Off" ? 1 : device.level;
 
     return (
       <View key={device.idx} style={device.isActive ? stylesLists.viewBox : stylesLists.viewBoxDisabled }>
@@ -43,7 +43,7 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
               disabled={!device.isActive}
               style={device.isActive ? stylesLists.slider : stylesLists.sliderDisabled}
               minimumValue={0} 
-              value={device.status === "Off" ? 0 : nextValue}
+              value={nextValue}
               maximumValue={100}
               step={1}
               minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor="#77B5FE"
