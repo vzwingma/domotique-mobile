@@ -11,14 +11,12 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk",
-        "image": "latest"
+        "image": "latest",
+        "permissions": ["android.permission.INTERNET"]
       }
     },
     "production": {
       "android": {
-        "image": "latest"
-      },
-      "ios": {
         "image": "latest"
       }
     }
