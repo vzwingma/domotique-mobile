@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "domoticz-mobile",
-    "slug": "Domoticz mobile",
+    "name": "Domoticz mobilee",
+    "slug": "domoticz-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -11,9 +11,6 @@
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
-    },
-    "ios": {
-      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
