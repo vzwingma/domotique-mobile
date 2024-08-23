@@ -2,7 +2,7 @@ import DomoticzDevice from "@/app/models/domoticzDevice.model";
 import { ThemedText } from "../../components/ThemedText";
 import { StyleSheet, View } from "react-native";
 import Slider from '@react-native-community/slider';
-import { updateDeviceLevel } from "../controllers/devices.controller";
+import { updateDeviceLevel, updateDeviceState } from "../controllers/devices.controller";
 import { getGroupColor } from "../constants/Colors";
 import IconDomoticzDevice, { getDeviceIcon } from "@/components/IconDomoticzDevice";
 import { DomoticzSwitchType } from "../constants/DomoticzEnum";
@@ -25,18 +25,14 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
       <View key={device.idx} style={device.isActive ? stylesLists.viewBox : stylesLists.viewBoxDisabled }>
         <View key={device.idx} style={stylesLists.iconBox}>
             <IconDomoticzDevice name={getDeviceIcon(device)}
-                                      size={78}
-                                      color={getGroupColor(device)} 
-                                      onPress={() => device.isActive ? 
-                                                        updateDeviceLevel(device.idx, device.status === "Off" ? device.level : 0, storeDeviceData, device.type)
-                                                        : {}}  />
+                                size={78}
+                                color={getGroupColor(device)} 
+                                onPress={() => onClickDeviceIcon(device, storeDeviceData)}  />
         </View>
         <View style={{flexDirection: "column"}}>
           <View style={stylesLists.labelsBox}>
             <ThemedText style={{fontSize: 20, color: getGroupColor(device)}}>{device.name}</ThemedText>
-            {device.isActive ? 
-                <ThemedText style={stylesLists.textLevel}>{device.status === "Off" ? device.status : device.level + "%"}</ThemedText> 
-            : <></>}
+            <ThemedText style={stylesLists.textLevel}>{getStatusLabel(device)}</ThemedText> 
           </View>
           { device.switchType === DomoticzSwitchType.SLIDER ?
             <Slider
@@ -54,6 +50,42 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
       </View>
     );
   };
+
+
+
+  /**
+   * Fonction pour le label du statut de l'équipement
+   */
+function getStatusLabel(device: DomoticzDevice) {
+    if(device.isActive === false) {
+        return "?";
+    }
+    else if(device.switchType === DomoticzSwitchType.ONOFF) {
+        return device.status;
+    }
+    else{
+      return device.status === "Off" ? "Off" : device.level + "%";
+    }
+}
+
+
+
+/**
+ * fonction pour gérer le clic sur l'icône de l'équipement
+ * @param device composant DomoticzDevice
+ * @param storeDeviceData setter pour les données des équipements
+ */
+function onClickDeviceIcon(device: DomoticzDevice, storeDeviceData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
+     if(device.isActive) {
+         if(device.switchType === DomoticzSwitchType.ONOFF) {
+             updateDeviceState(device.idx, device.status === "Off", storeDeviceData, device.type);
+         }
+         else {
+             updateDeviceLevel(device.idx, device.status === "Off" ? device.level : 0, storeDeviceData, device.type);
+         }
+     }
+ }
+
 
 
 export const stylesLists = StyleSheet.create({

@@ -17,10 +17,11 @@ export function loadDomoticzDevices(setIsLoaded: Function, storeDevicesData: Fun
     callDomoticz(SERVICES_URL.GET_DEVICES)
         .then(data => {
             storeDevicesData(data.result
-                                .map((device: any) => {
-                                    
-                                    return {
+                                .map((device: any, index: number) => {
+                                    let ddevice: DomoticzDevice;
+                                    ddevice = {
                                         idx: device.idx,
+                                        rang: index,
                                         name: String(device.Name).replaceAll("[Grp]", "").replaceAll("Prise ", "").trim(),
                                         status: String(device.Status).replaceAll("Set Level: ", ""),
                                         type: typeDevice,
@@ -31,7 +32,9 @@ export function loadDomoticzDevices(setIsLoaded: Function, storeDevicesData: Fun
                                         lastUpdate: device.LastUpdate,
                                         isActive: !device.HaveTimeout,
                                         data: device.Data
-                                    }})
+                                    }
+                                    return ddevice;
+                                })
                                 .filter((device:DomoticzDevice) => filterDeviceByType(device, typeDevice))
                                 .sort((d1:DomoticzDevice, d2:DomoticzDevice) => sortDevices(d1, d2, typeDevice)));
         setIsLoaded(true);
