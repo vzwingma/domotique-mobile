@@ -22,7 +22,7 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
 
     return (
       <View key={device.idx} style={device.isActive ? stylesLists.viewBox : stylesLists.viewBoxDisabled }>
-        <View key={device.idx} style={device.isActive ? stylesLists.iconBox : stylesLists.iconBoxDisabled}>
+        <View key={device.idx} style={stylesLists.iconBox}>
             <IconDomoticzDevice name={getDeviceIcon(device)}
                                       size={78}
                                       color={getGroupColor(device)} 
@@ -57,39 +57,32 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
 export const stylesLists = StyleSheet.create({
   viewBox: {
     flexDirection: 'row',
-    height: 100,
+    height: 90,
     width: '98%',
-    padding: 10,
-    margin: 5,
-    borderColor: '#808080',
+    padding: 3,
+    margin: 2,
+    borderColor: '#565656',
     borderWidth: 1,
   },
   viewBoxDisabled: {
     flexDirection: 'row',
-    height: 100,
-    width: '96%',
-    padding: 10,
-    margin: 5,
-    borderColor: '#808080',
+    height: 90,
+    width: '98%',
+    padding: 3,
+    margin: 3,
+    borderColor: '#FF0000',
     borderWidth: 1,
     opacity: 0.5,
   },  
   iconBox: {
     marginRight: 10,
   },
-  iconBoxDisabled: {
-    marginRight: 10,
-    borderColor: '#FF0000',
-    borderWidth: 1,
-    opacity: 0.5,
-    cursor: 'auto'
-  },
   slider: {
-    width: 360, 
+    width: 300, 
     height: 50
   },
   sliderDisabled: {
-    width: 360, 
+    width: 300, 
     height: 50,
     opacity: 0
   },

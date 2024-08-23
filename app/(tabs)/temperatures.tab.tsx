@@ -11,8 +11,8 @@ import { ThemedText } from '@/components/ThemedText';
 import DomoticzTemperature from '@/app/models/domoticzTemperature.model'; // Importe le type domoticzDevice
 import { tabStyles } from '.';
 import { loadDomoticzDevices as loadDomoticzTemperatures } from '../controllers/temperatures.controller';
-import { FlatList, View } from 'react-native';
 import { ViewDomoticzTemperature } from '../components/temperature.component';
+import ParallaxScrollView from '@/components/ParallaxScrollView';
 
 /**
  * Composant de l'écran des mesures de températures.
@@ -31,20 +31,29 @@ export default function TabDomoticzTemperatures() {
 
 
   return (
-    <View>
+    <ParallaxScrollView
+      headerBackgroundColor={{ light: '#353636', dark: '#353636' }}
+      headerImage={<Ionicons size={310} name="thermometer-sharp" style={tabStyles.headerImage} />}>
+
       {!isLoaded ? (
         <ThemedText>Chargement...</ThemedText>
       ) : (
-        <>
-          <View style={tabStyles.titleContainer}>
-            <Ionicons size={310} name="thermometer-sharp" style={tabStyles.headerImage} />
-          </View>
-          <FlatList data={temperaturesData} 
-                    renderItem={({item}) => (<ViewDomoticzTemperature temperature={item}/>)}
-                    keyExtractor={(item, index) => index.toString()} 
-                    style={tabStyles.list} />
-        </>
+        buildDeviceList(temperaturesData)
       )}
-    </View>
-  );
+    </ParallaxScrollView>
+);
+}
+
+
+/**
+ * Construit la liste des mesures de températures.
+ * 
+ * @param voletsData Les données des mesures de températures
+ */
+function buildDeviceList(voletsData: DomoticzTemperature[]) {
+  let items: JSX.Element[] = [];
+  voletsData.forEach(item => {
+    items.push(<ViewDomoticzTemperature key={item.idx} temperature={item}/>);          
+  });
+  return items;
 }
