@@ -106,11 +106,11 @@ export function updateDeviceState(idx: number, status: boolean, setDeviceData: F
                    { key: SERVICES_PARAMS.CMD, value: status ? "Open" : "Close" } ];
 
     callDomoticz(SERVICES_URL.CMD_BLINDS_LIGHTS_ON_OFF, params)
-                .catch((e) => {
+        .catch((e) => {
                     console.error('Une erreur s\'est produite lors de la mise à jour de ' + typeDevice, e);
                     showToast("Erreur lors de la commande de " + typeDevice, ToastDuration.LONG);
-                })
-                .finally(() => refreshEquipementState(setDeviceData, typeDevice));
+        })
+        .finally(() => refreshEquipementState(setDeviceData, typeDevice));
 }
 
 /**

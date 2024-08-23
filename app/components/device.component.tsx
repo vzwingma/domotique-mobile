@@ -28,7 +28,7 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
                                       size={78}
                                       color={getGroupColor(device)} 
                                       onPress={() => device.isActive ? 
-                                                        updateDeviceLevel(device.idx, device.status === "Off" ? device.level : 0, storeDeviceData, device.subType)
+                                                        updateDeviceLevel(device.idx, device.status === "Off" ? device.level : 0, storeDeviceData, device.type)
                                                         : {}}  />
         </View>
         <View style={{flexDirection: "column"}}>
@@ -46,7 +46,7 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
               step={1}
               minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor="#77B5FE"
               onValueChange={(value) => nextValue = value}
-              onResponderEnd={() => updateDeviceLevel(device.idx, nextValue, storeDeviceData, device.subType)}
+              onResponderEnd={() => updateDeviceLevel(device.idx, nextValue, storeDeviceData, device.type)}
             /> : <></> }
         </View>
       </View>

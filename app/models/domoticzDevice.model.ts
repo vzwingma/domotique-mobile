@@ -20,9 +20,9 @@ class DomoticzDevice {
     // Niveau de l'équipement
     level: number;
     // Type de l'équipement
-    type: string;
+    type: DomoticzType;
     // Sous-type de l'équipement (Lumière, volet, ...)
-    subType: DomoticzType;
+    subType: string;
     // Type de switch de l'équipement
     switchType: DomoticzSwitchType;
     // Status de l'équipement
@@ -34,7 +34,7 @@ class DomoticzDevice {
      * Constructeur
      */
     constructor(idx: number, rang: number, name: string, lastUpdate: string, level: number, 
-                type: string, subType: DomoticzType, switchType: DomoticzSwitchType, status: string, data: string, isGroup: boolean = false) {
+                type: DomoticzType, subType: string, switchType: DomoticzSwitchType, status: string, data: string, isGroup: boolean = false) {
         this.idx = idx;
         this.rang = rang;
         this.name = name;
