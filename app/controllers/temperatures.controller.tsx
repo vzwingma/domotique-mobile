@@ -1,5 +1,5 @@
 import callDomoticz from '@/app/services/ClientHTTP.service';
-import { SERVICES_PARAMS, SERVICES_URL } from '@/app/constants/APIconstants';
+import { SERVICES_URL } from '@/app/constants/APIconstants';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
 import DomoticzTemperature from '../models/domoticzTemperature.model';
 /**
@@ -49,7 +49,7 @@ export function loadDomoticzDevices(setIsLoaded: Function, storeTempsData: Funct
  * @returns true si la mesure est du type recherché
  */
 function filterTemperatureDeviceByType(temperature: DomoticzTemperature) : boolean {
-    if(temperature.name == "Pi Temperature") {
+    if(temperature.name === "Pi Temperature") {
         return false;
     }
     return true;

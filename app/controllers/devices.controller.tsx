@@ -71,7 +71,7 @@ function filterDeviceByType(device: DomoticzDevice, typeDevice: DomoticzType) : 
 export function updateDeviceLevel(idx: number, level: number, storeDevicesData: Function, typeDevice: DomoticzType) {
     if(level < 0) level = 0;
     if(level > 100) level = 100;
-    if(level == 0) {
+    if(level === 0) {
         updateDeviceState(idx, false, storeDevicesData, typeDevice);
     }
     else{
@@ -140,5 +140,4 @@ function sortDevices( device1: DomoticzDevice, device2: DomoticzDevice, typeEqui
         default:
             return 0;
     }
-    return ;
 }

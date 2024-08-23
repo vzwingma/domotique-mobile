@@ -7,7 +7,7 @@ export function showToast(text: string, duration?: ToastDuration) {
         console.log("Toast: " + text);
     }
     else if (Platform.OS === 'android') {
-        ToastAndroid.show(text, duration != undefined && duration != null && duration === ToastDuration.SHORT ? ToastAndroid.SHORT : ToastAndroid.LONG);
+        ToastAndroid.show(text, duration !== undefined && duration != null && duration === ToastDuration.SHORT ? ToastAndroid.SHORT : ToastAndroid.LONG);
     }
 }
 

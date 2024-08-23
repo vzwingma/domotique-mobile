@@ -10,10 +10,10 @@ import DomoticzDevice from "../models/domoticzDevice.model";
  */
 export function sortEquipements( device1: DomoticzDevice, device2: DomoticzDevice, devicesOrder: number[] ) {
     devicesOrder.forEach((idx, index) => {
-        if ( device1.idx == idx ){
+        if ( device1.idx === idx ){
             device1.rang = index;
         }
-        if ( device2.idx == idx ){
+        if ( device2.idx === idx ){
             device2.rang = index;
         }
     });

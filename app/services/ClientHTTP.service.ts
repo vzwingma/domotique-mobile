@@ -17,7 +17,7 @@ let storageWatch = 0;
  */
 function evaluateURL(path: string, params?: KeyValueParams[]): string {
     let fullURL = API_URL + path;
-    if (params != undefined && params != null && params.length > 0) {
+    if (params !== undefined && params !== null && params.length > 0) {
         params.forEach(param => {
             fullURL = fullURL.replace(param.key, param.value)
         })
