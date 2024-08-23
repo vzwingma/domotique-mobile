@@ -1,50 +1,85 @@
-# Welcome to your Expo app 👋
+# Domoticz Mobile
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Ce projet est une application mobile pour gérer les équipements Domoticz. L'application utilise React Native et Expo pour fournir une interface utilisateur intuitive et réactive.
 
-## Get started
+## Prérequis
 
-1. Install dependencies
+Avant de commencer, assurez-vous d'avoir les éléments suivants installés sur votre machine :
 
-   ```bash
-   npm install
-   ```
+- Node.js (version 14 ou supérieure)
+- npm (version 6 ou supérieure) ou yarn (version 1.22 ou supérieure)
+- Expo CLI (peut être installé globalement via npm ou yarn)
 
-2. Start the app
+## Installation
 
-   ```bash
-    npx expo start
-   ```
+1. Clonez le dépôt :
 
-In the output, you'll find options to open the app in a
+    ```bash
+    git clone https://github.com/votre-utilisateur/domoticz-mobile.git
+    cd domoticz-mobile
+    ```
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+2. Installez les dépendances :
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+    ```bash
+    npm install
+    ```
 
-## Get a fresh project
+    ou
 
-When you're ready, run:
+    ```bash
+    yarn install
+    ```
+
+## Démarrage
+
+Pour démarrer l'application en mode développement, utilisez la commande suivante :
 
 ```bash
-npm run reset-project
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Cela ouvrira une fenêtre de navigateur avec l'interface Expo, où vous pourrez choisir de lancer l'application sur un émulateur ou un appareil physique.
 
-## Learn more
+## Structure du Projet
 
-To learn more about developing your project with Expo, look at the following resources:
+- `components/` : Contient les composants React utilisés dans l'application.
+- `constants/` : Contient les constantes utilisées dans l'application, comme les couleurs et les types Domoticz.
+- `models/` : Contient les modèles de données utilisés dans l'application.
+- `services/` : Contient les services (appels vers Domoticz) de l'application.
+- `navigation/` : Contient les configurations de navigation pour l'application.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Fonctionnalités
 
-## Join the community
+- Gestion des équipements Domoticz : Affiche et contrôle les équipements Domoticz comme les lumières et les volets.
+- Navigation par onglets : Utilise une navigation par onglets pour une expérience utilisateur fluide.
 
-Join our community of developers creating universal apps.
+## Utilisation
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Une fois l'application démarrée en mode développement, vous pouvez la visualiser sur votre appareil en utilisant l'application Expo Go. Scannez simplement le code QR affiché dans votre terminal ou dans l'interface web Expo DevTools.
+
+## Configuration
+
+Avant de pouvoir utiliser l'application, vous devez configurer les paramètres de connexion à votre serveur Domoticz. Ouvrez le fichier `config.js` situé dans le répertoire `src/config` et modifiez les valeurs appropriées.
+
+## Fonctionnalités
+
+Cette application mobile vous permet de :
+
+- Afficher et contrôler les équipements Domoticz.
+- Gérer les scènes et les groupes d'équipements.
+- Recevoir des notifications en temps réel pour les événements Domoticz.
+- Personnaliser l'interface utilisateur selon vos préférences.
+
+## Contribution
+
+Si vous souhaitez contribuer à ce projet, vous pouvez suivre les étapes suivantes :
+
+1. Forker le dépôt.
+2. Créer une branche pour vos modifications.
+3. Effectuer vos modifications et les tester.
+4. Soumettre une demande de fusion (pull request) avec une description claire des modifications apportées.
+
+## Licence
+
+Ce projet est sous licence MIT. Veuillez consulter le fichier `LICENSE` pour plus d'informations.
