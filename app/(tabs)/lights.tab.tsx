@@ -42,7 +42,8 @@ export default function TabDomoticzLumieres() {
  */
 function buildDeviceList(voletsData: DomoticzDevice[], storeLumieresData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
   let items: JSX.Element[] = [];
-  voletsData.forEach(item => {
+  voletsData.forEach((item, idx) => {
+    item.rang = idx;
     items.push(<ViewDomoticzDevice key={item.idx} device={item} storeDeviceData={storeLumieresData}/>);          
   });
   return items;

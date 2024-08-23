@@ -1,4 +1,4 @@
-import DomoticzEquipement from "../models/domoticzDevice.model";
+import DomoticzDevice from "../models/domoticzDevice.model";
 /**
  * Ci-dessous se trouvent les couleurs utilisées dans l'application. Les couleurs sont définies en mode clair et sombre.
  * Il existe de nombreuses autres façons de styliser votre application. Par exemple, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
@@ -69,7 +69,7 @@ export const Colors = {
  * @param volet - L'équipement Domoticz.
  * @returns La couleur du groupe.
  */
-export function getGroupColor(volet: DomoticzEquipement) : string {
+export function getGroupColor(volet: DomoticzDevice) : string {
   if(volet.isGroup) {
     switch(volet.rang) {
       case 0: return "#5FACD3";

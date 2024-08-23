@@ -51,7 +51,8 @@ export default function TabDomoticzVolets() {
  */
 function buildDeviceList(voletsData: DomoticzDevice[], storeVoletsData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
   let items: JSX.Element[] = [];
-  voletsData.forEach(item => {
+  voletsData.forEach((item, idx) => {
+    item.rang = idx;
     items.push(<ViewDomoticzDevice key={item.idx} device={item} storeDeviceData={storeVoletsData}/>);          
   });
   return items;

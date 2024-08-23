@@ -43,7 +43,7 @@ export default function HomeScreen() {
               : 
               ( 
                 <>
-                      <ThemedText style={{fontStyle: 'italic', marginTop: 50}}>{API_URL}</ThemedText>
+                      <ThemedText style={{fontStyle: 'italic', marginTop: 50}}>[{API_URL}]</ThemedText>
                   <ThemedText type="title" style={ {color: responseData?.status === "OK" ? 'green' : 'red'} }>
                     {responseData?.status === "OK" ? "Connecté" : "Non connecté"}
                   </ThemedText>
