@@ -33,8 +33,10 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
         </View>
         <View style={{flexDirection: "column"}}>
           <View style={stylesLists.labelsBox}>
-            <ThemedText style={{fontSize: 20, color: getGroupColor(device), width:270}}>{device.name}</ThemedText>
-            {device.isActive ? <ThemedText style={stylesLists.textLevel}>{device.status}</ThemedText> : <></>}
+            <ThemedText style={{fontSize: 20, color: getGroupColor(device)}}>{device.name}</ThemedText>
+            {device.isActive ? 
+                <ThemedText style={stylesLists.textLevel}>{device.status === "Off" ? device.status : device.level + "%"}</ThemedText> 
+            : <></>}
           </View>
           { device.switchType === DomoticzSwitchType.SLIDER ?
             <Slider
@@ -47,7 +49,7 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
               minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor="#77B5FE"
               onValueChange={(value) => nextValue = value}
               onResponderEnd={() => updateDeviceLevel(device.idx, nextValue, storeDeviceData, device.type)}
-            /> : <></> }
+            /> : <Slider disabled style={stylesLists.sliderDisabled}/> }
         </View>
       </View>
     );

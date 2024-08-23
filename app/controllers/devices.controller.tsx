@@ -71,7 +71,7 @@ function filterDeviceByType(device: DomoticzDevice, typeDevice: DomoticzType) : 
  * 
  */
 export function updateDeviceLevel(idx: number, level: number, storeDevicesData: Function, typeDevice: DomoticzType) {
-    if(level < 0) level = 0;
+    if(level <= 0) level = 0;
     if(level > 100) level = 100;
     if(level === 0) {
         updateDeviceState(idx, false, storeDevicesData, typeDevice);
@@ -103,7 +103,7 @@ export function updateDeviceState(idx: number, status: boolean, setDeviceData: F
     console.log("Mise à jour du " + typeDevice + " " + idx + " à ", status ? "ON" : "OFF");
     
     let params = [ { key: SERVICES_PARAMS.IDX,   value: String(idx) },
-                   { key: SERVICES_PARAMS.CMD, value: status ? "Open" : "Close" } ];
+                   { key: SERVICES_PARAMS.CMD, value: status ? "On" : "Off" } ];
 
     callDomoticz(SERVICES_URL.CMD_BLINDS_LIGHTS_ON_OFF, params)
         .catch((e) => {
