@@ -5,6 +5,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { connectToDomoticz } from '@/app/controllers/index.controller';
 import DomoticzConfig from '../models/domoticzConfig.model';
+import { API_URL } from '../constants/APIconstants';
 
 /**
  * Ecran d'accueil
@@ -31,7 +32,7 @@ export default function HomeScreen() {
       }>
 
       <ThemedView style={tabStyles.titleContainer}>
-        <ThemedText type="title">Domoticz mobile</ThemedText>
+        <ThemedText type="title" style={{color: '#f5c727'}}>Domoticz mobile</ThemedText>
       </ThemedView>
       <ThemedView style={{alignItems: 'flex-end'}}>
         { responseData?.status === "OK" ? <ThemedText>{responseData?.version} r{responseData?.revision}</ThemedText> : <></> }
@@ -41,9 +42,12 @@ export default function HomeScreen() {
               ( <ThemedText  type="defaultSemiBold">Chargement...</ThemedText> )
               : 
               ( 
-                <ThemedText type="defaultSemiBold" style={ {color: responseData?.status === "OK" ? 'green' : 'red'} }>
-                  {responseData?.status === "OK" ? "Connecté" : "Non connecté"}
-                </ThemedText>
+                <>
+                      <ThemedText style={{fontStyle: 'italic', marginTop: 50}}>{API_URL}</ThemedText>
+                  <ThemedText type="title" style={ {color: responseData?.status === "OK" ? 'green' : 'red'} }>
+                    {responseData?.status === "OK" ? "Connecté" : "Non connecté"}
+                  </ThemedText>
+                </> 
               )
             }
       </ThemedView>            
