@@ -85,11 +85,13 @@ export const stylesLists = StyleSheet.create({
   },
   slider: {
     width: 300, 
-    height: 50
+    height: 50,
+    marginTop: -15
   },
   sliderDisabled: {
     width: 300, 
     height: 50,
+    marginTop: -15,
     opacity: 0
   },
   textLevel: {

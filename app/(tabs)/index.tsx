@@ -26,7 +26,7 @@ export default function HomeScreen() {
       headerImage={
         <Image
           source={require('@/assets/images/partial-dlogo.png')}
-          style={tabStyles.reactLogo}
+          style={tabStyles.domoticzLogo}
         />
       }>
 
@@ -65,14 +65,7 @@ export const tabStyles = StyleSheet.create({
     height: 350,
     backgroundColor: '#353636',
   },
-  list: {
-    backgroundColor: '#000000',
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
+  domoticzLogo: {
     width: 290,
     bottom: 0,
     left: 0,
