@@ -18,7 +18,6 @@
     "@expo/vector-icons": "^14.0.2",
     "@react-native-community/slider": "^4.5.2",
     "@react-navigation/native": "^6.0.2",
-    "domoticz-mobile": "file:",
     "expo": "~51.0.24",
     "expo-constants": "~16.0.2",
     "expo-font": "~12.0.9",
