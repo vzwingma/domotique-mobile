@@ -21,7 +21,7 @@ class IconDomoticzTemperature extends MaterialCommunityIcons {
  */
 export function getTemperatureIcon(temperature: DomoticzTemperature) :any {
 
-    if(temperature.subType === "Weather Station"){
+    if(temperature.idx === '101'){
         return "sun-thermometer-outline";
     }
     else if(temperature.idx === '45'){
