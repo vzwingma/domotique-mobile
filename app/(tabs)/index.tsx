@@ -49,11 +49,24 @@ export default function HomeScreen() {
   );
 }
 
+
 export const tabStyles = StyleSheet.create({
   titleContainer: {
-    flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    height: 190,
+    backgroundColor: '#353636',
+  },
+  headerImage: {
+    color: '#808080',
+    bottom: -90,
+    left: -35,
+    position: 'absolute',
+    height: 350,
+    backgroundColor: '#353636',
+  },
+  list: {
+    backgroundColor: '#000000',
   },
   stepContainer: {
     gap: 8,
@@ -65,11 +78,5 @@ export const tabStyles = StyleSheet.create({
     bottom: 0,
     left: 0,
     position: 'absolute',
-  },
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
-  },
+  }
 });

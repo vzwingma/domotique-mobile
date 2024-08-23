@@ -4,7 +4,7 @@
  */
 
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { FlatList } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import { useState , useEffect } from 'react';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
@@ -31,17 +31,22 @@ export default function TabDomoticzVolets() {
 
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#353636', dark: '#353636' }}
-      headerImage={<Ionicons size={310} name="reorder-four" style={tabStyles.headerImage} />}>
-
+    <View>
       {!isLoaded ? (
         <ThemedText>Chargement...</ThemedText>
       ) : (
+        <>
+          <View style={tabStyles.titleContainer}>
+            <Ionicons size={310} name="reorder-four" style={tabStyles.headerImage} />
+          </View>
           <FlatList data={voletsData} 
-                    renderItem={({item}) => (<ViewDomoticzDevice device={item} storeDeviceData={storeVoletsData}/>)} 
-                    keyExtractor={(item, index) => index.toString()} />
+                      renderItem={({item}) => (<ViewDomoticzDevice device={item} storeDeviceData={storeVoletsData}/>)} 
+                      keyExtractor={(item, index) => index.toString()} 
+                      style={tabStyles.list} />
+        </>
       )}
-    </ParallaxScrollView>
+    </View>
   );
 }
+
+

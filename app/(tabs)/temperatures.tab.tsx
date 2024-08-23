@@ -6,13 +6,12 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { useState , useEffect } from 'react';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 
 import DomoticzTemperature from '@/app/models/domoticzTemperature.model'; // Importe le type domoticzDevice
 import { tabStyles } from '.';
 import { loadDomoticzDevices as loadDomoticzTemperatures } from '../controllers/temperatures.controller';
-import { FlatList } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { ViewDomoticzTemperature } from '../components/temperature.component';
 
 /**
@@ -32,17 +31,20 @@ export default function TabDomoticzTemperatures() {
 
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#353636', dark: '#353636' }}
-      headerImage={<Ionicons size={310} name="thermometer-sharp" style={tabStyles.headerImage} />}>
-
+    <View>
       {!isLoaded ? (
         <ThemedText>Chargement...</ThemedText>
       ) : (
+        <>
+          <View style={tabStyles.titleContainer}>
+            <Ionicons size={310} name="thermometer-sharp" style={tabStyles.headerImage} />
+          </View>
           <FlatList data={temperaturesData} 
                     renderItem={({item}) => (<ViewDomoticzTemperature temperature={item}/>)}
-                    keyExtractor={(item, index) => index.toString()} />
+                    keyExtractor={(item, index) => index.toString()} 
+                    style={tabStyles.list} />
+        </>
       )}
-    </ParallaxScrollView>
+    </View>
   );
 }

@@ -1,7 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { FlatList } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { useState , useEffect } from 'react';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { loadDomoticzDevices } from '../controllers/devices.controller';
 import DomoticzEquipement from '../models/domoticzDevice.model';
@@ -22,17 +21,20 @@ export default function TabDomoticzLumieres() {
   }, [])
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#353636', dark: '#353636' }}
-      headerImage={<Ionicons size={310} name="bulb" style={tabStyles.headerImage} />}>
-
+    <View>
       {!isLoaded ? (
         <ThemedText>Chargement...</ThemedText>
       ) : (
+        <>
+          <View style={tabStyles.titleContainer}>
+            <Ionicons size={310} name="bulb" style={tabStyles.headerImage} />
+          </View>
           <FlatList data={lightsData} 
                     renderItem={({item}) => (<ViewDomoticzDevice device={item} storeDeviceData={storeLumieresData}/>)}
-                    keyExtractor={(item, index) => index.toString()} />
+                    keyExtractor={(item, index) => index.toString()} 
+                    style={tabStyles.list} />
+        </>
       )}
-    </ParallaxScrollView>
+    </View>
   );
 }
