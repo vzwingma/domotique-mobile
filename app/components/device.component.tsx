@@ -31,7 +31,7 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
                                                         : {}}  />
         </View>
         <View style={{flexDirection: "column"}}>
-          <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+          <View style={stylesLists.labelsBox}>
             <ThemedText style={{fontSize: 20, color: getGroupColor(device)}}>{device.name}</ThemedText>
             {device.isActive ? <ThemedText style={stylesLists.textLevel}>{device.status}</ThemedText> : <></>}
           </View>  
@@ -76,6 +76,12 @@ export const stylesLists = StyleSheet.create({
   },  
   iconBox: {
     marginRight: 10,
+    marginLeft: 2,
+  },
+  labelsBox: {
+    flexDirection: "row", 
+    justifyContent: "space-between", 
+    marginTop: 9
   },
   slider: {
     width: 300, 
@@ -90,6 +96,7 @@ export const stylesLists = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: '#FFBB3F',
+    paddingBottom: 10
   },
   textName: {
     fontSize: 20,

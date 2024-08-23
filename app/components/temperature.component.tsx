@@ -19,7 +19,7 @@ export const ViewDomoticzTemperature: React.FC<DomoticzTempProps> = ({ temperatu
         <IconDomoticzTemperature name={getTemperatureIcon(temperature)} color={"white"} size={78} />
       </View>
       <View style={{flexDirection: "column"}}>
-        <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+        <View style={stylesLists.labelsBox}>
           <ThemedText style={stylesLists.textName}>{temperature.name}</ThemedText>
           <View style={{flexDirection: "column"}}>
             <ThemedText style={stylesLists.textLevel}>{temperature.temp} °C</ThemedText>
