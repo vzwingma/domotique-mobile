@@ -6,7 +6,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { connectToDomoticz } from '@/app/controllers/index.controller';
 import DomoticzConfig from '../models/domoticzConfig.model';
 import { API_URL } from '../constants/APIconstants';
-
+import * as Network from 'expo-network';
 /**
  * Ecran d'accueil
  */
@@ -14,12 +14,17 @@ export default function HomeScreen() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [responseData, setResponseData] = useState<DomoticzConfig | null>(null); // State to store the response data
-
+  const [networkState, setNetworkState] = useState<Network.NetworkState | null>(null);
 
   // Lance la connexion à Domoticz
   useEffect(() => {
     connectToDomoticz(setIsLoading, setResponseData);
-    }, [])
+
+    Network.getNetworkStateAsync().then((network) => {
+      setNetworkState(network);
+    })
+
+  }, [])
 
   return (
     <ParallaxScrollView
@@ -43,14 +48,27 @@ export default function HomeScreen() {
               : 
               ( 
                 <>
-                      <ThemedText style={{fontStyle: 'italic', marginTop: 50}}>[{API_URL}]</ThemedText>
-                  <ThemedText type="title" style={ {color: responseData?.status === "OK" ? 'green' : 'red'} }>
+                  
+                  <ThemedText type="title" style={ {color: responseData?.status === "OK" ? 'green' : 'red', marginTop: 50} }>
                     {responseData?.status === "OK" ? "Connecté" : "Non connecté"}
                   </ThemedText>
                 </> 
               )
             }
-      </ThemedView>            
+      </ThemedView>
+
+
+      <ThemedView style={{alignItems: 'flex-end'}}>
+        { networkState ? 
+        <>
+          <ThemedText style={{fontStyle: 'italic', marginTop: 50}}>[{API_URL}]</ThemedText>
+          <ThemedText style={{fontStyle: 'italic'}}>Type : {networkState?.type}</ThemedText>
+          <ThemedText style={{fontStyle: 'italic'}}>Internet ? {networkState?.isInternetReachable ? "OUI" : "NON"}</ThemedText>
+          <ThemedText style={{fontStyle: 'italic'}}>Connecté ? {networkState?.isConnected ? "OUI" : "NON"}</ThemedText>
+        </>
+           : <></> }
+      </ThemedView>      
+
     </ParallaxScrollView>
   );
 }

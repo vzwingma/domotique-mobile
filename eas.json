@@ -11,8 +11,7 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk",
-        "image": "latest",
-        "permissions": ["android.permission.INTERNET"]
+        "image": "latest"
       }
     },
     "production": {
