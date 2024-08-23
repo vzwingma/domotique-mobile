@@ -12,7 +12,7 @@ import { ThemedText } from '@/components/ThemedText';
 import DomoticzTemperature from '@/app/models/domoticzTemperature.model'; // Importe le type domoticzDevice
 import { tabStyles } from '.';
 import { loadDomoticzDevices as loadDomoticzTemperatures } from '../controllers/temperatures.controller';
-import { FlatList } from 'react-native-gesture-handler';
+import { FlatList } from 'react-native';
 import { ViewDomoticzTemperature } from '../components/temperature.component';
 
 /**
@@ -36,7 +36,7 @@ export default function TabDomoticzTemperatures() {
       headerBackgroundColor={{ light: '#353636', dark: '#353636' }}
       headerImage={<Ionicons size={310} name="thermometer-sharp" style={tabStyles.headerImage} />}>
 
-{!isLoaded ? (
+      {!isLoaded ? (
         <ThemedText>Chargement...</ThemedText>
       ) : (
           <FlatList data={temperaturesData} 

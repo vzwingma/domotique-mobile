@@ -34,7 +34,7 @@ export default function HomeScreen() {
         <ThemedText type="title">Mobile Domoticz App</ThemedText>
       </ThemedView>
       <ThemedView>
-        { responseData?.status === "OK" ? <ThemedText>{responseData?.version} r{responseData?.revision}</ThemedText> : <> </> }
+        { responseData?.status === "OK" ? <ThemedText>{responseData?.version} r{responseData?.revision}</ThemedText> : <></> }
       </ThemedView>
       <ThemedView style={tabStyles.titleContainer}>
             {isLoading ? 
