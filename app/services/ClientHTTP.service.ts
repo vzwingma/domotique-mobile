@@ -67,7 +67,8 @@ function callDomoticz(path: SERVICES_URL, params?: KeyValueParams[]): Promise<an
         mode: "cors",
         headers: new Headers({
             'Content-Type': 'application/json',
-            'Authorization': 'Basic ' + API_AUTH }),
+            'Authorization': 'Basic ' + API_AUTH
+            }),
         })
         .then(res => {
             // Fin du watch

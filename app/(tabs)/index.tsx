@@ -34,14 +34,14 @@ export default function HomeScreen() {
         <ThemedText type="title">Mobile Domoticz App</ThemedText>
       </ThemedView>
       <ThemedView>
-        <ThemedText>{responseData?.version} r{responseData?.revision}</ThemedText>
+        { responseData?.status === "OK" ? <ThemedText>{responseData?.version} r{responseData?.revision}</ThemedText> : <> </> }
       </ThemedView>
       <ThemedView style={tabStyles.titleContainer}>
             {isLoading ? 
               ( <ThemedText  type="defaultSemiBold">Chargement...</ThemedText> ) : 
               ( <>
                   <ThemedText type="defaultSemiBold">Connecté à Domoticz : </ThemedText>
-                  <ThemedText type="default" style={responseData?.status ? {color: 'green'} : {color: 'red'}}>{responseData?.status}</ThemedText>
+                  <ThemedText type="default" style={responseData?.status === "OK" ? {color: 'green'} : {color: 'red'}}>{responseData?.status}</ThemedText>
                 </> )
             }
       </ThemedView>            
