@@ -4,7 +4,7 @@
  */
 class DomoticzTemperature {
     // Index de l'équipement
-    idx: number;
+    idx: string;
     // Rang de l'équipement (affichage)
     rang: number;
     // Nom de l'équipement
@@ -31,7 +31,7 @@ class DomoticzTemperature {
     /**
      * Constructeur
      */
-    constructor(idx: number, rang: number, name: string, lastUpdate: string, temp: number, humidity: number, humidityStatus: string,
+    constructor(idx: string, rang: number, name: string, lastUpdate: string, temp: number, humidity: number, humidityStatus: string,
                 type: string, subType: string, status: string, data: string, isGroup: boolean = false) {
         this.idx = idx;
         this.rang = rang;

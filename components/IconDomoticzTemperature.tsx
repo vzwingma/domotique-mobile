@@ -24,6 +24,9 @@ export function getTemperatureIcon(temperature: DomoticzTemperature) :any {
     if(temperature.subType === "Weather Station"){
         return "sun-thermometer-outline";
     }
+    else if(temperature.idx === '45'){
+        return "home-thermometer-outline";
+    }
     else if(!temperature.isActive){
         return "thermometer-off";  
     }

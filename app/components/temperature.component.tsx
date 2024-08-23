@@ -16,7 +16,7 @@ export const ViewDomoticzTemperature: React.FC<DomoticzTempProps> = ({ temperatu
   return (
     <View key={temperature.idx} style={temperature.isActive ? stylesLists.viewBox : stylesLists.viewBoxDisabled}>
       <View key={temperature.idx} style={stylesLists.iconBox}>
-        <IconDomoticzTemperature name={getTemperatureIcon(temperature)} color={"white"} size={78} />
+        <IconDomoticzTemperature name={getTemperatureIcon(temperature)} color={(temperature.subType === "Weather Station" ? "#F8C969" : "white")} size={78} />
       </View>
       <View style={{flexDirection: "column"}}>
         <View style={stylesLists.labelsBox}>
