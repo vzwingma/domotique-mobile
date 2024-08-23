@@ -1,4 +1,4 @@
-import { DomoticzType } from "../constants/DomoticzEnum";
+import { DomoticzSwitchType, DomoticzType } from "../constants/DomoticzEnum";
 
 
 /**
@@ -23,6 +23,8 @@ class DomoticzDevice {
     type: string;
     // Sous-type de l'équipement (Lumière, volet, ...)
     subType: DomoticzType;
+    // Type de switch de l'équipement
+    switchType: DomoticzSwitchType;
     // Status de l'équipement
     status: string;
     // Données de l'équipement
@@ -32,7 +34,7 @@ class DomoticzDevice {
      * Constructeur
      */
     constructor(idx: number, rang: number, name: string, lastUpdate: string, level: number, 
-                type: string, subType: DomoticzType, status: string, data: string, isGroup: boolean = false) {
+                type: string, subType: DomoticzType, switchType: DomoticzSwitchType, status: string, data: string, isGroup: boolean = false) {
         this.idx = idx;
         this.rang = rang;
         this.name = name;
@@ -40,6 +42,7 @@ class DomoticzDevice {
         this.level = level;
         this.type = type;
         this.subType = subType;
+        this.switchType = switchType;
         this.status = status;
         this.data = data;
         this.isGroup = isGroup;

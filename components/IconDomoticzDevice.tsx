@@ -16,7 +16,7 @@ class IconDomoticzDevice extends MaterialCommunityIcons {}
  * @returns nom de l'icone de l'équipement lumière
  */
 export function getDeviceIcon(device: DomoticzDevice) :any {
-    switch(device.subType){
+    switch(device.type){
         case DomoticzType.LIGHT:
             return getLightIcon(device);
         case DomoticzType.BLIND:

@@ -8,7 +8,14 @@ export enum DomoticzType {
     BLIND = "Volet",
     UNKNOWN = "Inconnu"
 }
-
+/*
+ * Enum pour les types de switch Domoticz
+ */
+export enum DomoticzSwitchType {
+    SLIDER = "Dimmer",
+    ONOFF = "On/Off",
+    UNKNOWN = "Inconnu"
+}
 /**
  * Tri des équipements Domoticz
  */

@@ -5,6 +5,7 @@ import Slider from '@react-native-community/slider';
 import { updateDeviceLevel } from "../controllers/devices.controller";
 import { getGroupColor } from "../constants/Colors";
 import IconDomoticzDevice, { getDeviceIcon } from "@/components/IconDomoticzDevice";
+import { DomoticzSwitchType } from "../constants/DomoticzEnum";
 
 // Définition des propriétés d'un équipement Domoticz
 type DomoticzDeviceProps = {
@@ -32,20 +33,21 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
         </View>
         <View style={{flexDirection: "column"}}>
           <View style={stylesLists.labelsBox}>
-            <ThemedText style={{fontSize: 20, color: getGroupColor(device)}}>{device.name}</ThemedText>
+            <ThemedText style={{fontSize: 20, color: getGroupColor(device), width:270}}>{device.name}</ThemedText>
             {device.isActive ? <ThemedText style={stylesLists.textLevel}>{device.status}</ThemedText> : <></>}
-          </View>  
-          <Slider
-            disabled={!device.isActive}
-            style={device.isActive ? stylesLists.slider : stylesLists.sliderDisabled}
-            minimumValue={0} 
-            value={nextValue}
-            maximumValue={100}
-            step={1}
-            minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor="#77B5FE"
-            onValueChange={(value) => nextValue = value}
-            onResponderEnd={() => updateDeviceLevel(device.idx, nextValue, storeDeviceData, device.subType)}
-          />
+          </View>
+          { device.switchType === DomoticzSwitchType.SLIDER ?
+            <Slider
+              disabled={!device.isActive}
+              style={device.isActive ? stylesLists.slider : stylesLists.sliderDisabled}
+              minimumValue={0} 
+              value={nextValue}
+              maximumValue={100}
+              step={1}
+              minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor="#77B5FE"
+              onValueChange={(value) => nextValue = value}
+              onResponderEnd={() => updateDeviceLevel(device.idx, nextValue, storeDeviceData, device.subType)}
+            /> : <></> }
         </View>
       </View>
     );
@@ -72,7 +74,7 @@ export const stylesLists = StyleSheet.create({
     margin: 3,
     borderColor: '#FF0000',
     borderWidth: 1,
-    opacity: 0.5,
+    opacity: 0.2,
   },  
   iconBox: {
     marginRight: 10,

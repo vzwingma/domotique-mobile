@@ -18,12 +18,14 @@ export function loadDomoticzDevices(setIsLoaded: Function, storeDevicesData: Fun
         .then(data => {
             storeDevicesData(data.result
                                 .map((device: any) => {
+                                    
                                     return {
                                         idx: device.idx,
                                         name: String(device.Name).replaceAll("[Grp]", "").replaceAll("Prise ", "").trim(),
                                         status: String(device.Status).replaceAll("Set Level: ", ""),
-                                        type: device.Type,
-                                        subType: typeDevice,
+                                        type: typeDevice,
+                                        subType: device.Type,
+                                        switchType: device.SwitchType,
                                         level: device.Level,
                                         isGroup: String(device.Name).indexOf("[Grp]") > -1,
                                         lastUpdate: device.LastUpdate,
