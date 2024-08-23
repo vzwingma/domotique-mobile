@@ -41,7 +41,7 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
               disabled={!device.isActive}
               style={device.isActive ? stylesLists.slider : stylesLists.sliderDisabled}
               minimumValue={0} 
-              value={nextValue}
+              value={device.status === "Off" ? 0 : nextValue}
               maximumValue={100}
               step={1}
               minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor="#77B5FE"
@@ -52,8 +52,6 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
       </View>
     );
   };
-
-
 
 
 export const stylesLists = StyleSheet.create({
