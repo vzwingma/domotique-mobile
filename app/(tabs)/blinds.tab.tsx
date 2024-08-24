@@ -6,7 +6,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState , useEffect, JSX } from 'react';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
 import { loadDomoticzDevices } from '@/app/controllers/devices.controller';
 import { ViewDomoticzDevice } from '@/app/components/device.component'; 
 import DomoticzDevice from '@/app/models/domoticzDevice.model'; // Importe le type domoticzDevice

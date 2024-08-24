@@ -1,5 +1,4 @@
 import { useState , useEffect } from 'react';
-import { ThemedText } from '@/components/ThemedText';
 import { loadDomoticzDevices } from '../controllers/devices.controller';
 import { DomoticzType } from '../constants/DomoticzEnum';
 import { ViewDomoticzDevice } from '@/app/components/device.component'; 
