@@ -14,11 +14,13 @@ export default function HomeScreen() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [responseData, setResponseData] = useState<DomoticzConfig | null>(null); // State to store the response data
+  const [error, setError] = useState(null);
+  const [issData, setISSData] = useState(null);
   const [networkState, setNetworkState] = useState<NetworkState | null>(null);
 
   // Lance la connexion à Domoticz
   useEffect(() => {
-    connectToDomoticz(setIsLoading, setResponseData);
+    connectToDomoticz(setIsLoading, setResponseData, setError, setISSData);
 
     getNetworkStateAsync().then((network) => {
       setNetworkState(network);
@@ -48,7 +50,7 @@ export default function HomeScreen() {
               : 
               ( 
                 <ThemedText type="title" style={ {color: responseData?.status === "OK" ? 'green' : 'red', marginTop: 50} }>
-                    {responseData?.status === "OK" ? "Connecté" : "Non connecté" }
+                    {responseData?.status === "OK" ? "Connecté" : "Non connecté" } {(error ? " - " + error : "")}
                 </ThemedText> 
               )
             }
@@ -62,6 +64,16 @@ export default function HomeScreen() {
           <ThemedText style={{fontStyle: 'italic'}}>Connecté ? {networkState?.isConnected ? "OUI" : "NON"}</ThemedText>
         </ThemedView>
         : <></> }
+
+          <ThemedView style={{alignItems: 'center', marginTop: 50}}>
+
+            <ThemedText type="defaultSemiBold">Bienvenue sur Domoticz Mobile</ThemedText>
+            <ThemedText type="default">Cette application vous permet de contrôler votre installation domotique depuis votre smartphone.</ThemedText>
+            <ThemedText type="default">{
+              issData ? JSON.stringify(issData) : "Chargement des données de l'ISS..."
+              }</ThemedText>
+            </ThemedView>
+
     </ParallaxScrollView>
   );
 }
