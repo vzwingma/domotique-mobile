@@ -3,7 +3,7 @@ import { ThemedText } from "../../components/ThemedText";
 import { StyleSheet, View } from "react-native";
 import Slider from '@react-native-community/slider';
 import { updateDeviceLevel, updateDeviceState } from "../controllers/devices.controller";
-import { getGroupColor } from "../constants/Colors";
+import { Colors, getGroupColor } from "../constants/Colors";
 import IconDomoticzDevice, { getDeviceIcon } from "@/components/IconDomoticzDevice";
 import { DomoticzSwitchType } from "../constants/DomoticzEnum";
 
@@ -42,7 +42,7 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
               value={nextValue}
               maximumValue={100}
               step={1}
-              minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor="#77B5FE"
+              minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor={Colors.domoticz.text}
               onValueChange={(value) => nextValue = value}
               onResponderEnd={() => updateDeviceLevel(device.idx, nextValue, storeDeviceData, device.type)}
             /> : <Slider disabled style={stylesLists.sliderDisabled}/> }

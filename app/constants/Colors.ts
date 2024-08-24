@@ -45,7 +45,8 @@ export const Colors = {
     /**
      * Couleur du texte en mode sombre.
      */
-    text: '#f5c727',
+    //text: '#f5c727',
+    text: '#084f4f',
   }
 };
 
