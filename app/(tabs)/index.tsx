@@ -5,9 +5,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { connectToDomoticz } from '@/app/controllers/index.controller';
 import DomoticzConfig from '../models/domoticzConfig.model';
-import { API_URL } from '../constants/APIconstants';
-import {getNetworkStateAsync, NetworkState} from 'expo-network';
-import { Colors } from '../constants/Colors';
+import { Colors, PROFILE, PROFILES_ENV } from '../constants/Colors';
 /**
  * Ecran d'accueil
  */
@@ -16,16 +14,10 @@ export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [responseData, setResponseData] = useState<DomoticzConfig | null>(null); // State to store the response data
   const [error, setError] = useState(null);
-  const [networkState, setNetworkState] = useState<NetworkState | null>(null);
-
+  const logoImage = PROFILE === PROFILES_ENV.C ? require('@/assets/images/c/partial-dlogo.png') : require('@/assets/images/v/partial-dlogo.png')
   // Lance la connexion à Domoticz
   useEffect(() => {
     connectToDomoticz(setIsLoading, setResponseData, setError);
-
-    getNetworkStateAsync().then((network) => {
-      setNetworkState(network);
-    })
-
   }, [])
 
   return (
@@ -33,36 +25,28 @@ export default function HomeScreen() {
       headerBackgroundColor={{ light: Colors.dark.titlebackground, dark: Colors.dark.titlebackground }}
       headerImage={
         <Image
-          source={require('@/assets/images/partial-dlogo.png')}
+          source={logoImage}
           style={tabStyles.domoticzLogo}
         />
       }>
 
       <ThemedView style={tabStyles.titleContainer}>
-        <ThemedText type="title" style={tabStyles.domoticzColor}>Domoticz mobile</ThemedText>
+        <ThemedText type="title" style={tabStyles.domoticzColor}>Domoticz Mobile</ThemedText>
       </ThemedView>
       <ThemedView style={{alignItems: 'flex-end'}}>
-        { responseData?.status === "OK" ? <ThemedText>{responseData?.version} r{responseData?.revision}</ThemedText> : <></> }
+        { responseData?.status === "OK" ? <ThemedText>Domoticz Application : {responseData?.version} r{responseData?.revision}</ThemedText> : <></> }
       </ThemedView>
       <ThemedView style={tabStyles.titleContainer}>
             {isLoading ? 
-              ( <ActivityIndicator size={'large'} color={Colors.domoticz.text}/> )
+              ( <ActivityIndicator size={'large'} color={Colors.domoticz.color}/> )
               : 
               ( 
-                <ThemedText type="title" style={ {color: responseData?.status === "OK" ? 'green' : 'red', marginTop: 50} }>
+                <ThemedText type="subtitle" style={ {color: responseData?.status === "OK" ? 'green' : 'red', marginTop: 50} }>
                     {responseData?.status === "OK" ? "Connecté" : "Non connecté" } {(error ? + error : "")}
                 </ThemedText> 
               )
             }
       </ThemedView>
-
-        { networkState ? 
-        <ThemedView style={{alignItems: 'flex-end'}}>
-          <ThemedText style={{fontStyle: 'italic', marginTop: 70, color:'#808080'}}>[{API_URL}]</ThemedText>
-          <ThemedText style={{fontStyle: 'italic', color:'#808080'}}>Connexion active ? {networkState?.isConnected ? "OUI" : "NON"}</ThemedText>
-          <ThemedText style={{fontStyle: 'italic', color:'#808080'}}>Accès à Internet ? {networkState?.isInternetReachable ? "OUI" : "NON"}</ThemedText>          
-        </ThemedView>
-        : <></> }
     </ParallaxScrollView>
   );
 }
@@ -89,6 +73,6 @@ export const tabStyles = StyleSheet.create({
     backgroundColor: Colors.dark.titlebackground,
   },
   domoticzColor: {
-    color: Colors.domoticz.text
+    color: Colors.domoticz.color
   }
 });
