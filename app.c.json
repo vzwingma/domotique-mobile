@@ -42,7 +42,6 @@
       "typedRoutes": true
     },
     "extra": {
-      "profile": "C",
       "router": {
         "origin": false
       },
