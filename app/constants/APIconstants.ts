@@ -6,6 +6,7 @@
 export const API_URL = process.env.DOMOTICZ_URL ?? process.env.EXPO_PUBLIC_DOMOTICZ_URL;
 export const API_AUTH = process.env.DOMOTICZ_AUTH ?? process.env.EXPO_PUBLIC_DOMOTICZ_AUTH;
 
+
 /**
  * L'URI racine pour les requêtes API.
  */

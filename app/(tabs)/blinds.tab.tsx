@@ -36,7 +36,7 @@ export default function TabDomoticzVolets() {
       headerImage={<Ionicons size={310} name="reorder-four" style={tabStyles.headerImage} />}>
 
       {!isLoaded ? (
-        <ActivityIndicator size={'large'} color={Colors.domoticz.text}/>
+        <ActivityIndicator size={'large'} color={Colors.domoticz.color}/>
       ) : (
           (buildDeviceList(voletsData, storeVoletsData))
       )}

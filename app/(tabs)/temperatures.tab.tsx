@@ -37,7 +37,7 @@ export default function TabDomoticzTemperatures() {
       headerImage={<Ionicons size={310} name="thermometer-sharp" style={tabStyles.headerImage} />}>
 
       {!isLoaded ? (
-        <ActivityIndicator size={'large'} color={Colors.domoticz.text}/>
+        <ActivityIndicator size={'large'} color={Colors.domoticz.color}/>
       ) : (
         buildDeviceList(temperaturesData)
       )}

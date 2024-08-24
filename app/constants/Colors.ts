@@ -3,7 +3,12 @@ import DomoticzDevice from "../models/domoticzDevice.model";
  * Ci-dessous se trouvent les couleurs utilisées dans l'application. Les couleurs sont définies en mode clair et sombre.
  * Il existe de nombreuses autres façons de styliser votre application. Par exemple, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
  */
+export const PROFILE = process.env.MY_ENVIRONMENT ?? process.env.EXPO_PUBLIC_MY_ENVIRONMENT;
 
+export const enum PROFILES_ENV {
+    C = "previewC",
+    V = "previewV",
+}
 /**
  * Couleurs utilisées en mode clair et sombre.
  */
@@ -45,10 +50,11 @@ export const Colors = {
     /**
      * Couleur du texte en mode sombre.
      */
-    //text: '#f5c727',
-    text: '#084f4f',
+    color: PROFILE === PROFILES_ENV.C ? '#339a9a' : '#f5c727',
   }
 };
+
+
 
 /**
  * Renvoie la couleur du groupe en fonction de l'équipement Domoticz spécifié.
