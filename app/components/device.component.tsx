@@ -119,12 +119,12 @@ export const stylesLists = StyleSheet.create({
     marginTop: 2
   },
   slider: {
-    width: 200, 
+    width: 270, 
     height: 40,
     marginTop: -15
   },
   sliderDisabled: {
-    width: 200, 
+    width: 270, 
     height: 50,
     marginTop: -15,
     opacity: 0
