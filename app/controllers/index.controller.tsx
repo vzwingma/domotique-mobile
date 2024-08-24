@@ -7,7 +7,7 @@ import { showToast, ToastDuration } from '@/hooks/AndroidToast';
 /**
  * connectToDomoticz
  */
-export function connectToDomoticz(setIsLoading: Function, storeConfigData: Function, storeError: Function, storeISSData: Function, storeIssError: Function) {
+export function connectToDomoticz(setIsLoading: Function, storeConfigData: Function, storeError: Function) {
 
     // Exemple d'utilisation de l'état isLoading et error
     setIsLoading(true);
@@ -32,21 +32,6 @@ export function connectToDomoticz(setIsLoading: Function, storeConfigData: Funct
           console.error('Une erreur s\'est produite lors de la connexion à Domoticz', e);
           showToast("Erreur de connexion à Domoticz", ToastDuration.SHORT);
       });
-
-
-      fetch('http://api.open-notify.org/iss-now.json')
-      .then(response => response.json())
-      .then(data => {
-        console.log(data)
-        storeISSData(data); })
-      .catch(e => {
-        console.error('Erreur lors de la récupération des données de l\'ISS', e)
-        storeIssError(e)
-      });
-
-
-
-      
 }
 
 export default connectToDomoticz;

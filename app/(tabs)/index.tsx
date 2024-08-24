@@ -16,13 +16,11 @@ export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [responseData, setResponseData] = useState<DomoticzConfig | null>(null); // State to store the response data
   const [error, setError] = useState(null);
-  const [issData, setISSData] = useState(null);
-  const [issError, setISSError] = useState(null);
   const [networkState, setNetworkState] = useState<NetworkState | null>(null);
 
   // Lance la connexion à Domoticz
   useEffect(() => {
-    connectToDomoticz(setIsLoading, setResponseData, setError, setISSData, setISSError);
+    connectToDomoticz(setIsLoading, setResponseData, setError);
 
     getNetworkStateAsync().then((network) => {
       setNetworkState(network);
@@ -52,7 +50,7 @@ export default function HomeScreen() {
               : 
               ( 
                 <ThemedText type="title" style={ {color: responseData?.status === "OK" ? 'green' : 'red', marginTop: 50} }>
-                    {responseData?.status === "OK" ? "Connecté" : "Non connecté" } {(error ? " - " + error : "")}
+                    {responseData?.status === "OK" ? "Connecté" : "Non connecté" } {(error ? + error : "")}
                 </ThemedText> 
               )
             }
@@ -60,21 +58,12 @@ export default function HomeScreen() {
 
         { networkState ? 
         <ThemedView style={{alignItems: 'flex-end'}}>
-          <ThemedText style={{fontStyle: 'italic', marginTop: 50}}>[{API_URL}]</ThemedText>
-          <ThemedText style={{fontStyle: 'italic'}}>Type     : {networkState?.type}</ThemedText>
-          <ThemedText style={{fontStyle: 'italic'}}>Internet ? {networkState?.isInternetReachable ? "OUI" : "NON"}</ThemedText>
-          <ThemedText style={{fontStyle: 'italic'}}>Connecté ? {networkState?.isConnected ? "OUI" : "NON"}</ThemedText>
+          <ThemedText style={{fontStyle: 'italic', marginTop: 70, color:'#808080'}}>[{API_URL}]</ThemedText>
+          <ThemedText style={{fontStyle: 'italic', color:'#808080'}}>Type             : {networkState?.type}</ThemedText>
+          <ThemedText style={{fontStyle: 'italic', color:'#808080'}}>Connexion active ? {networkState?.isConnected ? "OUI" : "NON"}</ThemedText>
+          <ThemedText style={{fontStyle: 'italic', color:'#808080'}}>Accès à Internet ? {networkState?.isInternetReachable ? "OUI" : "NON"}</ThemedText>          
         </ThemedView>
         : <></> }
-
-          <ThemedView style={{alignItems: 'center', marginTop: 50}}>
-            <ThemedText type="default">{(issError ? " - " + issError : "")}</ThemedText>
-            <ThemedText type="default">{
-              issData ? JSON.stringify(issData) : "Chargement des données de l'ISS..."
-              }
-              </ThemedText>
-            </ThemedView>
-
     </ParallaxScrollView>
   );
 }
