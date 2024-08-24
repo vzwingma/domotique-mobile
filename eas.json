@@ -9,6 +9,9 @@
       "android": {
         "buildType": "apk",
         "image": "latest"
+      },
+      "env": {
+        "EXPO_PUBLIC_MY_ENVIRONMENT": "development"
       }
     },
     "preview": {
@@ -18,9 +21,24 @@
         "image": "latest"
       }
     },
+    "previewV": {
+      "extends": "preview",
+      "env": {
+        "EXPO_PUBLIC_MY_ENVIRONMENT": "previewV"
+      }
+    },
+    "previewC": {
+      "extends": "preview",
+      "env": {
+        "EXPO_PUBLIC_MY_ENVIRONMENT": "previewC"
+      }
+    },    
     "production": {
       "android": {
         "image": "latest"
+      },
+      "env": {
+        "EXPO_PUBLIC_MY_ENVIRONMENT": "production"
       }
     }
   },
