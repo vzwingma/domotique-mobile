@@ -7,7 +7,7 @@ import { showToast, ToastDuration } from '@/hooks/AndroidToast';
 /**
  * connectToDomoticz
  */
-export function connectToDomoticz(setIsLoading: Function, storeConfigData: Function, storeError: Function, storeISSData: Function) {
+export function connectToDomoticz(setIsLoading: Function, storeConfigData: Function, storeError: Function, storeISSData: Function, storeIssError: Function) {
 
     // Exemple d'utilisation de l'état isLoading et error
     setIsLoading(true);
@@ -39,7 +39,10 @@ export function connectToDomoticz(setIsLoading: Function, storeConfigData: Funct
       .then(data => {
         console.log(data)
         storeISSData(data); })
-      .catch(e => console.error('Erreur lors de la récupération des données de l\'ISS', e));
+      .catch(e => {
+        console.error('Erreur lors de la récupération des données de l\'ISS', e)
+        storeIssError(e)
+      });
 
 
 
