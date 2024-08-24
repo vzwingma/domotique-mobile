@@ -25,13 +25,13 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
       <View key={device.idx} style={device.isActive ? stylesLists.viewBox : stylesLists.viewBoxDisabled }>
         <View key={device.idx} style={stylesLists.iconBox}>
             <IconDomoticzDevice name={getDeviceIcon(device)}
-                                size={78}
+                                size={60}
                                 color={getGroupColor(device)} 
                                 onPress={() => onClickDeviceIcon(device, storeDeviceData)}  />
         </View>
         <View style={{flexDirection: "column"}}>
           <View style={stylesLists.labelsBox}>
-            <ThemedText style={{fontSize: 20, color: getGroupColor(device)}}>{device.name}</ThemedText>
+            <ThemedText style={{fontSize: 16, color: getGroupColor(device)}}>{device.name}</ThemedText>
             <ThemedText style={stylesLists.textLevel}>{getStatusLabel(device)}</ThemedText> 
           </View>
           { device.switchType === DomoticzSwitchType.SLIDER ?
@@ -91,51 +91,52 @@ function onClickDeviceIcon(device: DomoticzDevice, storeDeviceData: React.Dispat
 export const stylesLists = StyleSheet.create({
   viewBox: {
     flexDirection: 'row',
-    height: 90,
+    height: 64,
     width: '98%',
-    padding: 3,
-    margin: 2,
-    borderColor: '#565656',
+    padding: 1,
+    margin: 1,
+    borderColor: '#3A3A3A',
     borderWidth: 1,
   },
   viewBoxDisabled: {
     flexDirection: 'row',
-    height: 90,
+    height: 64,
     width: '98%',
-    padding: 3,
-    margin: 3,
+    padding: 1,
+    margin: 1,
     borderColor: '#FF0000',
     borderWidth: 1,
     opacity: 0.2,
   },  
   iconBox: {
     marginRight: 10,
-    marginLeft: 2,
+    height: 60,
+    width: 60,
   },
   labelsBox: {
     flexDirection: "row", 
     justifyContent: "space-between", 
-    marginTop: 9
+    marginTop: 2
   },
   slider: {
-    width: 300, 
-    height: 50,
+    width: 200, 
+    height: 40,
     marginTop: -15
   },
   sliderDisabled: {
-    width: 300, 
+    width: 200, 
     height: 50,
     marginTop: -15,
     opacity: 0
   },
   textLevel: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#FFBB3F',
-    paddingBottom: 10
+    paddingBottom: 7
   },
   textName: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 'bold',
     width: 200,
   },  

@@ -59,7 +59,6 @@ export default function HomeScreen() {
         { networkState ? 
         <ThemedView style={{alignItems: 'flex-end'}}>
           <ThemedText style={{fontStyle: 'italic', marginTop: 70, color:'#808080'}}>[{API_URL}]</ThemedText>
-          <ThemedText style={{fontStyle: 'italic', color:'#808080'}}>Type             : {networkState?.type}</ThemedText>
           <ThemedText style={{fontStyle: 'italic', color:'#808080'}}>Connexion active ? {networkState?.isConnected ? "OUI" : "NON"}</ThemedText>
           <ThemedText style={{fontStyle: 'italic', color:'#808080'}}>Accès à Internet ? {networkState?.isInternetReachable ? "OUI" : "NON"}</ThemedText>          
         </ThemedView>
