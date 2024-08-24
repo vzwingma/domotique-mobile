@@ -122,7 +122,6 @@ export function updateDeviceState(idx: number, status: boolean, setDeviceData: F
  */
 function refreshEquipementState(setDeviceData: Function, typeEquipement: DomoticzType) {
     // Mise à jour des données
-    setTimeout(() => loadDomoticzDevices(() => {}, setDeviceData, typeEquipement), 0);
     setTimeout(() => loadDomoticzDevices(() => {}, setDeviceData, typeEquipement), 1000);
 }
 

@@ -23,17 +23,17 @@ export default function TabDomoticzVolets() {
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [voletsData, storeVoletsData] = useState<DomoticzDevice[]>([]); // État pour stocker les données de réponse
-
+  const [refreshing, setRefreshing] = useState(false);
   // Lance la connexion à Domoticz pour récupérer les volets
   useEffect(() => {
     loadDomoticzDevices(setIsLoaded, storeVoletsData, DomoticzType.BLIND);  
-  }, [])
+  }, [refreshing])
 
 
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: Colors.dark.titlebackground, dark: Colors.dark.titlebackground }}
-      headerImage={<Ionicons size={310} name="reorder-four" style={tabStyles.headerImage} />}>
+      headerImage={<Ionicons size={310} name="reorder-four" style={tabStyles.headerImage} />}
+      setRefreshing={setRefreshing}>
 
       {!isLoaded ? (
         <ActivityIndicator size={'large'} color={Colors.domoticz.color}/>

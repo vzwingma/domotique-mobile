@@ -1,5 +1,5 @@
 import type { PropsWithChildren, ReactElement } from 'react';
-import { StyleSheet, useColorScheme } from 'react-native';
+import { RefreshControl, StyleSheet, useColorScheme } from 'react-native';
 import Animated, {
   interpolate,
   useAnimatedRef,
@@ -8,22 +8,26 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { ThemedView } from '@/components/ThemedView';
+import React from 'react';
+import { Colors } from '@/app/constants/Colors';
 
 const HEADER_HEIGHT = 250;
 
 type Props = PropsWithChildren<{
   headerImage: ReactElement;
-  headerBackgroundColor: { dark: string; light: string };
+  setRefreshing: React.Dispatch<React.SetStateAction<boolean>>;
 }>;
 
 export default function ParallaxScrollView({
   children,
   headerImage,
-  headerBackgroundColor,
+  setRefreshing
 }: Props) {
-  const colorScheme = useColorScheme() ?? 'light';
+
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
+
+  let refreshing = false;
 
   const headerAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -42,13 +46,21 @@ export default function ParallaxScrollView({
     };
   });
 
+  const onRefresh = React.useCallback(() => {
+    refreshing = !refreshing;
+    setRefreshing(refreshing);
+  }, []);
+
+
   return (
     <ThemedView style={styles.container}>
-      <Animated.ScrollView ref={scrollRef} scrollEventThrottle={16}>
+      <Animated.ScrollView ref={scrollRef} scrollEventThrottle={16} refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
         <Animated.View
           style={[
             styles.header,
-            { backgroundColor: headerBackgroundColor[colorScheme] },
+            { backgroundColor: Colors.dark.titlebackground },
             headerAnimatedStyle,
           ]}>
           {headerImage}

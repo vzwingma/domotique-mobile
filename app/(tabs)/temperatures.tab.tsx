@@ -24,17 +24,17 @@ export default function TabDomoticzTemperatures() {
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [temperaturesData, storeTemperaturesData] = useState<DomoticzTemperature[]>([]); // État pour stocker les données de réponse
-
+  const [refreshing, setRefreshing] = useState(false);
   // Lance la connexion à Domoticz pour récupérer les volets
   useEffect(() => {
-     loadDomoticzTemperatures(setIsLoaded, storeTemperaturesData);  
-  }, [])
+    loadDomoticzTemperatures(setIsLoaded, storeTemperaturesData);
+  }, [refreshing])
 
 
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: Colors.dark.titlebackground, dark: Colors.dark.titlebackground }}
-      headerImage={<Ionicons size={310} name="thermometer-sharp" style={tabStyles.headerImage} />}>
+      headerImage={<Ionicons size={310} name="thermometer-sharp" style={tabStyles.headerImage} />}
+      setRefreshing={setRefreshing}>
 
       {!isLoaded ? (
         <ActivityIndicator size={'large'} color={Colors.domoticz.color}/>

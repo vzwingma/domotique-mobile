@@ -15,15 +15,16 @@ export default function TabDomoticzLumieres() {
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [lightsData, storeLumieresData] = useState<DomoticzDevice[]>([]); // State to store the response data
+  const [refreshing, setRefreshing] = useState(false);
 
   // Lance la connexion à Domoticz pour récupérer les lumières
   useEffect(() => {
     loadDomoticzDevices(setIsLoaded, storeLumieresData, DomoticzType.LIGHT);  
-  }, [])
+  }, [refreshing])
 
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: Colors.dark.titlebackground, dark: Colors.dark.titlebackground }}
+      setRefreshing={setRefreshing} 
       headerImage={<Ionicons size={310} name="bulb" style={tabStyles.headerImage} />}>
 
       {!isLoaded ? (

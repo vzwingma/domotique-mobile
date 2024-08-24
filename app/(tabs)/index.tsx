@@ -14,21 +14,23 @@ export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [responseData, setResponseData] = useState<DomoticzConfig | null>(null); // State to store the response data
   const [error, setError] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+
   const logoImage = PROFILE === PROFILES_ENV.C ? require('@/assets/images/c/partial-dlogo.png') : require('@/assets/images/v/partial-dlogo.png')
   // Lance la connexion à Domoticz
   useEffect(() => {
     connectToDomoticz(setIsLoading, setResponseData, setError);
-  }, [])
+  }, [refreshing])
 
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: Colors.dark.titlebackground, dark: Colors.dark.titlebackground }}
       headerImage={
         <Image
           source={logoImage}
           style={tabStyles.domoticzLogo}
         />
-      }>
+      }
+      setRefreshing={setRefreshing}>
 
       <ThemedView style={tabStyles.titleContainer}>
         <ThemedText type="title" style={tabStyles.domoticzColor}>Domoticz Mobile</ThemedText>
