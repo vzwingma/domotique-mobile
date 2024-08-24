@@ -7,6 +7,8 @@ import DomoticzDevice from '../models/domoticzDevice.model';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { Ionicons } from '@expo/vector-icons';
 import { tabStyles } from '.';
+import { Colors } from '../constants/Colors';
+import { ActivityIndicator } from 'react-native';
 /**
  * Ecran des lumières
  */
@@ -22,11 +24,11 @@ export default function TabDomoticzLumieres() {
 
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#353636', dark: '#353636' }}
+      headerBackgroundColor={{ light: Colors.dark.titlebackground, dark: Colors.dark.titlebackground }}
       headerImage={<Ionicons size={310} name="bulb" style={tabStyles.headerImage} />}>
 
       {!isLoaded ? (
-        <ThemedText>Chargement...</ThemedText>
+        <ActivityIndicator size={'large'} color={Colors.domoticz.text}/>
       ) : (
         buildDeviceList(lightsData, storeLumieresData)
       )}

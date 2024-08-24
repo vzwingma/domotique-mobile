@@ -6,13 +6,14 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { useState , useEffect } from 'react';
-import { ThemedText } from '@/components/ThemedText';
 
 import DomoticzTemperature from '@/app/models/domoticzTemperature.model'; // Importe le type domoticzDevice
 import { tabStyles } from '.';
 import { loadDomoticzDevices as loadDomoticzTemperatures } from '../controllers/temperatures.controller';
 import { ViewDomoticzTemperature } from '../components/temperature.component';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
+import { Colors } from '../constants/Colors';
+import { ActivityIndicator } from 'react-native';
 
 /**
  * Composant de l'écran des mesures de températures.
@@ -32,11 +33,11 @@ export default function TabDomoticzTemperatures() {
 
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#353636', dark: '#353636' }}
+      headerBackgroundColor={{ light: Colors.dark.titlebackground, dark: Colors.dark.titlebackground }}
       headerImage={<Ionicons size={310} name="thermometer-sharp" style={tabStyles.headerImage} />}>
 
       {!isLoaded ? (
-        <ThemedText>Chargement...</ThemedText>
+        <ActivityIndicator size={'large'} color={Colors.domoticz.text}/>
       ) : (
         buildDeviceList(temperaturesData)
       )}

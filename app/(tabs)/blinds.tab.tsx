@@ -12,6 +12,8 @@ import { ViewDomoticzDevice } from '@/app/components/device.component';
 import DomoticzDevice from '@/app/models/domoticzDevice.model'; // Importe le type domoticzDevice
 import { DomoticzType } from '@/app/constants/DomoticzEnum';
 import { tabStyles } from '.';
+import { Colors } from '../constants/Colors';
+import { ActivityIndicator } from 'react-native';
 
 /**
  * Composant de l'écran des volets.
@@ -31,11 +33,11 @@ export default function TabDomoticzVolets() {
 
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#353636', dark: '#353636' }}
+      headerBackgroundColor={{ light: Colors.dark.titlebackground, dark: Colors.dark.titlebackground }}
       headerImage={<Ionicons size={310} name="reorder-four" style={tabStyles.headerImage} />}>
 
       {!isLoaded ? (
-        <ThemedText>Chargement...</ThemedText>
+        <ActivityIndicator size={'large'} color={Colors.domoticz.text}/>
       ) : (
           (buildDeviceList(voletsData, storeVoletsData))
       )}

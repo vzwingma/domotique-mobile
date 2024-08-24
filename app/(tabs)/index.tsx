@@ -1,4 +1,4 @@
-import { Image, StyleSheet } from 'react-native';
+import { ActivityIndicator, Image, StyleSheet } from 'react-native';
 import { useState , useEffect } from 'react';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
@@ -7,6 +7,7 @@ import { connectToDomoticz } from '@/app/controllers/index.controller';
 import DomoticzConfig from '../models/domoticzConfig.model';
 import { API_URL } from '../constants/APIconstants';
 import {getNetworkStateAsync, NetworkState} from 'expo-network';
+import { Colors } from '../constants/Colors';
 /**
  * Ecran d'accueil
  */
@@ -30,7 +31,7 @@ export default function HomeScreen() {
 
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#353636', dark: '#353636' }}
+      headerBackgroundColor={{ light: Colors.dark.titlebackground, dark: Colors.dark.titlebackground }}
       headerImage={
         <Image
           source={require('@/assets/images/partial-dlogo.png')}
@@ -39,14 +40,14 @@ export default function HomeScreen() {
       }>
 
       <ThemedView style={tabStyles.titleContainer}>
-        <ThemedText type="title" style={{color: '#f5c727'}}>Domoticz mobile</ThemedText>
+        <ThemedText type="title" style={tabStyles.domoticzColor}>Domoticz mobile</ThemedText>
       </ThemedView>
       <ThemedView style={{alignItems: 'flex-end'}}>
         { responseData?.status === "OK" ? <ThemedText>{responseData?.version} r{responseData?.revision}</ThemedText> : <></> }
       </ThemedView>
       <ThemedView style={tabStyles.titleContainer}>
             {isLoading ? 
-              ( <ThemedText  type="defaultSemiBold">Chargement...</ThemedText> )
+              ( <ActivityIndicator size={'large'} color={Colors.domoticz.text}/> )
               : 
               ( 
                 <ThemedText type="title" style={ {color: responseData?.status === "OK" ? 'green' : 'red', marginTop: 50} }>
@@ -90,13 +91,16 @@ export const tabStyles = StyleSheet.create({
     left: -35,
     position: 'absolute',
     height: 350,
-    backgroundColor: '#353636',
+    backgroundColor: Colors.dark.titlebackground,
   },
   domoticzLogo: {
     width: 290,
     bottom: 0,
     left: 0,
     position: 'absolute',
-    backgroundColor: '#353636',
+    backgroundColor: Colors.dark.titlebackground,
+  },
+  domoticzColor: {
+    color: Colors.domoticz.text
   }
 });

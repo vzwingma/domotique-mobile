@@ -10,32 +10,6 @@ import DomoticzDevice from "../models/domoticzDevice.model";
 const tintColorDark = '#fff';
 
 export const Colors = {
-  light: {
-    /**
-     * Couleur du texte en mode clair.
-     */
-    text: '#ECEDEE',
-    /**
-     * Couleur de l'arrière-plan en mode clair.
-     */
-    background: '#151718',
-    /**
-     * Couleur de mise en évidence en mode clair.
-     */
-    tint: tintColorDark,
-    /**
-     * Couleur des icônes en mode clair.
-     */
-    icon: '#9BA1A6',
-    /**
-     * Couleur par défaut des icônes de l'onglet en mode clair.
-     */
-    tabIconDefault: '#9BA1A6',
-    /**
-     * Couleur des icônes de l'onglet sélectionné en mode clair.
-     */
-    tabIconSelected: tintColorDark,
-  },
   dark: {
     /**
      * Couleur du texte en mode sombre.
@@ -45,6 +19,11 @@ export const Colors = {
      * Couleur de l'arrière-plan en mode sombre.
      */
     background: '#151718',
+    /**
+     * Couleur de l'arrière-plan de la barre de titre en mode sombre.
+     */
+    titlebackground: '#353636',
+
     /**
      * Couleur de mise en évidence en mode sombre.
      */
@@ -62,6 +41,12 @@ export const Colors = {
      */
     tabIconSelected: tintColorDark,
   },
+  domoticz: {
+    /**
+     * Couleur du texte en mode sombre.
+     */
+    text: '#f5c727',
+  }
 };
 
 /**
