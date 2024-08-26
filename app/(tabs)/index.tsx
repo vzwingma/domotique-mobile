@@ -13,7 +13,7 @@ export default function HomeScreen() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [responseData, setResponseData] = useState<DomoticzConfig | null>(null); // State to store the response data
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
   const logoImage = PROFILE === PROFILES_ENV.C ? require('@/assets/images/c/partial-dlogo.png') : require('@/assets/images/v/partial-dlogo.png')
@@ -44,7 +44,7 @@ export default function HomeScreen() {
               : 
               ( 
                 <ThemedText type="subtitle" style={ {color: responseData?.status === "OK" ? 'green' : 'red', marginTop: 50} }>
-                    {responseData?.status === "OK" ? "Connecté" : "Non connecté" } {(error ? + error : "")}
+                    {responseData?.status === "OK" ? "Connecté" : "Non connecté :" } {(error !== null ? error.message : "")}
                 </ThemedText> 
               )
             }
