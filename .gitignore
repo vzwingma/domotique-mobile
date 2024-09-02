@@ -9,7 +9,11 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
-
+# IDE
+.idea/
+.vscode/
+# Android
+android/
 # macOS
 .DS_Store
 %ProgramData%/Microsoft/Windows/UUS/State/_active.uusver
@@ -18,6 +22,8 @@ web-build/
 
 expo-env.d.ts
 # @end expo-cli
+
+# Environment variables
 .env
 .env.previewC
 .env.previewV
