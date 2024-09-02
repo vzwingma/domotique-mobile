@@ -97,6 +97,7 @@ export const stylesLists = StyleSheet.create({
     margin: 1,
     borderColor: '#3A3A3A',
     borderWidth: 1,
+    backgroundColor: '#0b0b0b',
   },
   viewBoxDisabled: {
     flexDirection: 'row',
