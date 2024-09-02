@@ -27,7 +27,7 @@ export default function HomeScreen() {
 
   // Retourne la version de l'application et de Domoticz sous forme de JSX
   const getTabVersion = () => {
-    return <>
+    return <ThemedView style={{marginTop: 400}}>
     <ThemedView style={tabStyles.versionTabRow}>
       <ThemedView style={tabStyles.versionTabCell} ><ThemedText type='italic'>Domoticz App</ThemedText></ThemedView>
       <ThemedView style={tabStyles.versionTabCell} >{ responseData?.status === "OK" ? <ThemedText type='italic'>{responseData?.version}</ThemedText> : <></> }</ThemedView>
@@ -36,7 +36,7 @@ export default function HomeScreen() {
         <ThemedView style={tabStyles.versionTabCell} ><ThemedText type='italic'>Domoticz Mobile</ThemedText></ThemedView>
         <ThemedView style={tabStyles.versionTabCell} ><ThemedText type='italic'>1.0</ThemedText></ThemedView>
     </ThemedView>
-  </>
+  </ThemedView>
   }
 
 
@@ -54,7 +54,6 @@ export default function HomeScreen() {
         <ThemedText type="title" style={tabStyles.domoticzColor}>Domoticz Mobile</ThemedText>
       </ThemedView>
       
-      {getTabVersion()}
 
       <ThemedView style={tabStyles.titleContainer}>
             {isLoading ? 
@@ -67,6 +66,9 @@ export default function HomeScreen() {
               )
             }
       </ThemedView>
+
+      {getTabVersion()}
+
     </ParallaxScrollView>
   );
 }
