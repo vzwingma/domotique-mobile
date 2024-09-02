@@ -29,11 +29,11 @@ export default function HomeScreen() {
   const getTabVersion = () => {
     return <>
     <ThemedView style={tabStyles.versionTabRow}>
-      <ThemedView style={tabStyles.versionTabCell} ><ThemedText type='italic'>Domoticz :</ThemedText></ThemedView>
+      <ThemedView style={tabStyles.versionTabCell} ><ThemedText type='italic'>Domoticz App</ThemedText></ThemedView>
       <ThemedView style={tabStyles.versionTabCell} >{ responseData?.status === "OK" ? <ThemedText type='italic'>{responseData?.version}</ThemedText> : <></> }</ThemedView>
     </ThemedView>
     <ThemedView style={tabStyles.versionTabRow}>
-        <ThemedView style={tabStyles.versionTabCell} ><ThemedText type='italic'>Domoticz mobile :</ThemedText></ThemedView>
+        <ThemedView style={tabStyles.versionTabCell} ><ThemedText type='italic'>Domoticz Mobile</ThemedText></ThemedView>
         <ThemedView style={tabStyles.versionTabCell} ><ThemedText type='italic'>1.0</ThemedText></ThemedView>
     </ThemedView>
   </>
@@ -96,7 +96,7 @@ export const tabStyles = StyleSheet.create({
     flex: 1, 
     alignSelf: 'flex-end', 
     flexDirection: 'row', 
-    width:300
+    width:220
   },
   versionTabCell: {
     flex: 1, 
