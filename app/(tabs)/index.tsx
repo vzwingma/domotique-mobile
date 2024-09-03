@@ -58,11 +58,9 @@ export default function HomeScreen() {
             {isLoading ? 
               ( <ActivityIndicator size={'large'} color={Colors.domoticz.color}/> )
               : 
-              ( 
-                <ThemedText type="subtitle" style={ {color: responseData?.status === "OK" ? 'green' : 'red', marginTop: 50} }>
+              ( <ThemedText type="subtitle" style={ {color: responseData?.status === "OK" ? 'green' : 'red', marginTop: 50} }>
                     {responseData?.status === "OK" ? "Connecté" : "Non connecté :" } {(error !== null ? error.message : "")}
-                </ThemedText> 
-              )
+                </ThemedText> )
             }
       </ThemedView>
 
