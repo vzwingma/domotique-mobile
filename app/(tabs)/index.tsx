@@ -26,7 +26,7 @@ export default function HomeScreen() {
 
   // Retourne la version de l'application et de Domoticz sous forme de JSX
   const getTabVersion = () => {
-    return <ThemedView style={{marginTop: 300}}>
+    return <ThemedView style={{marginTop: 250}}>
     <ThemedView style={tabStyles.versionTabRow}>
       <ThemedView style={tabStyles.versionTabCell} ><ThemedText type='italic'>Domoticz App</ThemedText></ThemedView>
       <ThemedView style={tabStyles.versionTabCell} >{ responseData?.status === "OK" ? <ThemedText type='italic'>{responseData?.version}</ThemedText> : <></> }</ThemedView>
