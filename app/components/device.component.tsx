@@ -91,9 +91,9 @@ function onClickDeviceIcon(device: DomoticzDevice, storeDeviceData: React.Dispat
 export const stylesLists = StyleSheet.create({
   viewBox: {
     flexDirection: 'row',
-    height: 64,
+    height: 84,
     width: '98%',
-    padding: 1,
+    padding: 10,
     margin: 1,
     borderColor: '#3A3A3A',
     borderWidth: 1,
@@ -122,12 +122,12 @@ export const stylesLists = StyleSheet.create({
   slider: {
     width: 270, 
     height: 40,
-    marginTop: -15
+    marginTop: -10
   },
   sliderDisabled: {
     width: 270, 
     height: 50,
-    marginTop: -15,
+    marginTop: -10,
     opacity: 0
   },
   textLevel: {

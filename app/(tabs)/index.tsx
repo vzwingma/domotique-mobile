@@ -6,8 +6,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { connectToDomoticz } from '@/app/controllers/index.controller';
 import DomoticzConfig from '../models/domoticzConfig.model';
 import { Colors, PROFILE, PROFILES_ENV } from '../constants/Colors';
-import { stylesLists } from '../components/device.component';
-import { version } from 'uuid';
+
 /**
  * Ecran d'accueil
  */
@@ -98,7 +97,7 @@ export const tabStyles = StyleSheet.create({
     flex: 1, 
     alignSelf: 'flex-end', 
     flexDirection: 'row', 
-    width:220
+    width:250
   },
   versionTabCell: {
     flex: 1, 
