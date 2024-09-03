@@ -24,7 +24,7 @@ type DomoticzDeviceProps = {
 export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDeviceData: storeDeviceData }) => {
 
     const [flagLabel, showLabel] = useState<Boolean>(false);
-    const [nextValue, refreshNextValue] = useState<number>(device.status === "Off" ? 0.1 : (device.level >= 99 ? 100 : device.level));
+    const [nextValue, refreshNextValue] = useState<number>(getLevel(device));
 
     return (
       <View key={device.idx} style={device.isActive ? stylesLists.viewBox : stylesLists.viewBoxDisabled }>
@@ -43,11 +43,11 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
             <Slider
               disabled={!device.isActive}
               style={device.isActive ? stylesLists.slider : stylesLists.sliderDisabled}
-              minimumValue={0} value={nextValue} maximumValue={100}
+              minimumValue={0} value={getLevel(device)} maximumValue={100}
               step={1}
               minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor={Colors.domoticz.color}
               onValueChange={(value) => { setNextValue(value, refreshNextValue)}}
-              onPointerDown={() => showLabel(true)}
+              onResponderStart={() => { showLabel(true) }}
               onResponderEnd={() => {
                 updateDeviceLevel(device.idx, nextValue, storeDeviceData, device.type);
                 showLabel(false);
@@ -57,6 +57,15 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
       </View>
     );
   };
+
+  /**
+   * retourrne le niveau de l'équipement
+   * @param device  équipement Domoticz
+   * @returns niveau de l'équipement :
+   */
+  function getLevel(device: DomoticzDevice): number  {
+    return device.status === "Off" ? 0.1 : device.level
+  }
 
 
   /**
@@ -77,32 +86,28 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
   /**
    * Fonction pour le label du statut de l'équipement. Si on est en mode édition, on affiche le prochain état entre parenthèses.
    */
-function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: Boolean) {
+function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: Boolean): string {
 
-    if(device.isActive === false) {
-        return "?";
+  if(device.isActive === false) {
+    return "?";
+  }
+  else if(flagLabel) {
+    let nextLabel = "(";
+    if(nextValue <= 0.1) {
+    nextLabel += "Off";
     }
-    else if(flagLabel) {
-      let nextLabel = "(";
-      if(nextValue <= 0.1) {
-        nextLabel += "Off";
-      }
-      else if(nextValue >= 99) {
-        nextLabel += "100%";
-      }
-      else {
-        nextLabel += nextValue + "%";
-      }
-      nextLabel += ")";
-      return nextLabel;
+    else {
+    nextLabel += nextValue + "%";
     }
-    else if(device.switchType === DomoticzSwitchType.ONOFF) {
-        return device.status;
-    }
-    else{
-      let level = device.level >= 99 ? 100 : device.level;
-      return device.status === "Off" ? "Off" : level + "%";
-    }
+    nextLabel += ")";
+    return nextLabel;
+  }
+  else if(device.switchType === DomoticzSwitchType.ONOFF) {
+    return device.status;
+  }
+  else{
+    return device.status === "Off" ? "Off" : device.level + "%";
+  }
 }
 
 

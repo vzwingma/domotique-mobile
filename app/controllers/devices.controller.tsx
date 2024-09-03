@@ -27,7 +27,7 @@ export function loadDomoticzDevices(setIsLoaded: Function, storeDevicesData: Fun
                                         type: typeDevice,
                                         subType: device.Type,
                                         switchType: device.SwitchType,
-                                        level: device.Level,
+                                        level: device.Level >= 99 ? 100 : device.Level <= 0.1 ? 0 : device.Level,
                                         isGroup: String(device.Name).indexOf("[Grp]") > -1,
                                         lastUpdate: device.LastUpdate,
                                         isActive: !device.HaveTimeout,
