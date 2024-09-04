@@ -33,7 +33,7 @@ export default function HomeScreen() {
     </ThemedView>
     <ThemedView style={tabStyles.versionTabRow}>
         <ThemedView style={tabStyles.versionTabCell} ><ThemedText type='italic'>Domoticz Mobile</ThemedText></ThemedView>
-        <ThemedView style={tabStyles.versionTabCell} ><ThemedText type='italic'>1.0</ThemedText></ThemedView>
+        <ThemedView style={tabStyles.versionTabCell} ><ThemedText type='italic'>1.1</ThemedText></ThemedView>
     </ThemedView>
   </ThemedView>
   }

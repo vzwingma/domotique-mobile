@@ -194,7 +194,8 @@ export const stylesLists = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: Colors.domoticz.color,
-    paddingBottom: 7
+    paddingBottom: 7,
+    paddingRight: 15
   },
   textName: {
     fontSize: 16,
