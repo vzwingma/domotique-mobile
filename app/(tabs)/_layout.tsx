@@ -14,7 +14,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors['dark'].tint, // Couleur de l'onglet actif
+        tabBarActiveTintColor: Colors.domoticz.color, // Couleur de l'onglet actif
         headerShown: false, // Masquer l'en-tête
         unmountOnBlur: true, // Détruire le composant lorsqu'il n'est pas affiché
       }}>
