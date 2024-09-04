@@ -22,12 +22,12 @@ import { ActivityIndicator } from 'react-native';
  */
 export default function TabDomoticzTemperatures() {
 
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [temperaturesData, storeTemperaturesData] = useState<DomoticzTemperature[]>([]); // État pour stocker les données de réponse
   const [refreshing, setRefreshing] = useState(false);
   // Lance la connexion à Domoticz pour récupérer les volets
   useEffect(() => {
-    loadDomoticzTemperatures(setIsLoaded, storeTemperaturesData);
+    loadDomoticzTemperatures(setIsLoading, storeTemperaturesData);
   }, [refreshing])
 
 
@@ -36,7 +36,7 @@ export default function TabDomoticzTemperatures() {
       headerImage={<Ionicons size={310} name="thermometer-sharp" style={tabStyles.headerImage} />}
       setRefreshing={setRefreshing}>
 
-      {!isLoaded ? (
+      {!isLoading ? (
         <ActivityIndicator size={'large'} color={Colors.domoticz.color}/>
       ) : (
         buildDeviceList(temperaturesData)

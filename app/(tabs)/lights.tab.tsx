@@ -13,13 +13,13 @@ import { ActivityIndicator } from 'react-native';
  */
 export default function TabDomoticzLumieres() {
 
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [lightsData, storeLumieresData] = useState<DomoticzDevice[]>([]); // State to store the response data
   const [refreshing, setRefreshing] = useState(false);
 
   // Lance la connexion à Domoticz pour récupérer les lumières
   useEffect(() => {
-    loadDomoticzDevices(setIsLoaded, storeLumieresData, DomoticzType.LIGHT);  
+    loadDomoticzDevices(setIsLoading, storeLumieresData, DomoticzType.LIGHT);  
   }, [refreshing])
 
   return (
@@ -27,7 +27,7 @@ export default function TabDomoticzLumieres() {
       setRefreshing={setRefreshing} 
       headerImage={<Ionicons size={310} name="bulb" style={tabStyles.headerImage} />}>
 
-      {!isLoaded ? (
+      {!isLoading ? (
         <ActivityIndicator size={'large'} color={Colors.domoticz.color}/>
       ) : (
         buildDeviceList(lightsData, storeLumieresData)
