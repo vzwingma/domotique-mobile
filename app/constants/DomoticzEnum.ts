@@ -25,7 +25,7 @@ export const DomoticzLightsSort: number[] = [122, 128, 131, 72, 117, 113, 114, 1
 /**
  * Tri des équipements Domoticz
  */
-export const DomoticzBlindsSort: number[]  = [ 85, 84, 55, 66, 86, 67, 68] ;
+export const DomoticzBlindsSort: number[]  = [85, 84, 55, 66, 86, 67, 68] ;
 
 /**
  * Representes Groupes d'équipements
