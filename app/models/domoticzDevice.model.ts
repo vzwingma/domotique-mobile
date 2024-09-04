@@ -19,6 +19,8 @@ class DomoticzDevice {
     isActive: boolean = false;
     // Niveau de l'équipement
     level: number;
+    // Niveau de cohérence du niveau de l'équipement (pour les groupes). True par défaut pour les équipements
+    consistantLevel: boolean = true;
     // Type de l'équipement
     type: DomoticzType;
     // Sous-type de l'équipement (Lumière, volet, ...)

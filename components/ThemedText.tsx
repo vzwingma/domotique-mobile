@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   italic: {
     fontStyle: 'italic',
     fontSize: 12,
-    color: Colors.dark.titlebackground
+    color: Colors.dark.icon
   },
 
 });
