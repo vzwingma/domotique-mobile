@@ -11,7 +11,7 @@ import { ThemedView } from '@/components/ThemedView';
 import React from 'react';
 import { Colors } from '@/app/constants/Colors';
 
-const HEADER_HEIGHT = 250;
+const HEADER_HEIGHT = 100;
 
 type Props = PropsWithChildren<{
   headerImage: ReactElement;
@@ -76,7 +76,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    height: 250,
+    height: HEADER_HEIGHT,
+    width: '100%',
     overflow: 'hidden',
   },
   content: {

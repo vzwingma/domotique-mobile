@@ -32,7 +32,7 @@ export default function TabDomoticzVolets() {
 
   return (
     <ParallaxScrollView
-      headerImage={<Ionicons size={310} name="reorder-four" style={tabStyles.headerImage} />}
+      headerImage={<Ionicons size={100} name="reorder-four" style={tabStyles.headerImage} />}
       setRefreshing={setRefreshing}>
 
       {!isLoaded ? (

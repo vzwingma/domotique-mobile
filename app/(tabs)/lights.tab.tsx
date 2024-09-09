@@ -25,7 +25,7 @@ export default function TabDomoticzLumieres() {
   return (
     <ParallaxScrollView
       setRefreshing={setRefreshing} 
-      headerImage={<Ionicons size={310} name="bulb" style={tabStyles.headerImage} />}>
+      headerImage={<Ionicons size={100} name="bulb" style={tabStyles.headerImage} />}>
 
       {!isLoading ? (
         <ActivityIndicator size={'large'} color={Colors.domoticz.color}/>

@@ -33,7 +33,7 @@ export default function TabDomoticzTemperatures() {
 
   return (
     <ParallaxScrollView
-      headerImage={<Ionicons size={310} name="thermometer-sharp" style={tabStyles.headerImage} />}
+      headerImage={<Ionicons size={100} name="thermometer-sharp" style={tabStyles.headerImage} />}
       setRefreshing={setRefreshing}>
 
       {!isLoading ? (

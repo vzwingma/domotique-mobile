@@ -1,3 +1,4 @@
+
 import { ActivityIndicator, Image, StyleSheet } from 'react-native';
 import { useState , useEffect } from 'react';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -18,14 +19,14 @@ export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   const logoImage = PROFILE === PROFILES_ENV.C ? require('@/assets/images/c/partial-dlogo.png') : require('@/assets/images/v/partial-dlogo.png')
-  // Lance la connexion à Domoticz
+    // Lance la connexion à Domoticz
   useEffect(() => {
     connectToDomoticz(setIsLoading, setResponseData, setError);
   }, [refreshing])
 
 
   // Retourne la version de l'application et de Domoticz sous forme de JSX
-  const getTabVersion = () => {
+  const getTabVersion = (): JSX.Element => {
     return <ThemedView style={{marginTop: 275}}>
             <ThemedView style={tabStyles.versionTabRow}>
               <ThemedView style={tabStyles.versionTabCell} ><ThemedText type='italic'>Domoticz App</ThemedText></ThemedView>
@@ -64,7 +65,7 @@ export default function HomeScreen() {
             }
       </ThemedView>
 
-      {isLoading ? getTabVersion() : <></>}
+      {isLoading && error === null ? getTabVersion() : <></>}
 
     </ParallaxScrollView>
   );
@@ -78,16 +79,13 @@ export const tabStyles = StyleSheet.create({
   },
   headerImage: {
     color: '#808080',
-    bottom: -90,
-    left: -35,
     position: 'absolute',
-    height: 350,
+    bottom: -10,
     backgroundColor: Colors.dark.titlebackground,
   },
   domoticzLogo: {
-    width: 290,
-    bottom: 0,
-    left: 0,
+    width: 100,
+    height: 100,
     position: 'absolute',
     backgroundColor: Colors.dark.titlebackground,
   },
