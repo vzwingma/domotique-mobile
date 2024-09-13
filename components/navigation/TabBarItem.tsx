@@ -5,10 +5,11 @@ import { Colors } from "@/app/constants/Colors";
 import { StyleSheet } from "react-native";
 import { Tabs } from "@/app/constants/TabsEnums";
 
+// Propriétés des onglets
 interface TabBarItemsProps {
     activeTab: Tabs; // active tab
     thisTab: Tabs; // this tab name
-    setTab: (tab: Tabs) => void; // set active tab
+    selectNewTab: (tab: Tabs) => void; // set active tab
 }
 
 /**
@@ -18,8 +19,8 @@ interface TabBarItemsProps {
  * @param thisTab this tab name
  * @param setTab fonction pour définir l'onglet actif
  */
-export function TabBarItems({ activeTab, thisTab, setTab}: TabBarItemsProps) {
-    return <ThemedView style={tabStyles.tabsItem} onPointerDown={() => setTab(thisTab)}>
+export function TabBarItems({ activeTab, thisTab, selectNewTab}: TabBarItemsProps) {
+    return <ThemedView style={tabStyles.tabsItem} onPointerDown={() => selectNewTab(thisTab)}>
                 <TabBarIcon name={activeTab === thisTab ? getTabIcon(thisTab) : getTabIconOutline(thisTab)} 
                             color={activeTab === thisTab ? Colors.domoticz.color : '#ffffff'} />
                 <ThemedText type='tab'>{getTabLabel(thisTab)}</ThemedText>

@@ -12,11 +12,10 @@ import { ThemedText } from '@/components/ThemedText';
 import { DomoticzStatus, DomoticzType } from '../constants/DomoticzEnum';
 import HomeScreen from '.';
 import TabDomoticzTemperatures from './temperatures.tab';
-import TabDomoticzLumieres from './lights.tab';
-import TabDomoticzVolets from './blinds.tab';
 import { Ionicons } from '@expo/vector-icons';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { loadDomoticzDevices } from '../controllers/devices.controller';
+import TabDomoticzDevices from './devices.tabs';
 
 
 /**
@@ -36,6 +35,10 @@ export default function TabLayout() {
   const [tab, selectTab] = useState(Tabs.INDEX);
 
 
+  function selectNewTab(newTab: Tabs) {
+    setRefreshing(!refreshing);
+    selectTab(newTab);
+  }
 
   /**
    *  A l'initialisation, lance la connexion à Domoticz
@@ -57,13 +60,13 @@ export default function TabLayout() {
    * Fonction de callback pour stocker les données des appareils
    * @param voletsData Les données des volets 
    * @param lumieresData Les données des lumières
-   **/ 
+   **/
   function storeAllDevicesData(domoticzDevicesData: DomoticzDevice[]) {
     storeDevicesData(domoticzDevicesData);
     setIsLoading(false);
   }
 
-  
+
   return (
     <>
       <ParallaxScrollView
@@ -78,7 +81,7 @@ export default function TabLayout() {
             :
             (error !== null) ?
               <ThemedText type="subtitle" style={{ color: 'red', marginTop: 50 }}>Erreur : {error.message}</ThemedText>
-              :  
+              :
               showPanel(tab, domoticzDevicesData, storeDevicesData)
           }
         </ThemedView>
@@ -88,10 +91,10 @@ export default function TabLayout() {
         {
           (!isLoading && error === null) ?
             <>
-              <TabBarItems activeTab={tab} setTab={selectTab} thisTab={Tabs.INDEX} />
-              <TabBarItems activeTab={tab} setTab={selectTab} thisTab={Tabs.LUMIERES} />
-              <TabBarItems activeTab={tab} setTab={selectTab} thisTab={Tabs.VOLETS} />
-              <TabBarItems activeTab={tab} setTab={selectTab} thisTab={Tabs.TEMPERATURES} />
+              <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.INDEX} />
+              <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.LUMIERES} />
+              <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.VOLETS} />
+              <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.TEMPERATURES} />
             </> : <></>
         }
       </View>
@@ -124,19 +127,19 @@ function showLogoImage(tab: Tabs) {
  * @param tab L'onglet sélectionné
  * @param devicesData Les données des appareils
  */
-function showPanel(tab: Tabs, devicesData: DomoticzDevice[], storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>> ) : JSX.Element {
-  
+function showPanel(tab: Tabs, devicesData: DomoticzDevice[], storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>): JSX.Element {
+
   switch (tab) {
     case Tabs.INDEX:
       return <HomeScreen />
     case Tabs.LUMIERES:
-      return <TabDomoticzLumieres lightsData={devicesData} storeDevicesData={storeDevicesData}/>
+      return <TabDomoticzDevices devicesData={devicesData.filter(data => data.type === DomoticzType.LUMIERE)} storeDevicesData={storeDevicesData} />
     case Tabs.VOLETS:
-      return <TabDomoticzVolets voletsData={devicesData} storeDevicesData={storeDevicesData} />
+      return <TabDomoticzDevices devicesData={devicesData.filter(data => data.type === DomoticzType.VOLET)} storeDevicesData={storeDevicesData} />
     case Tabs.TEMPERATURES:
       return <TabDomoticzTemperatures />
     default:
-      return <ThemedText type="title" style={{color: 'red'}}>404 - Page non définie</ThemedText>
+      return <ThemedText type="title" style={{ color: 'red' }}>404 - Page non définie</ThemedText>
   }
 }
 

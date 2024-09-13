@@ -11,21 +11,11 @@ import { Colors } from '../constants/Colors';
  */
 export default function HomeScreen() {
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [responseData, setResponseData] = useState<DomoticzConfig | null>(null); // State to store the response data
-  const [error, setError] = useState<Error | null>(null);
-  const [refreshing, setRefreshing] = useState(false);
-
-  // Lance la connexion à Domoticz
-  useEffect(() => {
-
-  }, [refreshing])
-
 
   return (
       <ThemedView style={tabStyles.titleContainer}>
         <ThemedText type="subtitle" style={{ color: 'green' , marginTop: 50 }}>
-          Connecté {(error !== null ? error.message : "")}
+          Connecté à Domoticz
         </ThemedText>
       </ThemedView>
   );
@@ -37,30 +27,4 @@ export const tabStyles = StyleSheet.create({
     alignItems: 'center',
     gap: 8
   },
-  headerImage: {
-    color: '#808080',
-    position: 'absolute',
-    bottom: -10,
-    backgroundColor: Colors.dark.titlebackground,
-  },
-  domoticzLogo: {
-    width: 100,
-    height: 100,
-    position: 'absolute',
-    backgroundColor: Colors.dark.titlebackground,
-  },
-  versionTabRow: {
-    flex: 1,
-    alignSelf: 'flex-end',
-    flexDirection: 'row',
-    width: 250
-  },
-  versionTabCell: {
-    flex: 1,
-    alignSelf: 'stretch',
-    fontStyle: 'italic',
-  },
-  domoticzColor: {
-    color: Colors.domoticz.color
-  }
 });
