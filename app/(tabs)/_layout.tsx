@@ -172,12 +172,10 @@ export const tabStyles = StyleSheet.create({
     backgroundColor: Colors.dark.titlebackground,
   },
   tabsViewbox: {
-    position: 'absolute',
-    bottom: -20,
     flexDirection: 'row',
     width: '100%',
     backgroundColor: Colors.dark.titlebackground,
-    height: 84,
+    height: 70,
     padding: 10,
     margin: 1,
   }

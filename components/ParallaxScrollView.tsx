@@ -13,7 +13,6 @@ import { Colors } from '@/app/constants/Colors';
 import { ThemedText } from './ThemedText';
 import { DomoticzStatus } from '@/app/constants/DomoticzEnum';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { red } from 'react-native-reanimated/lib/typescript/reanimated2/Colors';
 
 const HEADER_HEIGHT = 100;
 
@@ -96,11 +95,11 @@ export default function ParallaxScrollView({
 function getConnexionStatusIcon(connexionStatus: DomoticzStatus) {
   switch (connexionStatus) {
     case DomoticzStatus.CONNECTE:
-      return <MaterialCommunityIcons name="check-circle" size={24} color="green" />;
+      return <MaterialCommunityIcons name="check-circle" size={24} color="green" style={{padding: 5}} />;
     case DomoticzStatus.DECONNECTE:
-      return <MaterialCommunityIcons name="alert-circle" size={24} color="red" />;
+      return <MaterialCommunityIcons name="alert-circle" size={24} color="red" style={{padding: 5}}/>;
     default:
-      return <MaterialCommunityIcons name="help-circle" size={24} color="grey" />;
+      return <MaterialCommunityIcons name="help-circle" size={24} color="grey" style={{padding: 5}}/>;
   }
 }
 
@@ -123,9 +122,8 @@ const styles = StyleSheet.create({
   titleHeader: {
     alignItems: 'flex-end',
     flexDirection: 'row-reverse',
-    top: 25,
-    right: 20,
-    gap: 8,
+    top: 40,
+    right: 8,
   },
   domoticzColor: {
     color: Colors.domoticz.color
