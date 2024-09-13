@@ -54,9 +54,8 @@ export default function ParallaxScrollView({
   });
 
   const onRefresh = React.useCallback(() => {
-    refreshing = !refreshing;
-    setRefreshing(refreshing);
-  }, []);
+    setRefreshing(!refreshing);
+  }, [refreshing, setRefreshing]);
 
 
   return (
