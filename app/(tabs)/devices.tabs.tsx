@@ -1,7 +1,5 @@
 import { ViewDomoticzDevice } from '@/app/components/device.component';
 import DomoticzDevice from '@/app/models/domoticzDevice.model'; // Importe le type domoticzDevice
-import { useEffect } from 'react';
-import { loadDomoticzDevices } from '../controllers/devices.controller';
 
 /**
  * 

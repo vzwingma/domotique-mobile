@@ -35,6 +35,10 @@ export default function TabLayout() {
   const [tab, selectTab] = useState(Tabs.INDEX);
 
 
+  /**
+   * Fonction pour changer d'onglet
+   * @param newTab Le nouvel onglet sélectionné
+   */
   function selectNewTab(newTab: Tabs) {
     setRefreshing(!refreshing);
     selectTab(newTab);
@@ -42,9 +46,10 @@ export default function TabLayout() {
 
   /**
    *  A l'initialisation, lance la connexion à Domoticz
+   * et à changement d'onglet
    * */
   useEffect(() => {
-    connectToDomoticz(setIsLoading, storeConnexionData, setError);
+    connectToDomoticz({setIsLoading, storeConnexionData, setError});
   }, [refreshing])
 
   /**
