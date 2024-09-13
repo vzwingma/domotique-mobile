@@ -16,6 +16,8 @@ import { Ionicons } from '@expo/vector-icons';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { loadDomoticzDevices } from '../controllers/devices.controller';
 import TabDomoticzDevices from './devices.tabs';
+import DomoticzTemperature from '../models/domoticzTemperature.model';
+import { loadDomoticzTemperatures } from '../controllers/temperatures.controller';
 
 
 /**
@@ -30,6 +32,7 @@ export default function TabLayout() {
 
   const [domoticzConnexionData, setConnexionData] = useState<DomoticzConfig | null>(null); // State to store the response data
   const [domoticzDevicesData, storeDevicesData] = useState<DomoticzDevice[]>([]); // State to store the devices data
+  const [domoticzTemperaturesData, storeTemperaturesData] = useState<DomoticzTemperature[]>([]); // État pour stocker les données de réponse
 
   const [error, setError] = useState<Error | null>(null);
   const [tab, selectTab] = useState(Tabs.INDEX);
@@ -59,6 +62,7 @@ export default function TabLayout() {
   function storeConnexionData(data: DomoticzConfig) {
     setConnexionData(data);
     loadDomoticzDevices(storeAllDevicesData);
+    loadDomoticzTemperatures(storeTemperaturesData);
   }
 
   /**
@@ -87,7 +91,7 @@ export default function TabLayout() {
             (error !== null) ?
               <ThemedText type="subtitle" style={{ color: 'red', marginTop: 50 }}>Erreur : {error.message}</ThemedText>
               :
-              showPanel(tab, domoticzDevicesData, storeDevicesData)
+              showPanel(tab, domoticzDevicesData, storeDevicesData, domoticzTemperaturesData)
           }
         </ThemedView>
 
@@ -131,8 +135,10 @@ function showLogoImage(tab: Tabs) {
  * 
  * @param tab L'onglet sélectionné
  * @param devicesData Les données des appareils
+ * @param storeDevicesData Setter pour les données des appareils
+ * @param domoticzTemperaturesData Les données des températures
  */
-function showPanel(tab: Tabs, devicesData: DomoticzDevice[], storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>): JSX.Element {
+function showPanel(tab: Tabs, devicesData: DomoticzDevice[], storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>, domoticzTemperaturesData: DomoticzTemperature[]): JSX.Element {
 
   switch (tab) {
     case Tabs.INDEX:
@@ -142,7 +148,7 @@ function showPanel(tab: Tabs, devicesData: DomoticzDevice[], storeDevicesData: R
     case Tabs.VOLETS:
       return <TabDomoticzDevices devicesData={devicesData.filter(data => data.type === DomoticzType.VOLET)} storeDevicesData={storeDevicesData} />
     case Tabs.TEMPERATURES:
-      return <TabDomoticzTemperatures />
+      return <TabDomoticzTemperatures temperaturesData={domoticzTemperaturesData} />
     default:
       return <ThemedText type="title" style={{ color: 'red' }}>404 - Page non définie</ThemedText>
   }

@@ -35,7 +35,7 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
           onPress={() => onClickDeviceIcon(device, storeDeviceData)} />
       </View>
       <View style={{ flexDirection: "column" }}>
-        <View style={ device.consistantLevel ? stylesLists.labelsBox : stylesLists.labelsBoxUnconsistent}>
+        <View style={device.consistantLevel ? stylesLists.labelsBox : stylesLists.labelsBoxUnconsistent}>
           <ThemedText style={{ fontSize: 16, color: getGroupColor(device) }}>{device.name}</ThemedText>
           <ThemedText style={stylesLists.textLevel}>{getStatusLabel(device, nextValue, flagLabel)}</ThemedText>
         </View>
