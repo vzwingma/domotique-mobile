@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 
-import { Colors, PROFILE, PROFILES_ENV } from '@/app/constants/Colors';
+import { Colors, PROFILE, PROFILES_ENV } from '@/app/enums/Colors';
 import connectToDomoticz from '../controllers/index.controller';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ActivityIndicator, Image, StyleSheet, View } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
-import { Tabs } from '../constants/TabsEnums';
+import { Tabs } from '../enums/TabsEnums';
 import { TabBarItems } from '@/components/navigation/TabBarItem';
 import DomoticzConfig from '../models/domoticzConfig.model';
 import { ThemedText } from '@/components/ThemedText';
-import { DomoticzStatus, DomoticzType } from '../constants/DomoticzEnum';
+import { DomoticzStatus, DomoticzType } from '../enums/DomoticzEnum';
 import HomeScreen from '.';
 import TabDomoticzTemperatures from './temperatures.tab';
 import { Ionicons } from '@expo/vector-icons';

@@ -9,9 +9,9 @@ import Animated, {
 
 import { ThemedView } from '@/components/ThemedView';
 import React from 'react';
-import { Colors } from '@/app/constants/Colors';
+import { Colors } from '@/app/enums/Colors';
 import { ThemedText } from './ThemedText';
-import { DomoticzStatus } from '@/app/constants/DomoticzEnum';
+import { DomoticzStatus } from '@/app/enums/DomoticzEnum';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const HEADER_HEIGHT = 100;

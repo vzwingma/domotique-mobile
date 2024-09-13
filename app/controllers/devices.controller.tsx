@@ -1,7 +1,7 @@
 import callDomoticz from '@/app/services/ClientHTTP.service';
-import { SERVICES_PARAMS, SERVICES_URL } from '@/app/constants/APIconstants';
+import { SERVICES_PARAMS, SERVICES_URL } from '@/app/enums/APIconstants';
 import { sortEquipements } from '@/app/services/DataUtils.service';
-import { DomoticzBlindsGroups, DomoticzBlindsSort, DomoticzLightsGroups, DomoticzLightsSort, DomoticzType } from '@/app/constants/DomoticzEnum';
+import { DomoticzBlindsGroups, DomoticzBlindsSort, DomoticzLightsGroups, DomoticzLightsSort, DomoticzType } from '@/app/enums/DomoticzEnum';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
 

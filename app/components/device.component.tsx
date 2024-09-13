@@ -3,9 +3,9 @@ import { ThemedText } from "../../components/ThemedText";
 import { StyleSheet, View } from "react-native";
 import Slider from '@react-native-community/slider';
 import { updateDeviceLevel, updateDeviceState } from "../controllers/devices.controller";
-import { Colors, getGroupColor } from "../constants/Colors";
+import { Colors, getGroupColor } from "../enums/Colors";
 import IconDomoticzDevice, { getDeviceIcon } from "@/components/IconDomoticzDevice";
-import { DomoticzSwitchType } from "../constants/DomoticzEnum";
+import { DomoticzSwitchType } from "../enums/DomoticzEnum";
 import { useState } from "react";
 
 // Définition des propriétés d'un équipement Domoticz

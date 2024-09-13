@@ -1,4 +1,4 @@
-import { DomoticzType } from "@/app/constants/DomoticzEnum";
+import { DomoticzType } from "@/app/enums/DomoticzEnum";
 import DomoticzDevice from "@/app/models/domoticzDevice.model";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 

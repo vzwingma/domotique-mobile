@@ -1,9 +1,9 @@
 import { ThemedText } from "../ThemedText";
 import { ThemedView } from "../ThemedView";
 import { TabBarIcon } from "./TabBarIcon";
-import { Colors } from "@/app/constants/Colors";
+import { Colors } from "@/app/enums/Colors";
 import { StyleSheet } from "react-native";
-import { Tabs } from "@/app/constants/TabsEnums";
+import { Tabs } from "@/app/enums/TabsEnums";
 
 // Propriétés des onglets
 interface TabBarItemsProps {

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import DomoticzConfig from '../models/domoticzConfig.model';
-import { Colors } from '../constants/Colors';
+import { Colors } from '../enums/Colors';
 
 /**
  * Ecran d'accueil

@@ -1,5 +1,5 @@
 import callDomoticz from '@/app/services/ClientHTTP.service';
-import { SERVICES_URL } from '@/app/constants/APIconstants';
+import { SERVICES_URL } from '@/app/enums/APIconstants';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
 import DomoticzTemperature from '../models/domoticzTemperature.model';
 /**
