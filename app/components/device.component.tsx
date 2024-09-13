@@ -23,7 +23,7 @@ type DomoticzDeviceProps = {
  */
 export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDeviceData: storeDeviceData }) => {
 
-  const [flagLabel, showLabel] = useState<Boolean>(false);
+  const [flagLabel, showLabel] = useState<boolean>(false);
   const [nextValue, refreshNextValue] = useState<number>(getLevel(device));
 
   return (
@@ -86,7 +86,7 @@ function setNextValue(value: number, refreshNextValue: React.Dispatch<React.SetS
 /**
  * Fonction pour le label du statut de l'équipement. Si on est en mode édition, on affiche le prochain état entre parenthèses.
  */
-function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: Boolean): string {
+function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: boolean): string {
 
 
   let getStatusLabel = "";

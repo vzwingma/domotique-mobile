@@ -69,7 +69,7 @@ export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]
  * @param idsSubDevices liste des équipements du groupe
  * @param devices liste des équipements
  */
-function evaluateGroupLevelConsistency(device: DomoticzDevice, idsSubDevices: Array<{ [key: number]: number[] }>, devices: DomoticzDevice[]) {
+function evaluateGroupLevelConsistency(device: DomoticzDevice, idsSubDevices: { [key: number]: number[] }[], devices: DomoticzDevice[]) {
     // Calcul uniquement pour les groupes
     if(device.isGroup === false) return;
 
@@ -93,7 +93,7 @@ function evaluateGroupLevelConsistency(device: DomoticzDevice, idsSubDevices: Ar
  * @param typeDevice type d'équipement
  * @returns true si l'équipement est du type recherché
  */
-function getDeviceType(deviceName: String): DomoticzType {
+function getDeviceType(deviceName: string): DomoticzType {
     if(deviceName.toLowerCase().includes("volet")) {
         return DomoticzType.VOLET;
     }

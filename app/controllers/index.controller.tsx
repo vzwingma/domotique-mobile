@@ -2,7 +2,6 @@ import callDomoticz from '@/app/services/ClientHTTP.service';
 import {SERVICES_URL}  from '@/app/enums/APIconstants';
 import DomoticzConfig from '../models/domoticzConfig.model';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
-import DomoticzDevice from '../models/domoticzDevice.model';
 
 
 // Propriétés de l'écran des équipements
