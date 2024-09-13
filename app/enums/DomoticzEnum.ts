@@ -1,11 +1,17 @@
 
 
+
+export enum DomoticzStatus {
+    INCONNU = 'INCONNU',
+    CONNECTE = 'CONNECTE',
+    DECONNECTE = 'DECONNECTE',
+}
 /**
  * Enum pour les types d'équipements Domoticz
  */
 export enum DomoticzType {
-    LIGHT = "Lumière",
-    BLIND = "Volet",
+    LUMIERE = "Lumière",
+    VOLET = "Volet",
     UNKNOWN = "Inconnu"
 }
 /*
@@ -35,7 +41,7 @@ export const DomoticzBlindsSort: number[]  = [85, 84, 55, 66, 86, 67, 68] ;
  * Chaque objet de groupe de volets a une paire clé-valeur, où la clé est l'ID du groupe et la valeur est un tableau d'IDs de volets.
  * @type {Array<{[key: number]: number[]}>}
  */
-export const DomoticzBlindsGroups : Array<{[key: number]: number[]}> = [
+export const DomoticzBlindsGroups : {[key: number]: number[]}[] = [
     // Tous volets                                
     {85 : [66, 55, 67, 68]}, 
     // Volets chambres
@@ -53,7 +59,7 @@ export const DomoticzBlindsGroups : Array<{[key: number]: number[]}> = [
  *   {117: [113, 114, 118, 128, 131, 72]}
  * ]
  */
-export const DomoticzLightsGroups : Array<{[key: number]: number[]}> = [
+export const DomoticzLightsGroups : {[key: number]: number[]}[] = [
     // Lumières salon
     {117 : [113, 114, 118]},
     // Toutes les lumières

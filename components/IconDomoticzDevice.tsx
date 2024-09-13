@@ -1,4 +1,4 @@
-import { DomoticzType } from "@/app/constants/DomoticzEnum";
+import { DomoticzType } from "@/app/enums/DomoticzEnum";
 import DomoticzDevice from "@/app/models/domoticzDevice.model";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
@@ -17,9 +17,9 @@ class IconDomoticzDevice extends MaterialCommunityIcons {}
  */
 export function getDeviceIcon(device: DomoticzDevice) :any {
     switch(device.type){
-        case DomoticzType.LIGHT:
+        case DomoticzType.LUMIERE:
             return getLightIcon(device);
-        case DomoticzType.BLIND:
+        case DomoticzType.VOLET:
             return getBlindIcon(device);
         default:
             return "help-circle-outline";

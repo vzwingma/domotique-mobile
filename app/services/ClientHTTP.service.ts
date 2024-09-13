@@ -1,7 +1,7 @@
 import 'react-native-get-random-values';
 import { v7 as uuidGen } from 'uuid';
-import { API_AUTH, API_URL, SERVICES_URL } from '../constants/APIconstants';
-import { KeyValueParams } from '../constants/APIconstants';
+import { API_AUTH, API_URL, SERVICES_URL } from '../enums/APIconstants';
+import { KeyValueParams } from '../enums/APIconstants';
 
 
 /** Client HTTP **/

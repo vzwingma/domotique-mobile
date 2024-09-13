@@ -1,4 +1,4 @@
-import { DomoticzSwitchType, DomoticzType } from "../constants/DomoticzEnum";
+import { DomoticzSwitchType, DomoticzType } from "../enums/DomoticzEnum";
 
 
 /**
