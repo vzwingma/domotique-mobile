@@ -1,28 +1,30 @@
-import { useState , useEffect } from 'react';
-import { loadDomoticzDevices } from '../controllers/devices.controller';
-import { DomoticzType } from '../constants/DomoticzEnum';
 import { ViewDomoticzDevice } from '@/app/components/device.component'; 
 import DomoticzDevice from '../models/domoticzDevice.model';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { Ionicons } from '@expo/vector-icons';
-import { tabStyles } from '.';
-import { Colors } from '../constants/Colors';
-import { ActivityIndicator } from 'react-native';
+import { DomoticzType } from '../constants/DomoticzEnum';
+
+/**
+ * 
+ * Ce fichier contient le code de l'écran des lumières.
+ */
+
+/**
+ * Propriétés de l'écran des lumières
+ */
+type TabDomoticzLumieresProps = {
+  lightsData : DomoticzDevice[] | undefined,
+  storeDevicesData : React.Dispatch<React.SetStateAction<DomoticzDevice[]>>
+}
+
 /**
  * Ecran des lumières
+ * @param lightsData Les données des lumières
+ * @param storeDevicesData La fonction pour mettre à jour les données des équipements
  */
-export default function TabDomoticzLumieres() {
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [lightsData, storeLumieresData] = useState<DomoticzDevice[]>([]); // State to store the response data
-  const [refreshing, setRefreshing] = useState(false);
-
-  // Lance la connexion à Domoticz pour récupérer les lumières
-  useEffect(() => {
-    loadDomoticzDevices(setIsLoading, storeLumieresData, DomoticzType.LIGHT);  
-  }, [refreshing])
-
-  return (buildDeviceList(lightsData, storeLumieresData));
+export default function TabDomoticzLumieres({lightsData, storeDevicesData} : TabDomoticzLumieresProps) : JSX.Element[] {
+  if(lightsData === undefined || storeDevicesData === undefined){
+    return [];
+  }
+  return buildDeviceList(lightsData.filter(data => data.type === DomoticzType.LUMIERE), storeDevicesData);
 }
 
 /**
@@ -31,11 +33,11 @@ export default function TabDomoticzLumieres() {
  * @param voletsData Les données des lumières
  * @param storeVoletsData La fonction pour mettre à jour les données des lumières
  */
-function buildDeviceList(voletsData: DomoticzDevice[], storeLumieresData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
+function buildDeviceList(lightsData: DomoticzDevice[], storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
   let items: JSX.Element[] = [];
-  voletsData.forEach((item, idx) => {
+  lightsData.forEach((item, idx) => {
     item.rang = idx;
-    items.push(<ViewDomoticzDevice key={item.idx} device={item} storeDeviceData={storeLumieresData}/>);          
+    items.push(<ViewDomoticzDevice key={item.idx} device={item} storeDeviceData={storeDevicesData}/>);          
   });
   return items;
 }

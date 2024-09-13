@@ -1,10 +1,10 @@
 
-import { ActivityIndicator, Image, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useState, useEffect } from 'react';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import DomoticzConfig from '../models/domoticzConfig.model';
-import { Colors, PROFILE, PROFILES_ENV } from '../constants/Colors';
+import { Colors } from '../constants/Colors';
 
 /**
  * Ecran d'accueil
@@ -24,9 +24,9 @@ export default function HomeScreen() {
 
   return (
       <ThemedView style={tabStyles.titleContainer}>
-          (<ThemedText type="subtitle" style={{ color: responseData?.status === "OK" ? 'green' : 'red', marginTop: 50 }}>
-            {responseData?.status === "OK" ? "Connecté" : "Non connecté :"} {(error !== null ? error.message : "")}
-          </ThemedText>)
+        <ThemedText type="subtitle" style={{ color: 'green' , marginTop: 50 }}>
+          Connecté {(error !== null ? error.message : "")}
+        </ThemedText>
       </ThemedView>
   );
 }

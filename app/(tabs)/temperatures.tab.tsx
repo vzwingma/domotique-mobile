@@ -3,17 +3,11 @@
  * Ce fichier contient le code de l'écran des mesures de températures.
  */
 
-import Ionicons from '@expo/vector-icons/Ionicons';
-
 import { useState , useEffect } from 'react';
 
 import DomoticzTemperature from '@/app/models/domoticzTemperature.model'; // Importe le type domoticzDevice
-import { tabStyles } from '.';
 import { loadDomoticzDevices as loadDomoticzTemperatures } from '../controllers/temperatures.controller';
 import { ViewDomoticzTemperature } from '../components/temperature.component';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { Colors } from '../constants/Colors';
-import { ActivityIndicator } from 'react-native';
 
 /**
  * Composant de l'écran des mesures de températures.

@@ -10,8 +10,8 @@ export enum DomoticzStatus {
  * Enum pour les types d'équipements Domoticz
  */
 export enum DomoticzType {
-    LIGHT = "Lumière",
-    BLIND = "Volet",
+    LUMIERE = "Lumière",
+    VOLET = "Volet",
     UNKNOWN = "Inconnu"
 }
 /*

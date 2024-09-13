@@ -9,12 +9,15 @@ import { Tabs } from '../constants/TabsEnums';
 import { TabBarItems } from '@/components/navigation/TabBarItem';
 import DomoticzConfig from '../models/domoticzConfig.model';
 import { ThemedText } from '@/components/ThemedText';
-import { DomoticzStatus } from '../constants/DomoticzEnum';
+import { DomoticzStatus, DomoticzType } from '../constants/DomoticzEnum';
 import HomeScreen from '.';
 import TabDomoticzTemperatures from './temperatures.tab';
 import TabDomoticzLumieres from './lights.tab';
 import TabDomoticzVolets from './blinds.tab';
 import { Ionicons } from '@expo/vector-icons';
+import DomoticzDevice from '../models/domoticzDevice.model';
+import { loadDomoticzDevices } from '../controllers/devices.controller';
+
 
 /**
  * Composant racine de l'application.
@@ -24,40 +27,68 @@ export default function TabLayout() {
 
   // État pour vérifier si l'utilisateur est connecté à Domoticz
   const [isLoading, setIsLoading] = useState(true);
-  const [responseData, setResponseData] = useState<DomoticzConfig | null>(null); // State to store the response data
-  const [error, setError] = useState<Error | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+
+  const [domoticzConnexionData, setConnexionData] = useState<DomoticzConfig | null>(null); // State to store the response data
+  const [domoticzDevicesData, storeDevicesData] = useState<DomoticzDevice[]>([]); // State to store the devices data
+
+  const [error, setError] = useState<Error | null>(null);
   const [tab, selectTab] = useState(Tabs.INDEX);
 
-  // A l'initialisation, lance la connexion à Domoticz
+
+
+  /**
+   *  A l'initialisation, lance la connexion à Domoticz
+   * */
   useEffect(() => {
-    connectToDomoticz(setIsLoading, setResponseData, setError);
+    connectToDomoticz(setIsLoading, storeConnexionData, setError);
   }, [refreshing])
 
+  /**
+   * Fonction de callback pour stocker les données de connexion et charger les appareils
+   * @param data Les données de connexion à Domoticz
+   */
+  function storeConnexionData(data: DomoticzConfig) {
+    setConnexionData(data);
+    loadDomoticzDevices(storeAllDevicesData);
+  }
 
+  /**
+   * Fonction de callback pour stocker les données des appareils
+   * @param voletsData Les données des volets 
+   * @param lumieresData Les données des lumières
+   **/ 
+  function storeAllDevicesData(domoticzDevicesData: DomoticzDevice[]) {
+    storeDevicesData(domoticzDevicesData);
+    setIsLoading(false);
+  }
+
+  
   return (
     <>
       <ParallaxScrollView
         headerImage={showLogoImage(tab)}
         headerTitle="Domoticz Mobile"
-        connexionStatus={!isLoading ? responseData?.status === "OK" ? DomoticzStatus.CONNECTE : DomoticzStatus.DECONNECTE : DomoticzStatus.INCONNU}
+        connexionStatus={!isLoading ? domoticzConnexionData?.status === "OK" ? DomoticzStatus.CONNECTE : DomoticzStatus.DECONNECTE : DomoticzStatus.INCONNU}
         setRefreshing={setRefreshing}>
 
         <ThemedView style={tabStyles.titleContainer}>
           {isLoading ?
             (<ActivityIndicator size={'large'} color={Colors.domoticz.color} />)
             :
-            (showPanel(tab, error))
+            (error !== null) ?
+              <ThemedText type="subtitle" style={{ color: 'red', marginTop: 50 }}>Erreur : {error.message}</ThemedText>
+              :  
+              showPanel(tab, domoticzDevicesData, storeDevicesData)
           }
         </ThemedView>
 
       </ParallaxScrollView>
       <View style={tabStyles.tabsViewbox}>
-        <TabBarItems activeTab={tab} setTab={selectTab} thisTab={Tabs.INDEX} />
         {
-          // TODO : Désactiver les onglets si l'utilisateur n'est pas connecté
-          !isLoading ? // && error === null ?
+          (!isLoading && error === null) ?
             <>
+              <TabBarItems activeTab={tab} setTab={selectTab} thisTab={Tabs.INDEX} />
               <TabBarItems activeTab={tab} setTab={selectTab} thisTab={Tabs.LUMIERES} />
               <TabBarItems activeTab={tab} setTab={selectTab} thisTab={Tabs.VOLETS} />
               <TabBarItems activeTab={tab} setTab={selectTab} thisTab={Tabs.TEMPERATURES} />
@@ -91,23 +122,21 @@ function showLogoImage(tab: Tabs) {
  * Affiche le panneau de l'onglet sélectionné
  * 
  * @param tab L'onglet sélectionné
- * @param error L'erreur éventuelle
+ * @param devicesData Les données des appareils
  */
-function showPanel(tab: Tabs, error: Error | null) {
-  if (error !== null) {
-    //   return <ThemedText type="subtitle" style={{ color: 'red', marginTop: 50 }}>Erreur : {error.message}</ThemedText>
-  }
+function showPanel(tab: Tabs, devicesData: DomoticzDevice[], storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>> ) : JSX.Element {
+  
   switch (tab) {
     case Tabs.INDEX:
       return <HomeScreen />
     case Tabs.LUMIERES:
-      return <TabDomoticzLumieres />
+      return <TabDomoticzLumieres lightsData={devicesData} storeDevicesData={storeDevicesData}/>
     case Tabs.VOLETS:
-      return <TabDomoticzVolets />
+      return <TabDomoticzVolets voletsData={devicesData} storeDevicesData={storeDevicesData} />
     case Tabs.TEMPERATURES:
       return <TabDomoticzTemperatures />
     default:
-      return <ThemedText type="title">404 - Page non définie</ThemedText>
+      return <ThemedText type="title" style={{color: 'red'}}>404 - Page non définie</ThemedText>
   }
 }
 

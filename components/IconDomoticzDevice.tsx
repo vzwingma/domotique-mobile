@@ -17,9 +17,9 @@ class IconDomoticzDevice extends MaterialCommunityIcons {}
  */
 export function getDeviceIcon(device: DomoticzDevice) :any {
     switch(device.type){
-        case DomoticzType.LIGHT:
+        case DomoticzType.LUMIERE:
             return getLightIcon(device);
-        case DomoticzType.BLIND:
+        case DomoticzType.VOLET:
             return getBlindIcon(device);
         default:
             return "help-circle-outline";
