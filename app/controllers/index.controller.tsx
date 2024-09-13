@@ -9,7 +9,6 @@ import { showToast, ToastDuration } from '@/hooks/AndroidToast';
  */
 export function connectToDomoticz(setIsLoading: Function, storeConfigData: Function, storeError: Function) {
 
-    // Exemple d'utilisation de l'état isLoading et error
     setIsLoading(true);
     // Appel du service externe de connexion à Domoticz
     callDomoticz(SERVICES_URL.GET_CONFIG)
@@ -24,7 +23,7 @@ export function connectToDomoticz(setIsLoading: Function, storeConfigData: Funct
       })
       .then(config => {
         setIsLoading(false);
-        storeConfigData(config); // Update the state with the response data
+        storeConfigData(config);
       })
       .catch((e) => {
           setIsLoading(false);

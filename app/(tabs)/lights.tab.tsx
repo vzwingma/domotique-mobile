@@ -22,18 +22,7 @@ export default function TabDomoticzLumieres() {
     loadDomoticzDevices(setIsLoading, storeLumieresData, DomoticzType.LIGHT);  
   }, [refreshing])
 
-  return (
-    <ParallaxScrollView
-      setRefreshing={setRefreshing} 
-      headerImage={<Ionicons size={100} name="bulb" style={tabStyles.headerImage} />}>
-
-      {!isLoading ? (
-        <ActivityIndicator size={'large'} color={Colors.domoticz.color}/>
-      ) : (
-        buildDeviceList(lightsData, storeLumieresData)
-      )}
-    </ParallaxScrollView>
-  );
+  return (buildDeviceList(lightsData, storeLumieresData));
 }
 
 /**

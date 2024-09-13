@@ -1,5 +1,11 @@
 
 
+
+export enum DomoticzStatus {
+    INCONNU = 'INCONNU',
+    CONNECTE = 'CONNECTE',
+    DECONNECTE = 'DECONNECTE',
+}
 /**
  * Enum pour les types d'équipements Domoticz
  */

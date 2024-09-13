@@ -31,18 +31,7 @@ export default function TabDomoticzTemperatures() {
   }, [refreshing])
 
 
-  return (
-    <ParallaxScrollView
-      headerImage={<Ionicons size={100} name="thermometer-sharp" style={tabStyles.headerImage} />}
-      setRefreshing={setRefreshing}>
-
-      {!isLoading ? (
-        <ActivityIndicator size={'large'} color={Colors.domoticz.color}/>
-      ) : (
-        buildDeviceList(temperaturesData)
-      )}
-    </ParallaxScrollView>
-);
+  return (buildDeviceList(temperaturesData));
 }
 
 

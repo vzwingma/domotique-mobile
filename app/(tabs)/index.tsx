@@ -1,10 +1,8 @@
 
 import { ActivityIndicator, Image, StyleSheet } from 'react-native';
-import { useState , useEffect } from 'react';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
+import { useState, useEffect } from 'react';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { connectToDomoticz } from '@/app/controllers/index.controller';
 import DomoticzConfig from '../models/domoticzConfig.model';
 import { Colors, PROFILE, PROFILES_ENV } from '../constants/Colors';
 
@@ -18,56 +16,18 @@ export default function HomeScreen() {
   const [error, setError] = useState<Error | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  const logoImage = PROFILE === PROFILES_ENV.C ? require('@/assets/images/c/partial-dlogo.png') : require('@/assets/images/v/partial-dlogo.png')
-    // Lance la connexion à Domoticz
+  // Lance la connexion à Domoticz
   useEffect(() => {
-    connectToDomoticz(setIsLoading, setResponseData, setError);
+
   }, [refreshing])
 
 
-  // Retourne la version de l'application et de Domoticz sous forme de JSX
-  const getTabVersion = (): JSX.Element => {
-    return <ThemedView style={{marginTop: 275}}>
-            <ThemedView style={tabStyles.versionTabRow}>
-              <ThemedView style={tabStyles.versionTabCell} ><ThemedText type='italic'>Domoticz App</ThemedText></ThemedView>
-              <ThemedView style={tabStyles.versionTabCell} >{ responseData?.status === "OK" ? <ThemedText type='italic'>{responseData?.version}</ThemedText> : <></> }</ThemedView>
-            </ThemedView>
-            <ThemedView style={tabStyles.versionTabRow}>
-                <ThemedView style={tabStyles.versionTabCell} ><ThemedText type='italic'>Domoticz Mobile</ThemedText></ThemedView>
-                <ThemedView style={tabStyles.versionTabCell} ><ThemedText type='italic'>1.1</ThemedText></ThemedView>
-            </ThemedView>
-          </ThemedView>
-  }
-
-
   return (
-    <ParallaxScrollView
-      headerImage={
-        <Image
-          source={logoImage}
-          style={tabStyles.domoticzLogo}
-        />
-      }
-      setRefreshing={setRefreshing}>
-
       <ThemedView style={tabStyles.titleContainer}>
-        <ThemedText type="title" style={tabStyles.domoticzColor}>Domoticz Mobile</ThemedText>
+          (<ThemedText type="subtitle" style={{ color: responseData?.status === "OK" ? 'green' : 'red', marginTop: 50 }}>
+            {responseData?.status === "OK" ? "Connecté" : "Non connecté :"} {(error !== null ? error.message : "")}
+          </ThemedText>)
       </ThemedView>
-      
-
-      <ThemedView style={tabStyles.titleContainer}>
-            {isLoading ? 
-              ( <ActivityIndicator size={'large'} color={Colors.domoticz.color}/> )
-              : 
-              ( <ThemedText type="subtitle" style={ {color: responseData?.status === "OK" ? 'green' : 'red', marginTop: 50} }>
-                    {responseData?.status === "OK" ? "Connecté" : "Non connecté :" } {(error !== null ? error.message : "")}
-                </ThemedText> )
-            }
-      </ThemedView>
-
-      {isLoading && error === null ? getTabVersion() : <></>}
-
-    </ParallaxScrollView>
   );
 }
 
@@ -90,13 +50,13 @@ export const tabStyles = StyleSheet.create({
     backgroundColor: Colors.dark.titlebackground,
   },
   versionTabRow: {
-    flex: 1, 
-    alignSelf: 'flex-end', 
-    flexDirection: 'row', 
-    width:250
+    flex: 1,
+    alignSelf: 'flex-end',
+    flexDirection: 'row',
+    width: 250
   },
   versionTabCell: {
-    flex: 1, 
+    flex: 1,
     alignSelf: 'stretch',
     fontStyle: 'italic',
   },

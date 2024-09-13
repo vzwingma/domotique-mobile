@@ -30,18 +30,7 @@ export default function TabDomoticzVolets() {
   }, [refreshing])
 
 
-  return (
-    <ParallaxScrollView
-      headerImage={<Ionicons size={100} name="reorder-four" style={tabStyles.headerImage} />}
-      setRefreshing={setRefreshing}>
-
-      {!isLoaded ? (
-        <ActivityIndicator size={'large'} color={Colors.domoticz.color}/>
-      ) : (
-          (buildDeviceList(voletsData, storeVoletsData))
-      )}
-    </ParallaxScrollView>
-  );
+  return (buildDeviceList(voletsData, storeVoletsData));
 }
 
 /**
