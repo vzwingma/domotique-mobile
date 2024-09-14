@@ -22,6 +22,16 @@ export enum DomoticzSwitchType {
     ONOFF = "On/Off",
     UNKNOWN = "Inconnu"
 }
+
+
+/**
+ * Enum pour les types d'équipements Domoticz
+ */
+export enum DomoticzDeviceStatus {
+    ON = "On",
+    OFF = "Off"
+}
+
 /**
  * Tri des équipements Domoticz
  */

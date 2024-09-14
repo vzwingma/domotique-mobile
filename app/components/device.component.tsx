@@ -5,7 +5,7 @@ import Slider from '@react-native-community/slider';
 import { updateDeviceLevel, updateDeviceState } from "../controllers/devices.controller";
 import { Colors, getGroupColor } from "../enums/Colors";
 import IconDomoticzDevice, { getDeviceIcon } from "@/components/IconDomoticzDevice";
-import { DomoticzSwitchType } from "../enums/DomoticzEnum";
+import { DomoticzDeviceStatus, DomoticzSwitchType } from "../enums/DomoticzEnum";
 import { useState } from "react";
 
 // Définition des propriétés d'un équipement Domoticz
@@ -49,7 +49,7 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
             onValueChange={(value) => { setNextValue(value, refreshNextValue) }}
             onResponderStart={() => { showLabel(true) }}
             onResponderEnd={() => {
-              updateDeviceLevel(device.idx, nextValue, storeDeviceData);
+              updateDeviceLevel(device.idx, device, nextValue, storeDeviceData);
               showLabel(false);
             }}
           /> : <Slider disabled style={stylesLists.sliderDisabled} />}
@@ -64,7 +64,7 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
  * @returns niveau de l'équipement :
  */
 function getLevel(device: DomoticzDevice): number {
-  return device.status === "Off" ? 0.1 : device.level
+  return device.status === DomoticzDeviceStatus.OFF ? 0.1 : device.level
 }
 
 
@@ -98,7 +98,7 @@ function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: bo
   else if (flagLabel) {
     let nextLabel = "(";
     if (nextValue <= 0.1) {
-      nextLabel += "Off";
+      nextLabel += DomoticzDeviceStatus.OFF;
     }
     else {
       nextLabel += nextValue + "%";
@@ -112,7 +112,7 @@ function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: bo
   }
   // Si c'est un variateur
   else {
-    getStatusLabel = device.status === "Off" ? "Off" : device.level + "%";
+    getStatusLabel = device.status === DomoticzDeviceStatus.OFF ? DomoticzDeviceStatus.OFF : device.level + "%";
   }
   // Si le groupe n'est pas cohérent
   if (!device.consistantLevel) {
@@ -132,10 +132,10 @@ function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: bo
 function onClickDeviceIcon(device: DomoticzDevice, storeDeviceData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
   if (device.isActive) {
     if (device.switchType === DomoticzSwitchType.ONOFF) {
-      updateDeviceState(device.idx, device.status === "Off", storeDeviceData);
+      updateDeviceState(device.idx, device, device.status === DomoticzDeviceStatus.OFF, storeDeviceData);
     }
     else {
-      updateDeviceLevel(device.idx, device.status === "Off" ? device.level : 0, storeDeviceData);
+      updateDeviceLevel(device.idx, device, device.status === DomoticzDeviceStatus.OFF ? device.level : 0, storeDeviceData);
     }
   }
 }
