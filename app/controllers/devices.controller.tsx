@@ -79,7 +79,7 @@ export function updateDeviceLevel(idx: number, device : DomoticzDevice, level: n
         updateDeviceState(idx, device, false, storeDevicesData);
     }
     else {
-        console.log("Mise à jour de l'équipement "  + device.name + "[" + idx + "]", level + "%");
+        console.log("Mise à jour de l'équipement "  + device.name + " [" + idx + "]", level + "%");
 
         let params = [{ key: SERVICES_PARAMS.IDX, value: String(idx) },
         { key: SERVICES_PARAMS.LEVEL, value: String(level) }];
@@ -104,7 +104,7 @@ export function updateDeviceLevel(idx: number, device : DomoticzDevice, level: n
  * 
  */
 export function updateDeviceState(idx: number, device: DomoticzDevice, status: boolean, setDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
-    console.log("Mise à jour de l'équipement  " + device.name + "[" + idx + "]", status ? DomoticzDeviceStatus.ON : DomoticzDeviceStatus.OFF);
+    console.log("Mise à jour de l'équipement  " + device.name + " [" + idx + "]", status ? DomoticzDeviceStatus.ON : DomoticzDeviceStatus.OFF);
 
     let params = [{ key: SERVICES_PARAMS.IDX, value: String(idx) },
     { key: SERVICES_PARAMS.CMD, value: status ? DomoticzDeviceStatus.ON : DomoticzDeviceStatus.OFF }];
@@ -154,5 +154,4 @@ function addActionForFavorite(device: DomoticzDevice) {
         console.error('Une erreur s\'est produite lors de la mise à jour des favoris', e);
         showToast("Erreur lors de la mise à jour des favoris", ToastDuration.SHORT);
     })
-    .finally(() => { console.log("Sauvegarde des Favoris réalisé"); });
 }

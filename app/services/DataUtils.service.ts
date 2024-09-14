@@ -71,11 +71,11 @@ export function evaluateGroupLevelConsistency(device: DomoticzDevice, idsSubDevi
 
 
 
+
+
 export enum KEY_STORAGE {
     FAVORITES = "domoticzBoard"
 };
-
-
 
 /**
  * Gestion des favoris en mémoire
