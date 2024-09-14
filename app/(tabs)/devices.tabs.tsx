@@ -16,27 +16,20 @@ type TabDomoticzDevicessProps = {
  * Composant de l'écran des volets.
  * 
  * Ce composant affiche une liste de volets récupérés depuis Domoticz.
+ * @param devicesData Les données des équipements
+ * @param storeDevicesData La fonction pour mettre à jour les données des volets
  */
 export default function TabDomoticzDevices({ devicesData, storeDevicesData }: TabDomoticzDevicessProps): JSX.Element[] {
 
   if (devicesData === undefined || storeDevicesData === undefined) {
     return [];
   }
-  return buildDeviceList(devicesData, storeDevicesData);
-}
 
-
-/**
- * Construit la liste des équipements
- * 
- * @param devicesData Les données des équipements
- * @param storeDevicesData La fonction pour mettre à jour les données des volets
- */
-function buildDeviceList(devicesData: DomoticzDevice[], storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
   let items: JSX.Element[] = [];
   devicesData.forEach((item, idx) => {
     item.rang = idx;
     items.push(<ViewDomoticzDevice key={item.idx} device={item} storeDeviceData={storeDevicesData} />);
   });
   return items;
+
 }

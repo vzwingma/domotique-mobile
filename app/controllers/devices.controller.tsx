@@ -1,7 +1,7 @@
 import callDomoticz from '@/app/services/ClientHTTP.service';
 import { SERVICES_PARAMS, SERVICES_URL } from '@/app/enums/APIconstants';
 import { sortEquipements } from '@/app/services/DataUtils.service';
-import { DomoticzBlindsGroups, DomoticzBlindsSort, DomoticzLightsGroups, DomoticzLightsSort, DomoticzType } from '@/app/enums/DomoticzEnum';
+import { DomoticzBlindsGroups, DomoticzBlindsSort, DomoticzDeviceStatus, DomoticzLightsGroups, DomoticzLightsSort, DomoticzType } from '@/app/enums/DomoticzEnum';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
 
@@ -81,7 +81,7 @@ function evaluateGroupLevelConsistency(device: DomoticzDevice, idsSubDevices: { 
         // recherche des niveaux des équipements du groupe, filtrage des doublons  et comptage
         // Si =1 alors le groupe est cohérent
         device.consistantLevel = devices.filter((device: DomoticzDevice) => arrayIdsSubdevicesOfGroup.includes(device.idx))
-            .map((device: DomoticzDevice) => device.status === 'Off' ? 0 : device.level)
+            .map((device: DomoticzDevice) => device.status === DomoticzDeviceStatus.OFF ? 0 : device.level)
             .filter((value, index, current_value) => current_value.indexOf(value) === index)
             .length === 1;
     }
@@ -109,18 +109,19 @@ function getDeviceType(deviceName: string): DomoticzType {
 /**
  * Rafraichissement du niveau de l'équipement
  * @param idx idx de l'équipement
+ * @param name nom de l'équipement
  * @param level niveau de l'équipement
  * @param setDeviceData fonction de mise à jour des données
  * 
  */
-export function updateDeviceLevel(idx: number, level: number, storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
+export function updateDeviceLevel(idx: number, name : string, level: number, storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
     if (level <= 0.1) level = 0;
     if (level >= 99) level = 100;
     if (level === 0) {
-        updateDeviceState(idx, false, storeDevicesData);
+        updateDeviceState(idx, name, false, storeDevicesData);
     }
     else {
-        console.log("Mise à jour de l'équipement " + idx, level + "%");
+        console.log("Mise à jour de l'équipement "  + name + "[" + idx + "]", level + "%");
 
         let params = [{ key: SERVICES_PARAMS.IDX, value: String(idx) },
         { key: SERVICES_PARAMS.LEVEL, value: String(level) }];
@@ -136,15 +137,16 @@ export function updateDeviceLevel(idx: number, level: number, storeDevicesData: 
 /**
  * mise à jour du niveau de l'équipement
  * @param idx idx de l'équipement
+ * @param name nom de l'équipement
  * @param status état de l'équipement
  * @param setDevicesData fonction de mise à jour des données
  * 
  */
-export function updateDeviceState(idx: number, status: boolean, setDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
-    console.log("Mise à jour du device " + idx, status ? "ON" : "OFF");
+export function updateDeviceState(idx: number, name: string, status: boolean, setDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
+    console.log("Mise à jour de l'équipement  " + name + "[" + idx + "]", status ? DomoticzDeviceStatus.ON : DomoticzDeviceStatus.OFF);
 
     let params = [{ key: SERVICES_PARAMS.IDX, value: String(idx) },
-    { key: SERVICES_PARAMS.CMD, value: status ? "On" : "Off" }];
+    { key: SERVICES_PARAMS.CMD, value: status ? DomoticzDeviceStatus.ON : DomoticzDeviceStatus.OFF }];
 
     callDomoticz(SERVICES_URL.CMD_BLINDS_LIGHTS_ON_OFF, params)
         .catch((e) => {

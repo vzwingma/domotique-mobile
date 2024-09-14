@@ -15,18 +15,9 @@ type TabDomoticzTemperaturesProps = {
  * Composant de l'écran des mesures de températures.
  * 
  * Ce composant affiche une liste de mesures de températeures récupérées depuis Domoticz.
+ * @param temperaturesData Les données des mesures de températures
  */
 export default function TabDomoticzTemperatures({ temperaturesData }: TabDomoticzTemperaturesProps): JSX.Element[] {
-  return buildDeviceList(temperaturesData);
-}
-
-
-/**
- * Construit la liste des mesures de températures.
- * 
- * @param voletsData Les données des mesures de températures
- */
-function buildDeviceList(temperaturesData: DomoticzTemperature[]) {
   let items: JSX.Element[] = [];
   temperaturesData.forEach(item => {
     items.push(<ViewDomoticzTemperature key={item.idx} temperature={item}/>);          
