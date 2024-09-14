@@ -142,7 +142,7 @@ function showPanel(tab: Tabs, devicesData: DomoticzDevice[], storeDevicesData: R
 
   switch (tab) {
     case Tabs.INDEX:
-      return <HomeScreen />
+      return <HomeScreen devicesData={devicesData} storeDevicesData={storeDevicesData}/>
     case Tabs.LUMIERES:
       return <TabDomoticzDevices devicesData={devicesData.filter(data => data.type === DomoticzType.LUMIERE)} storeDevicesData={storeDevicesData} />
     case Tabs.VOLETS:

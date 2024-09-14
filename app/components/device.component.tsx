@@ -49,7 +49,7 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
             onValueChange={(value) => { setNextValue(value, refreshNextValue) }}
             onResponderStart={() => { showLabel(true) }}
             onResponderEnd={() => {
-              updateDeviceLevel(device.idx, device.name, nextValue, storeDeviceData);
+              updateDeviceLevel(device.idx, device, nextValue, storeDeviceData);
               showLabel(false);
             }}
           /> : <Slider disabled style={stylesLists.sliderDisabled} />}
@@ -132,10 +132,10 @@ function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: bo
 function onClickDeviceIcon(device: DomoticzDevice, storeDeviceData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
   if (device.isActive) {
     if (device.switchType === DomoticzSwitchType.ONOFF) {
-      updateDeviceState(device.idx, device.name, device.status === DomoticzDeviceStatus.OFF, storeDeviceData);
+      updateDeviceState(device.idx, device, device.status === DomoticzDeviceStatus.OFF, storeDeviceData);
     }
     else {
-      updateDeviceLevel(device.idx, device.name, device.status === DomoticzDeviceStatus.OFF ? device.level : 0, storeDeviceData);
+      updateDeviceLevel(device.idx, device, device.status === DomoticzDeviceStatus.OFF ? device.level : 0, storeDeviceData);
     }
   }
 }

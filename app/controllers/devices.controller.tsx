@@ -1,9 +1,10 @@
 import callDomoticz from '@/app/services/ClientHTTP.service';
 import { SERVICES_PARAMS, SERVICES_URL } from '@/app/enums/APIconstants';
-import { sortEquipements } from '@/app/services/DataUtils.service';
+import { evaluateGroupLevelConsistency, getDeviceType, getFavouritesFromStorage as loadFavoritesFromStorage, sortEquipements, saveFavoritesToStorage } from '@/app/services/DataUtils.service';
 import { DomoticzBlindsGroups, DomoticzBlindsSort, DomoticzDeviceStatus, DomoticzLightsGroups, DomoticzLightsSort, DomoticzType } from '@/app/enums/DomoticzEnum';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
+import DomoticzFavorites from '../models/domoticzFavourites';
 
 /**
  * Charge les équipements Domoticz.
@@ -64,49 +65,6 @@ export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]
 
 
 /**
- * Evaluation de la cohérence du niveau des groupes
- * @param device équipement groupe
- * @param idsSubDevices liste des équipements du groupe
- * @param devices liste des équipements
- */
-function evaluateGroupLevelConsistency(device: DomoticzDevice, idsSubDevices: { [key: number]: number[] }[], devices: DomoticzDevice[]) {
-    // Calcul uniquement pour les groupes
-    if(device.isGroup === false) return;
-
-
-    // Recherche des équipements du groupe
-    let idsSubDevicesOfGroup = idsSubDevices.find((subDevice: any) => subDevice[device.idx]);
-    if (idsSubDevicesOfGroup !== undefined) {
-        let arrayIdsSubdevicesOfGroup: number[] = idsSubDevicesOfGroup[device.idx];
-        // recherche des niveaux des équipements du groupe, filtrage des doublons  et comptage
-        // Si =1 alors le groupe est cohérent
-        device.consistantLevel = devices.filter((device: DomoticzDevice) => arrayIdsSubdevicesOfGroup.includes(device.idx))
-            .map((device: DomoticzDevice) => device.status === DomoticzDeviceStatus.OFF ? 0 : device.level)
-            .filter((value, index, current_value) => current_value.indexOf(value) === index)
-            .length === 1;
-    }
-}
-
-/**
- * Filtrage des équipements par type
- * @param device equipement à filtrer
- * @param typeDevice type d'équipement
- * @returns true si l'équipement est du type recherché
- */
-function getDeviceType(deviceName: string): DomoticzType {
-    if(deviceName.toLowerCase().includes("volet")) {
-        return DomoticzType.VOLET;
-    }
-    else if(deviceName.toLowerCase().includes("lumière")
-                || deviceName.toLowerCase().includes("veilleuse")) {
-        return DomoticzType.LUMIERE;
-    }
-    else{
-        return DomoticzType.UNKNOWN;
-    }
-}
-
-/**
  * Rafraichissement du niveau de l'équipement
  * @param idx idx de l'équipement
  * @param name nom de l'équipement
@@ -114,14 +72,14 @@ function getDeviceType(deviceName: string): DomoticzType {
  * @param setDeviceData fonction de mise à jour des données
  * 
  */
-export function updateDeviceLevel(idx: number, name : string, level: number, storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
+export function updateDeviceLevel(idx: number, device : DomoticzDevice, level: number, storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
     if (level <= 0.1) level = 0;
     if (level >= 99) level = 100;
     if (level === 0) {
-        updateDeviceState(idx, name, false, storeDevicesData);
+        updateDeviceState(idx, device, false, storeDevicesData);
     }
     else {
-        console.log("Mise à jour de l'équipement "  + name + "[" + idx + "]", level + "%");
+        console.log("Mise à jour de l'équipement "  + device.name + "[" + idx + "]", level + "%");
 
         let params = [{ key: SERVICES_PARAMS.IDX, value: String(idx) },
         { key: SERVICES_PARAMS.LEVEL, value: String(level) }];
@@ -131,7 +89,10 @@ export function updateDeviceLevel(idx: number, name : string, level: number, sto
                 console.error('Une erreur s\'est produite lors de la mise à jour de l\'équipement', e);
                 showToast("Erreur lors de la commande de l'équipement", ToastDuration.LONG);
             })
-            .finally(() => refreshEquipementState(storeDevicesData));
+            .finally(() => {
+                addActionForFavorite(device);
+                refreshEquipementState(storeDevicesData)
+            });
     }
 }
 /**
@@ -142,8 +103,8 @@ export function updateDeviceLevel(idx: number, name : string, level: number, sto
  * @param setDevicesData fonction de mise à jour des données
  * 
  */
-export function updateDeviceState(idx: number, name: string, status: boolean, setDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
-    console.log("Mise à jour de l'équipement  " + name + "[" + idx + "]", status ? DomoticzDeviceStatus.ON : DomoticzDeviceStatus.OFF);
+export function updateDeviceState(idx: number, device: DomoticzDevice, status: boolean, setDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
+    console.log("Mise à jour de l'équipement  " + device.name + "[" + idx + "]", status ? DomoticzDeviceStatus.ON : DomoticzDeviceStatus.OFF);
 
     let params = [{ key: SERVICES_PARAMS.IDX, value: String(idx) },
     { key: SERVICES_PARAMS.CMD, value: status ? DomoticzDeviceStatus.ON : DomoticzDeviceStatus.OFF }];
@@ -153,7 +114,10 @@ export function updateDeviceState(idx: number, name: string, status: boolean, se
             console.error('Une erreur s\'est produite lors de la mise à jour d \' équipement', e);
             showToast("Erreur lors de la commande de mise à jour d'équipement", ToastDuration.LONG);
         })
-        .finally(() => refreshEquipementState(setDevicesData));
+        .finally(() => {
+            addActionForFavorite(device);
+            refreshEquipementState(setDevicesData)
+        });
 }
 
 /**
@@ -165,4 +129,30 @@ function refreshEquipementState(storeDevicesData: React.Dispatch<React.SetStateA
     // Mise à jour des données
     loadDomoticzDevices(storeDevicesData);
     setTimeout(() => loadDomoticzDevices(storeDevicesData), 1000);
+}
+
+
+
+/**
+ * Ajout d'une action pour l'équipement favori
+ * @param idx idx de l'équipement
+ */
+function addActionForFavorite(device: DomoticzDevice) {
+    loadFavoritesFromStorage()
+    .then((favoris) => {
+            const favoriteIndex = favoris.findIndex((fav: any) => fav.idx === device.idx);
+            if (favoriteIndex !== -1) {
+                favoris[favoriteIndex].favourites += 1;
+            } else {
+                let newFavourites : DomoticzFavorites = {idx: device.idx, favourites: 1, name: device.name, type: device.type, subType: device.subType};
+                favoris.push(newFavourites);
+            }
+            saveFavoritesToStorage(favoris);
+        }
+    )
+    .catch((e) => {
+        console.error('Une erreur s\'est produite lors de la mise à jour des favoris', e);
+        showToast("Erreur lors de la mise à jour des favoris", ToastDuration.SHORT);
+    })
+    .finally(() => { console.log("Sauvegarde des Favoris réalisé"); });
 }
