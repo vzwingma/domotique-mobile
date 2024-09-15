@@ -1,108 +1,105 @@
-import { ActivityIndicator, Image, StyleSheet } from 'react-native';
-import { useState, useEffect } from 'react';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
+
+import { StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { connectToDomoticz } from '@/app/controllers/index.controller';
-import DomoticzConfig from '../models/domoticzConfig.model';
-import { Colors, PROFILE, PROFILES_ENV } from '../constants/Colors';
-
-/**
- * Ecran d'accueil
- */
-export default function HomeScreen() {
-
-  const [isLoading, setIsLoading] = useState(true);
-  const [responseData, setResponseData] = useState<DomoticzConfig | null>(null); // State to store the response data
-  const [error, setError] = useState<Error | null>(null);
-  const [refreshing, setRefreshing] = useState(false);
-
-  const logoImage = PROFILE === PROFILES_ENV.C ? require('@/assets/images/c/partial-dlogo.png') : require('@/assets/images/v/partial-dlogo.png')
-  // Lance la connexion à Domoticz
-  useEffect(() => {
-    connectToDomoticz(setIsLoading, setResponseData, setError);
-  }, [refreshing])
+import DomoticzDevice from '../models/domoticzDevice.model';
+import { ViewDomoticzDevice } from '../components/device.component';
+import { getFavouritesFromStorage } from '../services/DataUtils.service';
+import { useEffect, useState } from 'react';
+import DomoticzFavorites from '../models/domoticzFavourites';
 
 
-  // Retourne la version de l'application et de Domoticz sous forme de JSX
-  const getTabVersion = () => {
-    return <ThemedView style={{ marginTop: 275 }}>
-      <ThemedView style={tabStyles.versionTabRow}>
-        <ThemedView style={tabStyles.versionTabCell} ><ThemedText type='italic'>Domoticz App</ThemedText></ThemedView>
-        <ThemedView style={tabStyles.versionTabCell} >{responseData?.status === "OK" ? <ThemedText type='italic'>{responseData?.version}</ThemedText> : <></>}</ThemedView>
-      </ThemedView>
-      <ThemedView style={tabStyles.versionTabRow}>
-        <ThemedView style={tabStyles.versionTabCell} ><ThemedText type='italic'>Domoticz Mobile</ThemedText></ThemedView>
-        <ThemedView style={tabStyles.versionTabCell} ><ThemedText type='italic'>1.0</ThemedText></ThemedView>
-      </ThemedView>
-    </ThemedView>
-  }
-
-
-  return (
-    <ParallaxScrollView
-      headerImage={
-        <Image
-          source={logoImage}
-          style={tabStyles.domoticzLogo}
-        />
-      }
-      setRefreshing={setRefreshing}>
-
-      <ThemedView style={tabStyles.titleContainer}>
-        <ThemedText type="title" style={tabStyles.domoticzColor}>Domoticz Mobile</ThemedText>
-      </ThemedView>
-
-
-      <ThemedView style={tabStyles.titleContainer}>
-        {isLoading ?
-          (<ActivityIndicator size={'large'} color={Colors.domoticz.color} />)
-          :
-          (<ThemedText type="subtitle" style={{ color: responseData?.status === "OK" ? 'green' : 'red', marginTop: 50 }}>
-            {responseData?.status === "OK" ? "Connecté" : "Non connecté :"} {(error !== null ? error.message : "")}
-          </ThemedText>)
-        }
-      </ThemedView>
-
-      {getTabVersion()}
-
-    </ParallaxScrollView>
-  );
+// Propriétés de l'écran des équipements
+type TabDomoticzDevicessProps = {
+  devicesData: DomoticzDevice[],
+  storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>
 }
 
 
+/**
+ * Ecran d'accueil avec les équipements favoris
+ * 
+ * Ce composant affiche une liste de volets récupérés depuis Domoticz.
+ * @param devicesData Les données des équipements
+ * @param storeDevicesData La fonction pour mettre à jour les données des volets
+ */
+export default function HomeScreen({ devicesData, storeDevicesData }: TabDomoticzDevicessProps) {
+
+
+  const [favorites, setFavorites] = useState([] as DomoticzDevice[]);
+
+  // Au chargement de l'écran, on charge les favoris
+  useEffect(() => {
+    getFavoritesDevicesFromCache(devicesData, setFavorites);
+  }, [devicesData]);
+
+
+
+  return (
+    <>
+      <ThemedView style={tabStyles.titleContainer}>
+        <ThemedText type="subtitle" style={{ color: 'green', marginTop: 10 }}>
+          Connecté à Domoticz
+        </ThemedText>
+      </ThemedView>
+      {getListFavoritesComponents(favorites, storeDevicesData)}
+    </>
+  );
+
+}
+
+
+/**
+ * Chargement des favoris depuis le cache
+ * @param devicesData liste des devices
+ * @param setFavorites fonction de mise à jour des favoris dans les états
+ * @returns 
+ */
+function getFavoritesDevicesFromCache(devicesData: DomoticzDevice[], setFavorites: Function) {
+  if (devicesData !== undefined) {
+
+    let favoriteDevices: DomoticzDevice[] = [];
+
+    getFavouritesFromStorage().then((favorites) => {
+
+      favorites
+        .sort((a, b) => b.favourites - a.favourites)
+        .forEach((fav: DomoticzFavorites) => {
+          const favoriteIndex = devicesData.findIndex((device) => device.idx === fav.idx);
+          if (favoriteIndex !== -1 && favoriteDevices.length < 5) {
+            favoriteDevices.push(devicesData[favoriteIndex]);
+          }
+        })
+
+      setFavorites(favoriteDevices);
+    });
+  }
+}
+
+
+/**
+ * liste des composants graphiques des devices favoris
+ * @param favoritesData devices favoris
+ * @param storeDevicesData fonction de mise à jour des devices
+ * @returns les devices favoris en jsx
+ */
+function getListFavoritesComponents(favoritesData: DomoticzDevice[], storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
+  let items: JSX.Element[] = [];
+  if (favoritesData === undefined || storeDevicesData === undefined) {
+    return items;
+  }
+  else {
+    favoritesData.forEach((fav: DomoticzDevice) => {
+      items.push(<ViewDomoticzDevice key={fav.idx} device={fav} storeDeviceData={storeDevicesData} />);
+    });
+  }
+  return items;
+}
+
+
+// Styles de l'écran des équipements
 export const tabStyles = StyleSheet.create({
   titleContainer: {
     alignItems: 'center',
-    gap: 8
   },
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
-    height: 350,
-    backgroundColor: Colors.dark.titlebackground,
-  },
-  domoticzLogo: {
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-    backgroundColor: Colors.dark.titlebackground,
-  },
-  versionTabRow: {
-    flex: 1,
-    alignSelf: 'flex-end',
-    flexDirection: 'row',
-    width: 250
-  },
-  versionTabCell: {
-    flex: 1,
-    alignSelf: 'stretch',
-    fontStyle: 'italic',
-  },
-  domoticzColor: {
-    color: Colors.domoticz.color
-  }
 });
