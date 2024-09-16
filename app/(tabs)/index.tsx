@@ -62,14 +62,14 @@ function getFavoritesDevicesFromCache(devicesData: DomoticzDevice[], setFavorite
 
     getFavouritesFromStorage().then((favorites) => {
 
-      favorites
-        .sort((a, b) => b.favourites - a.favourites)
-        .forEach((fav: DomoticzFavorites) => {
-          const favoriteIndex = devicesData.findIndex((device) => device.idx === fav.idx);
-          if (favoriteIndex !== -1 && favoriteDevices.length < 5) {
-            favoriteDevices.push(devicesData[favoriteIndex]);
-          }
-        })
+      let sortedFavorites = favorites.sort((a, b) => b.favourites - a.favourites);
+
+      sortedFavorites.forEach((fav: DomoticzFavorites) => {
+        const favoriteIndex = devicesData.findIndex((device) => device.idx === fav.idx);
+        if (favoriteIndex !== -1 && favoriteDevices.length < 5) {
+          favoriteDevices.push(devicesData[favoriteIndex]);
+        }
+      })
 
       setFavorites(favoriteDevices);
     });

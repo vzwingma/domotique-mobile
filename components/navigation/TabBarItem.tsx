@@ -19,7 +19,7 @@ interface TabBarItemsProps {
  * @param thisTab this tab name
  * @param setTab fonction pour définir l'onglet actif
  */
-export function TabBarItems({ activeTab, thisTab, selectNewTab}: TabBarItemsProps) {
+export function TabBarItems({ activeTab, thisTab, selectNewTab}: Readonly<TabBarItemsProps>) : JSX.Element {
     return <ThemedView style={tabStyles.tabsItem} onPointerDown={() => selectNewTab(thisTab)} onTouchEnd={() => selectNewTab(thisTab)}>
                 <TabBarIcon name={activeTab === thisTab ? getTabIcon(thisTab) : getTabIconOutline(thisTab)} 
                             color={activeTab === thisTab ? Colors.domoticz.color : '#ffffff'} />

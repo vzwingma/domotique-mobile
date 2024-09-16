@@ -29,7 +29,7 @@ export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]
                         type: getDeviceType(device.Name),
                         subType: device.Type,
                         switchType: device.SwitchType,
-                        level: device.Level >= 99 ? 100 : device.Level <= 0.1 ? 0 : Number(device.Level),
+                        level: evaluateDeviceLevel(device),
                         consistantLevel: true,
                         isGroup: String(device.Name).indexOf("[Grp]") > -1,
                         lastUpdate: device.LastUpdate,
@@ -62,6 +62,16 @@ export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]
         })
 }
 
+/**
+ * Evaluation du niveau de l'équipement
+ * @param device équipement
+ * @returns le niveau de l'équipement
+ */
+function evaluateDeviceLevel(device : DomoticzDevice){
+    if(device.level >= 99) return 100;
+    if(device.level <= 0.1) return 0;
+    return Number(device.level);
+}
 
 
 /**

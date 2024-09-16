@@ -21,10 +21,10 @@ type DomoticzDeviceProps = {
  * @param device équipement Domoticz
  * @param storeDeviceData setter pour les données des équipements
  */
-export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDeviceData: storeDeviceData }) => {
+export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDeviceData }) => {
 
-  const [flagLabel, showLabel] = useState<boolean>(false);
-  const [nextValue, refreshNextValue] = useState<number>(getLevel(device));
+  const [flagLabel, setFlagLabel] = useState<boolean>(false);
+  const [nextValue, setNextValue] = useState<number>(getLevel(device));
 
   return (
     <View key={device.idx} style={device.isActive ? stylesLists.viewBox : stylesLists.viewBoxDisabled}>
@@ -46,11 +46,11 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
             minimumValue={0} value={getLevel(device)} maximumValue={100}
             step={1}
             minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor={Colors.domoticz.color}
-            onValueChange={(value) => { setNextValue(value, refreshNextValue) }}
-            onResponderStart={() => { showLabel(true) }}
+            onValueChange={(value) => { overrideNextValue(value, setNextValue) }}
+            onResponderStart={() => { setFlagLabel(true) }}
             onResponderEnd={() => {
               updateDeviceLevel(device.idx, device, nextValue, storeDeviceData);
-              showLabel(false);
+              setFlagLabel(false);
             }}
           /> : <Slider disabled style={stylesLists.sliderDisabled} />}
       </View>
@@ -71,16 +71,16 @@ function getLevel(device: DomoticzDevice): number {
 /**
  * Surcharge de la valeur du slider pour la mettre à jour
  * @param value prochain niveau de l'équipement
- * @param refreshNextValue  fonction pour mettre à jour le prochain niveau de l'équipement
+ * @param setNextValue  fonction pour mettre à jour le prochain niveau de l'équipement
  */
-function setNextValue(value: number, refreshNextValue: React.Dispatch<React.SetStateAction<number>>) {
+function overrideNextValue(value: number, setNextValue: React.Dispatch<React.SetStateAction<number>>) {
   if (value <= 0) {
     value = 0.1;
   }
   else if (value >= 99) {
     value = 100;
   }
-  refreshNextValue(value);
+  setNextValue(value);
 }
 
 /**

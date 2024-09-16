@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Colors } from '@/app/enums/Colors';
 import connectToDomoticz from '../controllers/index.controller';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ActivityIndicator, Image, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { Tabs } from '../enums/TabsEnums';
 import { TabBarItems } from '@/components/navigation/TabBarItem';
@@ -30,9 +30,9 @@ export default function TabLayout() {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const [domoticzConnexionData, setConnexionData] = useState<DomoticzConfig | null>(null); // State to store the response data
-  const [domoticzDevicesData, storeDevicesData] = useState<DomoticzDevice[]>([]); // State to store the devices data
-  const [domoticzTemperaturesData, storeTemperaturesData] = useState<DomoticzTemperature[]>([]); // État pour stocker les données de réponse
+  const [domoticzConnexionData, setDomoticzConnexionData]       = useState<DomoticzConfig | null>(null);  // State to store the response data
+  const [domoticzDevicesData, setDomoticzDevicesData]           = useState<DomoticzDevice[]>([]);         // State to store the devices data
+  const [domoticzTemperaturesData, setDomoticzTemperaturesData] = useState<DomoticzTemperature[]>([]);    // État pour stocker les données de réponse
 
   const [error, setError] = useState<Error | null>(null);
   const [tab, selectTab] = useState(Tabs.INDEX);
@@ -60,9 +60,9 @@ export default function TabLayout() {
    * @param data Les données de connexion à Domoticz
    */
   function storeConnexionData(data: DomoticzConfig) {
-    setConnexionData(data);
+    setDomoticzConnexionData(data);
     loadDomoticzDevices(storeAllDevicesData);
-    loadDomoticzTemperatures(storeTemperaturesData);
+    loadDomoticzTemperatures(setDomoticzTemperaturesData);
   }
 
   /**
@@ -71,8 +71,33 @@ export default function TabLayout() {
    * @param lumieresData Les données des lumières
    **/
   function storeAllDevicesData(domoticzDevicesData: DomoticzDevice[]) {
-    storeDevicesData(domoticzDevicesData);
+    setDomoticzDevicesData(domoticzDevicesData);
     setIsLoading(false);
+  }
+
+
+  /**
+   * Récupère le statut de connexion à Domoticz
+   * 
+   * @returns Le statut de connexion suivant l'énumération DomoticzStatus
+   */
+  function getDomoticzStatus(): DomoticzStatus {
+    if(isLoading) return DomoticzStatus.INCONNU;
+    return domoticzConnexionData?.status === "OK" ? DomoticzStatus.CONNECTE : DomoticzStatus.DECONNECTE;
+  }
+
+
+  /**
+   * Récupère le contenu du panneau, suivant l'état de chargement et les erreurs
+   */
+  function getPanelContent() {
+    if (isLoading) {
+      return <ActivityIndicator size={'large'} color={Colors.domoticz.color} />
+    } else if (error !== null) {
+      return <ThemedText type="subtitle" style={{ color: 'red', marginTop: 50 }}>Erreur : {error.message}</ThemedText>
+    } else {
+      return showPanel(tab, domoticzDevicesData, setDomoticzDevicesData, domoticzTemperaturesData)
+    }
   }
 
 
@@ -81,18 +106,11 @@ export default function TabLayout() {
       <ParallaxScrollView
         headerImage={showLogoImage(tab)}
         headerTitle="Domoticz Mobile"
-        connexionStatus={!isLoading ? domoticzConnexionData?.status === "OK" ? DomoticzStatus.CONNECTE : DomoticzStatus.DECONNECTE : DomoticzStatus.INCONNU}
+        connexionStatus={getDomoticzStatus()}
         setRefreshing={setRefreshing}>
 
         <ThemedView style={tabStyles.titleContainer}>
-          {isLoading ?
-            (<ActivityIndicator size={'large'} color={Colors.domoticz.color} />)
-            :
-            (error !== null) ?
-              <ThemedText type="subtitle" style={{ color: 'red', marginTop: 50 }}>Erreur : {error.message}</ThemedText>
-              :
-              showPanel(tab, domoticzDevicesData, storeDevicesData, domoticzTemperaturesData)
-          }
+          {getPanelContent()}
         </ThemedView>
 
       </ParallaxScrollView>
