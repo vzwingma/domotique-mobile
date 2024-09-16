@@ -21,7 +21,7 @@ export type DomoticzDeviceProps = {
  * @param device équipement Domoticz
  * @param storeDeviceData setter pour les données des équipements
  */
-export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDeviceData } : DomoticzDeviceProps) => {
+export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDeviceData }: DomoticzDeviceProps) => {
 
   const [flagLabel, setFlagLabel] = useState<boolean>(false);
   const [nextValue, setNextValue] = useState<number>(getLevel(device));
@@ -30,7 +30,7 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
   return (
     <View key={device.idx} style={device.isActive ? stylesLists.viewBox : stylesLists.viewBoxDisabled}>
       <View key={device.idx} style={stylesLists.iconBox}>
-          <IconDomoticzDevice device={device} storeDeviceData={storeDeviceData}/>
+        <IconDomoticzDevice device={device} storeDeviceData={storeDeviceData} />
       </View>
       <View style={{ flexDirection: "column" }}>
         <View style={device.consistantLevel ? stylesLists.labelsBox : stylesLists.labelsBoxUnconsistent}>
