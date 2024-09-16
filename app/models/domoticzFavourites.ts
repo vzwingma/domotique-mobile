@@ -6,22 +6,32 @@ import { DomoticzType } from "../enums/DomoticzEnum";
  */
 class DomoticzFavorites {
     // Index de l'équipement
-    idx: number;
+    readonly idx: number;
     // Nombre de fois où l'équipement est activé
-    favourites: number;
+    public favorites: number;
     // Nom de l'équipement
-    name: string;
+    readonly name: string;
     // Type de l'équipement
-    type: DomoticzType;
+    readonly type: DomoticzType;
     // Sous-type de l'équipement (Lumière, volet, ...)
-    subType: string;
+    readonly subType: string;
 
     /**
      * Constructeur
      */
-    constructor(idx: number, favourites: number, name: string, type: DomoticzType, subType: string) {
+    /**
+     * Construit une nouvelle instance de la classe DomoticzFavorites.
+     * 
+     * @param {DomoticzFavorites} options - L'objet options contenant les propriétés pour l'initialisation.
+     * @param {number} options.idx - L'index des favoris.
+     * @param {number} options.favourites - Le nombre de fois où les favoris sont activés.
+     * @param {string} options.name - Le nom des favoris.
+     * @param {DomoticzType} options.type - Le type des favoris.
+     * @param {string} options.subType - Le sous-type des favoris.
+     */
+    constructor({ idx, favorites: favorites, name, type, subType }: DomoticzFavorites) {
         this.idx = idx;
-        this.favourites = favourites;
+        this.favorites = favorites;
         this.name = name;
         this.type = type;
         this.subType = subType;

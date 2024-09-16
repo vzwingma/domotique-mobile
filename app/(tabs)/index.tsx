@@ -62,7 +62,7 @@ function getFavoritesDevicesFromCache(devicesData: DomoticzDevice[], setFavorite
 
     getFavouritesFromStorage().then((favorites) => {
 
-      let sortedFavorites = favorites.sort((a, b) => b.favourites - a.favourites);
+      let sortedFavorites = favorites.sort((a, b) => b.favorites - a.favorites);
 
       sortedFavorites.forEach((fav: DomoticzFavorites) => {
         const favoriteIndex = devicesData.findIndex((device) => device.idx === fav.idx);

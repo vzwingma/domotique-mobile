@@ -152,9 +152,9 @@ function addActionForFavorite(device: DomoticzDevice) {
     .then((favoris) => {
             const favoriteIndex = favoris.findIndex((fav: any) => fav.idx === device.idx);
             if (favoriteIndex !== -1) {
-                favoris[favoriteIndex].favourites += 1;
+                favoris[favoriteIndex].favorites += 1;
             } else {
-                let newFavourites : DomoticzFavorites = {idx: device.idx, favourites: 1, name: device.name, type: device.type, subType: device.subType};
+                let newFavourites : DomoticzFavorites = {idx: device.idx, favorites: 1, name: device.name, type: device.type, subType: device.subType};
                 favoris.push(newFavourites);
             }
             saveFavoritesToStorage(favoris);
