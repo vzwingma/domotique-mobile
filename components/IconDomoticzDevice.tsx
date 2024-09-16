@@ -23,7 +23,7 @@ export const IconDomoticzDevice : React.FC<DomoticzDeviceProps> = ({ device, sto
     case DomoticzType.VOLET:
       return <View onPointerUp={() => onClickDeviceIcon(device, storeDeviceData)}>
                 <Image source={getVoletIcon(device)} 
-                       style={{ width: 60, height: 60, tintColor: getGroupColor(device), cursor: 'pointer', borderColor: 'red', borderWidth: 1}} />
+                       style={{ width: 60, height: 60, tintColor: getGroupColor(device), cursor: 'pointer'}} />
               </View>
 
     default:
@@ -56,24 +56,24 @@ export function getVoletIcon(device: DomoticzDevice) :ImageSourcePropType {
 
   if(device.isGroup){
     if(device.status === "Off" || device.level === 0){
-      return require('@/assets/icons/window-shutter-group-closed.svg');
+      return require('@/assets/icons/window-shutter-group-closed.png');
     }
     else if(device.level === 100){
-      return require('@/assets/icons/window-shutter-group-opened.svg');
+      return require('@/assets/icons/window-shutter-group-opened.png');
     }
     else{
-      return require('@/assets/icons/window-shutter-group-mid-opened.svg');
+      return require('@/assets/icons/window-shutter-group-mid-opened.png');
     }
   }
   else{
     if(device.status === "Off" || device.level === 0){
-      return require('@/assets/icons/window-shutter-closed.svg');
+      return require('@/assets/icons/window-shutter-closed.png');
     }
     else if(device.level === 100){
-      return require('@/assets/icons/window-shutter-opened.svg');
+      return require('@/assets/icons/window-shutter-opened.png');
     }
     else{
-      return require('@/assets/icons/window-shutter-mid-opened.svg');
+      return require('@/assets/icons/window-shutter-mid-opened.png');
     }
   }
 }

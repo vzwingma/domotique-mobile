@@ -150,7 +150,7 @@ export const stylesLists = StyleSheet.create({
   iconBox: {
     marginRight: 10,
     height: 60,
-    width: 60,
+    width: 60
   },
   labelsBox: {
     flexDirection: "row",
