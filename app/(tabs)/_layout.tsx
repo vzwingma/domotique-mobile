@@ -86,6 +86,14 @@ export default function TabLayout() {
   }
 
 
+  function getDomoticzSubtitle() {
+    if (isLoading) {
+      return "Chargement...";
+    } else {
+      return "v 2.0.0 - Domoticz " + domoticzConnexionData?.version;
+    }
+  }
+
   /**
    * Récupère le contenu du panneau, suivant l'état de chargement et les erreurs
    */
@@ -105,6 +113,7 @@ export default function TabLayout() {
       <ParallaxScrollView
         headerImage={getHeaderIcon(tab)}
         headerTitle="Domoticz Mobile"
+        headerSubtitle={getDomoticzSubtitle()}
         connexionStatus={getDomoticzStatus()}
         setRefreshing={setRefreshing}>
 
