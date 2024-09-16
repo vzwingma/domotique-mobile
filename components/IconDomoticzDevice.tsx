@@ -19,10 +19,13 @@ export const IconDomoticzDevice : React.FC<DomoticzDeviceProps> = ({ device, sto
                                  size={60}
                                  color={getGroupColor(device)}
                                  onPress={() => onClickDeviceIcon(device, storeDeviceData) }/>
+
     case DomoticzType.VOLET:
       return <View onPointerUp={() => onClickDeviceIcon(device, storeDeviceData)}>
-                <Image source={getVoletIcon(device)} style={{ width: 60, height: 60, tintColor: getGroupColor(device), cursor: 'pointer'}} />
+                <Image source={getVoletIcon(device)} 
+                       style={{ width: 60, height: 60, tintColor: getGroupColor(device), cursor: 'pointer', borderColor: 'red', borderWidth: 1}} />
               </View>
+
     default:
       return <></>;
   }
@@ -51,8 +54,6 @@ export function getLightIcon(device: DomoticzDevice) :any {
 */
 export function getVoletIcon(device: DomoticzDevice) :ImageSourcePropType {
 
-  
-  let iconName: string = '@/assets/icons/window-shutter';
   if(device.isGroup){
     if(device.status === "Off" || device.level === 0){
       return require('@/assets/icons/window-shutter-group-closed.svg');

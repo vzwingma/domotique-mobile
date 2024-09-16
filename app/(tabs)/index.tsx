@@ -6,7 +6,7 @@ import DomoticzDevice from '../models/domoticzDevice.model';
 import { ViewDomoticzDevice } from '../components/device.component';
 import { getFavouritesFromStorage } from '../services/DataUtils.service';
 import { useEffect, useState } from 'react';
-import DomoticzFavorites from '../models/domoticzFavourites';
+import DomoticzFavorites from '../models/domoticzFavorites';
 
 
 // Propriétés de l'écran des équipements

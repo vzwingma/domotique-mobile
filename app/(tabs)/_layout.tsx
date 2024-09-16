@@ -34,7 +34,7 @@ export default function TabLayout() {
   const [domoticzTemperaturesData, setDomoticzTemperaturesData] = useState<DomoticzTemperature[]>([]);    // État pour stocker les données de réponse
 
   const [error, setError] = useState<Error | null>(null);
-  const [tab, selectTab] = useState(Tabs.INDEX);
+  const [tab, setTab] = useState(Tabs.INDEX);
 
 
   /**
@@ -43,7 +43,7 @@ export default function TabLayout() {
    */
   function selectNewTab(newTab: Tabs) {
     setRefreshing(!refreshing);
-    selectTab(newTab);
+    setTab(newTab);
   }
 
   /**

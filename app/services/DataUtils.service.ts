@@ -1,7 +1,7 @@
 import { DomoticzDeviceStatus, DomoticzType } from "../enums/DomoticzEnum";
 import DomoticzDevice from "../models/domoticzDevice.model";
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import DomoticzFavorites from "../models/domoticzFavourites";
+import DomoticzFavorites from "../models/domoticzFavorites";
 
 /**
  * 

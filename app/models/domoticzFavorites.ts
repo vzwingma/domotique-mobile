@@ -29,7 +29,7 @@ class DomoticzFavorites {
      * @param {DomoticzType} options.type - Le type des favoris.
      * @param {string} options.subType - Le sous-type des favoris.
      */
-    constructor({ idx, favorites: favorites, name, type, subType }: DomoticzFavorites) {
+    constructor({ idx, favorites, name, type, subType }: DomoticzFavorites) {
         this.idx = idx;
         this.favorites = favorites;
         this.name = name;
