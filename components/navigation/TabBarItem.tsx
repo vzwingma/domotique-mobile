@@ -35,7 +35,7 @@ export function TabBarItems({ activeTab, thisTab, selectNewTab}: Readonly<TabBar
   function getTabLabel(tab: Tabs): string {
     switch (tab) {
       case Tabs.INDEX:
-        return 'Accueil';
+        return 'Favoris';
       case Tabs.LUMIERES:
         return 'Lumières';
       case Tabs.VOLETS:
@@ -55,7 +55,7 @@ export function TabBarItems({ activeTab, thisTab, selectNewTab}: Readonly<TabBar
   function getTabIconName(tab: Tabs): string {
     switch (tab) {
       case Tabs.INDEX:
-        return 'home';
+        return 'star';
       case Tabs.LUMIERES:
         return 'bulb';
       case Tabs.VOLETS:

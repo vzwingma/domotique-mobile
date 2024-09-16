@@ -38,8 +38,8 @@ export default function HomeScreen({ devicesData, storeDevicesData }: TabDomotic
   return (
     <>
       <ThemedView style={tabStyles.titleContainer}>
-        <ThemedText type="subtitle" style={{ color: 'green', marginTop: 10 }}>
-          Connecté à Domoticz
+        <ThemedText type="subtitle" style={{ color: 'white', marginTop: 10 }}>
+          Favoris
         </ThemedText>
       </ThemedView>
       {getListFavoritesComponents(favorites, storeDevicesData)}
@@ -66,7 +66,7 @@ function getFavoritesDevicesFromCache(devicesData: DomoticzDevice[], setFavorite
 
       sortedFavorites.forEach((fav: DomoticzFavorites) => {
         const favoriteIndex = devicesData.findIndex((device) => device.idx === fav.idx);
-        if (favoriteIndex !== -1 && favoriteDevices.length < 5) {
+        if (favoriteIndex !== -1 && favoriteDevices.length < 6) {
           favoriteDevices.push(devicesData[favoriteIndex]);
         }
       })
