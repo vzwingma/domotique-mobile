@@ -21,7 +21,7 @@ interface TabBarItemsProps {
  */
 export function TabBarItems({ activeTab, thisTab, selectNewTab}: Readonly<TabBarItemsProps>) : JSX.Element {
     return <ThemedView style={tabStyles.tabsItem} onPointerDown={() => selectNewTab(thisTab)} onTouchEnd={() => selectNewTab(thisTab)}>
-                <TabBarIcon name={activeTab === thisTab ? getTabIcon(thisTab) : getTabIconOutline(thisTab)} 
+                <TabBarIcon name={activeTab === thisTab ? getTabIconName(thisTab) : getTabIconOutline(thisTab)} 
                             color={activeTab === thisTab ? Colors.domoticz.color : '#ffffff'} />
                 <ThemedText type='tab'>{getTabLabel(thisTab)}</ThemedText>
             </ThemedView>;
@@ -52,7 +52,7 @@ export function TabBarItems({ activeTab, thisTab, selectNewTab}: Readonly<TabBar
    * @param tab nom de l'onglet
    * @returns l'icône de l'onglet sélectionné
    */
-  function getTabIcon(tab: Tabs): string {
+  function getTabIconName(tab: Tabs): string {
     switch (tab) {
       case Tabs.INDEX:
         return 'home';

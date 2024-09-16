@@ -17,8 +17,7 @@ import { loadDomoticzDevices } from '../controllers/devices.controller';
 import TabDomoticzDevices from './devices.tabs';
 import DomoticzTemperature from '../models/domoticzTemperature.model';
 import { loadDomoticzTemperatures } from '../controllers/temperatures.controller';
-import { showLogoImage } from '@/components/IconDomoticzDevice';
-
+import { getHeaderIcon } from '@/components/navigation/TabHeaderIcon';
 
 /**
  * Composant racine de l'application.
@@ -104,7 +103,7 @@ export default function TabLayout() {
   return (
     <>
       <ParallaxScrollView
-        headerImage={showLogoImage(tab)}
+        headerImage={getHeaderIcon(tab)}
         headerTitle="Domoticz Mobile"
         connexionStatus={getDomoticzStatus()}
         setRefreshing={setRefreshing}>
