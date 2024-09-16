@@ -18,7 +18,7 @@ class DomoticzDevice {
     // Equipement actif ?
     readonly isActive: boolean = false;
     // Niveau de l'équipement
-    readonly level: number;
+    level: number;
     // Niveau de cohérence du niveau de l'équipement (pour les groupes). True par défaut pour les équipements
     consistantLevel: boolean = true;
     // Type de l'équipement
@@ -28,7 +28,7 @@ class DomoticzDevice {
     // Type de switch de l'équipement
     readonly switchType: DomoticzSwitchType;
     // Status de l'équipement
-    readonly status: string;
+    status: string;
     // Données de l'équipement
     readonly data: string;
 

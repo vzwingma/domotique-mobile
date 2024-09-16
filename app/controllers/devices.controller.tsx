@@ -19,22 +19,22 @@ export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]
     callDomoticz(SERVICES_URL.GET_DEVICES)
         .then(data => {
             let dataDevices = data.result
-                .map((device: any, index: number) => {
+                .map((rawDevice: any, index: number) => {
                     let ddevice: DomoticzDevice;
                     ddevice = {
-                        idx: Number(device.idx),
+                        idx: Number(rawDevice.idx),
                         rang: index,
-                        name: String(device.Name).replaceAll("[Grp]", "").replaceAll("Prise ", "").trim(),
-                        status: String(device.Status).replaceAll("Set Level: ", ""),
-                        type: getDeviceType(device.Name),
-                        subType: device.Type,
-                        switchType: device.SwitchType,
-                        level: evaluateDeviceLevel(device),
+                        name: String(rawDevice.Name).replaceAll("[Grp]", "").replaceAll("Prise ", "").trim(),
+                        status: String(rawDevice.Status).replaceAll("Set Level: ", ""),
+                        type: getDeviceType(rawDevice.Name),
+                        subType: rawDevice.Type,
+                        switchType: rawDevice.SwitchType,
+                        level: evaluateDeviceLevel(rawDevice.Level),
                         consistantLevel: true,
-                        isGroup: String(device.Name).indexOf("[Grp]") > -1,
-                        lastUpdate: device.LastUpdate,
-                        isActive: !device.HaveTimeout,
-                        data: device.Data
+                        isGroup: String(rawDevice.Name).indexOf("[Grp]") > -1,
+                        lastUpdate: rawDevice.LastUpdate,
+                        isActive: !rawDevice.HaveTimeout,
+                        data: rawDevice.Data
                     }
                     return ddevice;
                 });
@@ -67,10 +67,11 @@ export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]
  * @param device équipement
  * @returns le niveau de l'équipement
  */
-function evaluateDeviceLevel(device : DomoticzDevice){
-    if(device.level >= 99) return 100;
-    if(device.level <= 0.1) return 0;
-    return Number(device.level);
+function evaluateDeviceLevel(deviceLevel : any) : number{
+    let level = Number(deviceLevel);
+    if(deviceLevel >= 99) level = 100;
+    if(deviceLevel <= 0.1) level = 0;
+    return level;
 }
 
 
