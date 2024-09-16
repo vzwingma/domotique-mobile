@@ -1,7 +1,7 @@
 import callDomoticz from '@/app/services/ClientHTTP.service';
 import { SERVICES_PARAMS, SERVICES_URL } from '@/app/enums/APIconstants';
 import { evaluateGroupLevelConsistency, getDeviceType, getFavouritesFromStorage as loadFavoritesFromStorage, sortEquipements, saveFavoritesToStorage } from '@/app/services/DataUtils.service';
-import { DomoticzBlindsGroups, DomoticzBlindsSort, DomoticzDeviceStatus, DomoticzLightsGroups, DomoticzLightsSort, DomoticzType } from '@/app/enums/DomoticzEnum';
+import { DomoticzBlindsGroups, DomoticzBlindsSort, DomoticzDeviceStatus, DomoticzLightsGroups, DomoticzLightsSort, DomoticzSwitchType, DomoticzType } from '@/app/enums/DomoticzEnum';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
 import DomoticzFavorites from '../models/domoticzFavourites';
@@ -76,6 +76,23 @@ function evaluateDeviceLevel(deviceLevel : any) : number{
 
 
 /**
+ * fonction pour gérer le clic sur l'icône de l'équipement
+ * @param device composant DomoticzDevice
+ * @param storeDeviceData setter pour les données des équipements
+ */
+export function onClickDeviceIcon(device: DomoticzDevice, storeDeviceData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
+    console.log("Clic sur l'icône de l'équipement " + device.name + " [" + device.idx + "]");
+    if (device.isActive) {
+      if (device.switchType === DomoticzSwitchType.ONOFF) {
+        updateDeviceState(device.idx, device, device.status === DomoticzDeviceStatus.OFF, storeDeviceData);
+      }
+      else {
+        updateDeviceLevel(device.idx, device, device.status === DomoticzDeviceStatus.OFF ? device.level : 0, storeDeviceData);
+      }
+    }
+  }
+  
+/**
  * Rafraichissement du niveau de l'équipement
  * @param idx idx de l'équipement
  * @param name nom de l'équipement
@@ -114,7 +131,7 @@ export function updateDeviceLevel(idx: number, device : DomoticzDevice, level: n
  * @param setDevicesData fonction de mise à jour des données
  * 
  */
-export function updateDeviceState(idx: number, device: DomoticzDevice, status: boolean, setDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
+function updateDeviceState(idx: number, device: DomoticzDevice, status: boolean, setDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
     console.log("Mise à jour de l'équipement  " + device.name + " [" + idx + "]", status ? DomoticzDeviceStatus.ON : DomoticzDeviceStatus.OFF);
 
     let params = [{ key: SERVICES_PARAMS.IDX, value: String(idx) },
