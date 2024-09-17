@@ -48,7 +48,7 @@ export function loadDomoticzTemperatures(storeTempsData: Function) {
  * @returns true si la mesure est du type recherché
  */
 function filterTemperatureDeviceByType(temperature: DomoticzTemperature): boolean {
-    return !(temperature.name === "Pi Temperature")
+    return (temperature.name !== "Pi Temperature")
 }
 
 

@@ -1,12 +1,15 @@
 /**
- * Configuration de Domoticz
+ * Modèle représentant la configuration de Domoticz.
  */
 class DomoticzConfig {
-    status: string;
-    version: string;
-    revision: string;
+    readonly status: string;
+    readonly version: string;
+    readonly revision: string;
 
-    constructor(status: string, version: string, revision: string) {
+    /**
+     * Constructeur
+     */
+    constructor({ status, version, revision }: DomoticzConfig) {
         this.status = status;
         this.version = version;
         this.revision = revision;

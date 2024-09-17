@@ -6,7 +6,7 @@ import DomoticzDevice from '../models/domoticzDevice.model';
 import { ViewDomoticzDevice } from '../components/device.component';
 import { getFavouritesFromStorage } from '../services/DataUtils.service';
 import { useEffect, useState } from 'react';
-import DomoticzFavorites from '../models/domoticzFavourites';
+import DomoticzFavorites from '../models/domoticzFavorites';
 
 
 // Propriétés de l'écran des équipements
@@ -38,8 +38,8 @@ export default function HomeScreen({ devicesData, storeDevicesData }: TabDomotic
   return (
     <>
       <ThemedView style={tabStyles.titleContainer}>
-        <ThemedText type="subtitle" style={{ color: 'green', marginTop: 10 }}>
-          Connecté à Domoticz
+        <ThemedText type="subtitle" style={{ color: 'white', marginTop: 10 }}>
+          Favoris
         </ThemedText>
       </ThemedView>
       {getListFavoritesComponents(favorites, storeDevicesData)}
@@ -62,14 +62,14 @@ function getFavoritesDevicesFromCache(devicesData: DomoticzDevice[], setFavorite
 
     getFavouritesFromStorage().then((favorites) => {
 
-      favorites
-        .sort((a, b) => b.favourites - a.favourites)
-        .forEach((fav: DomoticzFavorites) => {
-          const favoriteIndex = devicesData.findIndex((device) => device.idx === fav.idx);
-          if (favoriteIndex !== -1 && favoriteDevices.length < 5) {
-            favoriteDevices.push(devicesData[favoriteIndex]);
-          }
-        })
+      let sortedFavorites = favorites.sort((a, b) => b.favorites - a.favorites);
+
+      sortedFavorites.forEach((fav: DomoticzFavorites) => {
+        const favoriteIndex = devicesData.findIndex((device) => device.idx === fav.idx);
+        if (favoriteIndex !== -1 && favoriteDevices.length < 6) {
+          favoriteDevices.push(devicesData[favoriteIndex]);
+        }
+      })
 
       setFavorites(favoriteDevices);
     });

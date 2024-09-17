@@ -1,7 +1,7 @@
 import { DomoticzDeviceStatus, DomoticzType } from "../enums/DomoticzEnum";
 import DomoticzDevice from "../models/domoticzDevice.model";
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import DomoticzFavorites from "../models/domoticzFavourites";
+import DomoticzFavorites from "../models/domoticzFavorites";
 
 /**
  * 
@@ -71,11 +71,11 @@ export function evaluateGroupLevelConsistency(device: DomoticzDevice, idsSubDevi
 
 
 
+
+
 export enum KEY_STORAGE {
     FAVORITES = "domoticzBoard"
 };
-
-
 
 /**
  * Gestion des favoris en mémoire
@@ -85,7 +85,7 @@ export const getFavouritesFromStorage = (): Promise<DomoticzFavorites[]> => {
     return getValueFromStorage(KEY_STORAGE.FAVORITES)
         .then((value) => {
             if (value) {
-                return value.map((fav: any) => new DomoticzFavorites(fav.idx, fav.favourites, fav.name, fav.type, fav.subType));
+                return value.map((fav: any) => new DomoticzFavorites({ idx: fav.idx, favorites: fav.favourites, name: fav.name, type: fav.type, subType: fav.subType }));
             }
             else {
                 return [];

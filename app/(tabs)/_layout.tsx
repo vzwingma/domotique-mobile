@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
-import { Colors, PROFILE, PROFILES_ENV } from '@/app/enums/Colors';
+import { Colors } from '@/app/enums/Colors';
 import connectToDomoticz from '../controllers/index.controller';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ActivityIndicator, Image, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { Tabs } from '../enums/TabsEnums';
 import { TabBarItems } from '@/components/navigation/TabBarItem';
@@ -12,13 +12,12 @@ import { ThemedText } from '@/components/ThemedText';
 import { DomoticzStatus, DomoticzType } from '../enums/DomoticzEnum';
 import HomeScreen from '.';
 import TabDomoticzTemperatures from './temperatures.tab';
-import { Ionicons } from '@expo/vector-icons';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { loadDomoticzDevices } from '../controllers/devices.controller';
 import TabDomoticzDevices from './devices.tabs';
 import DomoticzTemperature from '../models/domoticzTemperature.model';
 import { loadDomoticzTemperatures } from '../controllers/temperatures.controller';
-
+import { getHeaderIcon } from '@/components/navigation/TabHeaderIcon';
 
 /**
  * Composant racine de l'application.
@@ -30,12 +29,12 @@ export default function TabLayout() {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const [domoticzConnexionData, setConnexionData] = useState<DomoticzConfig | null>(null); // State to store the response data
-  const [domoticzDevicesData, storeDevicesData] = useState<DomoticzDevice[]>([]); // State to store the devices data
-  const [domoticzTemperaturesData, storeTemperaturesData] = useState<DomoticzTemperature[]>([]); // État pour stocker les données de réponse
+  const [domoticzConnexionData, setDomoticzConnexionData]       = useState<DomoticzConfig | null>(null);  // State to store the response data
+  const [domoticzDevicesData, setDomoticzDevicesData]           = useState<DomoticzDevice[]>([]);         // State to store the devices data
+  const [domoticzTemperaturesData, setDomoticzTemperaturesData] = useState<DomoticzTemperature[]>([]);    // État pour stocker les données de réponse
 
   const [error, setError] = useState<Error | null>(null);
-  const [tab, selectTab] = useState(Tabs.INDEX);
+  const [tab, setTab] = useState(Tabs.INDEX);
 
 
   /**
@@ -44,7 +43,7 @@ export default function TabLayout() {
    */
   function selectNewTab(newTab: Tabs) {
     setRefreshing(!refreshing);
-    selectTab(newTab);
+    setTab(newTab);
   }
 
   /**
@@ -60,9 +59,9 @@ export default function TabLayout() {
    * @param data Les données de connexion à Domoticz
    */
   function storeConnexionData(data: DomoticzConfig) {
-    setConnexionData(data);
+    setDomoticzConnexionData(data);
     loadDomoticzDevices(storeAllDevicesData);
-    loadDomoticzTemperatures(storeTemperaturesData);
+    loadDomoticzTemperatures(setDomoticzTemperaturesData);
   }
 
   /**
@@ -71,28 +70,55 @@ export default function TabLayout() {
    * @param lumieresData Les données des lumières
    **/
   function storeAllDevicesData(domoticzDevicesData: DomoticzDevice[]) {
-    storeDevicesData(domoticzDevicesData);
+    setDomoticzDevicesData(domoticzDevicesData);
     setIsLoading(false);
+  }
+
+
+  /**
+   * Récupère le statut de connexion à Domoticz
+   * 
+   * @returns Le statut de connexion suivant l'énumération DomoticzStatus
+   */
+  function getDomoticzStatus(): DomoticzStatus {
+    if(isLoading) return DomoticzStatus.INCONNU;
+    return domoticzConnexionData?.status === "OK" ? DomoticzStatus.CONNECTE : DomoticzStatus.DECONNECTE;
+  }
+
+
+  function getDomoticzSubtitle() {
+    if (isLoading) {
+      return "Chargement...";
+    } else {
+      return "v 2.0.0 - Domoticz " + domoticzConnexionData?.version;
+    }
+  }
+
+  /**
+   * Récupère le contenu du panneau, suivant l'état de chargement et les erreurs
+   */
+  function getPanelContent() {
+    if (isLoading) {
+      return <ActivityIndicator size={'large'} color={Colors.domoticz.color} />
+    } else if (error !== null) {
+      return <ThemedText type="subtitle" style={{ color: 'red', marginTop: 50 }}>Erreur : {error.message}</ThemedText>
+    } else {
+      return showPanel(tab, domoticzDevicesData, setDomoticzDevicesData, domoticzTemperaturesData)
+    }
   }
 
 
   return (
     <>
       <ParallaxScrollView
-        headerImage={showLogoImage(tab)}
+        headerImage={getHeaderIcon(tab)}
         headerTitle="Domoticz Mobile"
-        connexionStatus={!isLoading ? domoticzConnexionData?.status === "OK" ? DomoticzStatus.CONNECTE : DomoticzStatus.DECONNECTE : DomoticzStatus.INCONNU}
+        headerSubtitle={getDomoticzSubtitle()}
+        connexionStatus={getDomoticzStatus()}
         setRefreshing={setRefreshing}>
 
         <ThemedView style={tabStyles.titleContainer}>
-          {isLoading ?
-            (<ActivityIndicator size={'large'} color={Colors.domoticz.color} />)
-            :
-            (error !== null) ?
-              <ThemedText type="subtitle" style={{ color: 'red', marginTop: 50 }}>Erreur : {error.message}</ThemedText>
-              :
-              showPanel(tab, domoticzDevicesData, storeDevicesData, domoticzTemperaturesData)
-          }
+          {getPanelContent()}
         </ThemedView>
 
       </ParallaxScrollView>
@@ -109,24 +135,6 @@ export default function TabLayout() {
       </View>
     </>
   );
-}
-
-/**
- * Affiche l'image du logo de l'application suivant l'onglet sélectionné
- */
-function showLogoImage(tab: Tabs) {
-  switch (tab) {
-    case Tabs.INDEX:
-      return <Image source={PROFILE === PROFILES_ENV.C ? require('@/assets/images/c/partial-dlogo.png') : require('@/assets/images/v/partial-dlogo.png')} style={tabStyles.domoticzLogo} />
-    case Tabs.LUMIERES:
-      return <Ionicons size={100} name="bulb" style={tabStyles.headerImage} />
-    case Tabs.VOLETS:
-      return <Ionicons size={100} name="reorder-four" style={tabStyles.headerImage} />
-    case Tabs.TEMPERATURES:
-      return <Ionicons size={100} name="thermometer-sharp" style={tabStyles.headerImage} />
-    default:
-      return <></>;
-  }
 }
 
 
@@ -159,18 +167,7 @@ export const tabStyles = StyleSheet.create({
     alignItems: 'center',
     gap: 8
   },
-  headerImage: {
-    color: '#808080',
-    position: 'absolute',
-    bottom: -10,
-    backgroundColor: Colors.dark.titlebackground,
-  },
-  domoticzLogo: {
-    width: 100,
-    height: 100,
-    position: 'absolute',
-    backgroundColor: Colors.dark.titlebackground,
-  },
+
   tabsViewbox: {
     flexDirection: 'row',
     width: '100%',
