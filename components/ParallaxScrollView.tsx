@@ -19,6 +19,7 @@ const HEADER_HEIGHT = 100;
 type Props = PropsWithChildren<{
   headerImage: ReactElement;
   headerTitle: string;
+  headerSubtitle?: string;
   connexionStatus?: DomoticzStatus;
   setRefreshing: React.Dispatch<React.SetStateAction<boolean>>;
 }>;
@@ -27,6 +28,7 @@ export default function ParallaxScrollView({
   children,
   headerImage,
   headerTitle,
+  headerSubtitle,
   connexionStatus,
   setRefreshing
 }: Props) {
@@ -73,7 +75,9 @@ export default function ParallaxScrollView({
           <ThemedView style={styles.titleHeader}>
             {connexionStatus && getConnexionStatusIcon(connexionStatus)}
             <ThemedText type="title" style={styles.domoticzColor}>{headerTitle}</ThemedText>
-
+          </ThemedView>
+          <ThemedView style={styles.titleHeader}>
+            <ThemedText type="italic" style={{color : 'grey', marginRight: 36}}>{headerSubtitle}</ThemedText>
           </ThemedView>
         </Animated.View>
         <ThemedView style={styles.content}>{children}</ThemedView>
@@ -121,7 +125,7 @@ const styles = StyleSheet.create({
   titleHeader: {
     alignItems: 'flex-end',
     flexDirection: 'row-reverse',
-    top: 40,
+    top: 30,
     right: 8,
   },
   domoticzColor: {

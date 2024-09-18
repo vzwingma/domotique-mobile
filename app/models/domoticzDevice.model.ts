@@ -6,37 +6,49 @@ import { DomoticzSwitchType, DomoticzType } from "../enums/DomoticzEnum";
  */
 class DomoticzDevice {
     // Index de l'équipement
-    idx: number;
+    readonly idx: number;
     // Rang de l'équipement (affichage)
     rang: number;
     // Nom de l'équipement
-    name: string;
+    readonly name: string;
     // Groupe d'équipements ?
-    isGroup: boolean = false;
+    readonly isGroup: boolean = false;
     // Date de la dernière mise à jour
-    lastUpdate: string;
+    readonly lastUpdate: string;
     // Equipement actif ?
-    isActive: boolean = false;
+    readonly isActive: boolean = false;
     // Niveau de l'équipement
     level: number;
     // Niveau de cohérence du niveau de l'équipement (pour les groupes). True par défaut pour les équipements
     consistantLevel: boolean = true;
     // Type de l'équipement
-    type: DomoticzType;
+    readonly type: DomoticzType;
     // Sous-type de l'équipement (Lumière, volet, ...)
-    subType: string;
+    readonly subType: string;
     // Type de switch de l'équipement
-    switchType: DomoticzSwitchType;
+    readonly switchType: DomoticzSwitchType;
     // Status de l'équipement
     status: string;
     // Données de l'équipement
-    data: string;
+    readonly data: string;
+
 
     /**
-     * Constructeur
+     * Constructeur de la classe DomoticzDevice.
+     * 
+     * @param idx - L'identifiant unique du périphérique.
+     * @param rang - Le rang du périphérique.
+     * @param name - Le nom du périphérique.
+     * @param lastUpdate - La date de la dernière mise à jour du périphérique.
+     * @param level - Le niveau du périphérique.
+     * @param type - Le type du périphérique.
+     * @param subType - Le sous-type du périphérique.
+     * @param switchType - Le type de commutation du périphérique.
+     * @param status - L'état du périphérique.
+     * @param data - Les données associées au périphérique.
+     * @param isGroup - Indique si le périphérique est un groupe (par défaut: false).
      */
-    constructor(idx: number, rang: number, name: string, lastUpdate: string, level: number, 
-                type: DomoticzType, subType: string, switchType: DomoticzSwitchType, status: string, data: string, isGroup: boolean = false) {
+    constructor({ idx, rang, name, lastUpdate, level, type, subType, switchType, status, data, isGroup = false }: DomoticzDevice) {
         this.idx = idx;
         this.rang = rang;
         this.name = name;

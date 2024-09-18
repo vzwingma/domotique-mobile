@@ -2,14 +2,14 @@ import DomoticzDevice from "@/app/models/domoticzDevice.model";
 import { ThemedText } from "../../components/ThemedText";
 import { StyleSheet, View } from "react-native";
 import Slider from '@react-native-community/slider';
-import { updateDeviceLevel, updateDeviceState } from "../controllers/devices.controller";
+import { updateDeviceLevel } from "../controllers/devices.controller";
 import { Colors, getGroupColor } from "../enums/Colors";
-import IconDomoticzDevice, { getDeviceIcon } from "@/components/IconDomoticzDevice";
-import { DomoticzDeviceStatus, DomoticzSwitchType } from "../enums/DomoticzEnum";
+import { DomoticzDeviceStatus, DomoticzSwitchType, DomoticzType } from "../enums/DomoticzEnum";
 import { useState } from "react";
+import IconDomoticzDevice from "@/components/IconDomoticzDevice";
 
 // Définition des propriétés d'un équipement Domoticz
-type DomoticzDeviceProps = {
+export type DomoticzDeviceProps = {
   device: DomoticzDevice;
   storeDeviceData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>;
 };
@@ -21,18 +21,16 @@ type DomoticzDeviceProps = {
  * @param device équipement Domoticz
  * @param storeDeviceData setter pour les données des équipements
  */
-export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDeviceData: storeDeviceData }) => {
+export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDeviceData }: DomoticzDeviceProps) => {
 
-  const [flagLabel, showLabel] = useState<boolean>(false);
-  const [nextValue, refreshNextValue] = useState<number>(getLevel(device));
+  const [flagLabel, setFlagLabel] = useState<boolean>(false);
+  const [nextValue, setNextValue] = useState<number>(getLevel(device));
+
 
   return (
     <View key={device.idx} style={device.isActive ? stylesLists.viewBox : stylesLists.viewBoxDisabled}>
       <View key={device.idx} style={stylesLists.iconBox}>
-        <IconDomoticzDevice name={getDeviceIcon(device)}
-          size={60}
-          color={getGroupColor(device)}
-          onPress={() => onClickDeviceIcon(device, storeDeviceData)} />
+        <IconDomoticzDevice device={device} storeDeviceData={storeDeviceData} />
       </View>
       <View style={{ flexDirection: "column" }}>
         <View style={device.consistantLevel ? stylesLists.labelsBox : stylesLists.labelsBoxUnconsistent}>
@@ -46,17 +44,19 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
             minimumValue={0} value={getLevel(device)} maximumValue={100}
             step={1}
             minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor={Colors.domoticz.color}
-            onValueChange={(value) => { setNextValue(value, refreshNextValue) }}
-            onResponderStart={() => { showLabel(true) }}
+            onValueChange={(value) => { overrideNextValue(value, setNextValue) }}
+            onResponderStart={() => { setFlagLabel(true) }}
             onResponderEnd={() => {
               updateDeviceLevel(device.idx, device, nextValue, storeDeviceData);
-              showLabel(false);
+              setFlagLabel(false);
             }}
           /> : <Slider disabled style={stylesLists.sliderDisabled} />}
       </View>
     </View>
   );
 };
+
+
 
 /**
  * retourrne le niveau de l'équipement
@@ -71,16 +71,16 @@ function getLevel(device: DomoticzDevice): number {
 /**
  * Surcharge de la valeur du slider pour la mettre à jour
  * @param value prochain niveau de l'équipement
- * @param refreshNextValue  fonction pour mettre à jour le prochain niveau de l'équipement
+ * @param setNextValue  fonction pour mettre à jour le prochain niveau de l'équipement
  */
-function setNextValue(value: number, refreshNextValue: React.Dispatch<React.SetStateAction<number>>) {
+function overrideNextValue(value: number, setNextValue: React.Dispatch<React.SetStateAction<number>>) {
   if (value <= 0) {
     value = 0.1;
   }
   else if (value >= 99) {
     value = 100;
   }
-  refreshNextValue(value);
+  setNextValue(value);
 }
 
 /**
@@ -124,22 +124,6 @@ function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: bo
 
 
 
-/**
- * fonction pour gérer le clic sur l'icône de l'équipement
- * @param device composant DomoticzDevice
- * @param storeDeviceData setter pour les données des équipements
- */
-function onClickDeviceIcon(device: DomoticzDevice, storeDeviceData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
-  if (device.isActive) {
-    if (device.switchType === DomoticzSwitchType.ONOFF) {
-      updateDeviceState(device.idx, device, device.status === DomoticzDeviceStatus.OFF, storeDeviceData);
-    }
-    else {
-      updateDeviceLevel(device.idx, device, device.status === DomoticzDeviceStatus.OFF ? device.level : 0, storeDeviceData);
-    }
-  }
-}
-
 
 
 export const stylesLists = StyleSheet.create({
@@ -166,7 +150,7 @@ export const stylesLists = StyleSheet.create({
   iconBox: {
     marginRight: 10,
     height: 60,
-    width: 60,
+    width: 60
   },
   labelsBox: {
     flexDirection: "row",
@@ -201,5 +185,5 @@ export const stylesLists = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     width: 200,
-  },
+  }
 });

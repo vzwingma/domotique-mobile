@@ -1,10 +1,10 @@
 import callDomoticz from '@/app/services/ClientHTTP.service';
 import { SERVICES_PARAMS, SERVICES_URL } from '@/app/enums/APIconstants';
 import { evaluateGroupLevelConsistency, getDeviceType, getFavouritesFromStorage as loadFavoritesFromStorage, sortEquipements, saveFavoritesToStorage } from '@/app/services/DataUtils.service';
-import { DomoticzBlindsGroups, DomoticzBlindsSort, DomoticzDeviceStatus, DomoticzLightsGroups, DomoticzLightsSort, DomoticzType } from '@/app/enums/DomoticzEnum';
+import { DomoticzBlindsGroups, DomoticzBlindsSort, DomoticzDeviceStatus, DomoticzLightsGroups, DomoticzLightsSort, DomoticzSwitchType, DomoticzType } from '@/app/enums/DomoticzEnum';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
-import DomoticzFavorites from '../models/domoticzFavourites';
+import DomoticzFavorites from '../models/domoticzFavorites';
 
 /**
  * Charge les équipements Domoticz.
@@ -19,22 +19,22 @@ export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]
     callDomoticz(SERVICES_URL.GET_DEVICES)
         .then(data => {
             let dataDevices = data.result
-                .map((device: any, index: number) => {
+                .map((rawDevice: any, index: number) => {
                     let ddevice: DomoticzDevice;
                     ddevice = {
-                        idx: Number(device.idx),
+                        idx: Number(rawDevice.idx),
                         rang: index,
-                        name: String(device.Name).replaceAll("[Grp]", "").replaceAll("Prise ", "").trim(),
-                        status: String(device.Status).replaceAll("Set Level: ", ""),
-                        type: getDeviceType(device.Name),
-                        subType: device.Type,
-                        switchType: device.SwitchType,
-                        level: device.Level >= 99 ? 100 : device.Level <= 0.1 ? 0 : Number(device.Level),
+                        name: String(rawDevice.Name).replaceAll("[Grp]", "").replaceAll("Prise ", "").trim(),
+                        status: String(rawDevice.Status).replaceAll("Set Level: ", ""),
+                        type: getDeviceType(rawDevice.Name),
+                        subType: rawDevice.Type,
+                        switchType: rawDevice.SwitchType,
+                        level: evaluateDeviceLevel(rawDevice.Level),
                         consistantLevel: true,
-                        isGroup: String(device.Name).indexOf("[Grp]") > -1,
-                        lastUpdate: device.LastUpdate,
-                        isActive: !device.HaveTimeout,
-                        data: device.Data
+                        isGroup: String(rawDevice.Name).indexOf("[Grp]") > -1,
+                        lastUpdate: rawDevice.LastUpdate,
+                        isActive: !rawDevice.HaveTimeout,
+                        data: rawDevice.Data
                     }
                     return ddevice;
                 });
@@ -62,8 +62,36 @@ export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]
         })
 }
 
+/**
+ * Evaluation du niveau de l'équipement
+ * @param device équipement
+ * @returns le niveau de l'équipement
+ */
+function evaluateDeviceLevel(deviceLevel : any) : number{
+    let level = Number(deviceLevel);
+    if(deviceLevel >= 99) level = 100;
+    if(deviceLevel <= 0.1) level = 0;
+    return level;
+}
 
 
+/**
+ * fonction pour gérer le clic sur l'icône de l'équipement
+ * @param device composant DomoticzDevice
+ * @param storeDeviceData setter pour les données des équipements
+ */
+export function onClickDeviceIcon(device: DomoticzDevice, storeDeviceData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
+    console.log("Clic sur l'icône de l'équipement " + device.name + " [" + device.idx + "]");
+    if (device.isActive) {
+      if (device.switchType === DomoticzSwitchType.ONOFF) {
+        updateDeviceState(device.idx, device, device.status === DomoticzDeviceStatus.OFF, storeDeviceData);
+      }
+      else {
+        updateDeviceLevel(device.idx, device, device.status === DomoticzDeviceStatus.OFF ? device.level : 0, storeDeviceData);
+      }
+    }
+  }
+  
 /**
  * Rafraichissement du niveau de l'équipement
  * @param idx idx de l'équipement
@@ -103,7 +131,7 @@ export function updateDeviceLevel(idx: number, device : DomoticzDevice, level: n
  * @param setDevicesData fonction de mise à jour des données
  * 
  */
-export function updateDeviceState(idx: number, device: DomoticzDevice, status: boolean, setDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
+function updateDeviceState(idx: number, device: DomoticzDevice, status: boolean, setDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
     console.log("Mise à jour de l'équipement  " + device.name + " [" + idx + "]", status ? DomoticzDeviceStatus.ON : DomoticzDeviceStatus.OFF);
 
     let params = [{ key: SERVICES_PARAMS.IDX, value: String(idx) },
@@ -142,9 +170,9 @@ function addActionForFavorite(device: DomoticzDevice) {
     .then((favoris) => {
             const favoriteIndex = favoris.findIndex((fav: any) => fav.idx === device.idx);
             if (favoriteIndex !== -1) {
-                favoris[favoriteIndex].favourites += 1;
+                favoris[favoriteIndex].favorites += 1;
             } else {
-                let newFavourites : DomoticzFavorites = {idx: device.idx, favourites: 1, name: device.name, type: device.type, subType: device.subType};
+                let newFavourites : DomoticzFavorites = {idx: device.idx, favorites: 1, name: device.name, type: device.type, subType: device.subType};
                 favoris.push(newFavourites);
             }
             saveFavoritesToStorage(favoris);
