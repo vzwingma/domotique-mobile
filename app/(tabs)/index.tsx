@@ -4,7 +4,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { ViewDomoticzDevice } from '../components/device.component';
-import { getFavouritesFromStorage } from '../services/DataUtils.service';
+import { getFavoritesFromStorage } from '../services/DataUtils.service';
 import { useEffect, useState } from 'react';
 import DomoticzFavorites from '../models/domoticzFavorites';
 
@@ -60,13 +60,15 @@ function getFavoritesDevicesFromCache(devicesData: DomoticzDevice[], setFavorite
 
     let favoriteDevices: DomoticzDevice[] = [];
 
-    getFavouritesFromStorage().then((favorites) => {
-
-      let sortedFavorites = favorites.sort((a, b) => b.favorites - a.favorites);
+    getFavoritesFromStorage().then((favorites) => {
+      let sortedFavorites = favorites
+        .filter((fav: DomoticzFavorites) => fav.favorites !== undefined && fav.favorites > 0)
+        .sort((fava: DomoticzFavorites, favb: DomoticzFavorites) => favb.favorites - fava.favorites);
 
       sortedFavorites.forEach((fav: DomoticzFavorites) => {
         const favoriteIndex = devicesData.findIndex((device) => device.idx === fav.idx);
-        if (favoriteIndex !== -1 && favoriteDevices.length < 6) {
+        if (favoriteIndex !== -1 && favoriteDevices.length < 5) {
+          devicesData[favoriteIndex].rang = fav.favorites;
           favoriteDevices.push(devicesData[favoriteIndex]);
         }
       })
@@ -90,6 +92,7 @@ function getListFavoritesComponents(favoritesData: DomoticzDevice[], storeDevice
   }
   else {
     favoritesData.forEach((fav: DomoticzDevice) => {
+      items.push(<ThemedText>{fav.idx} - {fav.rang} </ThemedText>);
       items.push(<ViewDomoticzDevice key={fav.idx} device={fav} storeDeviceData={storeDevicesData} />);
     });
   }

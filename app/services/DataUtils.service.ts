@@ -81,11 +81,11 @@ export enum KEY_STORAGE {
  * Gestion des favoris en mémoire
  * @returns les favoris stockés
  */
-export const getFavouritesFromStorage = (): Promise<DomoticzFavorites[]> => {
+export const getFavoritesFromStorage = (): Promise<DomoticzFavorites[]> => {
     return getValueFromStorage(KEY_STORAGE.FAVORITES)
         .then((value) => {
             if (value) {
-                return value.map((fav: any) => new DomoticzFavorites({ idx: fav.idx, favorites: fav.favourites, name: fav.name, type: fav.type, subType: fav.subType }));
+                return value.map((fav: any) => new DomoticzFavorites({ idx: fav.idx, favorites: fav.favorites, name: fav.name, type: fav.type, subType: fav.subType }));
             }
             else {
                 return [];
