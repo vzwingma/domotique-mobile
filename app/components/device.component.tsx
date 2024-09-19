@@ -4,7 +4,7 @@ import { StyleSheet, View } from "react-native";
 import Slider from '@react-native-community/slider';
 import { updateDeviceLevel } from "../controllers/devices.controller";
 import { Colors, getGroupColor } from "../enums/Colors";
-import { DomoticzDeviceStatus, DomoticzSwitchType, DomoticzType } from "../enums/DomoticzEnum";
+import { DomoticzDeviceStatus, DomoticzSwitchType } from "../enums/DomoticzEnum";
 import { useState } from "react";
 import IconDomoticzDevice from "@/components/IconDomoticzDevice";
 
