@@ -92,7 +92,6 @@ function getListFavoritesComponents(favoritesData: DomoticzDevice[], storeDevice
   }
   else {
     favoritesData.forEach((fav: DomoticzDevice) => {
-      items.push(<ThemedText>{fav.idx} - {fav.rang} </ThemedText>);
       items.push(<ViewDomoticzDevice key={fav.idx} device={fav} storeDeviceData={storeDevicesData} />);
     });
   }
