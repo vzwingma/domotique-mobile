@@ -23,7 +23,7 @@ type TabDomoticzDevicessProps = {
  * @param devicesData Les données des équipements
  * @param storeDevicesData La fonction pour mettre à jour les données des volets
  */
-export default function HomeScreen({ devicesData, storeDevicesData }: TabDomoticzDevicessProps) {
+export default function HomeScreen({ devicesData, storeDevicesData }: Readonly<TabDomoticzDevicessProps>) {
 
 
   const [favorites, setFavorites] = useState([] as DomoticzDevice[]);
