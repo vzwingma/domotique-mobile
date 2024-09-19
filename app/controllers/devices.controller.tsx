@@ -1,6 +1,6 @@
 import callDomoticz from '@/app/services/ClientHTTP.service';
 import { SERVICES_PARAMS, SERVICES_URL } from '@/app/enums/APIconstants';
-import { evaluateGroupLevelConsistency, getDeviceType, getFavouritesFromStorage as loadFavoritesFromStorage, sortEquipements, saveFavoritesToStorage } from '@/app/services/DataUtils.service';
+import { evaluateGroupLevelConsistency, getDeviceType, sortEquipements, saveFavoritesToStorage, getFavoritesFromStorage } from '@/app/services/DataUtils.service';
 import { DomoticzBlindsGroups, DomoticzBlindsSort, DomoticzDeviceStatus, DomoticzLightsGroups, DomoticzLightsSort, DomoticzSwitchType, DomoticzType } from '@/app/enums/DomoticzEnum';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
@@ -81,7 +81,6 @@ function evaluateDeviceLevel(deviceLevel : any) : number{
  * @param storeDeviceData setter pour les données des équipements
  */
 export function onClickDeviceIcon(device: DomoticzDevice, storeDeviceData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
-    console.log("Clic sur l'icône de l'équipement " + device.name + " [" + device.idx + "]");
     if (device.isActive) {
       if (device.switchType === DomoticzSwitchType.ONOFF) {
         updateDeviceState(device.idx, device, device.status === DomoticzDeviceStatus.OFF, storeDeviceData);
@@ -134,8 +133,9 @@ export function updateDeviceLevel(idx: number, device : DomoticzDevice, level: n
 function updateDeviceState(idx: number, device: DomoticzDevice, status: boolean, setDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
     console.log("Mise à jour de l'équipement  " + device.name + " [" + idx + "]", status ? DomoticzDeviceStatus.ON : DomoticzDeviceStatus.OFF);
 
-    let params = [{ key: SERVICES_PARAMS.IDX, value: String(idx) },
-    { key: SERVICES_PARAMS.CMD, value: status ? DomoticzDeviceStatus.ON : DomoticzDeviceStatus.OFF }];
+    let params = [
+        { key: SERVICES_PARAMS.IDX, value: String(idx) },
+        { key: SERVICES_PARAMS.CMD, value: status ? DomoticzDeviceStatus.ON : DomoticzDeviceStatus.OFF }];
 
     callDomoticz(SERVICES_URL.CMD_BLINDS_LIGHTS_ON_OFF, params)
         .catch((e) => {
@@ -166,10 +166,11 @@ function refreshEquipementState(storeDevicesData: React.Dispatch<React.SetStateA
  * @param idx idx de l'équipement
  */
 function addActionForFavorite(device: DomoticzDevice) {
-    loadFavoritesFromStorage()
+    getFavoritesFromStorage()
     .then((favoris) => {
             const favoriteIndex = favoris.findIndex((fav: any) => fav.idx === device.idx);
             if (favoriteIndex !== -1) {
+                if(favoris[favoriteIndex].favorites === undefined) favoris[favoriteIndex].favorites = 0;
                 favoris[favoriteIndex].favorites += 1;
             } else {
                 let newFavourites : DomoticzFavorites = {idx: device.idx, favorites: 1, name: device.name, type: device.type, subType: device.subType};

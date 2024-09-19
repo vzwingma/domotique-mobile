@@ -4,7 +4,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { getGroupColor } from "@/app/enums/Colors";
 import { DomoticzDeviceProps } from "@/app/components/device.component";
 import { onClickDeviceIcon } from "@/app/controllers/devices.controller";
-import { Image, ImageSourcePropType, View } from "react-native";
+import { Image, ImageSourcePropType, Pressable } from "react-native";
 
 
 /**
@@ -21,10 +21,10 @@ export const IconDomoticzDevice : React.FC<DomoticzDeviceProps> = ({ device, sto
                                  onPress={() => onClickDeviceIcon(device, storeDeviceData) }/>
 
     case DomoticzType.VOLET:
-      return <View onPointerUp={() => onClickDeviceIcon(device, storeDeviceData)}>
+      return <Pressable onPress={() => onClickDeviceIcon(device, storeDeviceData) }>
                 <Image source={getVoletIcon(device)} 
                        style={{ width: 60, height: 60, tintColor: getGroupColor(device), cursor: 'pointer'}} />
-              </View>
+              </Pressable>
 
     default:
       return <></>;
@@ -65,8 +65,8 @@ export function getVoletIcon(device: DomoticzDevice) :ImageSourcePropType {
       return require('@/assets/icons/window-shutter-group-mid-opened.png');
     }
   }
-  else{
-    if(device.status === "Off" || device.level === 0){
+  // Sinon c'est un volet simple
+  else if(device.status === "Off" || device.level === 0){
       return require('@/assets/icons/window-shutter-closed.png');
     }
     else if(device.level === 100){
@@ -75,7 +75,6 @@ export function getVoletIcon(device: DomoticzDevice) :ImageSourcePropType {
     else{
       return require('@/assets/icons/window-shutter-mid-opened.png');
     }
-  }
 }
 
 export default IconDomoticzDevice;
