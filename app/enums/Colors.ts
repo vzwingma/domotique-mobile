@@ -63,12 +63,12 @@ export const Colors = {
  */
 export function getGroupColor(volet: DomoticzDevice) : string {
   if(volet.isGroup) {
-    switch(volet.rang) {
-      case 0: return "#5FACD3";
-      case 1: return "#B19CD9";
-      case 2: return "#BDFCC9";
-      case 3: return "#FFDAB9";
-      case 4: return "#4AA3A2";
+    switch(volet.idx) {
+      case 85: return "#5FACD3"; // tous les volets 85 
+      case 84: return "#B19CD9"; // volets salon 84
+      case 86: return "#BDFCC9";// volets chambre 86
+      case 122: return "#FFDAB9";// toutes les lumières 122
+      case 117: return "#4AA3A2";  // lumières salon 117
       default: return "white";
     }
   }

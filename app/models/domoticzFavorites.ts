@@ -36,6 +36,7 @@ class DomoticzFavorites {
         this.name = name;
         this.type = type;
         this.subType = subType;
+        this.rang = 0;
     }
 }
 export default DomoticzFavorites;
