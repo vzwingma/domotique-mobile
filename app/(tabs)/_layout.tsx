@@ -9,7 +9,7 @@ import { Tabs } from '../enums/TabsEnums';
 import { TabBarItems } from '@/components/navigation/TabBarItem';
 import DomoticzConfig from '../models/domoticzConfig.model';
 import { ThemedText } from '@/components/ThemedText';
-import { DomoticzStatus, DomoticzType } from '../enums/DomoticzEnum';
+import { DOMOTICZ_MOBILE_VERSION, DomoticzStatus, DomoticzType } from '../enums/DomoticzEnum';
 import HomeScreen from '.';
 import TabDomoticzTemperatures from './temperatures.tab';
 import DomoticzDevice from '../models/domoticzDevice.model';
@@ -90,7 +90,7 @@ export default function TabLayout() {
     if (isLoading) {
       return "Chargement...";
     } else {
-      return "v 2.0.0 - Domoticz " + domoticzConnexionData?.version;
+      return "v " + DOMOTICZ_MOBILE_VERSION + " - Domoticz " + domoticzConnexionData?.version;
     }
   }
 
