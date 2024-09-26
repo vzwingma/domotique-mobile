@@ -43,13 +43,13 @@ export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]
                 .filter((device: DomoticzDevice) => device.type === DomoticzType.LUMIERE)
                 // Evaluation de la cohérence des niveaux des groupes
                 .map((device: DomoticzDevice) => {evaluateGroupLevelConsistency(device, DomoticzLightsGroups, dataDevices); return device;})
-                .sort((d1: DomoticzDevice, d2: DomoticzDevice) => sortEquipements(d1, d2, DomoticzLightsSort));    
+                .sort((d1: DomoticzDevice, d2: DomoticzDevice) => sortEquipements(d1, d2, DomoticzLightsSort));
 
             let voletsDevices = dataDevices
                 .filter((device: DomoticzDevice) => device.type === DomoticzType.VOLET)
                 // Evaluation de la cohérence des niveaux des groupes
                 .map((device: DomoticzDevice) => {evaluateGroupLevelConsistency(device, DomoticzBlindsGroups, dataDevices); return device;})
-                .sort((d1: DomoticzDevice, d2: DomoticzDevice) => sortEquipements(d1, d2, DomoticzBlindsSort));    
+                .sort((d1: DomoticzDevice, d2: DomoticzDevice) => sortEquipements(d1, d2, DomoticzBlindsSort));
             
             let allDevicesData: DomoticzDevice[] = [...lumieresDevices, ...voletsDevices];
             // Stockage des données
@@ -170,10 +170,12 @@ function addActionForFavorite(device: DomoticzDevice) {
     .then((favoris) => {
             const favoriteIndex = favoris.findIndex((fav: any) => fav.idx === device.idx);
             if (favoriteIndex !== -1) {
-                if(favoris[favoriteIndex].favorites === undefined) favoris[favoriteIndex].favorites = 0;
-                favoris[favoriteIndex].favorites += 1;
+                if(favoris[favoriteIndex].nbOfUse === undefined) {
+                    favoris[favoriteIndex].nbOfUse = 0;
+                }
+                favoris[favoriteIndex].nbOfUse += 1;
             } else {
-                let newFavourites : DomoticzFavorites = {idx: device.idx, favorites: 1, name: device.name, type: device.type, subType: device.subType};
+                let newFavourites : DomoticzFavorites = {idx: device.idx, nbOfUse: 1, name: device.name, type: device.type, subType: device.subType, rang: 0};
                 favoris.push(newFavourites);
             }
             saveFavoritesToStorage(favoris);

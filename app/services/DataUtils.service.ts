@@ -1,4 +1,4 @@
-import { DomoticzDeviceStatus, DomoticzType } from "../enums/DomoticzEnum";
+import { DomoticzBlindsSort, DomoticzDeviceStatus, DomoticzLightsSort, DomoticzType } from "../enums/DomoticzEnum";
 import DomoticzDevice from "../models/domoticzDevice.model";
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import DomoticzFavorites from "../models/domoticzFavorites";
@@ -10,7 +10,7 @@ import DomoticzFavorites from "../models/domoticzFavorites";
  * @param devicesOrder ordre des équipements
  * @returns tri des équipements
  */
-export function sortEquipements(device1: DomoticzDevice, device2: DomoticzDevice, devicesOrder: number[]) {
+export function sortEquipements(device1: DomoticzDevice | DomoticzFavorites, device2: DomoticzDevice | DomoticzFavorites, devicesOrder: number[]) {
     devicesOrder.forEach((idx, index) => {
         if (device1.idx === idx) {
             device1.rang = index;
@@ -22,6 +22,15 @@ export function sortEquipements(device1: DomoticzDevice, device2: DomoticzDevice
     return device1.rang - device2.rang;
 }
 
+export function sortFavorites(device1: DomoticzFavorites, device2: DomoticzFavorites) {
+    
+    if(device1.type === device2.type) {
+        return sortEquipements(device1, device2, device1.type === DomoticzType.LUMIERE ? DomoticzLightsSort : DomoticzBlindsSort);
+    }
+    else{
+        return device1.type < device2.type ? 1 : -1
+    }
+}
 
 
 /**
@@ -82,23 +91,15 @@ export enum KEY_STORAGE {
  * @returns les favoris stockés
  */
 export const getFavoritesFromStorage = (): Promise<DomoticzFavorites[]> => {
-    return getValueFromStorage(KEY_STORAGE.FAVORITES)
-        .then((value) => {
-            if (value) {
-                return value.map((fav: any) => new DomoticzFavorites({ idx: fav.idx, favorites: fav.favorites, name: fav.name, type: fav.type, subType: fav.subType }));
-            }
-            else {
-                return [];
-            }
-        });
+    return getValueFromStorage(KEY_STORAGE.FAVORITES);
 }
 
 /**
  * Sauvegarde des favoris en mémoire
- * @param favourites les favoris à sauvegarder
+ * @param favorites les favoris à sauvegarder
  */
-export const saveFavoritesToStorage = (favourites: DomoticzFavorites[]) => {
-    putValueInStorage(KEY_STORAGE.FAVORITES, favourites);
+export const saveFavoritesToStorage = (favorites: DomoticzFavorites[]) => {
+    putValueInStorage(KEY_STORAGE.FAVORITES, favorites);
 }
 
 
