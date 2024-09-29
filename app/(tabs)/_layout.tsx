@@ -51,6 +51,7 @@ export default function TabLayout() {
    * et à changement d'onglet
    * */
   useEffect(() => {
+    console.log("(Re)Chargement de l'application...");
     connectToDomoticz({setIsLoading, storeConnexionData, setError});
   }, [refreshing])
 

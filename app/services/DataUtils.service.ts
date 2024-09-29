@@ -22,6 +22,16 @@ export function sortEquipements(device1: DomoticzDevice | DomoticzFavorites, dev
     return device1.rang - device2.rang;
 }
 
+
+/**
+ * Trie les favoris en fonction de leur type et de critères spécifiques.
+ *
+ * @param {DomoticzFavorites} device1 - Le premier appareil à comparer.
+ * @param {DomoticzFavorites} device2 - Le deuxième appareil à comparer.
+ * @returns {number} - Retourne un nombre négatif si device1 doit être trié avant device2, 
+ *                     un nombre positif si device1 doit être trié après device2, 
+ *                     ou 0 si les deux appareils sont égaux.
+ */
 export function sortFavorites(device1: DomoticzFavorites, device2: DomoticzFavorites) {
     
     if(device1.type === device2.type) {

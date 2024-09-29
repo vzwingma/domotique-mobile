@@ -8,7 +8,7 @@ class DomoticzDevice {
     // Index de l'équipement
     readonly idx: number;
     // Rang de l'équipement (affichage)
-    rang: number;
+    rang: number = 0;
     // Nom de l'équipement
     readonly name: string;
     // Groupe d'équipements ?
