@@ -32,10 +32,12 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device }: Do
       <View key={device.idx} style={stylesListsDevices.iconBox}>
         <IconDomoticzDevice device={device} />
       </View>
-      <View style={{ flexDirection: "column" }}>
+      <View style={stylesListsDevices.contentBox}>
         <View style={device.consistantLevel ? stylesListsDevices.labelsBox : stylesListsDevices.labelsBoxUnconsistent}>
           <ThemedText style={{ fontSize: 16, color: getGroupColor(device) }}>{device.name}</ThemedText>
+          <View style={stylesListsDevices.valueBox}>
           <ThemedText style={stylesListsDevices.textLevel}>{getStatusLabel(device, nextValue, flagLabel)}</ThemedText>
+          </View>
         </View>
         {device.switchType === DomoticzSwitchType.SLIDER ?
           <Slider
@@ -101,7 +103,7 @@ function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: bo
       nextLabel += DomoticzDeviceStatus.OFF;
     }
     else {
-      nextLabel += nextValue + "%";
+      nextLabel += nextValue + " %";
     }
     nextLabel += ")";
     getStatusLabel = nextLabel;
@@ -112,7 +114,7 @@ function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: bo
   }
   // Si c'est un variateur
   else {
-    getStatusLabel = device.status === DomoticzDeviceStatus.OFF ? DomoticzDeviceStatus.OFF : device.level + "%";
+    getStatusLabel = device.status === DomoticzDeviceStatus.OFF ? DomoticzDeviceStatus.OFF + " " : device.level + " %";
   }
   // Si le groupe n'est pas cohérent
   if (!device.consistantLevel) {
@@ -130,7 +132,7 @@ export const stylesListsDevices = StyleSheet.create({
   viewBox: {
     flexDirection: 'row',
     height: 84,
-    width: '98%',
+    width: '100%',
     padding: 10,
     margin: 1,
     borderColor: '#3A3A3A',
@@ -140,7 +142,7 @@ export const stylesListsDevices = StyleSheet.create({
   viewBoxDisabled: {
     flexDirection: 'row',
     height: 64,
-    width: '98%',
+    width: '100%',
     padding: 1,
     margin: 1,
     borderColor: '#FF0000',
@@ -152,10 +154,16 @@ export const stylesListsDevices = StyleSheet.create({
     height: 60,
     width: 60
   },
+  contentBox: {
+    flexDirection: "column",
+    width: "100%",
+    paddingRight: 80
+  },
   labelsBox: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 2
+    marginTop: 2,
+    width: '100%'
   },
   labelsBoxUnconsistent: {
     flexDirection: "row",
@@ -163,13 +171,15 @@ export const stylesListsDevices = StyleSheet.create({
     marginTop: 2,
     opacity: 0.5
   },
+  valueBox: {
+    flexDirection: "column",
+    width: 80,
+  },  
   slider: {
-    width: 270,
     height: 40,
-    marginTop: -10
+    marginTop: -10,
   },
   sliderDisabled: {
-    width: 270,
     height: 50,
     marginTop: -10,
     opacity: 0
@@ -179,7 +189,7 @@ export const stylesListsDevices = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.domoticz.color,
     paddingBottom: 7,
-    paddingRight: 15
+    textAlign: "right",
   },
   textName: {
     fontSize: 16,

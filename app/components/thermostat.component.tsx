@@ -33,10 +33,12 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
       <View key={thermostat.idx} style={stylesListsDevices.iconBox}>
         <IconDomoticzThermostat thermostat={thermostat} />
       </View>
-      <View style={{ flexDirection: "column" }}>
+      <View style={stylesListsDevices.contentBox}>
         <View style={stylesListsDevices.labelsBox}>
           <ThemedText style={{ fontSize: 16, color: 'white' }}>{thermostat.name}</ThemedText>
+          <View style={stylesListsDevices.valueBox}>
           <ThemedText style={stylesListsDevices.textLevel}>{getStatusLabel(thermostat, nextValue, flagLabel)}</ThemedText>
+          </View>
         </View>
         <Slider
           disabled={!thermostat.isActive}
@@ -86,7 +88,7 @@ function getStatusLabel(device: DomoticzThermostat, nextValue: number, flagLabel
   }
   // Sinon on affiche le niveau actuel
   else {
-    getStatusLabel = device.temp + device.unit;
+    getStatusLabel = device.temp + " " + device.unit;
   }
   return getStatusLabel;
 
