@@ -34,6 +34,22 @@ export enum DomoticzDeviceStatus {
 }
 
 /**
+ * Valeurs min et max pour les thermostats
+ */
+export enum DomoticzThermostatLevelValue {
+    MIN = 10,
+    MAX = 40
+}
+
+/**
+ * Valeurs min et max pour les équipements
+ */
+export enum DomoticzDeviceLevelValue {
+    MIN = 0,
+    MAX = 100
+}
+
+/**
  * Tri des équipements Domoticz
  */
 export const DomoticzLightsSort: number[] = [122, 128, 131, 72, 117, 113, 114, 118];

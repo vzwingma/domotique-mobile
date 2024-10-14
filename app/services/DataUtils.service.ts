@@ -33,11 +33,11 @@ export function sortEquipements(device1: DomoticzDevice | DomoticzFavorites, dev
  *                     ou 0 si les deux appareils sont égaux.
  */
 export function sortFavorites(device1: DomoticzFavorites, device2: DomoticzFavorites) {
-    
-    if(device1.type === device2.type) {
+
+    if (device1.type === device2.type) {
         return sortEquipements(device1, device2, device1.type === DomoticzDeviceType.LUMIERE ? DomoticzLightsSort : DomoticzBlindsSort);
     }
-    else{
+    else {
         return device1.type < device2.type ? 1 : -1
     }
 }
@@ -119,7 +119,7 @@ export const saveFavoritesToStorage = (favorites: DomoticzFavorites[]) => {
 
 /**
  * Données stockées dans le storage
- **/ 
+ **/
 const getValueFromStorage = (key: KEY_STORAGE) => {
     return AsyncStorage.getItem(key).then((value) => {
         return JSON.parse(value || "[]");

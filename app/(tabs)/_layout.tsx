@@ -18,6 +18,8 @@ import TabDomoticzDevices from './devices.tabs';
 import { loadDomoticzTemperatures } from '../controllers/temperatures.controller';
 import { getHeaderIcon } from '@/components/navigation/TabHeaderIcon';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
+import DomoticzThermostat from '../models/domoticzThermostat.model';
+import TabDomoticzThermostats from './thermostats.tab';
 
 /**
  * Composant racine de l'application.
@@ -29,7 +31,7 @@ export default function TabLayout() {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const { domoticzConnexionData, setDomoticzConnexionData, setDomoticzDevicesData, setDomoticzTemperaturesData } = useContext(DomoticzContext)!;
+  const { domoticzConnexionData, setDomoticzConnexionData, setDomoticzDevicesData, setDomoticzTemperaturesData, setDomoticzThermostatData } = useContext(DomoticzContext)!;
 
   const [error, setError] = useState<Error | null>(null);
   const [tab, setTab] = useState(Tabs.INDEX);
@@ -68,8 +70,9 @@ export default function TabLayout() {
    * @param voletsData Les données des volets 
    * @param lumieresData Les données des lumières
    **/
-  function storeAllDevicesData(domoticzDevicesData: DomoticzDevice[]) {
+  function storeAllDevicesData(domoticzDevicesData: DomoticzDevice[], domoticzThermostatData: DomoticzThermostat[]) {
     setDomoticzDevicesData(domoticzDevicesData);
+    setDomoticzThermostatData(domoticzThermostatData);
     setIsLoading(false);
   }
 
@@ -158,7 +161,7 @@ function showPanel(tab: Tabs): JSX.Element {
     case Tabs.TEMPERATURES:
       return <TabDomoticzTemperatures />
       case Tabs.THERMOSTATS:
-        return <TabDomoticzTemperatures />
+        return <TabDomoticzThermostats />
       default:
       return <ThemedText type="title" style={{ color: 'red' }}>404 - Page non définie</ThemedText>
   }

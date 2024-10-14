@@ -16,10 +16,10 @@ import { DomoticzContext } from '../services/DomoticzContextProvider';
 export default function TabDomoticzTemperatures(): JSX.Element[] {
 
   const { domoticzTemperaturesData } = useContext(DomoticzContext)!;
-  
+
   let items: JSX.Element[] = [];
   domoticzTemperaturesData.forEach(item => {
-    items.push(<ViewDomoticzTemperature key={item.idx} temperature={item}/>);          
+    items.push(<ViewDomoticzTemperature key={item.idx} temperature={item} />);
   });
   return items;
 }

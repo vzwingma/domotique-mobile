@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import DomoticzConfig from "../models/domoticzConfig.model";
 import DomoticzDevice from "../models/domoticzDevice.model";
 import DomoticzTemperature from "../models/domoticzTemperature.model";
+import DomoticzThermostat from "../models/domoticzThermostat.model";
 
 
 
@@ -17,6 +18,9 @@ type DomoticzContextType = {
 
     domoticzTemperaturesData: DomoticzTemperature[];
     setDomoticzTemperaturesData: React.Dispatch<React.SetStateAction<DomoticzTemperature[]>>;
+
+    domoticzThermostatData: DomoticzThermostat[];
+    setDomoticzThermostatData: React.Dispatch<React.SetStateAction<DomoticzThermostat[]>>;
 };
 
 
@@ -32,9 +36,9 @@ export function DomoticzContextProvider({ children }: { children: Readonly<React
     const [domoticzConnexionData, setDomoticzConnexionData]       = useState<DomoticzConfig>();  // State to store the response data
     const [domoticzDevicesData, setDomoticzDevicesData]           = useState<DomoticzDevice[]>([]);         // State to store the devices data
     const [domoticzTemperaturesData, setDomoticzTemperaturesData] = useState<DomoticzTemperature[]>([]);    // État pour stocker les données de réponse
-
+    const [domoticzThermostatData, setDomoticzThermostatData]     = useState<DomoticzThermostat[]>([]);    // État pour stocker les données de réponse
     return (
-        <DomoticzContext.Provider value={{ domoticzConnexionData, setDomoticzConnexionData, domoticzDevicesData, setDomoticzDevicesData, domoticzTemperaturesData, setDomoticzTemperaturesData }}>
+        <DomoticzContext.Provider value={{ domoticzConnexionData, setDomoticzConnexionData, domoticzDevicesData, setDomoticzDevicesData, domoticzTemperaturesData, setDomoticzTemperaturesData, domoticzThermostatData, setDomoticzThermostatData }}>
             {children}
         </DomoticzContext.Provider>
     )

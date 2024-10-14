@@ -4,6 +4,7 @@
  */
 import { useContext } from 'react';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
+import { ViewDomoticzThermostat } from '../components/thermostat.component';
 
 
 /**
@@ -14,9 +15,13 @@ import { DomoticzContext } from '../services/DomoticzContextProvider';
  */
 export default function TabDomoticzThermostats(): JSX.Element[] {
 
-  const { domoticzTemperaturesData } = useContext(DomoticzContext)!;
-  
+  const { domoticzThermostatData } = useContext(DomoticzContext)!;
+
   let items: JSX.Element[] = [];
+
+  domoticzThermostatData.forEach((item, idx) => {
+    items.push(<ViewDomoticzThermostat key={item.idx} device={item} />);
+  });
 
   return items;
 }
