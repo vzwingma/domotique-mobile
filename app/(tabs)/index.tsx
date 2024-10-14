@@ -38,7 +38,7 @@ export default function HomeScreen({ devicesData, storeDevicesData }: Readonly<T
   return (
     <>
       <ThemedView style={tabStyles.titleContainer}>
-        <ThemedText type="subtitle" style={{ color: 'white', marginTop: 10 }}>
+        <ThemedText type="subtitle" style={{ color: 'white', marginTop: 5 }}>
           Favoris
         </ThemedText>
       </ThemedView>
@@ -61,11 +61,11 @@ function getFavoritesDevicesFromCache(devicesData: DomoticzDevice[], setFavorite
     let favoriteDevices: DomoticzDevice[] = [];
 
     getFavoritesFromStorage().then((favorites) => {
-      // Tri par nombre d'utilisation, et on garde les 5 premiers
+      // Tri par nombre d'utilisation, et on garde les 6 premiers
       let sortedFavorites = favorites
         .filter((fav: DomoticzFavorites) => fav.nbOfUse !== undefined && fav.nbOfUse > 0)
         .sort((fava: DomoticzFavorites, favb: DomoticzFavorites) => favb.nbOfUse - fava.nbOfUse)
-        .slice(0, 5)
+        .slice(0, 6)
         .sort((fava: DomoticzFavorites, favb: DomoticzFavorites) => sortFavorites(fava, favb))
 ;
 
