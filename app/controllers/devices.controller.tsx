@@ -15,8 +15,7 @@ import { loadDomoticzThermostats } from './thermostats.controller';
  * @param storeDevicesData - Fonction pour stocker les données des equipements volets/lumières dans l'état.
  * @param typeDevice - Type d'équipement à charger
  */
-
-export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[], thermosats: DomoticzThermostat[]) => void) {
+export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]) => void) {
     // Appel du service externe de connexion à Domoticz pour les types d'équipements
     callDomoticz(SERVICES_URL.GET_DEVICES)
         .then(data => {
@@ -52,16 +51,14 @@ export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]
                 // Evaluation de la cohérence des niveaux des groupes
                 .map((device: DomoticzDevice) => {evaluateGroupLevelConsistency(device, DomoticzBlindsGroups, dataDevices); return device;})
                 .sort((d1: DomoticzDevice, d2: DomoticzDevice) => sortEquipements(d1, d2, DomoticzBlindsSort));
-            
-            const thermostatsDevices = loadDomoticzThermostats(data);
 
             let allDevicesData: DomoticzDevice[] = [...lumieresDevices, ...voletsDevices];
             // Stockage des données
-            storeDevicesData(allDevicesData, thermostatsDevices);
+            storeDevicesData(allDevicesData);
         })
         .catch((e) => {
             console.error('Une erreur s\'est produite lors du chargement des devices', e);
-            storeDevicesData([], []);
+            storeDevicesData([]);
             showToast("Erreur lors du chargement des devices", ToastDuration.SHORT);
         })
 }

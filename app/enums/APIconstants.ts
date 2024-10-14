@@ -15,10 +15,10 @@ export const ROOT_URI = "json.htm?type=command&param=";
  * Paramètres pour les services.
  */
 export const enum SERVICES_PARAMS {
-    IDX = "<IDX>",
-    CMD = "<CMD>",
+    IDX   = "<IDX>",
+    CMD   = "<CMD>",
     LEVEL = "<LEVEL>",
-    TEMP = "<TEMP>",
+    TEMP  = "<TEMP>",
 }
 
 

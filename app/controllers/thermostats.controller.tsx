@@ -5,8 +5,6 @@ import DomoticzThermostat from '../models/domoticzThermostat.model';
 import { SERVICES_PARAMS, SERVICES_URL } from '../enums/APIconstants';
 import callDomoticz from '../services/ClientHTTP.service';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
-import { addActionForFavorite, refreshEquipementState } from './devices.controller';
-import DomoticzDevice from '../models/domoticzDevice.model';
 
 /**
  * Charge les équipements Domoticz.
@@ -16,30 +14,37 @@ import DomoticzDevice from '../models/domoticzDevice.model';
  * @param typeDevice - Type d'équipement à charger
  */
 
-export function loadDomoticzThermostats(data: any): DomoticzThermostat[] {
-
-    const thermostatsDevices: DomoticzThermostat[] = data.result
-        .filter((rawDevice: any) => getDeviceType(rawDevice.Name) === DomoticzDeviceType.THERMOSTAT)
-        .map((rawDevice: any, index: number) => {
-            let tdevice: DomoticzThermostat;
-            tdevice = {
-                idx: Number(rawDevice.idx),
-                rang: index,
-                name: evaluateDeviceName(rawDevice.Name),
-                status: String(rawDevice.Data),
-                type: getDeviceType(rawDevice.Name),
-                temp: evaluateThermostatPoint(rawDevice.SetPoint),
-                lastUpdate: rawDevice.LastUpdate,
-                isActive: !rawDevice.HaveTimeout,
-                data: rawDevice.Data,
-                unit: rawDevice.vunit
-            }
-            return tdevice;
-        });
-
-    return thermostatsDevices;
+export function loadDomoticzThermostats(storeThermostatsData: (thermostats: DomoticzThermostat[]) => void) {
+    // Appel du service externe de connexion à Domoticz pour les types d'équipements
+    callDomoticz(SERVICES_URL.GET_DEVICES)
+        .then(data => {
+            const thermostatsDevices : DomoticzThermostat[] = data.result
+                    .filter((rawDevice: any) => getDeviceType(rawDevice.Name) === DomoticzDeviceType.THERMOSTAT)
+                    .map((rawDevice: any, index: number) => {
+                        let tdevice: DomoticzThermostat;
+                        tdevice = {
+                            idx: Number(rawDevice.idx),
+                            rang: index,
+                            name: evaluateDeviceName(rawDevice.Name),
+                            status: String(rawDevice.Data),
+                            type: getDeviceType(rawDevice.Name),
+                            temp: evaluateThermostatPoint(rawDevice.SetPoint),
+                            lastUpdate: rawDevice.LastUpdate,
+                            isActive: !rawDevice.HaveTimeout,
+                            data: rawDevice.Data,
+                            unit: rawDevice.vunit
+                        }
+                        return tdevice;
+                    });
+            // Stockage des données
+            storeThermostatsData(thermostatsDevices);
+        })
+        .catch((e) => {
+            console.error('Une erreur s\'est produite lors du chargement des devices', e);
+            storeThermostatsData([]);
+            showToast("Erreur lors du chargement des devices", ToastDuration.SHORT);
+        })
 }
-
 
 /**
  * Traitement du nom de l'équipement
@@ -72,7 +77,7 @@ export function evaluateThermostatPoint(devicePoint: any): number {
  * @param storeThermostatData fonction de mise à jour des données
  * 
  */
-export function updateThermostatPoint(idx: number, device: DomoticzThermostat, temp: number, setDomoticzThermostatData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
+export function updateThermostatPoint(idx: number, device: DomoticzThermostat, temp: number, setDomoticzThermostatData: React.Dispatch<React.SetStateAction<DomoticzThermostat[]>>) {
     temp = evaluateThermostatPoint(temp);
     console.log("Mise à jour de l'équipement " + device.name + " [" + idx + "]", temp + device.unit);
 
@@ -86,8 +91,17 @@ export function updateThermostatPoint(idx: number, device: DomoticzThermostat, t
         })
         .finally(() => {
             console.log("Mise à jour de l'équipement " + device.name + " [" + idx + "]", temp + device.unit);
-            addActionForFavorite(device);
             refreshEquipementState(setDomoticzThermostatData)
         });
 }
 
+/**
+ * Rafraichissement de l'état des équipements
+ * @param setDeviceData fonction de mise à jour des données
+ * @param typeEquipement type d'équipement
+ */
+export function refreshEquipementState(setDomoticzThermostatData: React.Dispatch<React.SetStateAction<DomoticzThermostat[]>>) {
+    // Mise à jour des données
+    loadDomoticzThermostats(setDomoticzThermostatData);
+    setTimeout(() => loadDomoticzThermostats(setDomoticzThermostatData), 1000);
+}

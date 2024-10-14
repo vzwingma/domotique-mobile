@@ -12,14 +12,13 @@ import { ThemedText } from '@/components/ThemedText';
 import { DOMOTICZ_MOBILE_VERSION, DomoticzStatus, DomoticzDeviceType } from '../enums/DomoticzEnum';
 import HomeScreen from '.';
 import TabDomoticzTemperatures from './temperatures.tab';
-import DomoticzDevice from '../models/domoticzDevice.model';
 import { loadDomoticzDevices } from '../controllers/devices.controller';
 import TabDomoticzDevices from './devices.tabs';
 import { loadDomoticzTemperatures } from '../controllers/temperatures.controller';
 import { getHeaderIcon } from '@/components/navigation/TabHeaderIcon';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
-import DomoticzThermostat from '../models/domoticzThermostat.model';
 import TabDomoticzThermostats from './thermostats.tab';
+import { loadDomoticzThermostats } from '../controllers/thermostats.controller';
 
 /**
  * Composant racine de l'application.
@@ -61,18 +60,9 @@ export default function TabLayout() {
    */
   function storeConnexionData(data: DomoticzConfig) {
     setDomoticzConnexionData(data);
-    loadDomoticzDevices(storeAllDevicesData);
+    loadDomoticzDevices(setDomoticzDevicesData);
+    loadDomoticzThermostats(setDomoticzThermostatData);
     loadDomoticzTemperatures(setDomoticzTemperaturesData);
-  }
-
-  /**
-   * Fonction de callback pour stocker les données des appareils
-   * @param voletsData Les données des volets 
-   * @param lumieresData Les données des lumières
-   **/
-  function storeAllDevicesData(domoticzDevicesData: DomoticzDevice[], domoticzThermostatData: DomoticzThermostat[]) {
-    setDomoticzDevicesData(domoticzDevicesData);
-    setDomoticzThermostatData(domoticzThermostatData);
     setIsLoading(false);
   }
 

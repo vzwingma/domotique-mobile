@@ -26,12 +26,12 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
 
   const [flagLabel, setFlagLabel] = useState<boolean>(false);
   const [nextValue, setNextValue] = useState<number>(thermostat.temp);
-  const { setDomoticzDevicesData } = useContext(DomoticzContext)!;
+  const { setDomoticzThermostatData } = useContext(DomoticzContext)!;
 
   return (
     <View key={thermostat.idx} style={thermostat.isActive ? stylesListsDevices.viewBox : stylesListsDevices.viewBoxDisabled}>
       <View key={thermostat.idx} style={stylesListsDevices.iconBox}>
-        <IconDomoticzThermostat size={60} />
+        <IconDomoticzThermostat thermostat={thermostat} />
       </View>
       <View style={{ flexDirection: "column" }}>
         <View style={stylesListsDevices.labelsBox}>
@@ -47,7 +47,7 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
           onValueChange={(value) => { overrideNextValue(value, setNextValue) }}
           onResponderStart={() => { setFlagLabel(true) }}
           onResponderEnd={() => {
-            updateThermostatPoint(thermostat.idx, thermostat, nextValue, setDomoticzDevicesData);
+            updateThermostatPoint(thermostat.idx, thermostat, nextValue, setDomoticzThermostatData);
             setFlagLabel(false);
           }}
         />
