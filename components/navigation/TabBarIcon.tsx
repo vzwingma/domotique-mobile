@@ -8,7 +8,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
  * @returns {JSX.Element} Icone de la barre de navigation
  */
 export function TabBarIcon({ style, ...rest }: any) {
-  return <Ionicons size={28} style={[{ marginBottom: -3 }, style]} {...rest} />;
+    return <Ionicons size={28} style={[{ marginBottom: -3 }, style]} {...rest} />;  
 }
 
 

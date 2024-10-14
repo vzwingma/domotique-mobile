@@ -1,4 +1,4 @@
-import { DomoticzType } from "../enums/DomoticzEnum";
+import { DomoticzDeviceType } from "../enums/DomoticzEnum";
 
 
 /**
@@ -12,7 +12,7 @@ class DomoticzFavorites {
     // Nom de l'équipement
     readonly name: string;
     // Type de l'équipement
-    readonly type: DomoticzType;
+    readonly type: DomoticzDeviceType;
     // Sous-type de l'équipement (Lumière, volet, ...)
     readonly subType: string;
     public rang: number = 0;
@@ -27,7 +27,7 @@ class DomoticzFavorites {
      * @param {number} options.idx - L'index des favoris.
      * @param {number} options.nbOfUse - Le nombre de fois où les favoris sont activés.
      * @param {string} options.name - Le nom des favoris.
-     * @param {DomoticzType} options.type - Le type des favoris.
+     * @param {DomoticzDeviceType} options.type - Le type des favoris.
      * @param {string} options.subType - Le sous-type des favoris.
      */
     constructor({ idx, nbOfUse, name, type, subType }: DomoticzFavorites) {
