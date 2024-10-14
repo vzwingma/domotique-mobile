@@ -1,5 +1,4 @@
 import { ViewDomoticzDevice } from '@/app/components/device.component';
-import DomoticzDevice from '@/app/models/domoticzDevice.model'; // Importe le type domoticzDevice
 import { DomoticzType } from '../enums/DomoticzEnum';
 import { useContext } from 'react';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
@@ -37,7 +36,7 @@ export default function TabDomoticzDevices({ dataType }: TabDomoticzDevicessProp
         item.rang = idx;
         items.push(<ViewDomoticzDevice key={item.idx} device={item} />);
       });
-      
+
   return items;
 
 }

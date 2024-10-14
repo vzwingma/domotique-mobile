@@ -9,8 +9,8 @@ import DomoticzTemperature from "../models/domoticzTemperature.model";
  * Contexte de la partie budget
  */
 type DomoticzContextType = {
-    domoticzConnexionData: DomoticzConfig | null;
-    setDomoticzConnexionData: React.Dispatch<React.SetStateAction<DomoticzConfig | null>>;
+    domoticzConnexionData: DomoticzConfig | undefined;
+    setDomoticzConnexionData: React.Dispatch<React.SetStateAction<DomoticzConfig | undefined>>;
 
     domoticzDevicesData: DomoticzDevice[] | [];
     setDomoticzDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>;
@@ -29,7 +29,7 @@ export const DomoticzContext = React.createContext<DomoticzContextType | null>(n
  * @returns  provider
  */
 export function DomoticzContextProvider({ children }: { children: Readonly<React.ReactNode> }) : JSX.Element {
-    const [domoticzConnexionData, setDomoticzConnexionData]       = useState<DomoticzConfig | null>(null);  // State to store the response data
+    const [domoticzConnexionData, setDomoticzConnexionData]       = useState<DomoticzConfig>();  // State to store the response data
     const [domoticzDevicesData, setDomoticzDevicesData]           = useState<DomoticzDevice[]>([]);         // State to store the devices data
     const [domoticzTemperaturesData, setDomoticzTemperaturesData] = useState<DomoticzTemperature[]>([]);    // État pour stocker les données de réponse
 

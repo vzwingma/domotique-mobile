@@ -50,7 +50,7 @@ export default function TabLayout() {
    * */
   useEffect(() => {
     console.log("(Re)Chargement de l'application...");
-    connectToDomoticz({setIsLoading, storeConnexionData, setError});
+    connectToDomoticz({ setIsLoading, storeConnexionData, setError });
   }, [refreshing])
 
   /**
@@ -80,7 +80,7 @@ export default function TabLayout() {
    * @returns Le statut de connexion suivant l'énumération DomoticzStatus
    */
   function getDomoticzStatus(): DomoticzStatus {
-    if(isLoading) return DomoticzStatus.INCONNU;
+    if (isLoading) return DomoticzStatus.INCONNU;
     return domoticzConnexionData?.status === "OK" ? DomoticzStatus.CONNECTE : DomoticzStatus.DECONNECTE;
   }
 
@@ -108,7 +108,7 @@ export default function TabLayout() {
 
 
   return (
-    <DomoticzContextProvider>
+    <>
       <ParallaxScrollView
         headerImage={getHeaderIcon(tab)}
         headerTitle="Domoticz Mobile"
@@ -132,7 +132,7 @@ export default function TabLayout() {
             </> : <></>
         }
       </View>
-    </DomoticzContextProvider>
+    </>
   );
 }
 
@@ -149,11 +149,11 @@ function showPanel(tab: Tabs): JSX.Element {
 
   switch (tab) {
     case Tabs.INDEX:
-      return <HomeScreen/>
+      return <HomeScreen />
     case Tabs.LUMIERES:
       return <TabDomoticzDevices dataType={DomoticzType.LUMIERE} />
     case Tabs.VOLETS:
-      return <TabDomoticzDevices dataType={DomoticzType.VOLET}/>
+      return <TabDomoticzDevices dataType={DomoticzType.VOLET} />
     case Tabs.TEMPERATURES:
       return <TabDomoticzTemperatures />
     default:
