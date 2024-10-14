@@ -2,7 +2,7 @@ import IconDomoticzTemperature, { getTemperatureIcon } from "@/components/IconDo
 import DomoticzTemperature from "../models/domoticzTemperature.model";
 import { ThemedText } from "@/components/ThemedText";
 import { View } from "react-native";
-import { stylesLists } from "./device.component";
+import { stylesListsDevices } from "./device.component";
 
 // Définition des propriétés d'une température Domoticz
 type DomoticzTempProps = {
@@ -14,16 +14,16 @@ type DomoticzTempProps = {
 */
 export const ViewDomoticzTemperature: React.FC<DomoticzTempProps> = ({ temperature }) => {
   return (
-    <View key={temperature.idx} style={temperature.isActive ? stylesLists.viewBox : stylesLists.viewBoxDisabled}>
-      <View key={temperature.idx} style={stylesLists.iconBox}>
+    <View key={temperature.idx} style={temperature.isActive ? stylesListsDevices.viewBox : stylesListsDevices.viewBoxDisabled}>
+      <View key={temperature.idx} style={stylesListsDevices.iconBox}>
         <IconDomoticzTemperature name={getTemperatureIcon(temperature)} color={(temperature.idx === '101' ? "#F8C969" : "white")} size={60} />
       </View>
       <View style={{ flexDirection: "column" }}>
-        <View style={stylesLists.labelsBox}>
-          <ThemedText style={stylesLists.textName}>{temperature.name}</ThemedText>
+        <View style={stylesListsDevices.labelsBox}>
+          <ThemedText style={stylesListsDevices.textName}>{temperature.name}</ThemedText>
           <View style={{ flexDirection: "column" }}>
-            <ThemedText style={stylesLists.textLevel}>{temperature.temp} °C</ThemedText>
-            {temperature.humidity ? <ThemedText style={stylesLists.textLevel}>{temperature.humidity} %</ThemedText> : <></>}
+            <ThemedText style={stylesListsDevices.textLevel}>{temperature.temp} °C</ThemedText>
+            {temperature.humidity ? <ThemedText style={stylesListsDevices.textLevel}>{temperature.humidity} %</ThemedText> : <></>}
           </View>
         </View>
       </View>

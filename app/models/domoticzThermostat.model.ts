@@ -24,8 +24,10 @@ class DomoticzThermostat {
     status: string;
     // Données de l'équipement
     readonly data: string;
+    // Unité de l'équipement
+    readonly unit: string;
 
-    constructor(idx: number, name: string, lastUpdate: string, isActive: boolean, temp: number, type: DomoticzDeviceType, status: string, data: string) {
+    constructor(idx: number, name: string, lastUpdate: string, isActive: boolean, temp: number, type: DomoticzDeviceType, status: string, data: string, unit: string) {
         this.idx = idx;
         this.name = name;
         this.lastUpdate = lastUpdate;
@@ -34,6 +36,7 @@ class DomoticzThermostat {
         this.type = type;
         this.status = status;
         this.data = data;
+        this.unit = unit;
     }
 }
 export default DomoticzThermostat;

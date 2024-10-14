@@ -28,19 +28,19 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device }: Do
   const { setDomoticzDevicesData } = useContext(DomoticzContext)!;
 
   return (
-    <View key={device.idx} style={device.isActive ? stylesLists.viewBox : stylesLists.viewBoxDisabled}>
-      <View key={device.idx} style={stylesLists.iconBox}>
+    <View key={device.idx} style={device.isActive ? stylesListsDevices.viewBox : stylesListsDevices.viewBoxDisabled}>
+      <View key={device.idx} style={stylesListsDevices.iconBox}>
         <IconDomoticzDevice device={device} />
       </View>
       <View style={{ flexDirection: "column" }}>
-        <View style={device.consistantLevel ? stylesLists.labelsBox : stylesLists.labelsBoxUnconsistent}>
+        <View style={device.consistantLevel ? stylesListsDevices.labelsBox : stylesListsDevices.labelsBoxUnconsistent}>
           <ThemedText style={{ fontSize: 16, color: getGroupColor(device) }}>{device.name}</ThemedText>
-          <ThemedText style={stylesLists.textLevel}>{getStatusLabel(device, nextValue, flagLabel)}</ThemedText>
+          <ThemedText style={stylesListsDevices.textLevel}>{getStatusLabel(device, nextValue, flagLabel)}</ThemedText>
         </View>
         {device.switchType === DomoticzSwitchType.SLIDER ?
           <Slider
             disabled={!device.isActive}
-            style={device.isActive ? stylesLists.slider : stylesLists.sliderDisabled}
+            style={device.isActive ? stylesListsDevices.slider : stylesListsDevices.sliderDisabled}
             minimumValue={0} value={getLevel(device)} maximumValue={100}
             step={1}
             minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor={Colors.domoticz.color}
@@ -50,7 +50,7 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device }: Do
               updateDeviceLevel(device.idx, device, nextValue, setDomoticzDevicesData);
               setFlagLabel(false);
             }}
-          /> : <Slider disabled style={stylesLists.sliderDisabled} />}
+          /> : <Slider disabled style={stylesListsDevices.sliderDisabled} />}
       </View>
     </View>
   );
@@ -126,7 +126,7 @@ function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: bo
 
 
 
-export const stylesLists = StyleSheet.create({
+export const stylesListsDevices = StyleSheet.create({
   viewBox: {
     flexDirection: 'row',
     height: 84,

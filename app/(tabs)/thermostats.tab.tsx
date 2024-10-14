@@ -20,7 +20,7 @@ export default function TabDomoticzThermostats(): JSX.Element[] {
   let items: JSX.Element[] = [];
 
   domoticzThermostatData.forEach((item, idx) => {
-    items.push(<ViewDomoticzThermostat key={item.idx} device={item} />);
+    items.push(<ViewDomoticzThermostat key={item.idx} thermostat={item} />);
   });
 
   return items;

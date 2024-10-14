@@ -1,5 +1,5 @@
 import { ThemedText } from "../../components/ThemedText";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import Slider from '@react-native-community/slider';
 import { Colors } from "../enums/Colors";
 import { useContext, useState } from "react";
@@ -7,11 +7,12 @@ import { DomoticzContext } from "../services/DomoticzContextProvider";
 import DomoticzThermostat from "../models/domoticzThermostat.model";
 import IconDomoticzThermostat from "@/components/IconDomoticzThermostat";
 import { DomoticzThermostatLevelValue } from "../enums/DomoticzEnum";
-import { evaluateThermostatPoint } from "../controllers/thermostats.controller";
+import { evaluateThermostatPoint, updateThermostatPoint } from "../controllers/thermostats.controller";
+import { stylesListsDevices } from "./device.component";
 
 // Définition des propriétés d'un équipement Domoticz
 export type DomoticzThermostatProps = {
-  device: DomoticzThermostat;
+  thermostat: DomoticzThermostat;
 };
 
 
@@ -21,35 +22,35 @@ export type DomoticzThermostatProps = {
  * @param device équipement Domoticz
  * @param storeDeviceData setter pour les données des équipements
  */
-export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ device }: DomoticzThermostatProps) => {
+export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ thermostat }: DomoticzThermostatProps) => {
 
   const [flagLabel, setFlagLabel] = useState<boolean>(false);
-  const [nextValue, setNextValue] = useState<number>(device.temp);
+  const [nextValue, setNextValue] = useState<number>(thermostat.temp);
   const { setDomoticzDevicesData } = useContext(DomoticzContext)!;
 
   return (
-    <View key={device.idx} style={device.isActive ? stylesLists.viewBox : stylesLists.viewBoxDisabled}>
-      <View key={device.idx} style={stylesLists.iconBox}>
+    <View key={thermostat.idx} style={thermostat.isActive ? stylesListsDevices.viewBox : stylesListsDevices.viewBoxDisabled}>
+      <View key={thermostat.idx} style={stylesListsDevices.iconBox}>
         <IconDomoticzThermostat size={60} />
       </View>
       <View style={{ flexDirection: "column" }}>
-        <View style={stylesLists.labelsBox}>
-          <ThemedText style={{ fontSize: 16, color: 'white'}}>{device.name}</ThemedText>
-          <ThemedText style={stylesLists.textLevel}>{getStatusLabel(device, nextValue, flagLabel)}</ThemedText>
+        <View style={stylesListsDevices.labelsBox}>
+          <ThemedText style={{ fontSize: 16, color: 'white' }}>{thermostat.name}</ThemedText>
+          <ThemedText style={stylesListsDevices.textLevel}>{getStatusLabel(thermostat, nextValue, flagLabel)}</ThemedText>
         </View>
-          <Slider
-            disabled={!device.isActive}
-            style={device.isActive ? stylesLists.slider : stylesLists.sliderDisabled}
-            minimumValue={DomoticzThermostatLevelValue.MIN} value={device.temp} maximumValue={DomoticzThermostatLevelValue.MAX}
-            step={1}
-            minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor={Colors.domoticz.color}
-            onValueChange={(value) => { overrideNextValue(value, setNextValue) }}
-            onResponderStart={() => { setFlagLabel(true) }}
-            onResponderEnd={() => {
-          //    updateDeviceLevel(device.idx, device, nextValue, setDomoticzDevicesData);
-              setFlagLabel(false);
-            }}
-          />
+        <Slider
+          disabled={!thermostat.isActive}
+          style={thermostat.isActive ? stylesListsDevices.slider : stylesListsDevices.sliderDisabled}
+          minimumValue={DomoticzThermostatLevelValue.MIN} value={thermostat.temp} maximumValue={DomoticzThermostatLevelValue.MAX}
+          step={1}
+          minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor={Colors.domoticz.color}
+          onValueChange={(value) => { overrideNextValue(value, setNextValue) }}
+          onResponderStart={() => { setFlagLabel(true) }}
+          onResponderEnd={() => {
+            updateThermostatPoint(thermostat.idx, thermostat, nextValue, setDomoticzDevicesData);
+            setFlagLabel(false);
+          }}
+        />
       </View>
     </View>
   );
@@ -80,73 +81,13 @@ function getStatusLabel(device: DomoticzThermostat, nextValue: number, flagLabel
   }
   // Si on est en mode édition
   else if (flagLabel) {
-    let nextLabel = "(" + nextValue + "°C)";
+    let nextLabel = "(" + nextValue + device.unit + ")";
     getStatusLabel = nextLabel;
   }
-  // Si c'est un variateur
+  // Sinon on affiche le niveau actuel
   else {
-    getStatusLabel = device.temp + "°C";
+    getStatusLabel = device.temp + device.unit;
   }
   return getStatusLabel;
 
 }
-
-
-
-
-
-export const stylesLists = StyleSheet.create({
-  viewBox: {
-    flexDirection: 'row',
-    height: 84,
-    width: '98%',
-    padding: 10,
-    margin: 1,
-    borderColor: '#3A3A3A',
-    borderWidth: 1,
-    backgroundColor: '#0b0b0b',
-  },
-  viewBoxDisabled: {
-    flexDirection: 'row',
-    height: 64,
-    width: '98%',
-    padding: 1,
-    margin: 1,
-    borderColor: '#FF0000',
-    borderWidth: 1,
-    opacity: 0.2,
-  },
-  iconBox: {
-    marginRight: 10,
-    height: 60,
-    width: 60
-  },
-  labelsBox: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 2
-  },
-  slider: {
-    width: 270,
-    height: 40,
-    marginTop: -10
-  },
-  sliderDisabled: {
-    width: 270,
-    height: 50,
-    marginTop: -10,
-    opacity: 0
-  },
-  textLevel: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.domoticz.color,
-    paddingBottom: 7,
-    paddingRight: 15
-  },
-  textName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    width: 200,
-  }
-});

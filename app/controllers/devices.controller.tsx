@@ -115,8 +115,7 @@ export function onClickDeviceIcon(device: DomoticzDevice, storeDeviceData: React
  * 
  */
 export function updateDeviceLevel(idx: number, device : DomoticzDevice, level: number, storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
-    if (level <= 0.1) level = 0;
-    if (level >= 99) level = 100;
+    level = evaluateDeviceLevel(level);
     if (level === 0) {
         updateDeviceState(idx, device, false, storeDevicesData);
     }
@@ -168,7 +167,7 @@ function updateDeviceState(idx: number, device: DomoticzDevice, status: boolean,
  * @param setDeviceData fonction de mise à jour des données
  * @param typeEquipement type d'équipement
  */
-function refreshEquipementState(storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
+export function refreshEquipementState(storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
     // Mise à jour des données
     loadDomoticzDevices(storeDevicesData);
     setTimeout(() => loadDomoticzDevices(storeDevicesData), 1000);
@@ -180,7 +179,7 @@ function refreshEquipementState(storeDevicesData: React.Dispatch<React.SetStateA
  * Ajout d'une action pour l'équipement favori
  * @param idx idx de l'équipement
  */
-function addActionForFavorite(device: DomoticzDevice) {
+export function addActionForFavorite(device: DomoticzDevice | DomoticzThermostat) {
     getFavoritesFromStorage()
     .then((favoris) => {
             const favoriteIndex = favoris.findIndex((fav: any) => fav.idx === device.idx);
@@ -190,7 +189,7 @@ function addActionForFavorite(device: DomoticzDevice) {
                 }
                 favoris[favoriteIndex].nbOfUse += 1;
             } else {
-                let newFavourites : DomoticzFavorites = {idx: device.idx, nbOfUse: 1, name: device.name, type: device.type, subType: device.subType, rang: 0};
+                let newFavourites : DomoticzFavorites = {idx: device.idx, nbOfUse: 1, name: device.name, type: device.type, subType: "", rang: 0};
                 favoris.push(newFavourites);
             }
             saveFavoritesToStorage(favoris);
