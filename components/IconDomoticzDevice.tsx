@@ -1,4 +1,4 @@
-import { DomoticzType } from "@/app/enums/DomoticzEnum";
+import { DomoticzDeviceType } from "@/app/enums/DomoticzEnum";
 import DomoticzDevice from "@/app/models/domoticzDevice.model";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { getGroupColor } from "@/app/enums/Colors";
@@ -17,13 +17,13 @@ export const IconDomoticzDevice : React.FC<DomoticzDeviceProps> = ({ device } : 
   const { setDomoticzDevicesData } = useContext(DomoticzContext)!;
 
   switch (device.type) {
-    case DomoticzType.LUMIERE:
+    case DomoticzDeviceType.LUMIERE:
       return <MaterialCommunityIcons name={getLightIcon(device)}
                                  size={60}
                                  color={getGroupColor(device)}
                                  onPress={() => onClickDeviceIcon(device, setDomoticzDevicesData) }/>
 
-    case DomoticzType.VOLET:
+    case DomoticzDeviceType.VOLET:
       return <Pressable onPress={() => onClickDeviceIcon(device, setDomoticzDevicesData) }>
                 <Image source={getVoletIcon(device)} 
                        style={{ width: 60, height: 60, tintColor: getGroupColor(device), cursor: 'pointer'}} />

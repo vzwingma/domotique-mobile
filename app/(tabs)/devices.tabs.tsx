@@ -1,5 +1,5 @@
 import { ViewDomoticzDevice } from '@/app/components/device.component';
-import { DomoticzType } from '../enums/DomoticzEnum';
+import { DomoticzDeviceType } from '../enums/DomoticzEnum';
 import { useContext } from 'react';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
 
@@ -10,7 +10,7 @@ import { DomoticzContext } from '../services/DomoticzContextProvider';
 
 // Propriétés de l'écran des équipements
 type TabDomoticzDevicessProps = {
-  dataType: DomoticzType,
+  dataType: DomoticzDeviceType,
 }
 
 /**

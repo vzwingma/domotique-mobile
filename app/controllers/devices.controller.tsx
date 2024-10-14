@@ -1,7 +1,7 @@
 import callDomoticz from '@/app/services/ClientHTTP.service';
 import { SERVICES_PARAMS, SERVICES_URL } from '@/app/enums/APIconstants';
 import { evaluateGroupLevelConsistency, getDeviceType, sortEquipements, saveFavoritesToStorage, getFavoritesFromStorage } from '@/app/services/DataUtils.service';
-import { DomoticzBlindsGroups, DomoticzBlindsSort, DomoticzDeviceStatus, DomoticzLightsGroups, DomoticzLightsSort, DomoticzSwitchType, DomoticzType } from '@/app/enums/DomoticzEnum';
+import { DomoticzBlindsGroups, DomoticzBlindsSort, DomoticzDeviceStatus, DomoticzLightsGroups, DomoticzLightsSort, DomoticzSwitchType, DomoticzDeviceType } from '@/app/enums/DomoticzEnum';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
 import DomoticzFavorites from '../models/domoticzFavorites.model';
@@ -40,13 +40,13 @@ export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]
                 });
 
             let lumieresDevices = dataDevices    
-                .filter((device: DomoticzDevice) => device.type === DomoticzType.LUMIERE)
+                .filter((device: DomoticzDevice) => device.type === DomoticzDeviceType.LUMIERE)
                 // Evaluation de la cohérence des niveaux des groupes
                 .map((device: DomoticzDevice) => {evaluateGroupLevelConsistency(device, DomoticzLightsGroups, dataDevices); return device;})
                 .sort((d1: DomoticzDevice, d2: DomoticzDevice) => sortEquipements(d1, d2, DomoticzLightsSort));
 
             let voletsDevices = dataDevices
-                .filter((device: DomoticzDevice) => device.type === DomoticzType.VOLET)
+                .filter((device: DomoticzDevice) => device.type === DomoticzDeviceType.VOLET)
                 // Evaluation de la cohérence des niveaux des groupes
                 .map((device: DomoticzDevice) => {evaluateGroupLevelConsistency(device, DomoticzBlindsGroups, dataDevices); return device;})
                 .sort((d1: DomoticzDevice, d2: DomoticzDevice) => sortEquipements(d1, d2, DomoticzBlindsSort));

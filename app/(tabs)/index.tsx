@@ -68,8 +68,10 @@ function getFavoritesDevicesFromCache(devicesData: DomoticzDevice[], setFavorite
 
       sortedFavorites.forEach((fav: DomoticzFavorites) => {
         const favoriteIndex = devicesData.findIndex((device) => device.idx === fav.idx);
-        devicesData[favoriteIndex].rang = fav.nbOfUse;
-        favoriteDevices.push(devicesData[favoriteIndex]);
+        if(favoriteIndex !== -1 && devicesData[favoriteIndex] !== undefined) {
+          devicesData[favoriteIndex].rang = fav.nbOfUse;
+          favoriteDevices.push(devicesData[favoriteIndex]);
+        }
       })
 
       setFavorites(favoriteDevices);
