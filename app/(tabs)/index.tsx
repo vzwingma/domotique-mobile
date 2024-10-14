@@ -5,15 +5,10 @@ import { ThemedView } from '@/components/ThemedView';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { ViewDomoticzDevice } from '../components/device.component';
 import { getFavoritesFromStorage, sortFavorites } from '../services/DataUtils.service';
-import { useEffect, useState } from 'react';
-import DomoticzFavorites from '../models/domoticzFavorites';
+import { useContext, useEffect, useState } from 'react';
+import DomoticzFavorites from '../models/domoticzFavorites.model';
+import { DomoticzContext } from '../services/DomoticzContextProvider';
 
-
-// Propriétés de l'écran des équipements
-type TabDomoticzDevicessProps = {
-  devicesData: DomoticzDevice[],
-  storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>
-}
 
 
 /**
@@ -23,15 +18,17 @@ type TabDomoticzDevicessProps = {
  * @param devicesData Les données des équipements
  * @param storeDevicesData La fonction pour mettre à jour les données des volets
  */
-export default function HomeScreen({ devicesData, storeDevicesData }: Readonly<TabDomoticzDevicessProps>) {
+export default function HomeScreen() {
 
 
   const [favorites, setFavorites] = useState([] as DomoticzDevice[]);
+  const { domoticzDevicesData } = useContext(DomoticzContext)!;
 
+  
   // Au chargement de l'écran, on charge les favoris
   useEffect(() => {
-    getFavoritesDevicesFromCache(devicesData, setFavorites);
-  }, [devicesData]);
+    getFavoritesDevicesFromCache(domoticzDevicesData, setFavorites);
+  }, [domoticzDevicesData]);
 
 
 
@@ -42,7 +39,7 @@ export default function HomeScreen({ devicesData, storeDevicesData }: Readonly<T
           Favoris
         </ThemedText>
       </ThemedView>
-      {getListFavoritesComponents(favorites, storeDevicesData)}
+      {getListFavoritesComponents(favorites)}
     </>
   );
 
@@ -87,14 +84,14 @@ function getFavoritesDevicesFromCache(devicesData: DomoticzDevice[], setFavorite
  * @param storeDevicesData fonction de mise à jour des devices
  * @returns les devices favoris en jsx
  */
-function getListFavoritesComponents(favoritesData: DomoticzDevice[], storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
+function getListFavoritesComponents(favoritesData: DomoticzDevice[]): JSX.Element[] {
   let items: JSX.Element[] = [];
-  if (favoritesData === undefined || storeDevicesData === undefined) {
+  if (favoritesData === undefined) {
     return items;
   }
   else {
     favoritesData.forEach((fav: DomoticzDevice) => {
-      items.push(<ViewDomoticzDevice key={fav.idx} device={fav} storeDeviceData={storeDevicesData} />);
+      items.push(<ViewDomoticzDevice key={fav.idx} device={fav}/>);
     });
   }
   return items;

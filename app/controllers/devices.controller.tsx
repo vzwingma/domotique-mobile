@@ -4,7 +4,7 @@ import { evaluateGroupLevelConsistency, getDeviceType, sortEquipements, saveFavo
 import { DomoticzBlindsGroups, DomoticzBlindsSort, DomoticzDeviceStatus, DomoticzLightsGroups, DomoticzLightsSort, DomoticzSwitchType, DomoticzType } from '@/app/enums/DomoticzEnum';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
-import DomoticzFavorites from '../models/domoticzFavorites';
+import DomoticzFavorites from '../models/domoticzFavorites.model';
 
 /**
  * Charge les équipements Domoticz.

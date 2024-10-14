@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { Colors } from '@/app/enums/Colors';
 import connectToDomoticz from '../controllers/index.controller';
@@ -15,9 +15,9 @@ import TabDomoticzTemperatures from './temperatures.tab';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { loadDomoticzDevices } from '../controllers/devices.controller';
 import TabDomoticzDevices from './devices.tabs';
-import DomoticzTemperature from '../models/domoticzTemperature.model';
 import { loadDomoticzTemperatures } from '../controllers/temperatures.controller';
 import { getHeaderIcon } from '@/components/navigation/TabHeaderIcon';
+import { DomoticzContext, DomoticzContextProvider } from '../services/DomoticzContextProvider';
 
 /**
  * Composant racine de l'application.
@@ -29,9 +29,7 @@ export default function TabLayout() {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const [domoticzConnexionData, setDomoticzConnexionData]       = useState<DomoticzConfig | null>(null);  // State to store the response data
-  const [domoticzDevicesData, setDomoticzDevicesData]           = useState<DomoticzDevice[]>([]);         // State to store the devices data
-  const [domoticzTemperaturesData, setDomoticzTemperaturesData] = useState<DomoticzTemperature[]>([]);    // État pour stocker les données de réponse
+  const { domoticzConnexionData, setDomoticzConnexionData, setDomoticzDevicesData, setDomoticzTemperaturesData } = useContext(DomoticzContext)!;
 
   const [error, setError] = useState<Error | null>(null);
   const [tab, setTab] = useState(Tabs.INDEX);
@@ -104,13 +102,13 @@ export default function TabLayout() {
     } else if (error !== null) {
       return <ThemedText type="subtitle" style={{ color: 'red', marginTop: 50 }}>Erreur : {error.message}</ThemedText>
     } else {
-      return showPanel(tab, domoticzDevicesData, setDomoticzDevicesData, domoticzTemperaturesData)
+      return showPanel(tab)
     }
   }
 
 
   return (
-    <>
+    <DomoticzContextProvider>
       <ParallaxScrollView
         headerImage={getHeaderIcon(tab)}
         headerTitle="Domoticz Mobile"
@@ -134,7 +132,7 @@ export default function TabLayout() {
             </> : <></>
         }
       </View>
-    </>
+    </DomoticzContextProvider>
   );
 }
 
@@ -147,17 +145,17 @@ export default function TabLayout() {
  * @param storeDevicesData Setter pour les données des appareils
  * @param domoticzTemperaturesData Les données des températures
  */
-function showPanel(tab: Tabs, devicesData: DomoticzDevice[], storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>, domoticzTemperaturesData: DomoticzTemperature[]): JSX.Element {
+function showPanel(tab: Tabs): JSX.Element {
 
   switch (tab) {
     case Tabs.INDEX:
-      return <HomeScreen devicesData={devicesData} storeDevicesData={storeDevicesData}/>
+      return <HomeScreen/>
     case Tabs.LUMIERES:
-      return <TabDomoticzDevices devicesData={devicesData.filter(data => data.type === DomoticzType.LUMIERE)} storeDevicesData={storeDevicesData} />
+      return <TabDomoticzDevices dataType={DomoticzType.LUMIERE} />
     case Tabs.VOLETS:
-      return <TabDomoticzDevices devicesData={devicesData.filter(data => data.type === DomoticzType.VOLET)} storeDevicesData={storeDevicesData} />
+      return <TabDomoticzDevices dataType={DomoticzType.VOLET}/>
     case Tabs.TEMPERATURES:
-      return <TabDomoticzTemperatures temperaturesData={domoticzTemperaturesData} />
+      return <TabDomoticzTemperatures />
     default:
       return <ThemedText type="title" style={{ color: 'red' }}>404 - Page non définie</ThemedText>
   }

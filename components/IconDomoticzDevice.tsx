@@ -5,23 +5,26 @@ import { getGroupColor } from "@/app/enums/Colors";
 import { DomoticzDeviceProps } from "@/app/components/device.component";
 import { onClickDeviceIcon } from "@/app/controllers/devices.controller";
 import { Image, ImageSourcePropType, Pressable } from "react-native";
+import { useContext } from "react";
+import { DomoticzContext } from "@/app/services/DomoticzContextProvider";
 
 
 /**
  * Icone d'un équipement Domoticz, suivant le type et le statut de l'équipement.
  *  >Icone du volet : https://oblador.github.io/react-native-vector-icons/ 
  */
-export const IconDomoticzDevice : React.FC<DomoticzDeviceProps> = ({ device, storeDeviceData } : DomoticzDeviceProps) => {
+export const IconDomoticzDevice : React.FC<DomoticzDeviceProps> = ({ device } : DomoticzDeviceProps) => {
+  const { setDomoticzDevicesData } = useContext(DomoticzContext)!;
 
   switch (device.type) {
     case DomoticzType.LUMIERE:
       return <MaterialCommunityIcons name={getLightIcon(device)}
                                  size={60}
                                  color={getGroupColor(device)}
-                                 onPress={() => onClickDeviceIcon(device, storeDeviceData) }/>
+                                 onPress={() => onClickDeviceIcon(device, setDomoticzDevicesData) }/>
 
     case DomoticzType.VOLET:
-      return <Pressable onPress={() => onClickDeviceIcon(device, storeDeviceData) }>
+      return <Pressable onPress={() => onClickDeviceIcon(device, setDomoticzDevicesData) }>
                 <Image source={getVoletIcon(device)} 
                        style={{ width: 60, height: 60, tintColor: getGroupColor(device), cursor: 'pointer'}} />
               </Pressable>

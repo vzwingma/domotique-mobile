@@ -5,13 +5,13 @@ import Slider from '@react-native-community/slider';
 import { updateDeviceLevel } from "../controllers/devices.controller";
 import { Colors, getGroupColor } from "../enums/Colors";
 import { DomoticzDeviceStatus, DomoticzSwitchType } from "../enums/DomoticzEnum";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import IconDomoticzDevice from "@/components/IconDomoticzDevice";
+import { DomoticzContext } from "../services/DomoticzContextProvider";
 
 // Définition des propriétés d'un équipement Domoticz
 export type DomoticzDeviceProps = {
   device: DomoticzDevice;
-  storeDeviceData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>;
 };
 
 
@@ -21,16 +21,16 @@ export type DomoticzDeviceProps = {
  * @param device équipement Domoticz
  * @param storeDeviceData setter pour les données des équipements
  */
-export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDeviceData }: DomoticzDeviceProps) => {
+export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device }: DomoticzDeviceProps) => {
 
   const [flagLabel, setFlagLabel] = useState<boolean>(false);
   const [nextValue, setNextValue] = useState<number>(getLevel(device));
-
+  const { setDomoticzDevicesData } = useContext(DomoticzContext)!;
 
   return (
     <View key={device.idx} style={device.isActive ? stylesLists.viewBox : stylesLists.viewBoxDisabled}>
       <View key={device.idx} style={stylesLists.iconBox}>
-        <IconDomoticzDevice device={device} storeDeviceData={storeDeviceData} />
+        <IconDomoticzDevice device={device} />
       </View>
       <View style={{ flexDirection: "column" }}>
         <View style={device.consistantLevel ? stylesLists.labelsBox : stylesLists.labelsBoxUnconsistent}>
@@ -47,7 +47,7 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, stor
             onValueChange={(value) => { overrideNextValue(value, setNextValue) }}
             onResponderStart={() => { setFlagLabel(true) }}
             onResponderEnd={() => {
-              updateDeviceLevel(device.idx, device, nextValue, storeDeviceData);
+              updateDeviceLevel(device.idx, device, nextValue, setDomoticzDevicesData);
               setFlagLabel(false);
             }}
           /> : <Slider disabled style={stylesLists.sliderDisabled} />}
