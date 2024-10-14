@@ -1,5 +1,5 @@
 
-export const DOMOTICZ_MOBILE_VERSION = "2.1.1";
+export const DOMOTICZ_MOBILE_VERSION = "2.2.0";
 
 export enum DomoticzStatus {
     INCONNU = 'INCONNU',
@@ -9,9 +9,10 @@ export enum DomoticzStatus {
 /**
  * Enum pour les types d'équipements Domoticz
  */
-export enum DomoticzType {
+export enum DomoticzDeviceType {
     LUMIERE = "Lumière",
     VOLET = "Volet",
+    THERMOSTAT = "Thermostat",
     UNKNOWN = "Inconnu"
 }
 /*
@@ -30,6 +31,22 @@ export enum DomoticzSwitchType {
 export enum DomoticzDeviceStatus {
     ON = "On",
     OFF = "Off"
+}
+
+/**
+ * Valeurs min et max pour les thermostats
+ */
+export enum DomoticzThermostatLevelValue {
+    MIN = 10,
+    MAX = 40
+}
+
+/**
+ * Valeurs min et max pour les équipements
+ */
+export enum DomoticzDeviceLevelValue {
+    MIN = 0,
+    MAX = 100
 }
 
 /**

@@ -1,7 +1,7 @@
-import { DomoticzBlindsSort, DomoticzDeviceStatus, DomoticzLightsSort, DomoticzType } from "../enums/DomoticzEnum";
+import { DomoticzBlindsSort, DomoticzDeviceStatus, DomoticzLightsSort, DomoticzDeviceType } from "../enums/DomoticzEnum";
 import DomoticzDevice from "../models/domoticzDevice.model";
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import DomoticzFavorites from "../models/domoticzFavorites";
+import DomoticzFavorites from "../models/domoticzFavorites.model";
 
 /**
  * 
@@ -22,12 +22,22 @@ export function sortEquipements(device1: DomoticzDevice | DomoticzFavorites, dev
     return device1.rang - device2.rang;
 }
 
+
+/**
+ * Trie les favoris en fonction de leur type et de critères spécifiques.
+ *
+ * @param {DomoticzFavorites} device1 - Le premier appareil à comparer.
+ * @param {DomoticzFavorites} device2 - Le deuxième appareil à comparer.
+ * @returns {number} - Retourne un nombre négatif si device1 doit être trié avant device2, 
+ *                     un nombre positif si device1 doit être trié après device2, 
+ *                     ou 0 si les deux appareils sont égaux.
+ */
 export function sortFavorites(device1: DomoticzFavorites, device2: DomoticzFavorites) {
-    
-    if(device1.type === device2.type) {
-        return sortEquipements(device1, device2, device1.type === DomoticzType.LUMIERE ? DomoticzLightsSort : DomoticzBlindsSort);
+
+    if (device1.type === device2.type) {
+        return sortEquipements(device1, device2, device1.type === DomoticzDeviceType.LUMIERE ? DomoticzLightsSort : DomoticzBlindsSort);
     }
-    else{
+    else {
         return device1.type < device2.type ? 1 : -1
     }
 }
@@ -39,16 +49,19 @@ export function sortFavorites(device1: DomoticzFavorites, device2: DomoticzFavor
  * @param typeDevice type d'équipement
  * @returns true si l'équipement est du type recherché
  */
-export function getDeviceType(deviceName: string): DomoticzType {
+export function getDeviceType(deviceName: string): DomoticzDeviceType {
     if (deviceName.toLowerCase().includes("volet")) {
-        return DomoticzType.VOLET;
+        return DomoticzDeviceType.VOLET;
     }
     else if (deviceName.toLowerCase().includes("lumière")
         || deviceName.toLowerCase().includes("veilleuse")) {
-        return DomoticzType.LUMIERE;
+        return DomoticzDeviceType.LUMIERE;
+    }
+    else if (deviceName.toLowerCase().includes("thermostat")) {
+        return DomoticzDeviceType.THERMOSTAT;
     }
     else {
-        return DomoticzType.UNKNOWN;
+        return DomoticzDeviceType.UNKNOWN;
     }
 }
 
@@ -106,7 +119,7 @@ export const saveFavoritesToStorage = (favorites: DomoticzFavorites[]) => {
 
 /**
  * Données stockées dans le storage
- **/ 
+ **/
 const getValueFromStorage = (key: KEY_STORAGE) => {
     return AsyncStorage.getItem(key).then((value) => {
         return JSON.parse(value || "[]");
