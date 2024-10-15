@@ -1,4 +1,4 @@
-import { DomoticzSwitchType, DomoticzType } from "../enums/DomoticzEnum";
+import { DomoticzSwitchType, DomoticzDeviceType } from "../enums/DomoticzEnum";
 
 
 /**
@@ -19,10 +19,12 @@ class DomoticzDevice {
     readonly isActive: boolean = false;
     // Niveau de l'équipement
     level: number;
+    // Unit
+    unit: string = "";
     // Niveau de cohérence du niveau de l'équipement (pour les groupes). True par défaut pour les équipements
     consistantLevel: boolean = true;
     // Type de l'équipement
-    readonly type: DomoticzType;
+    readonly type: DomoticzDeviceType;
     // Sous-type de l'équipement (Lumière, volet, ...)
     readonly subType: string;
     // Type de switch de l'équipement

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { Colors } from '@/app/enums/Colors';
 import connectToDomoticz from '../controllers/index.controller';
@@ -9,15 +9,16 @@ import { Tabs } from '../enums/TabsEnums';
 import { TabBarItems } from '@/components/navigation/TabBarItem';
 import DomoticzConfig from '../models/domoticzConfig.model';
 import { ThemedText } from '@/components/ThemedText';
-import { DOMOTICZ_MOBILE_VERSION, DomoticzStatus, DomoticzType } from '../enums/DomoticzEnum';
+import { DOMOTICZ_MOBILE_VERSION, DomoticzStatus, DomoticzDeviceType } from '../enums/DomoticzEnum';
 import HomeScreen from '.';
 import TabDomoticzTemperatures from './temperatures.tab';
-import DomoticzDevice from '../models/domoticzDevice.model';
 import { loadDomoticzDevices } from '../controllers/devices.controller';
 import TabDomoticzDevices from './devices.tabs';
-import DomoticzTemperature from '../models/domoticzTemperature.model';
 import { loadDomoticzTemperatures } from '../controllers/temperatures.controller';
 import { getHeaderIcon } from '@/components/navigation/TabHeaderIcon';
+import { DomoticzContext } from '../services/DomoticzContextProvider';
+import TabDomoticzThermostats from './thermostats.tab';
+import { loadDomoticzThermostats } from '../controllers/thermostats.controller';
 
 /**
  * Composant racine de l'application.
@@ -29,9 +30,7 @@ export default function TabLayout() {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const [domoticzConnexionData, setDomoticzConnexionData]       = useState<DomoticzConfig | null>(null);  // State to store the response data
-  const [domoticzDevicesData, setDomoticzDevicesData]           = useState<DomoticzDevice[]>([]);         // State to store the devices data
-  const [domoticzTemperaturesData, setDomoticzTemperaturesData] = useState<DomoticzTemperature[]>([]);    // État pour stocker les données de réponse
+  const { domoticzConnexionData, setDomoticzConnexionData, setDomoticzDevicesData, setDomoticzTemperaturesData, setDomoticzThermostatData } = useContext(DomoticzContext)!;
 
   const [error, setError] = useState<Error | null>(null);
   const [tab, setTab] = useState(Tabs.INDEX);
@@ -52,7 +51,7 @@ export default function TabLayout() {
    * */
   useEffect(() => {
     console.log("(Re)Chargement de l'application...");
-    connectToDomoticz({setIsLoading, storeConnexionData, setError});
+    connectToDomoticz({ setIsLoading, storeConnexionData, setError });
   }, [refreshing])
 
   /**
@@ -61,17 +60,9 @@ export default function TabLayout() {
    */
   function storeConnexionData(data: DomoticzConfig) {
     setDomoticzConnexionData(data);
-    loadDomoticzDevices(storeAllDevicesData);
+    loadDomoticzDevices(setDomoticzDevicesData);
+    loadDomoticzThermostats(setDomoticzThermostatData);
     loadDomoticzTemperatures(setDomoticzTemperaturesData);
-  }
-
-  /**
-   * Fonction de callback pour stocker les données des appareils
-   * @param voletsData Les données des volets 
-   * @param lumieresData Les données des lumières
-   **/
-  function storeAllDevicesData(domoticzDevicesData: DomoticzDevice[]) {
-    setDomoticzDevicesData(domoticzDevicesData);
     setIsLoading(false);
   }
 
@@ -82,7 +73,7 @@ export default function TabLayout() {
    * @returns Le statut de connexion suivant l'énumération DomoticzStatus
    */
   function getDomoticzStatus(): DomoticzStatus {
-    if(isLoading) return DomoticzStatus.INCONNU;
+    if (isLoading) return DomoticzStatus.INCONNU;
     return domoticzConnexionData?.status === "OK" ? DomoticzStatus.CONNECTE : DomoticzStatus.DECONNECTE;
   }
 
@@ -104,7 +95,7 @@ export default function TabLayout() {
     } else if (error !== null) {
       return <ThemedText type="subtitle" style={{ color: 'red', marginTop: 50 }}>Erreur : {error.message}</ThemedText>
     } else {
-      return showPanel(tab, domoticzDevicesData, setDomoticzDevicesData, domoticzTemperaturesData)
+      return showPanel(tab)
     }
   }
 
@@ -131,6 +122,7 @@ export default function TabLayout() {
               <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.LUMIERES} />
               <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.VOLETS} />
               <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.TEMPERATURES} />
+              <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.THERMOSTATS} />
             </> : <></>
         }
       </View>
@@ -147,18 +139,20 @@ export default function TabLayout() {
  * @param storeDevicesData Setter pour les données des appareils
  * @param domoticzTemperaturesData Les données des températures
  */
-function showPanel(tab: Tabs, devicesData: DomoticzDevice[], storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>, domoticzTemperaturesData: DomoticzTemperature[]): JSX.Element {
+function showPanel(tab: Tabs): JSX.Element {
 
   switch (tab) {
     case Tabs.INDEX:
-      return <HomeScreen devicesData={devicesData} storeDevicesData={storeDevicesData}/>
+      return <HomeScreen />
     case Tabs.LUMIERES:
-      return <TabDomoticzDevices devicesData={devicesData.filter(data => data.type === DomoticzType.LUMIERE)} storeDevicesData={storeDevicesData} />
+      return <TabDomoticzDevices dataType={DomoticzDeviceType.LUMIERE} />
     case Tabs.VOLETS:
-      return <TabDomoticzDevices devicesData={devicesData.filter(data => data.type === DomoticzType.VOLET)} storeDevicesData={storeDevicesData} />
+      return <TabDomoticzDevices dataType={DomoticzDeviceType.VOLET} />
     case Tabs.TEMPERATURES:
-      return <TabDomoticzTemperatures temperaturesData={domoticzTemperaturesData} />
-    default:
+      return <TabDomoticzTemperatures />
+      case Tabs.THERMOSTATS:
+        return <TabDomoticzThermostats />
+      default:
       return <ThemedText type="title" style={{ color: 'red' }}>404 - Page non définie</ThemedText>
   }
 }

@@ -21,32 +21,12 @@ interface TabBarItemsProps {
  */
 export function TabBarItems({ activeTab, thisTab, selectNewTab}: Readonly<TabBarItemsProps>) : JSX.Element {
     return <ThemedView style={tabStyles.tabsItem} onPointerDown={() => selectNewTab(thisTab)} onTouchEnd={() => selectNewTab(thisTab)}>
-                <TabBarIcon name={activeTab === thisTab ? getTabIconName(thisTab) : getTabIconOutline(thisTab)} 
+                <TabBarIcon name={getTabIconName(thisTab) + (activeTab === thisTab ? "" : "-outline")} 
                             color={activeTab === thisTab ? Colors.domoticz.color : '#ffffff'} />
-                <ThemedText type='tab'>{getTabLabel(thisTab)}</ThemedText>
+                <ThemedText type='tab'>{thisTab.toString()}</ThemedText>
             </ThemedView>;
   }
 
-  /**
-   * Get tab label
-   * @param tab tab name
-   * @returns tab label
-   */
-  function getTabLabel(tab: Tabs): string {
-    switch (tab) {
-      case Tabs.INDEX:
-        return 'Favoris';
-      case Tabs.LUMIERES:
-        return 'Lumières';
-      case Tabs.VOLETS:
-        return 'Volets';
-      case Tabs.TEMPERATURES:
-        return 'Températures';
-      default:
-        return '';
-    }
-  }
-  
   /**
    * Retourne l'icône de l'onglet sélectionné
    * @param tab nom de l'onglet
@@ -62,26 +42,8 @@ export function TabBarItems({ activeTab, thisTab, selectNewTab}: Readonly<TabBar
         return 'reorder-four';
       case Tabs.TEMPERATURES:
         return 'thermometer';
-      default:
-        return '';
-    }
-  }
-
-  /**
-   * Retourne l'icône de l'onglet non sélectionné
-   * @param tab nom de l'onglet
-   * @returns l'icône de l'onglet non sélectionné
-   *    */
-  function getTabIconOutline(tab: Tabs): string {
-    switch (tab) {
-      case Tabs.INDEX:
-        return 'home-outline';
-      case Tabs.LUMIERES:
-        return 'bulb-outline';
-      case Tabs.VOLETS:
-        return 'reorder-four-outline';
-      case Tabs.TEMPERATURES:
-        return 'thermometer-outline';
+        case Tabs.THERMOSTATS:
+          return 'flame';        
       default:
         return '';
     }
@@ -90,7 +52,7 @@ export function TabBarItems({ activeTab, thisTab, selectNewTab}: Readonly<TabBar
 const tabStyles = StyleSheet.create({
  
     tabsItem: {
-      width: '25%',
+      width: '20%',
       backgroundColor: Colors.dark.titlebackground,
       alignItems: 'center',
       cursor: 'pointer',

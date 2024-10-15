@@ -1,7 +1,8 @@
   // Enumération des onglets
   export enum Tabs {
-    INDEX = 'Index',
-    LUMIERES = 'Lumieres',
+    INDEX = 'Favoris',
+    LUMIERES = 'Lumières',
     VOLETS = 'Volets',
-    TEMPERATURES = 'Temperatures'
+    TEMPERATURES = 'Températures',
+    THERMOSTATS = 'Thermostats',
   }

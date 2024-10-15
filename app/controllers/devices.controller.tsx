@@ -1,10 +1,12 @@
 import callDomoticz from '@/app/services/ClientHTTP.service';
 import { SERVICES_PARAMS, SERVICES_URL } from '@/app/enums/APIconstants';
 import { evaluateGroupLevelConsistency, getDeviceType, sortEquipements, saveFavoritesToStorage, getFavoritesFromStorage } from '@/app/services/DataUtils.service';
-import { DomoticzBlindsGroups, DomoticzBlindsSort, DomoticzDeviceStatus, DomoticzLightsGroups, DomoticzLightsSort, DomoticzSwitchType, DomoticzType } from '@/app/enums/DomoticzEnum';
+import { DomoticzBlindsGroups, DomoticzBlindsSort, DomoticzDeviceStatus, DomoticzLightsGroups, DomoticzLightsSort, DomoticzSwitchType, DomoticzDeviceType, DomoticzThermostatLevelValue, DomoticzDeviceLevelValue } from '@/app/enums/DomoticzEnum';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
-import DomoticzFavorites from '../models/domoticzFavorites';
+import DomoticzFavorites from '../models/domoticzFavorites.model';
+import DomoticzThermostat from '../models/domoticzThermostat.model';
+import { loadDomoticzThermostats } from './thermostats.controller';
 
 /**
  * Charge les équipements Domoticz.
@@ -13,18 +15,17 @@ import DomoticzFavorites from '../models/domoticzFavorites';
  * @param storeDevicesData - Fonction pour stocker les données des equipements volets/lumières dans l'état.
  * @param typeDevice - Type d'équipement à charger
  */
-
 export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]) => void) {
     // Appel du service externe de connexion à Domoticz pour les types d'équipements
     callDomoticz(SERVICES_URL.GET_DEVICES)
         .then(data => {
-            let dataDevices = data.result
+            const dataDevices : DomoticzDevice[] = data.result
                 .map((rawDevice: any, index: number) => {
                     let ddevice: DomoticzDevice;
                     ddevice = {
                         idx: Number(rawDevice.idx),
                         rang: index,
-                        name: String(rawDevice.Name).replaceAll("[Grp]", "").replaceAll("Prise ", "").trim(),
+                        name: evaluateDeviceName(rawDevice.Name),
                         status: String(rawDevice.Status).replaceAll("Set Level: ", ""),
                         type: getDeviceType(rawDevice.Name),
                         subType: rawDevice.Type,
@@ -39,18 +40,18 @@ export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]
                     return ddevice;
                 });
 
-            let lumieresDevices = dataDevices    
-                .filter((device: DomoticzDevice) => device.type === DomoticzType.LUMIERE)
+            const lumieresDevices : DomoticzDevice[] = dataDevices    
+                .filter((device: DomoticzDevice) => device.type === DomoticzDeviceType.LUMIERE)
                 // Evaluation de la cohérence des niveaux des groupes
                 .map((device: DomoticzDevice) => {evaluateGroupLevelConsistency(device, DomoticzLightsGroups, dataDevices); return device;})
                 .sort((d1: DomoticzDevice, d2: DomoticzDevice) => sortEquipements(d1, d2, DomoticzLightsSort));
 
-            let voletsDevices = dataDevices
-                .filter((device: DomoticzDevice) => device.type === DomoticzType.VOLET)
+            const voletsDevices : DomoticzDevice[] = dataDevices
+                .filter((device: DomoticzDevice) => device.type === DomoticzDeviceType.VOLET)
                 // Evaluation de la cohérence des niveaux des groupes
                 .map((device: DomoticzDevice) => {evaluateGroupLevelConsistency(device, DomoticzBlindsGroups, dataDevices); return device;})
                 .sort((d1: DomoticzDevice, d2: DomoticzDevice) => sortEquipements(d1, d2, DomoticzBlindsSort));
-            
+
             let allDevicesData: DomoticzDevice[] = [...lumieresDevices, ...voletsDevices];
             // Stockage des données
             storeDevicesData(allDevicesData);
@@ -62,6 +63,18 @@ export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]
         })
 }
 
+
+/**
+ * Traitement du nom de l'équipement
+ * @param deviceName nom de l'équipement
+ * @returns nom de l'équipement pour l'affichage
+ */
+function evaluateDeviceName(deviceName: string) : string {
+    return deviceName.replaceAll("[Grp]", "")
+                     .replaceAll("Prise ", "")
+                     .trim();
+}
+
 /**
  * Evaluation du niveau de l'équipement
  * @param device équipement
@@ -69,11 +82,10 @@ export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]
  */
 function evaluateDeviceLevel(deviceLevel : any) : number{
     let level = Number(deviceLevel);
-    if(deviceLevel >= 99) level = 100;
-    if(deviceLevel <= 0.1) level = 0;
+    if(deviceLevel >= DomoticzDeviceLevelValue.MAX - 1) level = DomoticzDeviceLevelValue.MAX;
+    if(deviceLevel <= DomoticzDeviceLevelValue.MIN + 0.1) level = DomoticzDeviceLevelValue.MIN;
     return level;
 }
-
 
 /**
  * fonction pour gérer le clic sur l'icône de l'équipement
@@ -100,8 +112,7 @@ export function onClickDeviceIcon(device: DomoticzDevice, storeDeviceData: React
  * 
  */
 export function updateDeviceLevel(idx: number, device : DomoticzDevice, level: number, storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
-    if (level <= 0.1) level = 0;
-    if (level >= 99) level = 100;
+    level = evaluateDeviceLevel(level);
     if (level === 0) {
         updateDeviceState(idx, device, false, storeDevicesData);
     }
@@ -153,7 +164,7 @@ function updateDeviceState(idx: number, device: DomoticzDevice, status: boolean,
  * @param setDeviceData fonction de mise à jour des données
  * @param typeEquipement type d'équipement
  */
-function refreshEquipementState(storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
+export function refreshEquipementState(storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
     // Mise à jour des données
     loadDomoticzDevices(storeDevicesData);
     setTimeout(() => loadDomoticzDevices(storeDevicesData), 1000);
@@ -165,7 +176,7 @@ function refreshEquipementState(storeDevicesData: React.Dispatch<React.SetStateA
  * Ajout d'une action pour l'équipement favori
  * @param idx idx de l'équipement
  */
-function addActionForFavorite(device: DomoticzDevice) {
+export function addActionForFavorite(device: DomoticzDevice | DomoticzThermostat) {
     getFavoritesFromStorage()
     .then((favoris) => {
             const favoriteIndex = favoris.findIndex((fav: any) => fav.idx === device.idx);
@@ -175,7 +186,7 @@ function addActionForFavorite(device: DomoticzDevice) {
                 }
                 favoris[favoriteIndex].nbOfUse += 1;
             } else {
-                let newFavourites : DomoticzFavorites = {idx: device.idx, nbOfUse: 1, name: device.name, type: device.type, subType: device.subType, rang: 0};
+                let newFavourites : DomoticzFavorites = {idx: device.idx, nbOfUse: 1, name: device.name, type: device.type, subType: "", rang: 0};
                 favoris.push(newFavourites);
             }
             saveFavoritesToStorage(favoris);

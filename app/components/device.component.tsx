@@ -5,13 +5,13 @@ import Slider from '@react-native-community/slider';
 import { updateDeviceLevel } from "../controllers/devices.controller";
 import { Colors, getGroupColor } from "../enums/Colors";
 import { DomoticzDeviceStatus, DomoticzSwitchType } from "../enums/DomoticzEnum";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import IconDomoticzDevice from "@/components/IconDomoticzDevice";
+import { DomoticzContext } from "../services/DomoticzContextProvider";
 
 // Définition des propriétés d'un équipement Domoticz
 export type DomoticzDeviceProps = {
   device: DomoticzDevice;
-  storeDeviceData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>;
 };
 
 
@@ -21,36 +21,43 @@ export type DomoticzDeviceProps = {
  * @param device équipement Domoticz
  * @param storeDeviceData setter pour les données des équipements
  */
-export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, storeDeviceData }: DomoticzDeviceProps) => {
+export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device }: DomoticzDeviceProps) => {
 
   const [flagLabel, setFlagLabel] = useState<boolean>(false);
   const [nextValue, setNextValue] = useState<number>(getLevel(device));
-
+  const { setDomoticzDevicesData } = useContext(DomoticzContext)!;
 
   return (
-    <View key={device.idx} style={device.isActive ? stylesLists.viewBox : stylesLists.viewBoxDisabled}>
-      <View key={device.idx} style={stylesLists.iconBox}>
-        <IconDomoticzDevice device={device} storeDeviceData={storeDeviceData} />
+    <View key={device.idx} style={device.isActive ? stylesListsDevices.viewBox : stylesListsDevices.viewBoxDisabled}>
+      <View key={device.idx} style={stylesListsDevices.iconBox}>
+        <IconDomoticzDevice device={device} />
       </View>
-      <View style={{ flexDirection: "column" }}>
-        <View style={device.consistantLevel ? stylesLists.labelsBox : stylesLists.labelsBoxUnconsistent}>
-          <ThemedText style={{ fontSize: 16, color: getGroupColor(device) }}>{device.name}</ThemedText>
-          <ThemedText style={stylesLists.textLevel}>{getStatusLabel(device, nextValue, flagLabel)}</ThemedText>
+      <View style={stylesListsDevices.contentBox}>
+        <View style={device.consistantLevel ? stylesListsDevices.labelsBox : stylesListsDevices.labelsBoxUnconsistent}>
+          <View style={stylesListsDevices.libelleBox}>
+            <ThemedText style={{ fontSize: 16, color: getGroupColor(device) }}>{device.name}</ThemedText>
+          </View>
+          <View style={stylesListsDevices.valueBox}>
+            <ThemedText style={stylesListsDevices.textLevel}>{getStatusLabel(device, nextValue, flagLabel)}</ThemedText>
+          </View>
+          <View style={stylesListsDevices.unitBox}>
+            <ThemedText style={stylesListsDevices.textLevel}>{device.unit}</ThemedText>
+          </View>
         </View>
         {device.switchType === DomoticzSwitchType.SLIDER ?
           <Slider
             disabled={!device.isActive}
-            style={device.isActive ? stylesLists.slider : stylesLists.sliderDisabled}
+            style={device.isActive ? stylesListsDevices.slider : stylesListsDevices.sliderDisabled}
             minimumValue={0} value={getLevel(device)} maximumValue={100}
             step={1}
             minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor={Colors.domoticz.color}
             onValueChange={(value) => { overrideNextValue(value, setNextValue) }}
             onResponderStart={() => { setFlagLabel(true) }}
             onResponderEnd={() => {
-              updateDeviceLevel(device.idx, device, nextValue, storeDeviceData);
+              updateDeviceLevel(device.idx, device, nextValue, setDomoticzDevicesData);
               setFlagLabel(false);
             }}
-          /> : <Slider disabled style={stylesLists.sliderDisabled} />}
+          /> : <Slider disabled style={stylesListsDevices.sliderDisabled} />}
       </View>
     </View>
   );
@@ -100,8 +107,8 @@ function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: bo
     if (nextValue <= 0.1) {
       nextLabel += DomoticzDeviceStatus.OFF;
     }
-    else {
-      nextLabel += nextValue + "%";
+    else{
+      nextLabel += nextValue;
     }
     nextLabel += ")";
     getStatusLabel = nextLabel;
@@ -112,11 +119,18 @@ function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: bo
   }
   // Si c'est un variateur
   else {
-    getStatusLabel = device.status === DomoticzDeviceStatus.OFF ? DomoticzDeviceStatus.OFF : device.level + "%";
+    if(device.status !== DomoticzDeviceStatus.OFF){
+      getStatusLabel = device.level + "";
+      device.unit = "%";
+    }
+    else{
+      getStatusLabel = DomoticzDeviceStatus.OFF;
+      device.unit = "";
+    }
   }
   // Si le groupe n'est pas cohérent
   if (!device.consistantLevel) {
-    getStatusLabel += " ?";
+    device.unit = "?";
   }
   return getStatusLabel;
 
@@ -126,11 +140,11 @@ function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: bo
 
 
 
-export const stylesLists = StyleSheet.create({
+export const stylesListsDevices = StyleSheet.create({
   viewBox: {
     flexDirection: 'row',
     height: 84,
-    width: '98%',
+    width: '100%',
     padding: 10,
     margin: 1,
     borderColor: '#3A3A3A',
@@ -139,12 +153,10 @@ export const stylesLists = StyleSheet.create({
   },
   viewBoxDisabled: {
     flexDirection: 'row',
-    height: 64,
-    width: '98%',
-    padding: 1,
+    height: 84,
+    width: '100%',
+    padding: 10,
     margin: 1,
-    borderColor: '#FF0000',
-    borderWidth: 1,
     opacity: 0.2,
   },
   iconBox: {
@@ -152,25 +164,42 @@ export const stylesLists = StyleSheet.create({
     height: 60,
     width: 60
   },
+  contentBox: {
+    flexDirection: "column",
+    width: "100%",
+    paddingRight: 75
+  },
   labelsBox: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 2
+    marginTop: 2,
+    width: '100%',
   },
   labelsBoxUnconsistent: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 2,
-    opacity: 0.5
+    opacity: 0.5,
+    width: '100%'
   },
+  libelleBox: {
+    width: "100%",
+  },   
+  valueBox: {
+    flexDirection: "column",
+    marginLeft: -80,
+    width: 60
+  },  
+  unitBox: {
+    width: 20
+  },
+
   slider: {
-    width: 270,
     height: 40,
-    marginTop: -10
+    marginTop: -10,
   },
   sliderDisabled: {
-    width: 270,
-    height: 50,
+    height: 40,
     marginTop: -10,
     opacity: 0
   },
@@ -179,7 +208,7 @@ export const stylesLists = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.domoticz.color,
     paddingBottom: 7,
-    paddingRight: 15
+    textAlign: "right",
   },
   textName: {
     fontSize: 16,

@@ -15,9 +15,10 @@ export const ROOT_URI = "json.htm?type=command&param=";
  * Paramètres pour les services.
  */
 export const enum SERVICES_PARAMS {
-    IDX = "<IDX>",
-    CMD = "<CMD>",
+    IDX   = "<IDX>",
+    CMD   = "<CMD>",
     LEVEL = "<LEVEL>",
+    TEMP  = "<TEMP>",
 }
 
 
@@ -32,6 +33,8 @@ export enum SERVICES_URL {
     CMD_BLINDS_LIGHTS_ON_OFF = ROOT_URI+"switchlight&idx="+SERVICES_PARAMS.IDX+"&switchcmd="+ SERVICES_PARAMS.CMD,
     // idx=<IDX>&switchcmd=Set%20Level&level=<0..100>
     CMD_BLINDS_LIGHTS_SET_LEVEL = ROOT_URI+"switchlight&idx="+SERVICES_PARAMS.IDX+"&switchcmd=Set%20Level&level="+ SERVICES_PARAMS.LEVEL,
+    // /json.htm?type=command&param=setsetpoint&idx=&setpoint=<0..100>
+    CMD_THERMOSTAT_SET_POINT = ROOT_URI+"setsetpoint&idx="+SERVICES_PARAMS.IDX+"&setpoint="+ SERVICES_PARAMS.TEMP,
 }
 
 
