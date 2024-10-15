@@ -35,9 +35,14 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
       </View>
       <View style={stylesListsDevices.contentBox}>
         <View style={stylesListsDevices.labelsBox}>
-          <ThemedText style={{ fontSize: 16, color: 'white' }}>{thermostat.name}</ThemedText>
+          <View style={stylesListsDevices.libelleBox}>
+            <ThemedText style={{ fontSize: 16, color: 'white' }}>{thermostat.name}</ThemedText>
+          </View>
           <View style={stylesListsDevices.valueBox}>
-          <ThemedText style={stylesListsDevices.textLevel}>{getStatusLabel(thermostat, nextValue, flagLabel)}</ThemedText>
+            <ThemedText style={stylesListsDevices.textLevel}>{getStatusLabel(thermostat, nextValue, flagLabel)}</ThemedText>
+          </View>
+          <View style={stylesListsDevices.unitBox}>
+            <ThemedText style={stylesListsDevices.textLevel}>{thermostat.unit}</ThemedText>
           </View>
         </View>
         <Slider
@@ -83,12 +88,11 @@ function getStatusLabel(device: DomoticzThermostat, nextValue: number, flagLabel
   }
   // Si on est en mode édition
   else if (flagLabel) {
-    let nextLabel = "(" + nextValue + device.unit + ")";
-    getStatusLabel = nextLabel;
+    getStatusLabel = "(" + nextValue + ")";
   }
   // Sinon on affiche le niveau actuel
   else {
-    getStatusLabel = device.temp + " " + device.unit;
+    getStatusLabel = device.temp + "";
   }
   return getStatusLabel;
 
