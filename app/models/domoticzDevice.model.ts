@@ -19,6 +19,8 @@ class DomoticzDevice {
     readonly isActive: boolean = false;
     // Niveau de l'équipement
     level: number;
+    // Unit
+    unit: string = "";
     // Niveau de cohérence du niveau de l'équipement (pour les groupes). True par défaut pour les équipements
     consistantLevel: boolean = true;
     // Type de l'équipement
