@@ -20,10 +20,16 @@ export const ViewDomoticzTemperature: React.FC<DomoticzTempProps> = ({ temperatu
       </View>
       <View style={stylesListsDevices.contentBox}>
         <View style={stylesListsDevices.labelsBox}>
-          <ThemedText style={stylesListsDevices.textName}>{temperature.name}</ThemedText>
+          <View style={stylesListsDevices.libelleBox}>
+            <ThemedText style={stylesListsDevices.textName}>{temperature.name}</ThemedText>
+          </View>
           <View style={stylesListsDevices.valueBox}>
-            <ThemedText style={stylesListsDevices.textLevel}>{temperature.temp} °C</ThemedText>
-            {temperature.humidity ? <ThemedText style={stylesListsDevices.textLevel}>{temperature.humidity}  %</ThemedText> : <></>}
+            <ThemedText style={stylesListsDevices.textLevel}>{temperature.temp}</ThemedText>
+            {temperature.humidity ? <ThemedText style={stylesListsDevices.textLevel}>{temperature.humidity}</ThemedText> : <></>}
+          </View>
+          <View style={stylesListsDevices.unitBox}>
+            <ThemedText style={stylesListsDevices.textLevel}>°C</ThemedText>
+            {temperature.humidity ? <ThemedText style={stylesListsDevices.textLevel}>%</ThemedText> : <></>}
           </View>
         </View>
       </View>

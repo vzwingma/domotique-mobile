@@ -34,9 +34,14 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device }: Do
       </View>
       <View style={stylesListsDevices.contentBox}>
         <View style={device.consistantLevel ? stylesListsDevices.labelsBox : stylesListsDevices.labelsBoxUnconsistent}>
-          <ThemedText style={{ fontSize: 16, color: getGroupColor(device) }}>{device.name}</ThemedText>
+          <View style={stylesListsDevices.libelleBox}>
+            <ThemedText style={{ fontSize: 16, color: getGroupColor(device) }}>{device.name}</ThemedText>
+          </View>
           <View style={stylesListsDevices.valueBox}>
-          <ThemedText style={stylesListsDevices.textLevel}>{getStatusLabel(device, nextValue, flagLabel)}</ThemedText>
+            <ThemedText style={stylesListsDevices.textLevel}>{getStatusLabel(device, nextValue, flagLabel)}</ThemedText>
+          </View>
+          <View style={stylesListsDevices.unitBox}>
+            <ThemedText style={stylesListsDevices.textLevel}>{device.unit}</ThemedText>
           </View>
         </View>
         {device.switchType === DomoticzSwitchType.SLIDER ?
@@ -102,8 +107,8 @@ function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: bo
     if (nextValue <= 0.1) {
       nextLabel += DomoticzDeviceStatus.OFF;
     }
-    else {
-      nextLabel += nextValue + " %";
+    else{
+      nextLabel += nextValue;
     }
     nextLabel += ")";
     getStatusLabel = nextLabel;
@@ -114,11 +119,18 @@ function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: bo
   }
   // Si c'est un variateur
   else {
-    getStatusLabel = device.status === DomoticzDeviceStatus.OFF ? DomoticzDeviceStatus.OFF + " " : device.level + " %";
+    if(device.status !== DomoticzDeviceStatus.OFF){
+      getStatusLabel = device.level + "";
+      device.unit = "%";
+    }
+    else{
+      getStatusLabel = DomoticzDeviceStatus.OFF;
+      device.unit = "";
+    }
   }
   // Si le groupe n'est pas cohérent
   if (!device.consistantLevel) {
-    getStatusLabel += " ?";
+    device.unit = "?";
   }
   return getStatusLabel;
 
@@ -141,12 +153,10 @@ export const stylesListsDevices = StyleSheet.create({
   },
   viewBoxDisabled: {
     flexDirection: 'row',
-    height: 64,
+    height: 84,
     width: '100%',
-    padding: 1,
+    padding: 10,
     margin: 1,
-    borderColor: '#FF0000',
-    borderWidth: 1,
     opacity: 0.2,
   },
   iconBox: {
@@ -157,30 +167,39 @@ export const stylesListsDevices = StyleSheet.create({
   contentBox: {
     flexDirection: "column",
     width: "100%",
-    paddingRight: 80
+    paddingRight: 75
   },
   labelsBox: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 2,
-    width: '100%'
+    width: '100%',
   },
   labelsBoxUnconsistent: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 2,
-    opacity: 0.5
+    opacity: 0.5,
+    width: '100%'
   },
+  libelleBox: {
+    width: "100%",
+  },   
   valueBox: {
     flexDirection: "column",
-    width: 80,
+    marginLeft: -80,
+    width: 60
   },  
+  unitBox: {
+    width: 20
+  },
+
   slider: {
     height: 40,
     marginTop: -10,
   },
   sliderDisabled: {
-    height: 50,
+    height: 40,
     marginTop: -10,
     opacity: 0
   },
