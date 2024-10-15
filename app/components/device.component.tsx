@@ -187,10 +187,11 @@ export const stylesListsDevices = StyleSheet.create({
   },   
   valueBox: {
     flexDirection: "column",
-    marginLeft: -50,
+    marginLeft: -80,
+    width: 60
   },  
   unitBox: {
-    width: 20,
+    width: 20
   },
 
   slider: {
