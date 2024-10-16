@@ -1,5 +1,4 @@
 import { DomoticzDeviceType } from "../enums/DomoticzEnum";
-import DomoticzDevice from "./domoticzDevice.model";
 
 
 /**

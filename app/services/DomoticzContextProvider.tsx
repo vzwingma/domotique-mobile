@@ -32,13 +32,29 @@ export const DomoticzContext = React.createContext<DomoticzContextType | null>(n
  * @param param0 children
  * @returns  provider
  */
-export function DomoticzContextProvider({ children }: { children: Readonly<React.ReactNode> }) : JSX.Element {
+export function DomoticzContextProvider({ children }: Readonly<{ children: React.ReactNode }>) : JSX.Element {
     const [domoticzConnexionData, setDomoticzConnexionData]       = useState<DomoticzConfig>();  // State to store the response data
     const [domoticzDevicesData, setDomoticzDevicesData]           = useState<DomoticzDevice[]>([]);         // State to store the devices data
     const [domoticzTemperaturesData, setDomoticzTemperaturesData] = useState<DomoticzTemperature[]>([]);    // État pour stocker les données de réponse
     const [domoticzThermostatData, setDomoticzThermostatData]     = useState<DomoticzThermostat[]>([]);    // État pour stocker les données de réponse
+    const contextValue = React.useMemo(() => ({
+        domoticzConnexionData,
+        setDomoticzConnexionData,
+        domoticzDevicesData,
+        setDomoticzDevicesData,
+        domoticzTemperaturesData,
+        setDomoticzTemperaturesData,
+        domoticzThermostatData,
+        setDomoticzThermostatData
+    }), [
+        domoticzConnexionData,
+        domoticzDevicesData,
+        domoticzTemperaturesData,
+        domoticzThermostatData
+    ]);
+
     return (
-        <DomoticzContext.Provider value={{ domoticzConnexionData, setDomoticzConnexionData, domoticzDevicesData, setDomoticzDevicesData, domoticzTemperaturesData, setDomoticzTemperaturesData, domoticzThermostatData, setDomoticzThermostatData }}>
+        <DomoticzContext.Provider value={contextValue}>
             {children}
         </DomoticzContext.Provider>
     )
