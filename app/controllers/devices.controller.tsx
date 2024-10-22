@@ -1,12 +1,11 @@
 import callDomoticz from '@/app/services/ClientHTTP.service';
 import { SERVICES_PARAMS, SERVICES_URL } from '@/app/enums/APIconstants';
 import { evaluateGroupLevelConsistency, getDeviceType, sortEquipements, saveFavoritesToStorage, getFavoritesFromStorage } from '@/app/services/DataUtils.service';
-import { DomoticzBlindsGroups, DomoticzBlindsSort, DomoticzDeviceStatus, DomoticzLightsGroups, DomoticzLightsSort, DomoticzSwitchType, DomoticzDeviceType, DomoticzThermostatLevelValue, DomoticzDeviceLevelValue } from '@/app/enums/DomoticzEnum';
+import { DomoticzBlindsGroups, DomoticzBlindsSort, DomoticzDeviceStatus, DomoticzLightsGroups, DomoticzLightsSort, DomoticzSwitchType, DomoticzDeviceType, DomoticzDeviceLevelValue } from '@/app/enums/DomoticzEnum';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
 import DomoticzFavorites from '../models/domoticzFavorites.model';
 import DomoticzThermostat from '../models/domoticzThermostat.model';
-import { loadDomoticzThermostats } from './thermostats.controller';
 
 /**
  * Charge les équipements Domoticz.
@@ -31,6 +30,7 @@ export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]
                         subType: rawDevice.Type,
                         switchType: rawDevice.SwitchType,
                         level: evaluateDeviceLevel(rawDevice.Level),
+                        unit: "%",
                         consistantLevel: true,
                         isGroup: String(rawDevice.Name).indexOf("[Grp]") > -1,
                         lastUpdate: rawDevice.LastUpdate,

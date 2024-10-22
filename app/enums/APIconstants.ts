@@ -34,7 +34,7 @@ export enum SERVICES_URL {
     // idx=<IDX>&switchcmd=Set%20Level&level=<0..100>
     CMD_BLINDS_LIGHTS_SET_LEVEL = ROOT_URI+"switchlight&idx="+SERVICES_PARAMS.IDX+"&switchcmd=Set%20Level&level="+ SERVICES_PARAMS.LEVEL,
     // /json.htm?type=command&param=setsetpoint&idx=&setpoint=<0..100>
-    CMD_THERMOSTAT_SET_POINT = ROOT_URI+"setsetpoint&idx="+SERVICES_PARAMS.IDX+"&setpoint="+ SERVICES_PARAMS.TEMP,
+    CMD_THERMOSTAT_SET_POINT = ROOT_URI+"setsetpoint&idx="+SERVICES_PARAMS.IDX+"&setpoint="+ SERVICES_PARAMS.TEMP
 }
 
 
