@@ -62,9 +62,7 @@ function getFavoritesDevicesFromCache(devicesData: DomoticzDevice[], setFavorite
       let sortedFavorites = favorites
         .filter((fav: DomoticzFavorites) => fav.nbOfUse !== undefined && fav.nbOfUse > 0)
         .sort((fava: DomoticzFavorites, favb: DomoticzFavorites) => favb.nbOfUse - fava.nbOfUse)
-        .slice(0, 6)
-        .sort((fava: DomoticzFavorites, favb: DomoticzFavorites) => sortFavorites(fava, favb))
-;
+        .sort((fava: DomoticzFavorites, favb: DomoticzFavorites) => sortFavorites(fava, favb));
 
       sortedFavorites.forEach((fav: DomoticzFavorites) => {
         const favoriteIndex = devicesData.findIndex((device) => device.idx === fav.idx);
@@ -92,9 +90,13 @@ function getListFavoritesComponents(favoritesData: DomoticzDevice[]): JSX.Elemen
     return items;
   }
   else {
-    favoritesData.forEach((fav: DomoticzDevice) => {
-      items.push(<ViewDomoticzDevice key={fav.idx} device={fav}/>);
-    });
+    favoritesData
+      // .filter((favDevice: DomoticzDevice) => favDevice.isActive)
+      .slice(0, 6)
+      .forEach((fav: DomoticzDevice) => {
+        items.push(<ThemedText key={"text"+fav.idx} type="italic" style={{ color: 'white', marginTop: -10, marginBottom: -10 }}>{fav.rang}</ThemedText>);
+        items.push(<ViewDomoticzDevice key={fav.idx} device={fav}/>);
+      });
   }
   return items;
 }
