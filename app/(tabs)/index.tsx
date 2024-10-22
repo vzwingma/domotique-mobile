@@ -91,10 +91,9 @@ function getListFavoritesComponents(favoritesData: DomoticzDevice[]): JSX.Elemen
   }
   else {
     favoritesData
-      // .filter((favDevice: DomoticzDevice) => favDevice.isActive)
+      .filter((favDevice: DomoticzDevice) => favDevice.isActive)
       .slice(0, 6)
       .forEach((fav: DomoticzDevice) => {
-        items.push(<ThemedText key={"text"+fav.idx} type="italic" style={{ color: 'white', marginTop: -10, marginBottom: -10 }}>{fav.rang}</ThemedText>);
         items.push(<ViewDomoticzDevice key={fav.idx} device={fav}/>);
       });
   }
