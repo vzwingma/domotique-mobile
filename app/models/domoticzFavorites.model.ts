@@ -4,7 +4,7 @@ import { DomoticzDeviceType } from "../enums/DomoticzEnum";
 /**
  * Favoris d'Equipement Domoticz (Lumières, volets)
  */
-class DomoticzFavorites {
+class   DomoticzFavorites {
     // Index de l'équipement
     readonly idx: number;
     // Nombre de fois où l'équipement est activé
@@ -15,7 +15,7 @@ class DomoticzFavorites {
     readonly type: DomoticzDeviceType;
     // Sous-type de l'équipement (Lumière, volet, ...)
     readonly subType: string;
-    public rang: number = 0;
+
 
     /**
      * Constructeur
@@ -36,7 +36,6 @@ class DomoticzFavorites {
         this.name = name;
         this.type = type;
         this.subType = subType;
-        this.rang = 0;
     }
 }
 export default DomoticzFavorites;

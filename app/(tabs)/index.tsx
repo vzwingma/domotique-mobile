@@ -31,7 +31,6 @@ export default function HomeScreen() {
   }, [domoticzDevicesData]);
 
 
-
   return (
     <>
       <ThemedView style={tabStyles.titleContainer}>
@@ -58,6 +57,7 @@ function getFavoritesDevicesFromCache(devicesData: DomoticzDevice[], setFavorite
     let favoriteDevices: DomoticzDevice[] = [];
 
     getFavoritesFromStorage().then((favorites) => {
+
       // Tri par nombre d'utilisation
       let sortedFavorites = favorites
         .filter((fav: DomoticzFavorites) => fav.nbOfUse !== undefined && fav.nbOfUse > 0)
@@ -66,7 +66,7 @@ function getFavoritesDevicesFromCache(devicesData: DomoticzDevice[], setFavorite
       sortedFavorites.forEach((fav: DomoticzFavorites) => {
         const favoriteIndex = devicesData.findIndex((device) => device.idx === fav.idx);
         if(favoriteIndex !== -1 && devicesData[favoriteIndex] !== undefined) {
-          devicesData[favoriteIndex].rang = fav.nbOfUse;
+          devicesData[favoriteIndex].data = ""+fav.nbOfUse;
           favoriteDevices.push(devicesData[favoriteIndex]);
         }
       })
@@ -96,7 +96,7 @@ function getListFavoritesComponents(favoritesData: DomoticzDevice[]): JSX.Elemen
       // Et on les retrie suivant la mise en page
       .sort((favDeviceA: DomoticzDevice, favDeviceB: DomoticzDevice) => sortFavoritesDevices(favDeviceA, favDeviceB))
       .forEach((fav: DomoticzDevice) => {
-        items.push(<ThemedText key={"text"+fav.idx} type="italic" style={{ color: 'white', marginTop: -10, marginBottom: -10 }}>{fav.rang}</ThemedText>);
+        items.push(<ThemedText key={"text"+fav.idx} type="italic" style={{ color: 'white', marginTop: -10, marginBottom: -10 }}>{fav.data}</ThemedText>);
         items.push(<ViewDomoticzDevice key={fav.idx} device={fav}/>);
       });
   }

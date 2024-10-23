@@ -10,7 +10,7 @@ import DomoticzFavorites from "../models/domoticzFavorites.model";
  * @param devicesOrder ordre des équipements
  * @returns tri des équipements
  */
-export function sortEquipements(device1: DomoticzDevice | DomoticzFavorites, device2: DomoticzDevice | DomoticzFavorites, devicesOrder: number[]) {
+export function sortEquipements(device1: DomoticzDevice, device2: DomoticzDevice, devicesOrder: number[]) {
     devicesOrder.forEach((idx, index) => {
         if (device1.idx === idx) {
             device1.rang = index;
