@@ -4,7 +4,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { ViewDomoticzDevice } from '../components/device.component';
-import { getFavoritesFromStorage, sortFavorites } from '../services/DataUtils.service';
+import { getFavoritesFromStorage, sortFavorites as sortFavoritesDevices } from '../services/DataUtils.service';
 import { useContext, useEffect, useState } from 'react';
 import DomoticzFavorites from '../models/domoticzFavorites.model';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
@@ -58,10 +58,10 @@ function getFavoritesDevicesFromCache(devicesData: DomoticzDevice[], setFavorite
     let favoriteDevices: DomoticzDevice[] = [];
 
     getFavoritesFromStorage().then((favorites) => {
-      // Tri par nombre d'utilisation, et on garde les 6 premiers
+      // Tri par nombre d'utilisation
       let sortedFavorites = favorites
         .filter((fav: DomoticzFavorites) => fav.nbOfUse !== undefined && fav.nbOfUse > 0)
-        .sort((fava: DomoticzFavorites, favb: DomoticzFavorites) => sortFavorites(fava, favb));
+        .sort((fava: DomoticzFavorites, favb: DomoticzFavorites) => favb.nbOfUse - fava.nbOfUse)
 
       sortedFavorites.forEach((fav: DomoticzFavorites) => {
         const favoriteIndex = devicesData.findIndex((device) => device.idx === fav.idx);
@@ -90,8 +90,11 @@ function getListFavoritesComponents(favoritesData: DomoticzDevice[]): JSX.Elemen
   }
   else {
     favoritesData
-      // .filter((favDevice: DomoticzDevice) => favDevice.isActive)
-      //.slice(0, 6)
+    // On ne garde que les 8 premiers favoris actifs
+      .filter((favDevice: DomoticzDevice) => favDevice.isActive)
+      .slice(0, 8)
+      // Et on les retrie suivant la mise en page
+      .sort((favDeviceA: DomoticzDevice, favDeviceB: DomoticzDevice) => sortFavoritesDevices(favDeviceA, favDeviceB))
       .forEach((fav: DomoticzDevice) => {
         items.push(<ThemedText key={"text"+fav.idx} type="italic" style={{ color: 'white', marginTop: -10, marginBottom: -10 }}>{fav.rang}</ThemedText>);
         items.push(<ViewDomoticzDevice key={fav.idx} device={fav}/>);

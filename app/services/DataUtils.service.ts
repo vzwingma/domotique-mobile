@@ -32,7 +32,7 @@ export function sortEquipements(device1: DomoticzDevice | DomoticzFavorites, dev
  *                     un nombre positif si device1 doit être trié après device2, 
  *                     ou 0 si les deux appareils sont égaux.
  */
-export function sortFavorites(device1: DomoticzFavorites, device2: DomoticzFavorites) {
+export function sortFavorites(device1: DomoticzDevice, device2: DomoticzDevice) {
 
     if (device1.type === device2.type) {
         return sortEquipements(device1, device2, device1.type === DomoticzDeviceType.LUMIERE ? DomoticzLightsSort : DomoticzBlindsSort);
