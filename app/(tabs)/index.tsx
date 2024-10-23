@@ -96,7 +96,6 @@ function getListFavoritesComponents(favoritesData: DomoticzDevice[]): JSX.Elemen
       // Et on les retrie suivant la mise en page
       .sort((favDeviceA: DomoticzDevice, favDeviceB: DomoticzDevice) => sortFavoritesDevices(favDeviceA, favDeviceB))
       .forEach((fav: DomoticzDevice) => {
-        items.push(<ThemedText key={"text"+fav.idx} type="italic" style={{ color: 'white', marginTop: -10, marginBottom: -10 }}>{fav.data}</ThemedText>);
         items.push(<ViewDomoticzDevice key={fav.idx} device={fav}/>);
       });
   }
