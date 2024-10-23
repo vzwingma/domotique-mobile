@@ -92,7 +92,7 @@ function getListFavoritesComponents(favoritesData: DomoticzDevice[]): JSX.Elemen
     favoritesData
     // On ne garde que les 8 premiers favoris actifs
       .filter((favDevice: DomoticzDevice) => favDevice.isActive)
-      .slice(0, 8)
+      .slice(0, 6)
       // Et on les retrie suivant la mise en page
       .sort((favDeviceA: DomoticzDevice, favDeviceB: DomoticzDevice) => sortFavoritesDevices(favDeviceA, favDeviceB))
       .forEach((fav: DomoticzDevice) => {
