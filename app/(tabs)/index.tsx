@@ -1,5 +1,4 @@
 
-import { StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import DomoticzDevice from '../models/domoticzDevice.model';
@@ -33,11 +32,6 @@ export default function HomeScreen() {
 
   return (
     <>
-      <ThemedView style={tabStyles.titleContainer}>
-        <ThemedText type="subtitle" style={{ color: 'white', marginTop: 5 }}>
-          Favoris
-        </ThemedText>
-      </ThemedView>
       {getListFavoritesComponents(favorites)}
     </>
   );
@@ -92,7 +86,7 @@ function getListFavoritesComponents(favoritesData: DomoticzDevice[]): JSX.Elemen
     favoritesData
     // On ne garde que les 8 premiers favoris actifs
       .filter((favDevice: DomoticzDevice) => favDevice.isActive)
-      .slice(0, 8)
+      .slice(0, 6)
       // Et on les retrie suivant la mise en page
       .sort((favDeviceA: DomoticzDevice, favDeviceB: DomoticzDevice) => sortFavoritesDevices(favDeviceA, favDeviceB))
       .forEach((fav: DomoticzDevice) => {
@@ -102,11 +96,3 @@ function getListFavoritesComponents(favoritesData: DomoticzDevice[]): JSX.Elemen
   }
   return items;
 }
-
-
-// Styles de l'écran des équipements
-export const tabStyles = StyleSheet.create({
-  titleContainer: {
-    alignItems: 'center',
-  },
-});
