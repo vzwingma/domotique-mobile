@@ -8,7 +8,7 @@
       "web"
     ],
     "githubUrl": "https://github.com/vzwingma/domotique-mobile",
-    "version": "1.0.0.V",
+    "version": "2.2.2.V",
     "orientation": "portrait",
     "icon": "./assets/images/v/icon.png",
     "scheme": "myapp",
