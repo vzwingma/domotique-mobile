@@ -61,7 +61,6 @@ function getFavoritesDevicesFromCache(devicesData: DomoticzDevice[], setFavorite
       // Tri par nombre d'utilisation, et on garde les 6 premiers
       let sortedFavorites = favorites
         .filter((fav: DomoticzFavorites) => fav.nbOfUse !== undefined && fav.nbOfUse > 0)
-        .sort((fava: DomoticzFavorites, favb: DomoticzFavorites) => favb.nbOfUse - fava.nbOfUse)
         .sort((fava: DomoticzFavorites, favb: DomoticzFavorites) => sortFavorites(fava, favb));
 
       sortedFavorites.forEach((fav: DomoticzFavorites) => {
@@ -92,7 +91,7 @@ function getListFavoritesComponents(favoritesData: DomoticzDevice[]): JSX.Elemen
   else {
     favoritesData
       // .filter((favDevice: DomoticzDevice) => favDevice.isActive)
-      .slice(0, 6)
+      //.slice(0, 6)
       .forEach((fav: DomoticzDevice) => {
         items.push(<ThemedText key={"text"+fav.idx} type="italic" style={{ color: 'white', marginTop: -10, marginBottom: -10 }}>{fav.rang}</ThemedText>);
         items.push(<ViewDomoticzDevice key={fav.idx} device={fav}/>);
