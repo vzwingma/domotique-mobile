@@ -116,17 +116,16 @@ function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: bo
   // Si c'est un interrupteur
   else if (device.switchType === DomoticzSwitchType.ONOFF) {
     getStatusLabel = device.status;
+    device.unit = "";
   }
   // Si c'est un variateur
-  else {
-    if(device.status !== DomoticzDeviceStatus.OFF){
+  else if(device.status !== DomoticzDeviceStatus.OFF){
       getStatusLabel = device.level + "";
       device.unit = "%";
-    }
-    else{
+  }
+  else{
       getStatusLabel = DomoticzDeviceStatus.OFF;
       device.unit = "";
-    }
   }
   // Si le groupe n'est pas cohérent
   if (!device.consistantLevel) {

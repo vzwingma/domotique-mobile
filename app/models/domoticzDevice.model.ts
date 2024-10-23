@@ -32,7 +32,7 @@ class DomoticzDevice {
     // Status de l'équipement
     status: string;
     // Données de l'équipement
-    readonly data: string;
+    public data: string;
 
 
     /**
