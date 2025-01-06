@@ -8,15 +8,14 @@ import { getFavoritesFromStorage, sortFavorites as sortFavoritesDevices } from '
 import { useContext, useEffect, useState } from 'react';
 import DomoticzFavorites from '../models/domoticzFavorites.model';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
+import React from 'react';
 
 
 
 /**
  * Ecran d'accueil avec les équipements favoris
- * 
+ *
  * Ce composant affiche une liste de volets récupérés depuis Domoticz.
- * @param devicesData Les données des équipements
- * @param storeDevicesData La fonction pour mettre à jour les données des volets
  */
 export default function HomeScreen() {
 
@@ -24,7 +23,7 @@ export default function HomeScreen() {
   const [favorites, setFavorites] = useState([] as DomoticzDevice[]);
   const { domoticzDevicesData } = useContext(DomoticzContext)!;
 
-  
+
   // Au chargement de l'écran, on charge les favoris
   useEffect(() => {
     getFavoritesDevicesFromCache(domoticzDevicesData, setFavorites);
@@ -49,7 +48,7 @@ export default function HomeScreen() {
  * Chargement des favoris depuis le cache
  * @param devicesData liste des devices
  * @param setFavorites fonction de mise à jour des favoris dans les états
- * @returns 
+ * @returns
  */
 function getFavoritesDevicesFromCache(devicesData: DomoticzDevice[], setFavorites: Function) {
   if (devicesData !== undefined) {
@@ -80,7 +79,6 @@ function getFavoritesDevicesFromCache(devicesData: DomoticzDevice[], setFavorite
 /**
  * liste des composants graphiques des devices favoris
  * @param favoritesData devices favoris
- * @param storeDevicesData fonction de mise à jour des devices
  * @returns les devices favoris en jsx
  */
 function getListFavoritesComponents(favoritesData: DomoticzDevice[]): JSX.Element[] {
