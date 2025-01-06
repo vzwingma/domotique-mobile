@@ -69,7 +69,7 @@ export default function TabLayout() {
 
   /**
    * Récupère le statut de connexion à Domoticz
-   * 
+   *
    * @returns Le statut de connexion suivant l'énumération DomoticzStatus
    */
   function getDomoticzStatus(): DomoticzStatus {
@@ -133,11 +133,8 @@ export default function TabLayout() {
 
 /**
  * Affiche le panneau de l'onglet sélectionné
- * 
+ *
  * @param tab L'onglet sélectionné
- * @param devicesData Les données des appareils
- * @param storeDevicesData Setter pour les données des appareils
- * @param domoticzTemperaturesData Les données des températures
  */
 function showPanel(tab: Tabs): JSX.Element {
 
