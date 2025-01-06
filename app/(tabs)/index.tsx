@@ -1,15 +1,10 @@
 
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { ViewDomoticzDevice } from '../components/device.component';
 import { getFavoritesFromStorage, sortFavorites as sortFavoritesDevices } from '../services/DataUtils.service';
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import DomoticzFavorites from '../models/domoticzFavorites.model';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
-import React from 'react';
-
-
 
 /**
  * Ecran d'accueil avec les équipements favoris
