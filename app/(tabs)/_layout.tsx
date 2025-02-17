@@ -89,7 +89,7 @@ export default function TabLayout() {
   /**
    * Récupère le contenu du panneau, suivant l'état de chargement et les erreurs
    */
-  function getPanelContent() {
+  function getPanelContent() : React.JSX.Element{
     if (isLoading) {
       return <ActivityIndicator size={'large'} color={Colors.domoticz.color} />
     } else if (error !== null) {
