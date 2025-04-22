@@ -186,7 +186,7 @@ export function addActionForFavorite(device: DomoticzDevice | DomoticzThermostat
                 }
                 favoris[favoriteIndex].nbOfUse += 1;
             } else {
-                let newFavourites : DomoticzFavorites = {idx: device.idx, nbOfUse: 1, name: device.name, type: device.type, subType: "", rang: 0};
+                let newFavourites : DomoticzFavorites = {idx: device.idx, nbOfUse: 1, name: device.name, type: device.type, subType: ""};
                 favoris.push(newFavourites);
             }
             saveFavoritesToStorage(favoris);
