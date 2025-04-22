@@ -1,22 +1,15 @@
 
-import { StyleSheet } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { ViewDomoticzDevice } from '../components/device.component';
-import { getFavoritesFromStorage, sortFavorites } from '../services/DataUtils.service';
-import { useContext, useEffect, useState } from 'react';
+import { getFavoritesFromStorage, sortFavorites as sortFavoritesDevices } from '../services/DataUtils.service';
+import React, { useContext, useEffect, useState } from 'react';
 import DomoticzFavorites from '../models/domoticzFavorites.model';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
 
-
-
 /**
  * Ecran d'accueil avec les équipements favoris
- * 
+ *
  * Ce composant affiche une liste de volets récupérés depuis Domoticz.
- * @param devicesData Les données des équipements
- * @param storeDevicesData La fonction pour mettre à jour les données des volets
  */
 export default function HomeScreen() {
 
@@ -24,21 +17,15 @@ export default function HomeScreen() {
   const [favorites, setFavorites] = useState([] as DomoticzDevice[]);
   const { domoticzDevicesData } = useContext(DomoticzContext)!;
 
-  
+
   // Au chargement de l'écran, on charge les favoris
   useEffect(() => {
     getFavoritesDevicesFromCache(domoticzDevicesData, setFavorites);
   }, [domoticzDevicesData]);
 
 
-
   return (
     <>
-      <ThemedView style={tabStyles.titleContainer}>
-        <ThemedText type="subtitle" style={{ color: 'white', marginTop: 5 }}>
-          Favoris
-        </ThemedText>
-      </ThemedView>
       {getListFavoritesComponents(favorites)}
     </>
   );
@@ -50,7 +37,7 @@ export default function HomeScreen() {
  * Chargement des favoris depuis le cache
  * @param devicesData liste des devices
  * @param setFavorites fonction de mise à jour des favoris dans les états
- * @returns 
+ * @returns
  */
 function getFavoritesDevicesFromCache(devicesData: DomoticzDevice[], setFavorites: Function) {
   if (devicesData !== undefined) {
@@ -58,16 +45,16 @@ function getFavoritesDevicesFromCache(devicesData: DomoticzDevice[], setFavorite
     let favoriteDevices: DomoticzDevice[] = [];
 
     getFavoritesFromStorage().then((favorites) => {
-      // Tri par nombre d'utilisation, et on garde les 6 premiers
+
+      // Tri par nombre d'utilisation
       let sortedFavorites = favorites
         .filter((fav: DomoticzFavorites) => fav.nbOfUse !== undefined && fav.nbOfUse > 0)
         .sort((fava: DomoticzFavorites, favb: DomoticzFavorites) => favb.nbOfUse - fava.nbOfUse)
-        .sort((fava: DomoticzFavorites, favb: DomoticzFavorites) => sortFavorites(fava, favb));
 
       sortedFavorites.forEach((fav: DomoticzFavorites) => {
         const favoriteIndex = devicesData.findIndex((device) => device.idx === fav.idx);
         if(favoriteIndex !== -1 && devicesData[favoriteIndex] !== undefined) {
-          devicesData[favoriteIndex].rang = fav.nbOfUse;
+          devicesData[favoriteIndex].data = ""+fav.nbOfUse;
           favoriteDevices.push(devicesData[favoriteIndex]);
         }
       })
@@ -81,7 +68,6 @@ function getFavoritesDevicesFromCache(devicesData: DomoticzDevice[], setFavorite
 /**
  * liste des composants graphiques des devices favoris
  * @param favoritesData devices favoris
- * @param storeDevicesData fonction de mise à jour des devices
  * @returns les devices favoris en jsx
  */
 function getListFavoritesComponents(favoritesData: DomoticzDevice[]): JSX.Element[] {
@@ -91,19 +77,14 @@ function getListFavoritesComponents(favoritesData: DomoticzDevice[]): JSX.Elemen
   }
   else {
     favoritesData
+    // On ne garde que les 8 premiers favoris actifs
       .filter((favDevice: DomoticzDevice) => favDevice.isActive)
       .slice(0, 6)
+      // Et on les retrie suivant la mise en page
+      .sort((favDeviceA: DomoticzDevice, favDeviceB: DomoticzDevice) => sortFavoritesDevices(favDeviceA, favDeviceB))
       .forEach((fav: DomoticzDevice) => {
         items.push(<ViewDomoticzDevice key={fav.idx} device={fav}/>);
       });
   }
   return items;
 }
-
-
-// Styles de l'écran des équipements
-export const tabStyles = StyleSheet.create({
-  titleContainer: {
-    alignItems: 'center',
-  },
-});

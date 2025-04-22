@@ -1,5 +1,5 @@
 
-export const DOMOTICZ_MOBILE_VERSION = "2.2.0";
+export const DOMOTICZ_MOBILE_VERSION = "2.3.0";
 
 export enum DomoticzStatus {
     INCONNU = 'INCONNU',
@@ -62,17 +62,17 @@ export const DomoticzBlindsSort: number[]  = [85, 84, 55, 66, 86, 67, 68] ;
 
 /**
  * Representes Groupes d'équipements
- * 
+ *
  * @remarks
  * La constante `DomoticzBlindsGroups` est un tableau d'objets, où chaque objet représente un groupe de volets.
  * Chaque objet de groupe de volets a une paire clé-valeur, où la clé est l'ID du groupe et la valeur est un tableau d'IDs de volets.
  * @type {Array<{[key: number]: number[]}>}
  */
 export const DomoticzBlindsGroups : {[key: number]: number[]}[] = [
-    // Tous volets                                
-    {85 : [66, 55, 67, 68]}, 
+    // Tous volets
+    {85 : [66, 55, 67, 68]},
     // Volets chambres
-    {86 : [67, 68]}, 
+    {86 : [67, 68]},
     // Volets Salon
     {84 : [66, 55]}
 ] ;

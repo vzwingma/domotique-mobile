@@ -1,4 +1,5 @@
 # Domoticz Mobile
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=vzwingma_domotique-mobile&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=vzwingma_domotique-mobile)
 
 Ce projet est une application mobile pour gérer les équipements Domoticz. L'application utilise React Native et Expo pour fournir une interface utilisateur intuitive et réactive.
 
