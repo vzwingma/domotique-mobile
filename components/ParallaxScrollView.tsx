@@ -1,5 +1,5 @@
 import type { PropsWithChildren, ReactElement } from 'react';
-import { RefreshControl, StyleSheet } from 'react-native';
+import { RefreshControl, StyleSheet, View } from 'react-native';
 import Animated, {
   interpolate,
   useAnimatedRef,
@@ -62,7 +62,7 @@ export default function ParallaxScrollView({
 
 
   return (
-    <ThemedView style={styles.container}>
+    <View style={styles.container}>
       <Animated.ScrollView ref={scrollRef} scrollEventThrottle={16} refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }>
@@ -73,17 +73,17 @@ export default function ParallaxScrollView({
             headerAnimatedStyle,
           ]}>
           {headerImage}
-          <ThemedView style={styles.titleHeader}>
+          <View style={styles.titleHeader}>
             {connexionStatus && getConnexionStatusIcon(connexionStatus)}
             <ThemedText type="title" style={styles.domoticzColor}>{headerTitle}</ThemedText>
-          </ThemedView>
-          <ThemedView style={styles.titleHeader}>
+          </View>
+          <View style={styles.titleHeader}>
             <ThemedText type="italic" style={{color : 'grey', marginRight: 36}}>{headerSubtitle}</ThemedText>
-          </ThemedView>
+          </View>
         </Animated.View>
-        <ThemedView style={styles.content}>{children}</ThemedView>
+        <View style={styles.content}>{children}</View>
       </Animated.ScrollView>
-    </ThemedView>
+    </View>
   );
 }
 

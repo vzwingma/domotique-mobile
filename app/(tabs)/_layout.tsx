@@ -4,7 +4,6 @@ import { Colors } from '@/app/enums/Colors';
 import connectToDomoticz from '../controllers/index.controller';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import { ThemedView } from '@/components/ThemedView';
 import { Tabs } from '../enums/TabsEnums';
 import { TabBarItems } from '@/components/navigation/TabBarItem';
 import DomoticzConfig from '../models/domoticzConfig.model';
@@ -109,9 +108,9 @@ export default function TabLayout() {
         connexionStatus={getDomoticzStatus()}
         setRefreshing={setRefreshing}>
 
-        <ThemedView style={tabStyles.titleContainer}>
+        <View style={tabStyles.titleContainer}>
           {getPanelContent()}
-        </ThemedView>
+        </View>
 
       </ParallaxScrollView>
       <View style={tabStyles.tabsViewbox}>

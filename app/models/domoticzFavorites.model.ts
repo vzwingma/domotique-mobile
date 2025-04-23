@@ -4,7 +4,7 @@ import { DomoticzDeviceType } from "../enums/DomoticzEnum";
 /**
  * Favoris d'Equipement Domoticz (Lumières, volets)
  */
-class   DomoticzFavorites {
+class DomoticzFavorites {
     // Index de l'équipement
     readonly idx: number;
     // Nombre de fois où l'équipement est activé
