@@ -1,8 +1,7 @@
 import { ThemedText } from "../ThemedText";
-import { ThemedView } from "../ThemedView";
 import { TabBarIcon } from "./TabBarIcon";
 import { Colors } from "@/app/enums/Colors";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Tabs } from "@/app/enums/TabsEnums";
 
 // Propriétés des onglets
@@ -20,11 +19,11 @@ interface TabBarItemsProps {
  * @param setTab fonction pour définir l'onglet actif
  */
 export function TabBarItems({ activeTab, thisTab, selectNewTab}: Readonly<TabBarItemsProps>) : JSX.Element {
-    return <ThemedView style={tabStyles.tabsItem} onPointerDown={() => selectNewTab(thisTab)} onTouchEnd={() => selectNewTab(thisTab)}>
+    return <View style={tabStyles.tabsItem} onPointerDown={() => selectNewTab(thisTab)} onTouchEnd={() => selectNewTab(thisTab)}>
                 <TabBarIcon name={getTabIconName(thisTab) + (activeTab === thisTab ? "" : "-outline")} 
                             color={activeTab === thisTab ? Colors.domoticz.color : '#ffffff'} />
                 <ThemedText type='tab'>{thisTab.toString()}</ThemedText>
-            </ThemedView>;
+            </View>;
   }
 
   /**
