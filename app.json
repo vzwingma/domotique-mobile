@@ -10,17 +10,17 @@
     "githubUrl": "https://github.com/vzwingma/domotique-mobile",
     "version": "2.4.0.V",
     "orientation": "portrait",
-    "icon": "./assets/images/c/icon.png",
+    "icon": "./assets/images/v/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "dark",
     "splash": {
-      "image": "./assets/images/c/splash.png",
+      "image": "./assets/images/v/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/c/adaptive-icon.png",
+        "foregroundImage": "./assets/images/v/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "io.github.vzwingma.domatique.mobile"
@@ -28,7 +28,7 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/c/favicon.png",
+      "favicon": "./assets/images/v/favicon.png",
       "name": "Domoticz mobile",
       "shortName": "Domoticz mobile"
     },
