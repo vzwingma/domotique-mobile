@@ -16,8 +16,8 @@ import TabDomoticzDevices from './devices.tabs';
 import { loadDomoticzTemperatures } from '../controllers/temperatures.controller';
 import { getHeaderIcon } from '@/components/navigation/TabHeaderIcon';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
-import TabDomoticzThermostats from './thermostats.tab';
 import { loadDomoticzThermostats } from '../controllers/thermostats.controller';
+import TabDomoticzParametres from './parametrages.tab';
 
 /**
  * Composant racine de l'application.
@@ -121,7 +121,7 @@ export default function TabLayout() {
               <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.LUMIERES} />
               <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.VOLETS} />
               <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.TEMPERATURES} />
-              <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.THERMOSTATS} />
+              <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.PARAMETRES} />
             </> : <></>
         }
       </View>
@@ -146,8 +146,8 @@ function showPanel(tab: Tabs): JSX.Element {
       return <TabDomoticzDevices dataType={DomoticzDeviceType.VOLET} />
     case Tabs.TEMPERATURES:
       return <TabDomoticzTemperatures />
-      case Tabs.THERMOSTATS:
-        return <TabDomoticzThermostats />
+      case Tabs.PARAMETRES:
+        return <TabDomoticzParametres />
       default:
       return <ThemedText type="title" style={{ color: 'red' }}>404 - Page non définie</ThemedText>
   }
