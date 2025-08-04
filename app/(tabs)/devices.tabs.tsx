@@ -1,6 +1,6 @@
 import { ViewDomoticzDevice } from '@/app/components/device.component';
 import { DomoticzDeviceType } from '../enums/DomoticzEnum';
-import { useContext } from 'react';
+import { JSX, useContext } from 'react';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
 
 /**
