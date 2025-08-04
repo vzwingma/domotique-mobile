@@ -41,8 +41,8 @@ export function TabBarItems({ activeTab, thisTab, selectNewTab}: Readonly<TabBar
         return 'reorder-four';
       case Tabs.TEMPERATURES:
         return 'thermometer';
-        case Tabs.THERMOSTATS:
-          return 'flame';        
+        case Tabs.PARAMETRES:
+          return 'cog';
       default:
         return '';
     }
