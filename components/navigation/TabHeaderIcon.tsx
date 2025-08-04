@@ -20,8 +20,8 @@ export function getHeaderIcon(tab: Tabs) {
         return <Ionicons size={iconSize} name="reorder-four" style={tabStyles.headerImage} />
       case Tabs.TEMPERATURES:
         return <Ionicons size={iconSize} name="thermometer-sharp" style={tabStyles.headerImage} />
-        case Tabs.THERMOSTATS:
-          return <Ionicons size={iconSize} name="flame" style={tabStyles.headerImage} />        
+        case Tabs.PARAMETRES:
+          return <Ionicons size={iconSize} name="cog-sharp" style={tabStyles.headerImage} />        
       default:
         return <></>;
     }

@@ -1,5 +1,5 @@
 
-export const DOMOTICZ_MOBILE_VERSION = "2.4.1";
+export const DOMOTICZ_MOBILE_VERSION = "2.5.0";
 
 export enum DomoticzStatus {
     INCONNU = 'INCONNU',
@@ -13,6 +13,7 @@ export enum DomoticzDeviceType {
     LUMIERE = "Lumière",
     VOLET = "Volet",
     THERMOSTAT = "Thermostat",
+    PARAMETRE = "Paramètre",
     UNKNOWN = "Inconnu"
 }
 /*

@@ -31,7 +31,7 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
   return (
     <View key={thermostat.idx} style={thermostat.isActive ? stylesListsDevices.viewBox : stylesListsDevices.viewBoxDisabled}>
       <View key={thermostat.idx} style={stylesListsDevices.iconBox}>
-        <IconDomoticzThermostat thermostat={thermostat} />
+        <IconDomoticzThermostat/>
       </View>
       <View style={stylesListsDevices.contentBox}>
         <View style={stylesListsDevices.labelsBox}>
