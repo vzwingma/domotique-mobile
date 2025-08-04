@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { JSX, useState } from "react";
 import DomoticzConfig from "../models/domoticzConfig.model";
 import DomoticzDevice from "../models/domoticzDevice.model";
 import DomoticzTemperature from "../models/domoticzTemperature.model";
 import DomoticzThermostat from "../models/domoticzThermostat.model";
+import DomoticzParameter from "../models/domoticzParameter.model";
 
 
 
@@ -21,6 +22,10 @@ type DomoticzContextType = {
 
     domoticzThermostatData: DomoticzThermostat[];
     setDomoticzThermostatData: React.Dispatch<React.SetStateAction<DomoticzThermostat[]>>;
+
+    domoticzParametersData: DomoticzParameter[];
+    setDomoticzParametersData: React.Dispatch<React.SetStateAction<DomoticzParameter[]>>;
+
 };
 
 
@@ -37,6 +42,7 @@ export function DomoticzContextProvider({ children }: Readonly<{ children: React
     const [domoticzDevicesData, setDomoticzDevicesData]           = useState<DomoticzDevice[]>([]);         // State to store the devices data
     const [domoticzTemperaturesData, setDomoticzTemperaturesData] = useState<DomoticzTemperature[]>([]);    // État pour stocker les données de réponse
     const [domoticzThermostatData, setDomoticzThermostatData]     = useState<DomoticzThermostat[]>([]);    // État pour stocker les données de réponse
+    const [domoticzParametersData, setDomoticzParametersData]     = useState<DomoticzParameter[]>([]);    // État pour stocker les données de réponse
     const contextValue = React.useMemo(() => ({
         domoticzConnexionData,
         setDomoticzConnexionData,
@@ -45,12 +51,15 @@ export function DomoticzContextProvider({ children }: Readonly<{ children: React
         domoticzTemperaturesData,
         setDomoticzTemperaturesData,
         domoticzThermostatData,
-        setDomoticzThermostatData
+        setDomoticzThermostatData,
+         domoticzParametersData,
+        setDomoticzParametersData
     }), [
         domoticzConnexionData,
         domoticzDevicesData,
         domoticzTemperaturesData,
-        domoticzThermostatData
+        domoticzThermostatData,
+        domoticzParametersData
     ]);
 
     return (

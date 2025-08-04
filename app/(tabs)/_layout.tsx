@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { JSX, useContext, useEffect, useState } from 'react';
 
 import { Colors } from '@/app/enums/Colors';
 import connectToDomoticz from '../controllers/index.controller';
@@ -18,6 +18,7 @@ import { getHeaderIcon } from '@/components/navigation/TabHeaderIcon';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
 import { loadDomoticzThermostats } from '../controllers/thermostats.controller';
 import TabDomoticzParametres from './parametrages.tab';
+import { loadDomoticzParameters } from '../controllers/parameters.controller';
 
 /**
  * Composant racine de l'application.
@@ -29,7 +30,7 @@ export default function TabLayout() {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const { domoticzConnexionData, setDomoticzConnexionData, setDomoticzDevicesData, setDomoticzTemperaturesData, setDomoticzThermostatData } = useContext(DomoticzContext)!;
+  const { domoticzConnexionData, setDomoticzConnexionData, setDomoticzDevicesData, setDomoticzTemperaturesData, setDomoticzThermostatData, setDomoticzParametersData  } = useContext(DomoticzContext)!;
 
   const [error, setError] = useState<Error | null>(null);
   const [tab, setTab] = useState(Tabs.INDEX);
@@ -62,6 +63,7 @@ export default function TabLayout() {
     loadDomoticzDevices(setDomoticzDevicesData);
     loadDomoticzThermostats(setDomoticzThermostatData);
     loadDomoticzTemperatures(setDomoticzTemperaturesData);
+    loadDomoticzParameters(setDomoticzParametersData);
     setIsLoading(false);
   }
 

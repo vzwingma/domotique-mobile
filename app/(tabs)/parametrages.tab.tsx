@@ -2,7 +2,10 @@
  * 
  * Ce fichier contient le code de l'écran des mesures de températures.
  */
+import { JSX, useContext } from 'react';
 import { View } from 'react-native';
+import { DomoticzContext } from '../services/DomoticzContextProvider';
+import { ViewDomoticzParamList } from '../components/paramList.component';
 
 
 /**
@@ -11,9 +14,16 @@ import { View } from 'react-native';
  */
 export default function TabDomoticzParametres(): JSX.Element[] {
 
-  let items: JSX.Element[] = [];
-  items.push(<View key="separator" style={{ height: 1, backgroundColor: 'red', marginVertical: 10 }} />);
+  const { domoticzParametersData } = useContext(DomoticzContext)!;
 
+  let items: JSX.Element[] = [];
+
+  domoticzParametersData
+      .forEach((item, idx) => {
+        item.rang = idx;
+        items.push(<ViewDomoticzParamList key={item.idx} parameter={item} />);
+      });
 
   return items;
+
 }

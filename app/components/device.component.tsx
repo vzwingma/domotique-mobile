@@ -166,7 +166,8 @@ export const stylesListsDevices = StyleSheet.create({
   contentBox: {
     flexDirection: "column",
     width: "100%",
-    paddingRight: 75
+    paddingRight: 75,
+    justifyContent: "center",
   },
   labelsBox: {
     flexDirection: "row",
@@ -192,7 +193,7 @@ export const stylesListsDevices = StyleSheet.create({
   unitBox: {
     width: 20
   },
-
+  // SLIDER
   slider: {
     height: 40,
     marginTop: -10,
@@ -213,5 +214,40 @@ export const stylesListsDevices = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     width: 200,
-  }
+  },
+  // DROPDOWN
+      // Dropdown de sélection
+    dropdown: {
+        flexDirection: "column",
+        marginLeft: -150,
+        borderColor: 'gray',
+        borderWidth: 0.5,
+        borderRadius: 8,
+        width: 150,
+        backgroundColor: Colors.dark.background,
+        color: Colors.domoticz.color,
+    },
+
+    // Style de la liste déroulante d'un dropdown
+    listStyle: {
+        backgroundColor: Colors.dark.background,
+    },
+    // Style des éléments de la liste déroulante d'un dropdown
+    listItemStyle: {
+        margin: 0,
+        padding: 0,
+        height: 'auto',
+        color: Colors.domoticz.color,
+        fontFamily: "BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif",
+    },
+    placeholderStyle: {
+        fontWeight: 'normal',
+        paddingLeft: 10,
+        color: 'gray',
+    },
+        selectedTextStyle: {
+        color: Colors.domoticz.color,
+        paddingLeft: 10,
+        fontWeight: 'bold',
+    },
 });
