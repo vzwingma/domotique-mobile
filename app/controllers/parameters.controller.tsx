@@ -22,12 +22,10 @@ export function loadDomoticzParameters(storeParameters: (parameters: DomoticzPar
                         let tdevice: DomoticzParameter;
                         tdevice = {
                             idx: Number(rawDevice.idx),
-                            rang: index,
                             name: rawDevice.Name,
                             status: String(rawDevice.Data),
                             type: getDeviceType(rawDevice.Name),
                             lastUpdate: rawDevice.LastUpdate,
-                            isActive: !rawDevice.HaveTimeout,
                             data: rawDevice.Data,
                             level: rawDevice.Level,
                             levelNames: rawDevice.LevelNames ? Buffer.from(rawDevice.LevelNames, 'base64').toString('utf-8').split('|') : [],
@@ -58,7 +56,7 @@ export function updateParameterValue(idx: number, device: DomoticzParameter, lev
 
         let params = [{ key: SERVICES_PARAMS.IDX, value: String(idx) },
         { key: SERVICES_PARAMS.LEVEL, value: String(level.id) }];
-/*
+
         callDomoticz(SERVICES_URL.CMD_BLINDS_LIGHTS_SET_LEVEL, params)
             .catch((e) => {
                 console.error('Une erreur s\'est produite lors de la mise à jour du paramètre', e);
@@ -66,7 +64,7 @@ export function updateParameterValue(idx: number, device: DomoticzParameter, lev
             })
             .finally(() => {
                 refreshEquipementState(setDomoticzParametersData)
-            });  */
+            });
 }
 
 /**
