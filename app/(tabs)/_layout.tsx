@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { JSX, useContext, useEffect, useState } from 'react';
 
 import { Colors } from '@/app/enums/Colors';
 import connectToDomoticz from '../controllers/index.controller';
@@ -16,8 +16,9 @@ import TabDomoticzDevices from './devices.tabs';
 import { loadDomoticzTemperatures } from '../controllers/temperatures.controller';
 import { getHeaderIcon } from '@/components/navigation/TabHeaderIcon';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
-import TabDomoticzThermostats from './thermostats.tab';
 import { loadDomoticzThermostats } from '../controllers/thermostats.controller';
+import TabDomoticzParametres from './parametrages.tab';
+import { loadDomoticzParameters } from '../controllers/parameters.controller';
 
 /**
  * Composant racine de l'application.
@@ -29,7 +30,7 @@ export default function TabLayout() {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const { domoticzConnexionData, setDomoticzConnexionData, setDomoticzDevicesData, setDomoticzTemperaturesData, setDomoticzThermostatData } = useContext(DomoticzContext)!;
+  const { domoticzConnexionData, setDomoticzConnexionData, setDomoticzDevicesData, setDomoticzTemperaturesData, setDomoticzThermostatData, setDomoticzParametersData  } = useContext(DomoticzContext)!;
 
   const [error, setError] = useState<Error | null>(null);
   const [tab, setTab] = useState(Tabs.INDEX);
@@ -62,6 +63,7 @@ export default function TabLayout() {
     loadDomoticzDevices(setDomoticzDevicesData);
     loadDomoticzThermostats(setDomoticzThermostatData);
     loadDomoticzTemperatures(setDomoticzTemperaturesData);
+    loadDomoticzParameters(setDomoticzParametersData);
     setIsLoading(false);
   }
 
@@ -121,7 +123,7 @@ export default function TabLayout() {
               <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.LUMIERES} />
               <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.VOLETS} />
               <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.TEMPERATURES} />
-              <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.THERMOSTATS} />
+              <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.PARAMETRES} />
             </> : <></>
         }
       </View>
@@ -146,8 +148,8 @@ function showPanel(tab: Tabs): JSX.Element {
       return <TabDomoticzDevices dataType={DomoticzDeviceType.VOLET} />
     case Tabs.TEMPERATURES:
       return <TabDomoticzTemperatures />
-      case Tabs.THERMOSTATS:
-        return <TabDomoticzThermostats />
+      case Tabs.PARAMETRES:
+        return <TabDomoticzParametres />
       default:
       return <ThemedText type="title" style={{ color: 'red' }}>404 - Page non définie</ThemedText>
   }

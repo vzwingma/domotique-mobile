@@ -60,6 +60,9 @@ export function getDeviceType(deviceName: string): DomoticzDeviceType {
     else if (deviceName.toLowerCase().includes("thermostat")) {
         return DomoticzDeviceType.THERMOSTAT;
     }
+    else if (deviceName.toLowerCase().includes("mode")) {
+        return DomoticzDeviceType.PARAMETRE;
+    }
     else {
         return DomoticzDeviceType.UNKNOWN;
     }

@@ -4,5 +4,5 @@
     LUMIERES = 'Lumières',
     VOLETS = 'Volets',
     TEMPERATURES = 'Températures',
-    THERMOSTATS = 'Thermostats',
+    PARAMETRES = 'Paramètres',
   }
