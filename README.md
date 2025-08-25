@@ -7,7 +7,7 @@ Ce projet est une application mobile pour gérer les équipements Domoticz. L'ap
 
 Avant de commencer, assurez-vous d'avoir les éléments suivants installés sur votre machine :
 
-- Node.js (version 14 ou supérieure)
+- Node.js (version 21 ou supérieure)
 - npm (version 6 ou supérieure) ou yarn (version 1.22 ou supérieure)
 - Expo CLI (peut être installé globalement via npm ou yarn)
 
