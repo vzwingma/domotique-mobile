@@ -79,14 +79,13 @@ function callDomoticz(path: SERVICES_URL, params?: KeyValueParams[]): Promise<an
             }
         })
         .then(data => { 
-            // console.log("[WS traceId=" + traceId + "] < [data]", data);
             if(data.status === "ERR") {
-                throw new Error(data.message);
+                throw new Error(fullURL+" - " +data.message);
             }
             return data; })
         .catch(e => {
             console.error("[WS traceId=" + traceId + "] < Erreur lors de l'appel HTTP [" + fullURL + "]", e);
-            throw new Error(e);
+            throw new Error(fullURL+" - "+API_AUTH+" - " +e.message);
         })
 
 }
