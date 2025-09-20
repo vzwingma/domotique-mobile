@@ -181,9 +181,7 @@ export function addActionForFavorite(device: DomoticzDevice | DomoticzThermostat
     .then((favoris) => {
             const favoriteIndex = favoris.findIndex((fav: any) => fav.idx === device.idx);
             if (favoriteIndex !== -1) {
-                if(favoris[favoriteIndex].nbOfUse === undefined) {
-                    favoris[favoriteIndex].nbOfUse = 0;
-                }
+                favoris[favoriteIndex].nbOfUse ??= 0;
                 favoris[favoriteIndex].nbOfUse += 1;
             } else {
                 let newFavourites : DomoticzFavorites = {idx: device.idx, nbOfUse: 1, name: device.name, type: device.type, subType: ""};

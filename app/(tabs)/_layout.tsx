@@ -83,7 +83,7 @@ export default function TabLayout() {
     if (isLoading) {
       return "Chargement...";
     } else {
-      return "v " + DOMOTICZ_MOBILE_VERSION + " - Domoticz " + domoticzConnexionData?.version;
+      return "v" + DOMOTICZ_MOBILE_VERSION + " - Domoticz " + domoticzConnexionData?.version;
     }
   }
 
@@ -165,7 +165,7 @@ export const tabStyles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     backgroundColor: Colors.dark.titlebackground,
-    height: 70,
+    height: 100,
     padding: 10,
     margin: 1,
   }
