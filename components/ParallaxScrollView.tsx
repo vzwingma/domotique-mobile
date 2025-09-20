@@ -77,7 +77,7 @@ export default function ParallaxScrollView({
             <ThemedText type="title" style={styles.domoticzColor}>{headerTitle}</ThemedText>
           </View>
           <View style={styles.titleHeader}>
-            <ThemedText type="italic" style={{color : 'grey', marginRight: 36}}>{headerSubtitle}</ThemedText>
+            <ThemedText type="italic" style={{color : 'grey', marginRight: 36, width: '100%', textAlign: 'right'}}>{headerSubtitle}</ThemedText>
           </View>
         </Animated.View>
         <View style={styles.content}>{children}</View>

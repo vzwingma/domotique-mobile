@@ -83,7 +83,7 @@ export default function TabLayout() {
     if (isLoading) {
       return "Chargement...";
     } else {
-      return "v " + DOMOTICZ_MOBILE_VERSION + " - Domoticz " + domoticzConnexionData?.version;
+      return "v" + DOMOTICZ_MOBILE_VERSION + " - Domoticz " + domoticzConnexionData?.version;
     }
   }
 
