@@ -54,7 +54,7 @@ export function getDeviceType(deviceName: string): DomoticzDeviceType {
         return DomoticzDeviceType.VOLET;
     }
     else if (deviceName.toLowerCase().includes("lumière")
-        || deviceName.toLowerCase().includes("veilleuse")) {
+        || deviceName.toLowerCase().includes("prise")) {
         return DomoticzDeviceType.LUMIERE;
     }
     else if (deviceName.toLowerCase().includes("thermostat")) {
