@@ -93,10 +93,10 @@ export default function TabLayout() {
   function getPanelContent() : React.JSX.Element{
     if (isLoading) {
       return <ActivityIndicator size={'large'} color={Colors.domoticz.color} />
-    } else if (error !== null) {
-      return <ThemedText type="subtitle" style={{ color: 'red', marginTop: 50 }}>Erreur : {error.message}</ThemedText>
-    } else {
+    } else if (error === null) {
       return showPanel(tab)
+    } else {
+      return <ThemedText type="subtitle" style={{ color: 'red', marginTop: 50 }}>Erreur : {error.message}</ThemedText>
     }
   }
 
