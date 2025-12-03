@@ -63,6 +63,9 @@ export function getDeviceType(deviceName: string): DomoticzDeviceType {
     else if (deviceName.toLowerCase().includes("mode")) {
         return DomoticzDeviceType.PARAMETRE;
     }
+    else if (deviceName.toLowerCase().includes("présence") || deviceName.toLowerCase().includes("phase")) {
+        return DomoticzDeviceType.PARAMETRE_RO;
+    }    
     else {
         return DomoticzDeviceType.UNKNOWN;
     }

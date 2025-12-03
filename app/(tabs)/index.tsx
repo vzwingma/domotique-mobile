@@ -2,7 +2,7 @@
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { ViewDomoticzDevice } from '../components/device.component';
 import { getFavoritesFromStorage, sortFavorites as sortFavoritesDevices } from '../services/DataUtils.service';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { JSX, useContext, useEffect, useState } from 'react';
 import DomoticzFavorites from '../models/domoticzFavorites.model';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
 
