@@ -3,7 +3,7 @@
  * Ce fichier contient le code de l'écran des mesures de températures.
  */
 import { ViewDomoticzTemperature } from '../components/temperature.component';
-import { useContext } from 'react';
+import { JSX, useContext } from 'react';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
 import { ViewDomoticzThermostat } from '../components/thermostat.component';
 import { View } from 'react-native';

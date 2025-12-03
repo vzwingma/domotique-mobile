@@ -14,7 +14,7 @@ class IconDomoticzTemperature extends MaterialCommunityIcons { }
  * @param temperature mesure de température Domoticz
  * @returns nom de l'icone de l'équipement 
  */
-export function getTemperatureIcon(temperature: DomoticzTemperature) :string {
+export function getTemperatureIcon(temperature: DomoticzTemperature) :any {
 
     if(temperature.idx === '101'){
         return "sun-thermometer-outline";

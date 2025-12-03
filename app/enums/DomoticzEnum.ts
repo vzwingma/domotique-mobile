@@ -14,6 +14,7 @@ export enum DomoticzDeviceType {
     VOLET = "Volet",
     THERMOSTAT = "Thermostat",
     PARAMETRE = "Paramètre",
+    PARAMETRE_RO = "Paramètre (Lecture seule)",
     UNKNOWN = "Inconnu"
 }
 /*
