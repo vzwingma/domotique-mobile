@@ -5,7 +5,7 @@ import { useContext } from "react";
 import { DomoticzContext } from "../services/DomoticzContextProvider";
 import { stylesListsDevices } from "./device.component";
 import DomoticzParameter from "../models/domoticzParameter.model";
-import IconDomoticzParametre from "@/components/IconDomoticzParametre";
+import IconDomoticzParametre, { getIconDomoticzParametre } from "@/components/IconDomoticzParametre";
 import { Colors } from "../enums/Colors";
 import { updateParameterValue } from "../controllers/parameters.controller";
 import { DomoticzDeviceType } from "../enums/DomoticzEnum";
@@ -28,7 +28,7 @@ export const ViewDomoticzParamList: React.FC<DomoticzParamListProps> = ({ parame
   return (
     <View key={parametre.idx} style={stylesListsDevices.viewBox}>
       <View key={parametre.idx} style={stylesListsDevices.iconBox}>
-        <IconDomoticzParametre parametre={parametre} />
+        <IconDomoticzParametre name={getIconDomoticzParametre(parametre)} color={"white"} size={60} />
       </View>
       <View style={stylesListsDevices.contentBox}>
 

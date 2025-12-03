@@ -19,8 +19,7 @@ export function loadDomoticzParameters(storeParameters: (parameters: DomoticzPar
             const parametersDevices : DomoticzParameter[] = data.result
                     .filter((rawDevice: any) => (getDeviceType(rawDevice.Name) === DomoticzDeviceType.PARAMETRE || getDeviceType(rawDevice.Name) === DomoticzDeviceType.PARAMETRE_RO))
                     .map((rawDevice: any) => {
-                        let tdevice: DomoticzParameter;
-                        tdevice = {
+                        let tdevice: DomoticzParameter = {
                             idx: Number(rawDevice.idx),
                             name: rawDevice.Name,
                             status: String(rawDevice.Data),
@@ -33,7 +32,6 @@ export function loadDomoticzParameters(storeParameters: (parameters: DomoticzPar
                         }
                         return tdevice;
                     });
-            // Store the processed thermostat data
             storeParameters(parametersDevices);
         })
         .catch((e) => {

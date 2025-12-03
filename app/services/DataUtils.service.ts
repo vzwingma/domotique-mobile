@@ -50,7 +50,6 @@ export function sortFavorites(device1: DomoticzDevice, device2: DomoticzDevice) 
  * @returns true si l'équipement est du type recherché
  */
 export function getDeviceType(deviceName: string): DomoticzDeviceType {
-    console.log("deviceName", deviceName.toLocaleLowerCase());
     if (deviceName.toLowerCase().includes("volet")) {
         return DomoticzDeviceType.VOLET;
     }
@@ -64,7 +63,7 @@ export function getDeviceType(deviceName: string): DomoticzDeviceType {
     else if (deviceName.toLowerCase().includes("mode")) {
         return DomoticzDeviceType.PARAMETRE;
     }
-    else if (deviceName.toLowerCase().includes("présence")) {
+    else if (deviceName.toLowerCase().includes("présence") || deviceName.toLowerCase().includes("phase")) {
         return DomoticzDeviceType.PARAMETRE_RO;
     }    
     else {
