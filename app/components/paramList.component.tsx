@@ -8,6 +8,7 @@ import DomoticzParameter from "../models/domoticzParameter.model";
 import IconDomoticzParametre from "@/components/IconDomoticzParametre";
 import { Colors } from "../enums/Colors";
 import { updateParameterValue } from "../controllers/parameters.controller";
+import { DomoticzDeviceType } from "../enums/DomoticzEnum";
 
 // Définition des propriétés d'un équipement Domoticz
 export type DomoticzParamListProps = {
@@ -36,6 +37,7 @@ export const ViewDomoticzParamList: React.FC<DomoticzParamListProps> = ({ parame
             <ThemedText style={{ fontSize: 16, color: 'white' }}>{parametre.name}</ThemedText>
           </View>
           
+            { parametre.type === DomoticzDeviceType.PARAMETRE &&
             <Dropdown
               style={stylesListsDevices.dropdown} containerStyle={stylesListsDevices.listStyle} itemContainerStyle={stylesListsDevices.listItemStyle} itemTextStyle={stylesListsDevices.listItemStyle}
               activeColor={Colors.dark.background} placeholderStyle={stylesListsDevices.placeholderStyle} selectedTextStyle={stylesListsDevices.selectedTextStyle}
@@ -46,6 +48,12 @@ export const ViewDomoticzParamList: React.FC<DomoticzParamListProps> = ({ parame
               value={parametre.level}
               onChange={(level) => updateParameterValue(parametre.idx, parametre, level, setDomoticzParametersData)}
             />
+            }
+            { parametre.type === DomoticzDeviceType.PARAMETRE_RO &&
+              <View style={stylesListsDevices.infovalue}>
+                <ThemedText style={{ fontSize: 16, color: Colors.domoticz.color, paddingLeft: 10 }}>{parametre.data}</ThemedText>
+              </View>
+            }
         </View>
       </View>
     </View>
