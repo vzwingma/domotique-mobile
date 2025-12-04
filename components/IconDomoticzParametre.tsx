@@ -49,6 +49,7 @@ function getIconPhase(status:string) {
         case "preparation chauffage":
             return "today-outline";;
         case "réveil":
+        case "reveil":
             return "alarm-outline";;
         case "journee":
             return "sunny-outline";;
