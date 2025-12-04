@@ -1,5 +1,5 @@
 
-export const DOMOTICZ_MOBILE_VERSION = "2.7.0";
+export const DOMOTICZ_MOBILE_VERSION = "2.7.1";
 
 export enum DomoticzStatus {
     INCONNU = 'INCONNU',
