@@ -22,11 +22,11 @@ export function getTemperatureIcon(temperature: DomoticzTemperature) :any {
     else if(temperature.idx === '45'){
         return "home-thermometer-outline";
     }
-    else if(!temperature.isActive){
-        return "thermometer-off";  
+    else if(temperature.isActive){
+        return "thermometer";
     }
     else{
-        return "thermometer";
+        return "thermometer-off";  
     }
 }
 export default IconDomoticzTemperature;
