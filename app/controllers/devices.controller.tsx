@@ -32,7 +32,7 @@ export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]
                         level: evaluateDeviceLevel(rawDevice.Level),
                         unit: "%",
                         consistantLevel: true,
-                        isGroup: String(rawDevice.Name).indexOf("[Grp]") > -1,
+                        isGroup: String(rawDevice.Name).includes("[Grp]"),
                         lastUpdate: rawDevice.LastUpdate,
                         isActive: !rawDevice.HaveTimeout,
                         data: rawDevice.Data
@@ -180,12 +180,12 @@ export function addActionForFavorite(device: DomoticzDevice | DomoticzThermostat
     getFavoritesFromStorage()
     .then((favoris) => {
             const favoriteIndex = favoris.findIndex((fav: any) => fav.idx === device.idx);
-            if (favoriteIndex !== -1) {
-                favoris[favoriteIndex].nbOfUse ??= 0;
-                favoris[favoriteIndex].nbOfUse += 1;
-            } else {
+            if (favoriteIndex === -1) {
                 let newFavourites : DomoticzFavorites = {idx: device.idx, nbOfUse: 1, name: device.name, type: device.type, subType: ""};
                 favoris.push(newFavourites);
+            } else {
+                favoris[favoriteIndex].nbOfUse ??= 0;
+                favoris[favoriteIndex].nbOfUse += 1;
             }
             saveFavoritesToStorage(favoris);
         }
