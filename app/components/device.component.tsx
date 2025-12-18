@@ -250,4 +250,15 @@ export const stylesListsDevices = StyleSheet.create({
         paddingLeft: 10,
         fontWeight: 'bold',
     },
+
+  infovalue: {
+        flexDirection: "column",
+        marginLeft: -150,
+        borderColor: 'gray',
+        borderWidth: 0.5,
+        borderRadius: 8,
+        width: 150,
+        backgroundColor: Colors.dark.background,
+        color: Colors.domoticz.color,
+    },    
 });
