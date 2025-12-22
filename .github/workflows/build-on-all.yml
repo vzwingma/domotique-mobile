@@ -1,0 +1,24 @@
+name: CI on all branches
+
+  # Controls when the action will run.
+# Triggers the workflow on push or pull request events on all but the master branch
+on:
+  push:
+    # Sequence of patterns matched against refs/heads
+    branches-ignore: [ mainC, mainV ]
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  expo-doctor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: 🏗 Setup Expo
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+      - run: npx expo-env-info
+      - name: Run expo-doctor
+        run: npx expo-doctor@latest
