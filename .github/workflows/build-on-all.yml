@@ -19,6 +19,10 @@ jobs:
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
+          packager: npm
+          token: ${{ secrets.EXPO_TOKEN }}
       - run: npx expo-env-info
+      - name: 📦 Install dependencies
+        run: npm install
       - name: Run expo-doctor
         run: npx expo-doctor@latest
