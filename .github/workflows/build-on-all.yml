@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: BUILD
     steps:
+      - uses: actions/setup-node@v6
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v3
         with:
           node-version: 21.x
       - name: 🏗 Setup Expo
