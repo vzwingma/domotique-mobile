@@ -6,6 +6,8 @@ on:
   push:
     # Sequence of patterns matched against refs/heads
     branches-ignore: [ mainC, mainV ]
+  pull_request:
+    branches-ignore: [ mainC, mainV ]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -18,6 +20,8 @@ jobs:
         with:
           node-version: 21.x
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - name: 🏗 Setup Expo
         uses: expo/expo-github-action@v8
         with:
@@ -27,5 +31,12 @@ jobs:
       - run: npx expo-env-info
       - name: 📦 Install dependencies
         run: npm install
+      - name: 🧪 Run unit tests
+        run: npm test -- --ci --watchAll=false --coverage
+      - name: 🔎 SonarQube Cloud Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       - name: Run expo-doctor
         run: npx expo-doctor@latest
