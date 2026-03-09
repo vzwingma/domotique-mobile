@@ -1,115 +1,97 @@
 /**
  * Tests pour le composant ThemedText
- * Vérifie les snapshots et les styles pour chaque type de texte
+ *
+ * Utilise @testing-library/react-native + StyleSheet.flatten pour inspecter
+ * les styles réels (react-test-renderer.toJSON() retourne null avec React 19
+ * dans ce projet, cf. ThemedText-test.tsx.snap).
+ *
+ * Couvre :
+ *  - Vérification des styles pour chaque type (fontSize, fontWeight, lineHeight…)
+ *  - Couleur du thème dark injectée par useThemeColor
+ *  - Rendu sans crash pour tous les types et props supplémentaires
  */
 import * as React from 'react';
-import renderer from 'react-test-renderer';
+import { render, screen } from '@testing-library/react-native';
+import { StyleSheet } from 'react-native';
 import { ThemedText } from '../ThemedText';
 
-// ─── Snapshots par type ────────────────────────────────────────────────────────
+// ─── Utilitaire ────────────────────────────────────────────────────────────────
 
-describe('ThemedText – snapshots par type', () => {
-  it('snapshot : type default (implicite)', () => {
-    const tree = renderer.create(<ThemedText>Texte par défaut</ThemedText>).toJSON();
-    expect(tree).toMatchSnapshot();
-  });
-
-  it('snapshot : type title', () => {
-    const tree = renderer.create(<ThemedText type="title">Titre</ThemedText>).toJSON();
-    expect(tree).toMatchSnapshot();
-  });
-
-  it('snapshot : type defaultSemiBold', () => {
-    const tree = renderer.create(<ThemedText type="defaultSemiBold">Semi-Bold</ThemedText>).toJSON();
-    expect(tree).toMatchSnapshot();
-  });
-
-  it('snapshot : type subtitle', () => {
-    const tree = renderer.create(<ThemedText type="subtitle">Sous-titre</ThemedText>).toJSON();
-    expect(tree).toMatchSnapshot();
-  });
-
-  it('snapshot : type link', () => {
-    const tree = renderer.create(<ThemedText type="link">Lien</ThemedText>).toJSON();
-    expect(tree).toMatchSnapshot();
-  });
-
-  it('snapshot : type italic', () => {
-    const tree = renderer.create(<ThemedText type="italic">Italique</ThemedText>).toJSON();
-    expect(tree).toMatchSnapshot();
-  });
-
-  it('snapshot : type tab', () => {
-    const tree = renderer.create(<ThemedText type="tab">Onglet</ThemedText>).toJSON();
-    expect(tree).toMatchSnapshot();
-  });
-});
-
-// ─── Vérification des styles ───────────────────────────────────────────────────
-
-/**
- * Utilitaire : aplatit un tableau de styles en un objet unique
- */
-function flattenStyle(styleArray: any[]): Record<string, any> {
-  return styleArray.reduce((acc: Record<string, any>, s: any) => ({ ...acc, ...(s ?? {}) }), {});
+/** Résout les IDs StyleSheet et aplatit un tableau de styles en objet plat */
+function getStyle(element: { props: { style?: any } }): Record<string, any> {
+  return StyleSheet.flatten(element.props.style) ?? {};
 }
 
-describe('ThemedText – vérification des styles', () => {
-  it('type default → fontSize=16, lineHeight=24', () => {
-    const json = renderer.create(<ThemedText>Default</ThemedText>).toJSON() as any;
-    const style = flattenStyle(json.props.style);
+// ─── Vérification des styles par type ─────────────────────────────────────────
+
+describe('ThemedText - styles par type', () => {
+
+  it('type default (implicite) → fontSize=16, lineHeight=24', () => {
+    render(<ThemedText>Texte default</ThemedText>);
+    const style = getStyle(screen.getByText('Texte default'));
     expect(style.fontSize).toBe(16);
     expect(style.lineHeight).toBe(24);
   });
 
   it('type title → fontSize=32, fontWeight=bold, lineHeight=32', () => {
-    const json = renderer.create(<ThemedText type="title">Titre</ThemedText>).toJSON() as any;
-    const style = flattenStyle(json.props.style);
+    render(<ThemedText type="title">Titre</ThemedText>);
+    const style = getStyle(screen.getByText('Titre'));
     expect(style.fontSize).toBe(32);
     expect(style.fontWeight).toBe('bold');
     expect(style.lineHeight).toBe(32);
   });
 
   it('type defaultSemiBold → fontSize=16, fontWeight=600, lineHeight=24', () => {
-    const json = renderer.create(<ThemedText type="defaultSemiBold">SemiBold</ThemedText>).toJSON() as any;
-    const style = flattenStyle(json.props.style);
+    render(<ThemedText type="defaultSemiBold">SemiBold</ThemedText>);
+    const style = getStyle(screen.getByText('SemiBold'));
     expect(style.fontSize).toBe(16);
     expect(style.fontWeight).toBe('600');
     expect(style.lineHeight).toBe(24);
   });
 
   it('type subtitle → fontSize=20, fontWeight=bold', () => {
-    const json = renderer.create(<ThemedText type="subtitle">Subtitle</ThemedText>).toJSON() as any;
-    const style = flattenStyle(json.props.style);
+    render(<ThemedText type="subtitle">Sous-titre</ThemedText>);
+    const style = getStyle(screen.getByText('Sous-titre'));
     expect(style.fontSize).toBe(20);
     expect(style.fontWeight).toBe('bold');
   });
 
   it('type link → fontSize=16, lineHeight=30', () => {
-    const json = renderer.create(<ThemedText type="link">Lien</ThemedText>).toJSON() as any;
-    const style = flattenStyle(json.props.style);
+    render(<ThemedText type="link">Lien</ThemedText>);
+    const style = getStyle(screen.getByText('Lien'));
     expect(style.fontSize).toBe(16);
     expect(style.lineHeight).toBe(30);
   });
 
   it('type tab → fontSize=10, lineHeight=30', () => {
-    const json = renderer.create(<ThemedText type="tab">Tab</ThemedText>).toJSON() as any;
-    const style = flattenStyle(json.props.style);
+    render(<ThemedText type="tab">Tab</ThemedText>);
+    const style = getStyle(screen.getByText('Tab'));
     expect(style.fontSize).toBe(10);
     expect(style.lineHeight).toBe(30);
   });
 
   it('type italic → fontStyle=italic, fontSize=12', () => {
-    const json = renderer.create(<ThemedText type="italic">Italique</ThemedText>).toJSON() as any;
-    const style = flattenStyle(json.props.style);
+    render(<ThemedText type="italic">Italique</ThemedText>);
+    const style = getStyle(screen.getByText('Italique'));
     expect(style.fontStyle).toBe('italic');
     expect(style.fontSize).toBe(12);
   });
 });
 
+// ─── Couleur du thème ─────────────────────────────────────────────────────────
+
+describe('ThemedText - couleur du thème', () => {
+  it('injecte la couleur dark (#ECEDEE) via useThemeColor', () => {
+    // useThemeColor('text') renvoie Colors.dark.text = '#ECEDEE'
+    render(<ThemedText>Couleur test</ThemedText>);
+    const style = getStyle(screen.getByText('Couleur test'));
+    expect(style.color).toBe('#ECEDEE');
+  });
+});
+
 // ─── Rendu sans crash ──────────────────────────────────────────────────────────
 
-describe('ThemedText – rendu sans crash', () => {
+describe('ThemedText - rendu sans crash', () => {
   const types: Array<'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link' | 'italic' | 'tab'> = [
     'default', 'title', 'defaultSemiBold', 'subtitle', 'link', 'italic', 'tab',
   ];
@@ -117,23 +99,19 @@ describe('ThemedText – rendu sans crash', () => {
   types.forEach((type) => {
     it(`ne crash pas pour le type "${type}"`, () => {
       expect(() =>
-        renderer.create(<ThemedText type={type}>Contenu test</ThemedText>)
+        render(<ThemedText type={type}>Contenu {type}</ThemedText>)
       ).not.toThrow();
     });
   });
 
   it('accepte des props supplémentaires (testID, numberOfLines)', () => {
     expect(() =>
-      renderer.create(
-        <ThemedText testID="my-text" numberOfLines={2}>Texte</ThemedText>
-      )
+      render(<ThemedText testID="my-text" numberOfLines={2}>Extra props</ThemedText>)
     ).not.toThrow();
   });
 
-  it('transmet la couleur du thème dark au composant Text', () => {
-    // useThemeColor renvoie Colors.dark.text = '#ECEDEE' en mode dark
-    const json = renderer.create(<ThemedText>Texte</ThemedText>).toJSON() as any;
-    const style = flattenStyle(json.props.style);
-    expect(style.color).toBe('#ECEDEE');
+  it('affiche le texte enfant correctement', () => {
+    render(<ThemedText>Hello Domoticz</ThemedText>);
+    expect(screen.getByText('Hello Domoticz')).toBeTruthy();
   });
 });
