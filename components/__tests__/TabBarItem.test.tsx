@@ -13,7 +13,7 @@
  *  - Rendu sans crash pour chaque valeur de l'enum Tabs
  */
 import * as React from 'react';
-import { render, act, fireEvent } from '@testing-library/react-native';
+import { render, act } from '@testing-library/react-native';
 import { TabBarItems } from '../navigation/TabBarItem';
 import { Tabs } from '@/app/enums/TabsEnums';
 import { Colors } from '@/app/enums/Colors';

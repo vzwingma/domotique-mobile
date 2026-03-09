@@ -45,7 +45,7 @@ describe('callDomoticz', () => {
     process.env.EXPO_PUBLIC_DOMOTICZ_AUTH = FAKE_AUTH;
     // Réinitialise le module pour que API_URL / API_AUTH soient recalculés
     // (les constantes sont lues au chargement du module, donc on spy sur fetch)
-    global.fetch = jest.fn();
+    globalThis.fetch = jest.fn();
   });
 
   afterEach(() => {
@@ -57,18 +57,18 @@ describe('callDomoticz', () => {
 
   describe('Construction de l\'URL', () => {
     it('utilise l\'URL de base sans paramètre pour GET_CONFIG', async () => {
-      (global.fetch as jest.Mock).mockResolvedValue(
+      (globalThis.fetch as jest.Mock).mockResolvedValue(
         makeFetchResponse(200, { status: 'OK', result: [] })
       );
 
       await callDomoticz(SERVICES_URL.GET_DEVICES);
 
-      const calledUrl: string = (global.fetch as jest.Mock).mock.calls[0][0];
+      const calledUrl: string = (globalThis.fetch as jest.Mock).mock.calls[0][0];
       expect(calledUrl).toContain('getdevices');
     });
 
     it('remplace <IDX> dans l\'URL par la valeur fournie', async () => {
-      (global.fetch as jest.Mock).mockResolvedValue(
+      (globalThis.fetch as jest.Mock).mockResolvedValue(
         makeFetchResponse(200, { status: 'OK' })
       );
 
@@ -77,13 +77,13 @@ describe('callDomoticz', () => {
         { key: SERVICES_PARAMS.CMD, value: 'On' },
       ]);
 
-      const calledUrl: string = (global.fetch as jest.Mock).mock.calls[0][0];
+      const calledUrl: string = (globalThis.fetch as jest.Mock).mock.calls[0][0];
       expect(calledUrl).toContain('idx=42');
       expect(calledUrl).not.toContain('<IDX>');
     });
 
     it('remplace <CMD> dans l\'URL par la valeur fournie', async () => {
-      (global.fetch as jest.Mock).mockResolvedValue(
+      (globalThis.fetch as jest.Mock).mockResolvedValue(
         makeFetchResponse(200, { status: 'OK' })
       );
 
@@ -92,13 +92,13 @@ describe('callDomoticz', () => {
         { key: SERVICES_PARAMS.CMD, value: 'Close' },
       ]);
 
-      const calledUrl: string = (global.fetch as jest.Mock).mock.calls[0][0];
+      const calledUrl: string = (globalThis.fetch as jest.Mock).mock.calls[0][0];
       expect(calledUrl).toContain('switchcmd=Close');
       expect(calledUrl).not.toContain('<CMD>');
     });
 
     it('remplace <LEVEL> dans l\'URL par la valeur fournie', async () => {
-      (global.fetch as jest.Mock).mockResolvedValue(
+      (globalThis.fetch as jest.Mock).mockResolvedValue(
         makeFetchResponse(200, { status: 'OK' })
       );
 
@@ -107,13 +107,13 @@ describe('callDomoticz', () => {
         { key: SERVICES_PARAMS.LEVEL, value: '75' },
       ]);
 
-      const calledUrl: string = (global.fetch as jest.Mock).mock.calls[0][0];
+      const calledUrl: string = (globalThis.fetch as jest.Mock).mock.calls[0][0];
       expect(calledUrl).toContain('level=75');
       expect(calledUrl).not.toContain('<LEVEL>');
     });
 
     it('remplace <TEMP> dans l\'URL par la valeur fournie', async () => {
-      (global.fetch as jest.Mock).mockResolvedValue(
+      (globalThis.fetch as jest.Mock).mockResolvedValue(
         makeFetchResponse(200, { status: 'OK' })
       );
 
@@ -122,19 +122,19 @@ describe('callDomoticz', () => {
         { key: SERVICES_PARAMS.TEMP, value: '21.5' },
       ]);
 
-      const calledUrl: string = (global.fetch as jest.Mock).mock.calls[0][0];
+      const calledUrl: string = (globalThis.fetch as jest.Mock).mock.calls[0][0];
       expect(calledUrl).toContain('setpoint=21.5');
       expect(calledUrl).not.toContain('<TEMP>');
     });
 
     it('conserve l\'URL inchangée si aucun paramètre n\'est passé', async () => {
-      (global.fetch as jest.Mock).mockResolvedValue(
+      (globalThis.fetch as jest.Mock).mockResolvedValue(
         makeFetchResponse(200, { status: 'OK', result: [] })
       );
 
       await callDomoticz(SERVICES_URL.GET_TEMPS);
 
-      const calledUrl: string = (global.fetch as jest.Mock).mock.calls[0][0];
+      const calledUrl: string = (globalThis.fetch as jest.Mock).mock.calls[0][0];
       expect(calledUrl).toContain('getdevices&filter=temp');
     });
   });
@@ -143,37 +143,37 @@ describe('callDomoticz', () => {
 
   describe('Header Authorization', () => {
     it('envoie un header Authorization: Basic dans la requête', async () => {
-      (global.fetch as jest.Mock).mockResolvedValue(
+      (globalThis.fetch as jest.Mock).mockResolvedValue(
         makeFetchResponse(200, { status: 'OK', result: [] })
       );
 
       await callDomoticz(SERVICES_URL.GET_DEVICES);
 
-      const requestInit: RequestInit = (global.fetch as jest.Mock).mock.calls[0][1];
+      const requestInit: RequestInit = (globalThis.fetch as jest.Mock).mock.calls[0][1];
       const headers = requestInit.headers as Headers;
       expect(headers.get('Authorization')).toMatch(/^Basic /);
     });
 
     it('envoie un header Content-Type: application/json', async () => {
-      (global.fetch as jest.Mock).mockResolvedValue(
+      (globalThis.fetch as jest.Mock).mockResolvedValue(
         makeFetchResponse(200, { status: 'OK', result: [] })
       );
 
       await callDomoticz(SERVICES_URL.GET_DEVICES);
 
-      const requestInit: RequestInit = (global.fetch as jest.Mock).mock.calls[0][1];
+      const requestInit: RequestInit = (globalThis.fetch as jest.Mock).mock.calls[0][1];
       const headers = requestInit.headers as Headers;
       expect(headers.get('Content-Type')).toBe('application/json');
     });
 
     it('utilise la méthode GET', async () => {
-      (global.fetch as jest.Mock).mockResolvedValue(
+      (globalThis.fetch as jest.Mock).mockResolvedValue(
         makeFetchResponse(200, { status: 'OK', result: [] })
       );
 
       await callDomoticz(SERVICES_URL.GET_DEVICES);
 
-      const requestInit: RequestInit = (global.fetch as jest.Mock).mock.calls[0][1];
+      const requestInit: RequestInit = (globalThis.fetch as jest.Mock).mock.calls[0][1];
       expect(requestInit.method).toBe('GET');
     });
   });
@@ -183,7 +183,7 @@ describe('callDomoticz', () => {
   describe('Succès HTTP 200', () => {
     it('retourne les données JSON pour un status 200 + status "OK"', async () => {
       const fakeData = { status: 'OK', result: [{ idx: 1, Name: 'Lumière' }] };
-      (global.fetch as jest.Mock).mockResolvedValue(makeFetchResponse(200, fakeData));
+      (globalThis.fetch as jest.Mock).mockResolvedValue(makeFetchResponse(200, fakeData));
 
       const result = await callDomoticz(SERVICES_URL.GET_DEVICES);
 
@@ -192,7 +192,7 @@ describe('callDomoticz', () => {
 
     it('retourne les données pour n\'importe quel status 2xx', async () => {
       const fakeData = { status: 'OK', result: [] };
-      (global.fetch as jest.Mock).mockResolvedValue(makeFetchResponse(201, fakeData));
+      (globalThis.fetch as jest.Mock).mockResolvedValue(makeFetchResponse(201, fakeData));
 
       const result = await callDomoticz(SERVICES_URL.GET_DEVICES);
 
@@ -204,7 +204,7 @@ describe('callDomoticz', () => {
 
   describe('Erreur HTTP', () => {
     it('throw une erreur pour un status HTTP 400', async () => {
-      (global.fetch as jest.Mock).mockResolvedValue(
+      (globalThis.fetch as jest.Mock).mockResolvedValue(
         makeFetchResponse(400, {}, 'Bad Request')
       );
 
@@ -212,7 +212,7 @@ describe('callDomoticz', () => {
     });
 
     it('throw une erreur pour un status HTTP 500', async () => {
-      (global.fetch as jest.Mock).mockResolvedValue(
+      (globalThis.fetch as jest.Mock).mockResolvedValue(
         makeFetchResponse(500, {}, 'Internal Server Error')
       );
 
@@ -220,7 +220,7 @@ describe('callDomoticz', () => {
     });
 
     it('throw une erreur pour un status HTTP 401', async () => {
-      (global.fetch as jest.Mock).mockResolvedValue(
+      (globalThis.fetch as jest.Mock).mockResolvedValue(
         makeFetchResponse(401, {}, 'Unauthorized')
       );
 
@@ -228,7 +228,7 @@ describe('callDomoticz', () => {
     });
 
     it('throw une erreur pour un status HTTP 404', async () => {
-      (global.fetch as jest.Mock).mockResolvedValue(
+      (globalThis.fetch as jest.Mock).mockResolvedValue(
         makeFetchResponse(404, {}, 'Not Found')
       );
 
@@ -241,14 +241,14 @@ describe('callDomoticz', () => {
   describe('Status Domoticz "ERR"', () => {
     it('throw une erreur quand data.status === "ERR"', async () => {
       const errData = { status: 'ERR', message: 'Device not found' };
-      (global.fetch as jest.Mock).mockResolvedValue(makeFetchResponse(200, errData));
+      (globalThis.fetch as jest.Mock).mockResolvedValue(makeFetchResponse(200, errData));
 
       await expect(callDomoticz(SERVICES_URL.GET_DEVICES)).rejects.toThrow();
     });
 
     it('inclut le message d\'erreur Domoticz dans l\'exception', async () => {
       const errData = { status: 'ERR', message: 'Device not found' };
-      (global.fetch as jest.Mock).mockResolvedValue(makeFetchResponse(200, errData));
+      (globalThis.fetch as jest.Mock).mockResolvedValue(makeFetchResponse(200, errData));
 
       await expect(callDomoticz(SERVICES_URL.GET_DEVICES)).rejects.toThrow(
         /Device not found/
@@ -260,13 +260,13 @@ describe('callDomoticz', () => {
 
   describe('Réseau indisponible', () => {
     it('throw une erreur quand fetch rejette (réseau indisponible)', async () => {
-      (global.fetch as jest.Mock).mockRejectedValue(new Error('Network request failed'));
+      (globalThis.fetch as jest.Mock).mockRejectedValue(new Error('Network request failed'));
 
       await expect(callDomoticz(SERVICES_URL.GET_DEVICES)).rejects.toThrow();
     });
 
     it('propage le message d\'erreur réseau', async () => {
-      (global.fetch as jest.Mock).mockRejectedValue(new Error('Network request failed'));
+      (globalThis.fetch as jest.Mock).mockRejectedValue(new Error('Network request failed'));
 
       await expect(callDomoticz(SERVICES_URL.GET_DEVICES)).rejects.toThrow(
         /Network request failed/
@@ -274,7 +274,7 @@ describe('callDomoticz', () => {
     });
 
     it('throw une erreur quand fetch rejette avec TypeError (CORS)', async () => {
-      (global.fetch as jest.Mock).mockRejectedValue(
+      (globalThis.fetch as jest.Mock).mockRejectedValue(
         new TypeError('Failed to fetch')
       );
 
