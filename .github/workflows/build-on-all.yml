@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  expo-doctor:
+  expo-build:
     runs-on: ubuntu-latest
     environment: BUILD
     steps:
