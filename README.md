@@ -1,86 +1,116 @@
 # Domoticz Mobile
+
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=vzwingma_domotique-mobile&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=vzwingma_domotique-mobile)
 
-Ce projet est une application mobile pour gérer les équipements Domoticz. L'application utilise React Native et Expo pour fournir une interface utilisateur intuitive et réactive.
+Application mobile pour piloter les équipements [Domoticz](https://www.domoticz.com/). Développée avec React Native et Expo, elle cible principalement Android et le web.
 
 ## Prérequis
 
-Avant de commencer, assurez-vous d'avoir les éléments suivants installés sur votre machine :
-
-- Node.js (version 21 ou supérieure)
-- npm (version 6 ou supérieure) ou yarn (version 1.22 ou supérieure)
-- Expo CLI (peut être installé globalement via npm ou yarn)
+- Node.js 21 ou supérieur
+- npm 6 ou supérieur
+- Expo CLI (`npm install -g expo-cli`)
 
 ## Installation
 
-1. Clonez le dépôt :
-
-    ```bash
-    git clone https://github.com/votre-utilisateur/domoticz-mobile.git
-    cd domoticz-mobile
-    ```
-
-2. Installez les dépendances :
-
-    ```bash
-    npm install
-    ```
-
-    ou
-
-    ```bash
-    yarn install
-    ```
-
-## Démarrage
-
-Pour démarrer l'application en mode développement, utilisez la commande suivante :
-
 ```bash
-npx expo start
+git clone https://github.com/vzwingma/domoticz-mobile.git
+cd domoticz-mobile
+npm install
 ```
 
-Cela ouvrira une fenêtre de navigateur avec l'interface Expo, où vous pourrez choisir de lancer l'application sur un émulateur ou un appareil physique.
+## Variables d'environnement
 
-## Structure du Projet
+La configuration passe exclusivement par des variables d'environnement préfixées `EXPO_PUBLIC_`.  
+Créez un fichier `.env.local` à la racine du projet (non versionné) :
 
-- `components/` : Contient les composants React utilisés dans l'application.
-- `constants/` : Contient les constantes utilisées dans l'application, comme les couleurs et les types Domoticz.
-- `models/` : Contient les modèles de données utilisés dans l'application.
-- `services/` : Contient les services (appels vers Domoticz) de l'application.
-- `navigation/` : Contient les configurations de navigation pour l'application.
+```env
+# URL du serveur Domoticz (inclure le port si nécessaire)
+EXPO_PUBLIC_DOMOTICZ_URL=http://192.168.1.x:8080/
+
+# Authentification Basic Auth encodée en Base64 (format : "login:password" encodé)
+EXPO_PUBLIC_DOMOTICZ_AUTH=<Base64 de login:password>
+
+# Environnement courant (optionnel)
+EXPO_PUBLIC_MY_ENVIRONMENT=development
+```
+
+> **Générer la valeur Base64 :** `echo -n "monlogin:monmotdepasse" | base64`
+
+## Scripts npm
+
+```bash
+npm start                                           # Serveur de développement Expo
+npm run android                                     # Lancer sur émulateur/appareil Android
+npm run web                                         # Lancer dans le navigateur
+npm test                                            # Tests Jest en mode watch
+npm test -- path/to/file.test.tsx                   # Un fichier de test précis
+npm test -- --testNamePattern="nom du test"         # Tests filtrés par nom
+npm run lint                                        # ESLint via Expo
+```
+
+Builds EAS (distribution APK Android) :
+
+```bash
+eas build --profile development   # Build de développement
+eas build --profile preview       # APK à distribution interne
+eas build --profile production    # Build de production
+```
+
+Une fois `npm start` lancé, scannez le QR code avec l'application Expo Go sur votre appareil.
+
+## Architecture
+
+### Flux de données
+
+```
+UI (onglet)  →  Controller  →  ClientHTTP.service  →  Serveur Domoticz
+                                       ↓
+                       Mise à jour du Context → re-rendu UI
+```
+
+Toutes les requêtes HTTP sont centralisées dans `app/services/ClientHTTP.service.ts` via `callDomoticz()` avec Basic Auth et traçage UUID.
+
+### Structure des dossiers
+
+```
+app/
+  (tabs)/       # Écrans principaux : accueil, lumières, volets, températures, paramètres
+  components/   # Composants de niveau écran (*.component.tsx)
+  controllers/  # Pont entre l'UI et les services (*.controller.tsx)
+  services/     # Client HTTP, fournisseur de contexte (*.service.ts)
+  models/       # Modèles de données TypeScript sous forme de classes (*.model.ts)
+  enums/        # Constantes, enums, couleurs, endpoints API
+
+components/     # Composants UI génériques partagés (ThemedText, icônes…)
+hooks/          # Hooks React personnalisés
+assets/         # Polices, icônes, images
+```
+
+**Routing :** Expo Router avec routage basé sur les fichiers (routes typées activées).  
+**État global :** React Context API via `DomoticzContextProvider`.
 
 ## Fonctionnalités
 
-- Gestion des équipements Domoticz : Affiche et contrôle les équipements Domoticz comme les lumières et les volets.
-- Navigation par onglets : Utilise une navigation par onglets pour une expérience utilisateur fluide.
+- Affichage et contrôle des lumières (on/off, variateur)
+- Gestion des volets/stores (ouverture, fermeture, arrêt, niveau)
+- Consultation des capteurs de température
+- Contrôle des thermostats (point de consigne)
+- Gestion des groupes d'équipements
+- Paramètres de l'application
 
-## Utilisation
+## Tests
 
-Une fois l'application démarrée en mode développement, vous pouvez la visualiser sur votre appareil en utilisant l'application Expo Go. Scannez simplement le code QR affiché dans votre terminal ou dans l'interface web Expo DevTools.
+Les tests utilisent **Jest** avec le preset `jest-expo` (snapshot testing et tests unitaires).
 
-## Configuration
-
-Avant de pouvoir utiliser l'application, vous devez configurer les paramètres de connexion à votre serveur Domoticz. Ouvrez le fichier `config.js` situé dans le répertoire `src/config` et modifiez les valeurs appropriées.
-
-## Fonctionnalités
-
-Cette application mobile vous permet de :
-
-- Afficher et contrôler les équipements Domoticz.
-- Gérer les scènes et les groupes d'équipements.
-- Recevoir des notifications en temps réel pour les événements Domoticz.
-- Personnaliser l'interface utilisateur selon vos préférences.
+```bash
+npm test           # Lance Jest en mode watch
+npm run lint       # Vérifie le code avec ESLint
+```
 
 ## Contribution
 
-Si vous souhaitez contribuer à ce projet, vous pouvez suivre les étapes suivantes :
-
-1. Forker le dépôt.
-2. Créer une branche pour vos modifications.
-3. Effectuer vos modifications et les tester.
-4. Soumettre une demande de fusion (pull request) avec une description claire des modifications apportées.
+Consultez [CONTRIBUTING.md](./CONTRIBUTING.md) pour les conventions et le processus de contribution.
 
 ## Licence
 
-Ce projet est sous licence MIT. Veuillez consulter le fichier `LICENSE` pour plus d'informations.
+Ce projet est sous licence MIT. Consultez le fichier `LICENSE` pour plus d'informations.

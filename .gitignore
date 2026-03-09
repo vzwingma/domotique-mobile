@@ -9,6 +9,9 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
+coverage/
+coverage/*
+
 # IDE
 .idea/
 .vscode/
@@ -27,3 +30,4 @@ expo-env.d.ts
 .env
 .env.previewC
 .env.previewV
+
