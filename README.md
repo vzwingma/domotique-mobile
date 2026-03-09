@@ -6,9 +6,9 @@ Application mobile pour piloter les équipements [Domoticz](https://www.domoticz
 
 ## Prérequis
 
-- Node.js (version 21 ou supérieure)
-- npm (version 6 ou supérieure)
-- Expo CLI
+- Node.js 21 ou supérieur
+- npm 6 ou supérieur
+- Expo CLI (`npm install -g expo-cli`)
 
 ## Installation
 
@@ -18,57 +18,76 @@ cd domoticz-mobile
 npm install
 ```
 
-## Configuration
+## Variables d'environnement
 
-Créez un fichier `.env` à la racine du projet avec les variables suivantes :
+La configuration passe exclusivement par des variables d'environnement préfixées `EXPO_PUBLIC_`.  
+Créez un fichier `.env.local` à la racine du projet (non versionné) :
 
 ```env
-EXPO_PUBLIC_DOMOTICZ_URL=http://votre-serveur-domoticz:8080
-EXPO_PUBLIC_DOMOTICZ_AUTH=<identifiants en Base64 : login:password>
+# URL du serveur Domoticz (inclure le port si nécessaire)
+EXPO_PUBLIC_DOMOTICZ_URL=http://192.168.1.x:8080/
+
+# Authentification Basic Auth encodée en Base64 (format : "login:password" encodé)
+EXPO_PUBLIC_DOMOTICZ_AUTH=<Base64 de login:password>
+
+# Environnement courant (optionnel)
+EXPO_PUBLIC_MY_ENVIRONMENT=development
 ```
 
-## Démarrage
+> **Générer la valeur Base64 :** `echo -n "monlogin:monmotdepasse" | base64`
+
+## Scripts npm
 
 ```bash
-npm start          # Serveur de développement Expo
-npm run android    # Lancer sur émulateur/appareil Android
-npm run web        # Lancer sur le web
-```
-
-Une fois démarré, scannez le QR code avec l'application Expo Go sur votre appareil.
-
-## Commandes utiles
-
-```bash
-npm test                                            # Tests Jest (mode watch)
+npm start                                           # Serveur de développement Expo
+npm run android                                     # Lancer sur émulateur/appareil Android
+npm run web                                         # Lancer dans le navigateur
+npm test                                            # Tests Jest en mode watch
 npm test -- path/to/file.test.tsx                   # Un fichier de test précis
-npm test -- --testNamePattern="nom du test"         # Tests par nom
+npm test -- --testNamePattern="nom du test"         # Tests filtrés par nom
 npm run lint                                        # ESLint via Expo
 ```
 
 Builds EAS (distribution APK Android) :
 
 ```bash
-eas build --profile development
-eas build --profile preview      # APK à distribution interne
-eas build --profile production
+eas build --profile development   # Build de développement
+eas build --profile preview       # APK à distribution interne
+eas build --profile production    # Build de production
 ```
 
-## Structure du projet
+Une fois `npm start` lancé, scannez le QR code avec l'application Expo Go sur votre appareil.
+
+## Architecture
+
+### Flux de données
+
+```
+UI (onglet)  →  Controller  →  ClientHTTP.service  →  Serveur Domoticz
+                                       ↓
+                       Mise à jour du Context → re-rendu UI
+```
+
+Toutes les requêtes HTTP sont centralisées dans `app/services/ClientHTTP.service.ts` via `callDomoticz()` avec Basic Auth et traçage UUID.
+
+### Structure des dossiers
 
 ```
 app/
   (tabs)/       # Écrans principaux : accueil, lumières, volets, températures, paramètres
-  components/   # Composants de niveau écran
-  controllers/  # Pont entre l'UI et les services (chargement des données)
-  services/     # Client HTTP, fournisseur de contexte
-  models/       # Modèles de données TypeScript (classes)
+  components/   # Composants de niveau écran (*.component.tsx)
+  controllers/  # Pont entre l'UI et les services (*.controller.tsx)
+  services/     # Client HTTP, fournisseur de contexte (*.service.ts)
+  models/       # Modèles de données TypeScript sous forme de classes (*.model.ts)
   enums/        # Constantes, enums, couleurs, endpoints API
 
-components/     # Composants UI génériques partagés
+components/     # Composants UI génériques partagés (ThemedText, icônes…)
 hooks/          # Hooks React personnalisés
 assets/         # Polices, icônes, images
 ```
+
+**Routing :** Expo Router avec routage basé sur les fichiers (routes typées activées).  
+**État global :** React Context API via `DomoticzContextProvider`.
 
 ## Fonctionnalités
 
@@ -79,12 +98,18 @@ assets/         # Polices, icônes, images
 - Gestion des groupes d'équipements
 - Paramètres de l'application
 
+## Tests
+
+Les tests utilisent **Jest** avec le preset `jest-expo` (snapshot testing et tests unitaires).
+
+```bash
+npm test           # Lance Jest en mode watch
+npm run lint       # Vérifie le code avec ESLint
+```
+
 ## Contribution
 
-1. Forker le dépôt
-2. Créer une branche pour vos modifications
-3. Effectuer vos modifications et les tester (`npm test`, `npm run lint`)
-4. Soumettre une pull request avec une description claire des changements
+Consultez [CONTRIBUTING.md](./CONTRIBUTING.md) pour les conventions et le processus de contribution.
 
 ## Licence
 
