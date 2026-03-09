@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ThemedText – snapshots par type snapshot : type default (implicite) 1`] = `null`;
+
+exports[`ThemedText – snapshots par type snapshot : type defaultSemiBold 1`] = `null`;
+
+exports[`ThemedText – snapshots par type snapshot : type italic 1`] = `null`;
+
+exports[`ThemedText – snapshots par type snapshot : type link 1`] = `null`;
+
+exports[`ThemedText – snapshots par type snapshot : type subtitle 1`] = `null`;
+
+exports[`ThemedText – snapshots par type snapshot : type tab 1`] = `null`;
+
+exports[`ThemedText – snapshots par type snapshot : type title 1`] = `null`;
