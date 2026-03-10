@@ -28,6 +28,4 @@ expo-env.d.ts
 
 # Environment variables
 .env
-.env.previewC
-.env.previewV
 
