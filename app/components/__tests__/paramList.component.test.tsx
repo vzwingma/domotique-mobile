@@ -94,7 +94,7 @@ describe('paramList.component — chips pour PARAMETRE', () => {
     expect(getByText('Soirée')).toBeTruthy();
   });
 
-  it('n'affiche pas de chips pour un paramètre PARAMETRE_RO', () => {
+  it("n'affiche pas de chips pour un parametre PARAMETRE_RO", () => {
     const param = makeParameter({
       type: DomoticzDeviceType.PARAMETRE_RO,
       levelNames: ['Nuit', 'Jour'],
@@ -116,7 +116,7 @@ describe('paramList.component — renommage Phase → Moment (T16)', () => {
     expect(getByText('Moment')).toBeTruthy();
   });
 
-  it('n'affiche pas "Phase" quand le nom est "Phase"', () => {
+  it("n'affiche pas \"Phase\" quand le nom est \"Phase\"", () => {
     const param = makeParameter({ name: 'Phase' });
     const { queryByText } = renderParam(param);
     expect(queryByText('Phase')).toBeNull();
@@ -155,7 +155,7 @@ describe('paramList.component — labels Présence (T17)', () => {
     expect(getByText('Maison vide')).toBeTruthy();
   });
 
-  it('n'affiche pas "Présent" brut pour un paramètre Présence', () => {
+  it("n'affiche pas \"Présent\" brut pour un paramètre Présence", () => {
     const param = makeParameter({
       name: 'Présence',
       type: DomoticzDeviceType.PARAMETRE,
@@ -226,7 +226,7 @@ describe('paramList.component — click chip appelle updateParameterValue', () =
     );
   });
 
-  it('n'appelle pas updateParameterValue pour un PARAMETRE_RO', () => {
+  it("n'appelle pas updateParameterValue pour un PARAMETRE_RO", () => {
     const param = makeParameter({
       name: 'Lecture',
       type: DomoticzDeviceType.PARAMETRE_RO,

@@ -61,9 +61,11 @@ jest.mock('@/components/IconDomoticzDevice', () => {
 // Vecteur d'icônes (déjà dans jest.setup.ts mais on renforce)
 jest.mock('@expo/vector-icons/Ionicons', () => 'Ionicons');
 
-// ─── Factory : crée un DomoticzDevice minimal ─────────────────────────────────
+// ─── Factory : crée un DomoticzDevice minimal (objet littéral, pas new DomoticzDevice)
+// Le constructeur de DomoticzDevice n'assigne pas `isActive` (readonly avec default false),
+// donc on utilise un cast vers DomoticzDevice pour éviter ce problème.
 function makeDevice(overrides: Partial<DomoticzDevice>): DomoticzDevice {
-  const base: any = {
+  return {
     idx: 1,
     rang: 0,
     name: 'Test Device',
@@ -78,8 +80,8 @@ function makeDevice(overrides: Partial<DomoticzDevice>): DomoticzDevice {
     switchType: DomoticzSwitchType.ONOFF,
     status: 'On',
     data: '',
-  };
-  return new DomoticzDevice({ ...base, ...overrides });
+    ...overrides,
+  } as DomoticzDevice;
 }
 
 // ─── Provider minimal pour DomoticzContext ────────────────────────────────────
@@ -235,7 +237,7 @@ describe('device.component — BlindActionsBar pour les volets', () => {
     expect(getByLabelText('Fermer le volet')).toBeTruthy();
   });
 
-  it('n'affiche pas BlindActionsBar pour une lumière', () => {
+  it("n'affiche pas BlindActionsBar pour une lumiere", () => {
     const device = makeDevice({
       type: DomoticzDeviceType.LUMIERE,
       switchType: DomoticzSwitchType.ONOFF,

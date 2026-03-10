@@ -1,5 +1,5 @@
 import { ThemedText } from "../../components/ThemedText";
-import { View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Slider from '@react-native-community/slider';
 import { Colors } from "../enums/Colors";
 import { useContext, useState } from "react";
@@ -18,18 +18,34 @@ export type DomoticzThermostatProps = {
 
 
 /**
- * Composant pour afficher un équipement Domoticz.
- * @param device équipement Domoticz
- * @param storeDeviceData setter pour les données des équipements
+ * Composant pour afficher un thermostat Domoticz avec boutons +/- et mesure vs consigne.
  */
 export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ thermostat }: DomoticzThermostatProps) => {
 
   const [flagLabel, setFlagLabel] = useState<boolean>(false);
   const [nextValue, setNextValue] = useState<number>(thermostat.temp);
-  const { setDomoticzThermostatData } = useContext(DomoticzContext)!;
+  const { setDomoticzThermostatData, domoticzTemperaturesData } = useContext(DomoticzContext)!;
+
+  // T12 — mesure du salon
+  const measuredTemp = domoticzTemperaturesData.find(t => t.name.toLowerCase().includes('salon'));
+
+  // T11 — boutons +/- 0.5°C
+  const handleDecrease = () => {
+    if (!thermostat.isActive) return;
+    const newValue = Math.max(DomoticzThermostatLevelValue.MIN, nextValue - 0.5);
+    setNextValue(newValue);
+    updateThermostatPoint(thermostat.idx, thermostat, newValue, setDomoticzThermostatData);
+  };
+
+  const handleIncrease = () => {
+    if (!thermostat.isActive) return;
+    const newValue = Math.min(DomoticzThermostatLevelValue.MAX, nextValue + 0.5);
+    setNextValue(newValue);
+    updateThermostatPoint(thermostat.idx, thermostat, newValue, setDomoticzThermostatData);
+  };
 
   return (
-    <View key={thermostat.idx} style={thermostat.isActive ? stylesListsDevices.viewBox : stylesListsDevices.viewBoxDisabled}>
+    <View key={thermostat.idx} style={thermostat.isActive ? thermostatStyles.viewBox : thermostatStyles.viewBoxDisabled}>
       <View key={thermostat.idx} style={stylesListsDevices.iconBox}>
         <IconDomoticzThermostat/>
       </View>
@@ -38,13 +54,43 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
           <View style={stylesListsDevices.libelleBox}>
             <ThemedText style={{ fontSize: 16, color: 'white' }}>{thermostat.name}</ThemedText>
           </View>
-          <View style={stylesListsDevices.valueBox}>
+          {/* T11 — boutons +/- autour de la valeur consigne */}
+          <View style={thermostatStyles.controlBox}>
+            <TouchableOpacity
+              style={[thermostatStyles.adjustButton, !thermostat.isActive && thermostatStyles.adjustButtonDisabled]}
+              activeOpacity={0.7}
+              onPress={handleDecrease}
+              disabled={!thermostat.isActive}
+              accessibilityRole="button"
+              accessibilityLabel="Diminuer la consigne"
+            >
+              <ThemedText style={thermostatStyles.adjustButtonText}>−</ThemedText>
+            </TouchableOpacity>
             <ThemedText style={stylesListsDevices.textLevel}>{getStatusLabel(thermostat, nextValue, flagLabel)}</ThemedText>
+            <TouchableOpacity
+              style={[thermostatStyles.adjustButton, !thermostat.isActive && thermostatStyles.adjustButtonDisabled]}
+              activeOpacity={0.7}
+              onPress={handleIncrease}
+              disabled={!thermostat.isActive}
+              accessibilityRole="button"
+              accessibilityLabel="Augmenter la consigne"
+            >
+              <ThemedText style={thermostatStyles.adjustButtonText}>+</ThemedText>
+            </TouchableOpacity>
           </View>
           <View style={stylesListsDevices.unitBox}>
             <ThemedText style={stylesListsDevices.textLevel}>{thermostat.unit}</ThemedText>
           </View>
         </View>
+        {/* T12 — mesure vs consigne */}
+        {measuredTemp && (
+          <View style={thermostatStyles.measuredRow}>
+            <ThemedText style={thermostatStyles.measuredLabel}>Mesure </ThemedText>
+            <ThemedText style={thermostatStyles.measuredValue}>{measuredTemp.temp}°C</ThemedText>
+            <ThemedText style={thermostatStyles.consigneLabel}>  Consigne </ThemedText>
+            <ThemedText style={thermostatStyles.consigneValue}>{thermostat.temp}°C</ThemedText>
+          </View>
+        )}
         <Slider
           disabled={!thermostat.isActive}
           style={thermostat.isActive ? stylesListsDevices.slider : stylesListsDevices.sliderDisabled}
@@ -68,32 +114,84 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
 
 /**
  * Surcharge de la valeur du slider pour la mettre à jour
- * @param value prochain niveau de l'équipement
- * @param setNextValue  fonction pour mettre à jour le prochain niveau de l'équipement
  */
 function overrideNextValue(value: number, setNextValue: React.Dispatch<React.SetStateAction<number>>) {
   setNextValue(evaluateThermostatPoint(value));
 }
 
 /**
- * Fonction pour le label du statut de l'équipement. Si on est en mode édition, on affiche le prochain état entre parenthèses.
+ * Label du statut du thermostat (consigne courante ou valeur en cours d'édition).
  */
 function getStatusLabel(device: DomoticzThermostat, nextValue: number, flagLabel: boolean): string {
-
-
-  let getStatusLabel = "";
-  // Si l'équipement est désactivé
-  if (!device.isActive) {
-    getStatusLabel = "-";
-  }
-  // Si on est en mode édition
-  else if (flagLabel) {
-    getStatusLabel = "(" + nextValue + ")";
-  }
-  // Sinon on affiche le niveau actuel
-  else {
-    getStatusLabel = device.temp + "";
-  }
-  return getStatusLabel;
-
+  if (!device.isActive) return "-";
+  if (flagLabel) return "(" + nextValue + ")";
+  return device.temp + "";
 }
+
+const thermostatStyles = StyleSheet.create({
+  viewBox: {
+    flexDirection: 'row',
+    width: '100%',
+    padding: 10,
+    margin: 1,
+    borderColor: '#3A3A3A',
+    borderWidth: 1,
+    backgroundColor: '#0b0b0b',
+    minHeight: 84,
+  },
+  viewBoxDisabled: {
+    flexDirection: 'row',
+    width: '100%',
+    padding: 10,
+    margin: 1,
+    opacity: 0.2,
+    minHeight: 84,
+  },
+  controlBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: -80,
+  },
+  adjustButton: {
+    minWidth: 44,
+    minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    paddingHorizontal: 10,
+  },
+  adjustButtonDisabled: {
+    opacity: 0.4,
+  },
+  adjustButtonText: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  measuredRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 2,
+    marginBottom: 2,
+  },
+  measuredLabel: {
+    fontSize: 11,
+    color: '#9BA1A6',
+  },
+  measuredValue: {
+    fontSize: 11,
+    color: '#9BA1A6',
+    fontWeight: 'bold',
+  },
+  consigneLabel: {
+    fontSize: 11,
+    color: '#9BA1A6',
+  },
+  consigneValue: {
+    fontSize: 11,
+    color: Colors.domoticz.color,
+    fontWeight: 'bold',
+  },
+});

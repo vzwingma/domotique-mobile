@@ -132,7 +132,7 @@ describe('BlindActionsBar — état disabled quand isActive=false', () => {
     expect(btn.props.accessibilityState?.disabled).toBe(true);
   });
 
-  it('aucun callback n'est appelé au press quand isActive=false', () => {
+  it("aucun callback n'est appele au press quand isActive=false", () => {
     const cbs = makeCallbacks();
     const { getByLabelText } = render(<BlindActionsBar isActive={false} {...cbs} />);
     // fireEvent.press tentera quand même le press — mais onPress est undefined → pas d'appel
