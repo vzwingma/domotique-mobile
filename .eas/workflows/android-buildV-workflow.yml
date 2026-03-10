@@ -1,0 +1,13 @@
+name: Build V Version
+
+on:
+  push:
+    branches:
+      - 'mainV'
+
+jobs:
+  build_android_V:
+    type: build
+    params:
+      platform: android
+      profile: previewV
