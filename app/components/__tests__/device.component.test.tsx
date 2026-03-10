@@ -46,14 +46,12 @@ jest.mock('@/app/services/ClientHTTP.service', () => ({
 
 // Slider
 jest.mock('@react-native-community/slider', () => {
-  const React = require('react');
   const { View } = require('react-native');
   return (props: any) => <View testID="slider" {...props} />;
 });
 
 // Icône personnalisée
 jest.mock('@/components/IconDomoticzDevice', () => {
-  const React = require('react');
   const { View } = require('react-native');
   return (props: any) => <View testID="icon-device" />;
 });

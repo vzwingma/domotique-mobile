@@ -25,7 +25,6 @@ jest.mock('@/app/controllers/parameters.controller', () => ({
 
 // Icône paramètre
 jest.mock('@/components/IconDomoticzParametre', () => {
-  const React = require('react');
   const { View } = require('react-native');
   const IconDomoticzParametre = (props: any) => <View testID="icon-parametre" />;
   IconDomoticzParametre.getIconDomoticzParametre = () => 'home-outline';
