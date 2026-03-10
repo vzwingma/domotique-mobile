@@ -10,7 +10,7 @@ import { Image, StyleSheet } from "react-native";
  * Affiche l'image du logo de l'application suivant l'onglet sélectionné
  */
 export function getHeaderIcon(tab: Tabs) {
-    const iconSize = 110;
+    const iconSize = 60;
     switch (tab) {
       case Tabs.INDEX:
         return <Image source={PROFILE === PROFILES_ENV.C ? require('@/assets/images/c/partial-dlogo.png') : require('@/assets/images/v/partial-dlogo.png')} style={tabStyles.domoticzLogo} />
@@ -20,8 +20,8 @@ export function getHeaderIcon(tab: Tabs) {
         return <Ionicons size={iconSize} name="reorder-four" style={tabStyles.headerImage} />
       case Tabs.TEMPERATURES:
         return <Ionicons size={iconSize} name="thermometer-sharp" style={tabStyles.headerImage} />
-        case Tabs.PARAMETRES:
-          return <Ionicons size={iconSize} name="cog-sharp" style={tabStyles.headerImage} />        
+        case Tabs.MAISON:
+          return <Ionicons size={iconSize} name="home-sharp" style={tabStyles.headerImage} />        
       default:
         return <></>;
     }
@@ -38,8 +38,8 @@ export const tabStyles = StyleSheet.create({
       backgroundColor: Colors.dark.titlebackground,
     },
     domoticzLogo: {
-      width: 100,
-      height: 100,
+      width: 60,
+      height: 60,
       position: 'absolute',
       backgroundColor: Colors.dark.titlebackground,
     },

@@ -4,7 +4,6 @@ import { Colors } from '@/app/enums/Colors';
 import connectToDomoticz from '../controllers/index.controller';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import Constants from 'expo-constants';
 import { Tabs } from '../enums/TabsEnums';
 import { TabBarItems } from '@/components/navigation/TabBarItem';
 import DomoticzConfig from '../models/domoticzConfig.model';
@@ -35,7 +34,6 @@ export default function TabLayout() {
 
   const [error, setError] = useState<Error | null>(null);
   const [tab, setTab] = useState(Tabs.INDEX);
-  const appVersion = Constants.expoConfig?.version ?? 'inconnue';
 
 
   /**
@@ -85,7 +83,7 @@ export default function TabLayout() {
     if (isLoading) {
       return "Chargement...";
     } else {
-      return "v" + appVersion + " - Domoticz " + domoticzConnexionData?.version;
+      return "Domoticz v" + domoticzConnexionData?.version;
     }
   }
 
@@ -125,7 +123,7 @@ export default function TabLayout() {
               <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.LUMIERES} />
               <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.VOLETS} />
               <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.TEMPERATURES} />
-              <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.PARAMETRES} />
+              <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.MAISON} />
             </> : <></>
         }
       </View>
@@ -150,7 +148,7 @@ function showPanel(tab: Tabs): JSX.Element {
       return <TabDomoticzDevices dataType={DomoticzDeviceType.VOLET} />
     case Tabs.TEMPERATURES:
       return <TabDomoticzTemperatures />
-      case Tabs.PARAMETRES:
+      case Tabs.MAISON:
         return <TabDomoticzParametres />
       default:
       return <ThemedText type="title" style={{ color: 'red' }}>404 - Page non définie</ThemedText>
