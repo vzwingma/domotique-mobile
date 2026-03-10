@@ -103,7 +103,7 @@ describe('TabBarItems - callback selectNewTab', () => {
 
   it('selectNewTab non appele sans interaction', () => {
     render(
-      <TabBarItems activeTab={Tabs.INDEX} thisTab={Tabs.PARAMETRES} selectNewTab={selectNewTab} />
+      <TabBarItems activeTab={Tabs.INDEX} thisTab={Tabs.MAISON} selectNewTab={selectNewTab} />
     );
     expect(selectNewTab).not.toHaveBeenCalled();
   });
