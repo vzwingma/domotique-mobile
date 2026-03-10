@@ -1,0 +1,18 @@
+name: Build Android Versions
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  build_android_V:
+    type: build
+    params:
+      platform: android
+      profile: previewV
+  build_android_C:
+    type: build
+    params:
+      platform: android
+      profile: previewC
