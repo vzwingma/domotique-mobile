@@ -4,11 +4,12 @@ import { Colors } from '@/app/enums/Colors';
 import connectToDomoticz from '../controllers/index.controller';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import Constants from 'expo-constants';
 import { Tabs } from '../enums/TabsEnums';
 import { TabBarItems } from '@/components/navigation/TabBarItem';
 import DomoticzConfig from '../models/domoticzConfig.model';
 import { ThemedText } from '@/components/ThemedText';
-import { DOMOTICZ_MOBILE_VERSION, DomoticzStatus, DomoticzDeviceType } from '../enums/DomoticzEnum';
+import { DomoticzStatus, DomoticzDeviceType } from '../enums/DomoticzEnum';
 import HomeScreen from '.';
 import TabDomoticzTemperatures from './temperatures.tab';
 import { loadDomoticzDevices } from '../controllers/devices.controller';
@@ -34,6 +35,7 @@ export default function TabLayout() {
 
   const [error, setError] = useState<Error | null>(null);
   const [tab, setTab] = useState(Tabs.INDEX);
+  const appVersion = Constants.expoConfig?.version ?? 'inconnue';
 
 
   /**
@@ -83,7 +85,7 @@ export default function TabLayout() {
     if (isLoading) {
       return "Chargement...";
     } else {
-      return "v" + DOMOTICZ_MOBILE_VERSION + " - Domoticz " + domoticzConnexionData?.version;
+      return "v" + appVersion + " - Domoticz " + domoticzConnexionData?.version;
     }
   }
 

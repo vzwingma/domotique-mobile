@@ -1,6 +1,3 @@
-
-export const DOMOTICZ_MOBILE_VERSION = "2.7.2";
-
 export enum DomoticzStatus {
     INCONNU = 'INCONNU',
     CONNECTE = 'CONNECTE',
