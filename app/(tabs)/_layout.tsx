@@ -97,7 +97,7 @@ export default function TabLayout() {
     <>
       <ParallaxScrollView
         headerImage={getHeaderIcon(tab)}
-        headerTitle="Domoticz Mobile"
+        headerTitle={tab.toString()}
         connexionStatus={getDomoticzStatus()}
         setRefreshing={setRefreshing}>
 
