@@ -27,7 +27,7 @@ function getParametreDisplayName(name: string): string {
  */
 function getParametreDisplayLabel(parametreName: string, levelName: string): string {
   if (parametreName.includes("Présence")) {
-    if (levelName === "Présents") return "Maison occupée";
+    if (levelName === "Présent") return "Maison occupée";
     if (levelName === "Absent") return "Maison vide";
   }
   if (parametreName.includes("Phase")) {
