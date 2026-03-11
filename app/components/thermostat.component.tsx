@@ -51,7 +51,7 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
       </View>
       <View style={stylesListsDevices.contentBox}>
         <View style={stylesListsDevices.labelsBox}>
-          <View style={stylesListsDevices.libelleBox}>
+          <View style={thermostatStyles.libelleBox}>
             <ThemedText style={{ fontSize: 16, color: 'white' }}>{thermostat.name}</ThemedText>
           </View>
           {/* T11 — boutons +/- autour de la valeur consigne */}
@@ -66,7 +66,7 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
             >
               <ThemedText style={thermostatStyles.adjustButtonText}>−</ThemedText>
             </TouchableOpacity>
-            <ThemedText style={stylesListsDevices.textLevel}>{getStatusLabel(thermostat, nextValue, flagLabel)}</ThemedText>
+            <ThemedText style={stylesListsDevices.textLevel}>{getStatusLabel(thermostat, nextValue, flagLabel)} {thermostat.unit}</ThemedText>
             <TouchableOpacity
               style={[thermostatStyles.adjustButton, !thermostat.isActive && thermostatStyles.adjustButtonDisabled]}
               activeOpacity={0.7}
@@ -78,17 +78,18 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
               <ThemedText style={thermostatStyles.adjustButtonText}>+</ThemedText>
             </TouchableOpacity>
           </View>
-          <View style={stylesListsDevices.unitBox}>
-            <ThemedText style={stylesListsDevices.textLevel}>{thermostat.unit}</ThemedText>
-          </View>
         </View>
         {/* T12 — mesure vs consigne */}
         {measuredTemp && (
           <View style={thermostatStyles.measuredRow}>
-            <ThemedText style={thermostatStyles.measuredLabel}>Mesure </ThemedText>
-            <ThemedText style={thermostatStyles.measuredValue}>{measuredTemp.temp}°C</ThemedText>
-            <ThemedText style={thermostatStyles.consigneLabel}>  Consigne </ThemedText>
-            <ThemedText style={thermostatStyles.consigneValue}>{thermostat.temp}°C</ThemedText>
+            <View style={thermostatStyles.measuredSection}>
+              <ThemedText style={thermostatStyles.measuredLabel}>Mesure : </ThemedText>
+              <ThemedText style={thermostatStyles.measuredValue}>{measuredTemp.temp}°C</ThemedText>
+            </View>
+            <View style={thermostatStyles.consigneSection}>
+              <ThemedText style={thermostatStyles.consigneLabel}>Consigne : </ThemedText>
+              <ThemedText style={thermostatStyles.consigneValue}>{thermostat.temp}°C</ThemedText>
+            </View>
           </View>
         )}
         <Slider
@@ -151,7 +152,6 @@ const thermostatStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: -80,
   },
   adjustButton: {
     minWidth: 44,
@@ -173,8 +173,23 @@ const thermostatStyles = StyleSheet.create({
   measuredRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginTop: 2,
     marginBottom: 2,
+  },
+  measuredSection: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  consigneSection: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  libelleBox: {
+    flex: 1,
   },
   measuredLabel: {
     fontSize: 11,
