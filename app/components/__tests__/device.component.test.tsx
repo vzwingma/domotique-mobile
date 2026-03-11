@@ -103,8 +103,8 @@ jest.mock('@/app/services/DomoticzContextProvider', () => {
   return { DomoticzContext: MockCtx };
 });
 
-function renderDevice(device: DomoticzDevice) {
-  return render(<ViewDomoticzDevice device={device} />);
+function renderDevice(device: DomoticzDevice, enhancedUi = false) {
+  return render(<ViewDomoticzDevice device={device} enhancedUi={enhancedUi} />);
 }
 
 // =============================================================================
@@ -161,6 +161,7 @@ describe('device.component — lumières individuelles (T05)', () => {
 
   it('affiche "Allumée" pour une lumière On (ONOFF)', () => {
     const device = makeDevice({
+      name: 'Lumière Salon',
       type: DomoticzDeviceType.LUMIERE,
       switchType: DomoticzSwitchType.ONOFF,
       isGroup: false,
@@ -169,6 +170,20 @@ describe('device.component — lumières individuelles (T05)', () => {
     });
     const { getByText } = renderDevice(device);
     expect(getByText('Allumée')).toBeTruthy();
+  });
+
+  it("marque l'action principale comme active pour une lumière switch allumée en mode enhanced UI", () => {
+    const device = makeDevice({
+      name: 'Lumière Salon',
+      type: DomoticzDeviceType.LUMIERE,
+      switchType: DomoticzSwitchType.ONOFF,
+      isGroup: false,
+      status: 'On',
+      level: 0,
+      isActive: true,
+    });
+    const { getByLabelText } = renderDevice(device, true);
+    expect(getByLabelText('Action principale lumière Lumière Salon')).toHaveProp('accessibilityState', expect.objectContaining({ selected: true }));
   });
 
   it('affiche "Éteinte" pour une lumière variateur Off', () => {

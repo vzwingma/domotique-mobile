@@ -49,7 +49,6 @@ exports[`GroupCard snapshot actif et déconnecté 1`] = `
             "alignItems": "center",
             "flexDirection": "row",
             "gap": 10,
-            "justifyContent": "space-between",
           }
         }
       >
@@ -90,6 +89,8 @@ exports[`GroupCard snapshot actif et déconnecté 1`] = `
               "alignItems": "center",
               "flexDirection": "row",
               "gap": 4,
+              "justifyContent": "flex-end",
+              "minWidth": 80,
             }
           }
         >
@@ -240,7 +241,6 @@ exports[`GroupCard snapshot actif et déconnecté 2`] = `
             "alignItems": "center",
             "flexDirection": "row",
             "gap": 10,
-            "justifyContent": "space-between",
           }
         }
       >
@@ -280,7 +280,6 @@ exports[`GroupCard snapshot actif et déconnecté 2`] = `
             [
               {
                 "alignItems": "center",
-                "alignSelf": "flex-end",
                 "backgroundColor": "#2a1414",
                 "borderColor": "#7f2b2b",
                 "borderRadius": 999,

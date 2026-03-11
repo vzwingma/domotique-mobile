@@ -36,11 +36,14 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, enha
   const isDimmable = device.switchType === DomoticzSwitchType.SLIDER;
   const sliderVisible = enhancedUi ? isDimmable : true;
   const statusLabel = getStatusLabel(device, nextValue, flagLabel);
+  const isPrimaryActionActive = device.switchType === DomoticzSwitchType.ONOFF
+    ? device.status === DomoticzDeviceStatus.ON
+    : device.status !== DomoticzDeviceStatus.OFF && device.level > 0;
 
   const primaryAction = (
     <PrimaryIconAction
       accessibilityLabel={`Action principale ${device.type.toLowerCase()} ${device.name}`}
-      active={device.status !== DomoticzDeviceStatus.OFF && device.level > 0}
+      active={isPrimaryActionActive}
       disabled={!device.isActive}
       onPress={() => performDevicePrimaryAction(device, setDomoticzDevicesData)}>
       <IconDomoticzDevice device={device} interactive={false} />
@@ -285,21 +288,24 @@ export const stylesListsDevices = StyleSheet.create({
     width: '100%'
   },
   libelleBox: {
-    width: "100%",
+    flex: 1,
+    minWidth: 0,
   },
   valueBox: {
     flexDirection: "column",
-    marginLeft: -80,
-    width: 60
+    marginLeft: 0,
+    width: 80,
+    alignItems: 'flex-end',
   },
   valueBoxDisconnected: {
     flexDirection: "column",
-    marginLeft: -120,
-    width: 110,
+    marginLeft: 0,
+    width: 120,
     alignItems: 'flex-end',
   },
   unitBox: {
-    width: 20
+    width: 20,
+    alignItems: 'flex-end',
   },
   // SLIDER
   slider: {

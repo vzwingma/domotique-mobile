@@ -48,7 +48,7 @@ export function mapDomoticzStatusToConnectionBadgeState({
   return 'erreur';
 }
 
-export function ConnectionBadge({ state }: ConnectionBadgeProps) {
+export function ConnectionBadge({ state }: Readonly<ConnectionBadgeProps>) {
   const visual = BADGE_VISUALS[state];
 
   return (

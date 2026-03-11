@@ -23,7 +23,7 @@ export const IconDomoticzDevice : React.FC<IconDomoticzDeviceInternalProps> = ({
   switch (device.type) {
     case DomoticzDeviceType.LUMIERE:
       return <MaterialCommunityIcons name={getLightIcon(device)}
-                                 size={60}
+                                 size={58}
                                  color={getGroupColor(device)}
                                  onPress={interactive ? () => performDevicePrimaryAction(device, setDomoticzDevicesData) : undefined}/>
 

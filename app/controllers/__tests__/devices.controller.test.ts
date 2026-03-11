@@ -1,4 +1,4 @@
-import { loadDomoticzDevices, onClickDeviceIcon, updateDeviceLevel, addActionForFavorite, refreshEquipementState, getBlindGroupLabel, getStatusLabel } from '../devices.controller';
+import { loadDomoticzDevices, onClickDeviceIcon, updateDeviceLevel, addActionForFavorite, refreshEquipementState, getBlindGroupLabel, getLightsGroupLabel, getStatusLabel } from '../devices.controller';
 import callDomoticz from '@/app/services/ClientHTTP.service';
 import { getFavoritesFromStorage, saveFavoritesToStorage } from '@/app/services/DataUtils.service';
 import { DomoticzDeviceType, DomoticzDeviceStatus, DomoticzSwitchType } from '@/app/enums/DomoticzEnum';
@@ -321,6 +321,40 @@ describe('getBlindGroupLabel — libellé groupe de volets', () => {
         const device = makeDevice({ type: DomoticzDeviceType.VOLET, isGroup: true, consistantLevel: true, level: 50 });
         expect(getBlindGroupLabel(device)).toBe('50');
         expect(device.unit).toBe('%');
+    });
+});
+
+describe('getLightsGroupLabel — libellé groupe lumières', () => {
+    it('retourne "Allumées" pour un groupe non cohérent mais status=On et level>0 (mix dimmer/switch)', () => {
+        const device = makeDevice({
+            type: DomoticzDeviceType.LUMIERE,
+            isGroup: true,
+            consistantLevel: false,
+            status: DomoticzDeviceStatus.ON,
+            level: 40,
+        });
+        expect(getLightsGroupLabel(device)).toBe('Allumées');
+    });
+
+    it('retourne "Éteintes" pour un groupe status=Off', () => {
+        const device = makeDevice({
+            type: DomoticzDeviceType.LUMIERE,
+            isGroup: true,
+            status: DomoticzDeviceStatus.OFF,
+            level: 0,
+        });
+        expect(getLightsGroupLabel(device)).toBe('Éteintes');
+    });
+
+    it('retourne "Mixte" pour un groupe non cohérent sans status On explicite', () => {
+        const device = makeDevice({
+            type: DomoticzDeviceType.LUMIERE,
+            isGroup: true,
+            consistantLevel: false,
+            status: '40 %' as DomoticzDeviceStatus,
+            level: 40,
+        });
+        expect(getLightsGroupLabel(device)).toBe('Mixte');
     });
 });
 

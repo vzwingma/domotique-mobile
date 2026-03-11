@@ -6,7 +6,6 @@ exports[`DisconnectedState snapshot standard et compact 1`] = `
     [
       {
         "alignItems": "center",
-        "alignSelf": "flex-end",
         "backgroundColor": "#2a1414",
         "borderColor": "#7f2b2b",
         "borderRadius": 999,
@@ -64,7 +63,6 @@ exports[`DisconnectedState snapshot standard et compact 2`] = `
     [
       {
         "alignItems": "center",
-        "alignSelf": "flex-end",
         "backgroundColor": "#2a1414",
         "borderColor": "#7f2b2b",
         "borderRadius": 999,

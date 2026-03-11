@@ -47,7 +47,6 @@ export const GroupCard: React.FC<GroupCardProps> = ({
           <ThemedText style={styles.summary}>{summary}</ThemedText>
         </View>
       </View>
-      <View style={styles.commandsRow}>{commands}</View>
       {secondaryControl ? <View style={styles.secondaryRow}>{secondaryControl}</View> : null}
     </View>
   );
@@ -79,7 +78,6 @@ const styles = StyleSheet.create({
   },
   labelsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     gap: 10,
   },
@@ -90,6 +88,8 @@ const styles = StyleSheet.create({
   valueRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'flex-end',
+    minWidth: 80,
     gap: 4,
   },
   status: {
