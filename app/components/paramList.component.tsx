@@ -27,8 +27,11 @@ function getParametreDisplayName(name: string): string {
  */
 function getParametreDisplayLabel(parametreName: string, levelName: string): string {
   if (parametreName.includes("Présence")) {
-    if (levelName === "Présent") return "Maison occupée";
+    if (levelName === "Présents") return "Maison occupée";
     if (levelName === "Absent") return "Maison vide";
+  }
+  if (parametreName.includes("Phase")) {
+    if (levelName === "Journee") return "en journée";
   }
   return levelName;
 }
@@ -75,7 +78,9 @@ export const ViewDomoticzParamList: React.FC<DomoticzParamListProps> = ({ parame
       }
 
       {parametre.type === DomoticzDeviceType.PARAMETRE_RO &&
-        <ThemedText style={{ fontSize: 14, color: Colors.domoticz.color }}>{parametre.data}</ThemedText>
+      <View style={stylesListsDevices.infovalue}>
+        <ThemedText style={{ fontSize: 14, color: Colors.domoticz.color }}>{getParametreDisplayLabel(parametre.name, parametre.data)}</ThemedText>
+      </View>
       }
     </View>
   );
@@ -125,7 +130,7 @@ const chipStyles = StyleSheet.create({
     borderColor: Colors.domoticz.color,
   },
   chipText: {
-    fontSize: 12,
+    fontSize: 10,
     color: '#ccc',
     textAlign: 'center',
   },

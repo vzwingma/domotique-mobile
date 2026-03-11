@@ -205,12 +205,13 @@ export const stylesListsDevices = StyleSheet.create({
     },
 
   infovalue: {
-        flexDirection: "column",
-        marginLeft: -150,
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontSize: 14,
         borderColor: 'gray',
         borderWidth: 0.5,
         borderRadius: 8,
-        width: 150,
+        width: 180,
         backgroundColor: Colors.dark.background,
         color: Colors.domoticz.color,
     },    
