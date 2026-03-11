@@ -126,7 +126,7 @@ export const ViewBlindDevice: React.FC<ViewBlindDeviceProps> = ({ device, enhanc
           </View>
           <View style={device.isActive ? stylesListsDevices.valueBox : stylesListsDevices.valueBoxDisconnected}>
             {!device.isActive && enhancedUi
-              ? <DisconnectedState compact />
+              ? <DisconnectedState />
               : <ThemedText numberOfLines={1} style={stylesListsDevices.textLevel}>{statusLabel}</ThemedText>
             }
           </View>

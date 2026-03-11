@@ -41,7 +41,7 @@ export const GroupCard: React.FC<GroupCardProps> = ({
                 {unit ? <ThemedText style={styles.unit}>{unit}</ThemedText> : null}
               </View>
             ) : (
-              <DisconnectedState compact />
+              <DisconnectedState />
             )}
           </View>
           <ThemedText style={styles.summary}>{summary}</ThemedText>

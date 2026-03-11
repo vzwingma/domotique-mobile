@@ -46,7 +46,7 @@ export const FavoriteLightCard: React.FC<FavoriteLightCardProps> = ({ device }) 
               État : {statusLabel}
             </ThemedText>
           ) : (
-            <DisconnectedState compact />
+            <DisconnectedState />
           )}
         </View>
       </View>
