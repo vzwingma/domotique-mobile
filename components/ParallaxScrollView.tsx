@@ -18,7 +18,6 @@ const HEADER_HEIGHT = 100;
 type Props = PropsWithChildren<{
   headerImage: ReactElement;
   headerTitle: string;
-  headerSubtitle?: string;
   connexionStatus?: DomoticzStatus;
   setRefreshing: React.Dispatch<React.SetStateAction<boolean>>;
 }>;
@@ -27,7 +26,6 @@ export default function ParallaxScrollView({
   children,
   headerImage,
   headerTitle,
-  headerSubtitle,
   connexionStatus,
   setRefreshing
 }: Props) {

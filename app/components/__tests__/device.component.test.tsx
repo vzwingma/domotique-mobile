@@ -13,7 +13,6 @@
  *  - Lumière individuelle On → "Allumé"
  *  - Groupe lumière Off → "Éteintes"
  *  - Groupe lumière On → "Allumées"
- *  - BlindActionsBar présente pour un volet actif
  */
 import React from 'react';
 import { render } from '@testing-library/react-native';
@@ -220,29 +219,30 @@ describe('device.component — groupes de lumières (T04)', () => {
 });
 
 // =============================================================================
-// QA03-5 : BlindActionsBar présente pour un volet actif
+// QA03-5 : Slider présent pour un volet actif (pas de BlindActionsBar)
 // =============================================================================
-describe('device.component — BlindActionsBar pour les volets', () => {
-  it('affiche les boutons Ouvrir/Stop/Fermer pour un volet actif', () => {
+describe('device.component — slider pour les volets', () => {
+  it('affiche un slider pour un volet actif (SLIDER)', () => {
     const device = makeDevice({
       type: DomoticzDeviceType.VOLET,
+      switchType: DomoticzSwitchType.SLIDER,
       status: 'Off',
       isActive: true,
     });
-    const { getByLabelText } = renderDevice(device);
-    expect(getByLabelText('Ouvrir le volet')).toBeTruthy();
-    expect(getByLabelText('Stopper le volet')).toBeTruthy();
-    expect(getByLabelText('Fermer le volet')).toBeTruthy();
+    const { getByTestId } = renderDevice(device);
+    expect(getByTestId('slider')).toBeTruthy();
   });
 
-  it("n'affiche pas BlindActionsBar pour une lumiere", () => {
+  it("n'affiche pas de boutons Ouvrir/Stop/Fermer pour un volet", () => {
     const device = makeDevice({
-      type: DomoticzDeviceType.LUMIERE,
-      switchType: DomoticzSwitchType.ONOFF,
-      status: 'On',
+      type: DomoticzDeviceType.VOLET,
+      switchType: DomoticzSwitchType.SLIDER,
+      status: 'Off',
       isActive: true,
     });
     const { queryByLabelText } = renderDevice(device);
     expect(queryByLabelText('Ouvrir le volet')).toBeNull();
+    expect(queryByLabelText('Stopper le volet')).toBeNull();
+    expect(queryByLabelText('Fermer le volet')).toBeNull();
   });
 });
