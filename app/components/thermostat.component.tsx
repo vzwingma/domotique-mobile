@@ -50,7 +50,7 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
         <IconDomoticzThermostat/>
       </View>
       <View style={stylesListsDevices.contentBox}>
-        <View style={stylesListsDevices.labelsBox}>
+        <View style={thermostatStyles.titleControlBox}>
           <View style={thermostatStyles.libelleBox}>
             <ThemedText style={{ fontSize: 16, color: 'white' }}>{thermostat.name}</ThemedText>
           </View>
@@ -66,7 +66,7 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
             >
               <ThemedText style={thermostatStyles.adjustButtonText}>−</ThemedText>
             </TouchableOpacity>
-            <ThemedText style={stylesListsDevices.textLevel}>{getStatusLabel(thermostat, nextValue, flagLabel)} {thermostat.unit}</ThemedText>
+            <ThemedText style={thermostatStyles.textLevel}>{getStatusLabel(thermostat, nextValue, flagLabel)} {thermostat.unit}</ThemedText>
             <TouchableOpacity
               style={[thermostatStyles.adjustButton, !thermostat.isActive && thermostatStyles.adjustButtonDisabled]}
               activeOpacity={0.7}
@@ -148,10 +148,16 @@ const thermostatStyles = StyleSheet.create({
     opacity: 0.2,
     minHeight: 84,
   },
+  titleControlBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   controlBox: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    alignContent: 'center',
   },
   adjustButton: {
     minWidth: 44,
@@ -170,6 +176,12 @@ const thermostatStyles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
+  textLevel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.domoticz.color,
+    textAlign: "right",
+  },  
   measuredRow: {
     flexDirection: 'row',
     alignItems: 'center',
