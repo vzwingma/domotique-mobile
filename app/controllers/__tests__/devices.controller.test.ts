@@ -314,7 +314,7 @@ describe('getBlindGroupLabel — libellé groupe de volets', () => {
 
     it('retourne "Ouvert" quand level=100', () => {
         const device = makeDevice({ type: DomoticzDeviceType.VOLET, isGroup: true, consistantLevel: true, level: 100 });
-        expect(getBlindGroupLabel(device)).toBe('Ouvert');
+        expect(getBlindGroupLabel(device)).toBe('Ouverts');
     });
 
     it('retourne le niveau en % quand level est intermédiaire', () => {

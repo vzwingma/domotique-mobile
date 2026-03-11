@@ -251,7 +251,7 @@ export function getBlindGroupLabel(device: DomoticzDevice): string {
   device.unit = "";
   if (!device.consistantLevel) return "Mixte";
   if (device.level === 0) return "Fermé";
-  if (device.level >= 100) return "Ouvert";
+  if (device.level >= 100) return "Ouverts";
   device.unit = "%";
   return device.level + "";
 }
