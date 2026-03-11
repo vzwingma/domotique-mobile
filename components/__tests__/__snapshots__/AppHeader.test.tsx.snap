@@ -72,17 +72,22 @@ exports[`AppHeader snapshot du header 1`] = `
       accessibilityRole="text"
       accessible={true}
       style={
-        {
-          "alignItems": "center",
-          "backgroundColor": "#151718",
-          "borderColor": "#9BA1A6",
-          "borderRadius": 999,
-          "borderWidth": 1,
-          "flexDirection": "row",
-          "gap": 4,
-          "paddingHorizontal": 8,
-          "paddingVertical": 4,
-        }
+        [
+          {
+            "alignItems": "center",
+            "backgroundColor": "#151718",
+            "borderColor": "#9BA1A6",
+            "borderRadius": 999,
+            "borderWidth": 1,
+            "flexDirection": "row",
+            "gap": 4,
+            "paddingHorizontal": 8,
+            "paddingVertical": 4,
+          },
+          {
+            "borderColor": "#4caf50",
+          },
+        ]
       }
     >
       <MaterialCommunityIcons
@@ -106,11 +111,16 @@ exports[`AppHeader snapshot du header 1`] = `
             undefined,
             undefined,
             undefined,
-            {
-              "color": "#ECEDEE",
-              "fontSize": 12,
-              "lineHeight": 14,
-            },
+            [
+              {
+                "color": "#ECEDEE",
+                "fontSize": 12,
+                "lineHeight": 14,
+              },
+              {
+                "color": "#4caf50",
+              },
+            ],
           ]
         }
       >

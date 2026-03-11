@@ -31,6 +31,10 @@ export function getConnectionBadgeLabel(state: ConnectionBadgeState): string {
   return BADGE_VISUALS[state].label;
 }
 
+export function getConnectionBadgeColor(state: ConnectionBadgeState): string {
+  return BADGE_VISUALS[state].color;
+}
+
 export function mapDomoticzStatusToConnectionBadgeState({
   status,
   isLoading = false,
@@ -53,12 +57,12 @@ export function ConnectionBadge({ state }: Readonly<ConnectionBadgeProps>) {
 
   return (
     <View
-      style={styles.badge}
+      style={[styles.badge, { borderColor: visual.color }]}
       accessible
       accessibilityRole="text"
       accessibilityLabel={`Statut de connexion : ${visual.label}`}>
       <MaterialCommunityIcons name={visual.icon} size={15} color={visual.color} />
-      <ThemedText style={styles.label}>{visual.label}</ThemedText>
+      <ThemedText style={[styles.label, { color: visual.color }]}>{visual.label}</ThemedText>
     </View>
   );
 }

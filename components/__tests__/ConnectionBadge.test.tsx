@@ -2,6 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import {
   ConnectionBadge,
+  getConnectionBadgeColor,
   getConnectionBadgeLabel,
   mapDomoticzStatusToConnectionBadgeState,
   type ConnectionBadgeState,
@@ -57,6 +58,17 @@ describe('ConnectionBadge - label utilitaire', () => {
     ['erreur', 'Erreur'],
   ] as Array<[ConnectionBadgeState, string]>)('retourne %s -> %s', (state, expectedLabel) => {
     expect(getConnectionBadgeLabel(state)).toBe(expectedLabel);
+  });
+});
+
+describe('ConnectionBadge - couleur utilitaire', () => {
+  it.each([
+    ['connecte', '#4caf50'],
+    ['synchronisation', '#f5c727'],
+    ['deconnecte', '#f44336'],
+    ['erreur', '#ff8a65'],
+  ] as Array<[ConnectionBadgeState, string]>)('retourne %s -> %s', (state, expectedColor) => {
+    expect(getConnectionBadgeColor(state)).toBe(expectedColor);
   });
 });
 

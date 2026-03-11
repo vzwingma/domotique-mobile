@@ -9,6 +9,7 @@ import { ThemedText } from '@/components/ThemedText';
 import Constants from 'expo-constants';
 import { Colors } from '../enums/Colors';
 import {
+  getConnectionBadgeColor,
   getConnectionBadgeLabel,
   mapDomoticzStatusToConnectionBadgeState,
 } from '@/components/ConnectionBadge';
@@ -23,12 +24,12 @@ export default function TabDomoticzParametres(): JSX.Element {
     status: domoticzConnexionData?.status,
   });
   const connectionLabel = getConnectionBadgeLabel(connectionState);
+  const connectionColor = getConnectionBadgeColor(connectionState);
   const domoticzStatusRaw = domoticzConnexionData?.status ?? 'non disponible';
 
   return (
     <>
       <View style={sectionStyles.section}>
-        <ThemedText style={sectionStyles.title}>Pilotage global</ThemedText>
         {domoticzParametersData.map((item) => (
           <ViewDomoticzParamList key={item.idx} parametre={item} />
         ))}
@@ -46,12 +47,8 @@ export default function TabDomoticzParametres(): JSX.Element {
           <ThemedText style={aboutStyles.value}>v{domoticzConnexionData?.version ?? '?'}</ThemedText>
         </View>
         <View style={aboutStyles.row}>
-          <ThemedText style={aboutStyles.label}>Révision Domoticz</ThemedText>
-          <ThemedText style={aboutStyles.value}>{domoticzConnexionData?.revision ?? 'non disponible'}</ThemedText>
-        </View>
-        <View style={aboutStyles.row}>
           <ThemedText style={aboutStyles.label}>Statut détaillé</ThemedText>
-          <ThemedText style={aboutStyles.value}>
+          <ThemedText style={[aboutStyles.value, { color: connectionColor }]}>
             {connectionLabel} ({domoticzStatusRaw})
           </ThemedText>
         </View>
@@ -63,7 +60,7 @@ export default function TabDomoticzParametres(): JSX.Element {
 const sectionStyles = StyleSheet.create({
   section: {
     width: '100%',
-    gap: 2,
+    gap: 10,
   },
   title: {
     fontSize: 14,
