@@ -13,12 +13,11 @@ import { ThemedText } from './ThemedText';
 import { DomoticzStatus } from '@/app/enums/DomoticzEnum';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const HEADER_HEIGHT = 100;
+const HEADER_HEIGHT = 70;
 
 type Props = PropsWithChildren<{
   headerImage: ReactElement;
   headerTitle: string;
-  headerSubtitle?: string;
   connexionStatus?: DomoticzStatus;
   setRefreshing: React.Dispatch<React.SetStateAction<boolean>>;
 }>;
@@ -27,7 +26,6 @@ export default function ParallaxScrollView({
   children,
   headerImage,
   headerTitle,
-  headerSubtitle,
   connexionStatus,
   setRefreshing
 }: Props) {
@@ -75,9 +73,6 @@ export default function ParallaxScrollView({
           <View style={styles.titleHeader}>
             {connexionStatus && getConnexionStatusIcon(connexionStatus)}
             <ThemedText type="title" style={styles.domoticzColor}>{headerTitle}</ThemedText>
-          </View>
-          <View style={styles.titleHeader}>
-            <ThemedText type="italic" style={{color : 'grey', marginRight: 36, width: '100%', textAlign: 'right'}}>{headerSubtitle}</ThemedText>
           </View>
         </Animated.View>
         <View style={styles.content}>{children}</View>

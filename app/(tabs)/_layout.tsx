@@ -8,7 +8,7 @@ import { Tabs } from '../enums/TabsEnums';
 import { TabBarItems } from '@/components/navigation/TabBarItem';
 import DomoticzConfig from '../models/domoticzConfig.model';
 import { ThemedText } from '@/components/ThemedText';
-import { DOMOTICZ_MOBILE_VERSION, DomoticzStatus, DomoticzDeviceType } from '../enums/DomoticzEnum';
+import { DomoticzStatus, DomoticzDeviceType } from '../enums/DomoticzEnum';
 import HomeScreen from '.';
 import TabDomoticzTemperatures from './temperatures.tab';
 import { loadDomoticzDevices } from '../controllers/devices.controller';
@@ -79,14 +79,6 @@ export default function TabLayout() {
   }
 
 
-  function getDomoticzSubtitle() {
-    if (isLoading) {
-      return "Chargement...";
-    } else {
-      return "v" + DOMOTICZ_MOBILE_VERSION + " - Domoticz " + domoticzConnexionData?.version;
-    }
-  }
-
   /**
    * Récupère le contenu du panneau, suivant l'état de chargement et les erreurs
    */
@@ -105,8 +97,7 @@ export default function TabLayout() {
     <>
       <ParallaxScrollView
         headerImage={getHeaderIcon(tab)}
-        headerTitle="Domoticz Mobile"
-        headerSubtitle={getDomoticzSubtitle()}
+        headerTitle={tab.toString()}
         connexionStatus={getDomoticzStatus()}
         setRefreshing={setRefreshing}>
 
@@ -123,7 +114,7 @@ export default function TabLayout() {
               <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.LUMIERES} />
               <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.VOLETS} />
               <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.TEMPERATURES} />
-              <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.PARAMETRES} />
+              <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.MAISON} />
             </> : <></>
         }
       </View>
@@ -148,7 +139,7 @@ function showPanel(tab: Tabs): JSX.Element {
       return <TabDomoticzDevices dataType={DomoticzDeviceType.VOLET} />
     case Tabs.TEMPERATURES:
       return <TabDomoticzTemperatures />
-      case Tabs.PARAMETRES:
+      case Tabs.MAISON:
         return <TabDomoticzParametres />
       default:
       return <ThemedText type="title" style={{ color: 'red' }}>404 - Page non définie</ThemedText>

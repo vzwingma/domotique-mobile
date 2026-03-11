@@ -29,13 +29,13 @@ eas build --profile production
 app/
   _layout.tsx             # Layout racine : ThemeProvider (dark) + DomoticzContextProvider + Stack
   (tabs)/
-    _layout.tsx           # Barre d'onglets personnalisée (5 onglets : accueil, lumières, volets, températures, paramètres)
+    _layout.tsx           # Barre d'onglets personnalisée (5 onglets : accueil, lumières, volets, températures, maison)
     index.tsx             # Accueil / état de la connexion
     lumieres.tsx          # Lumières
     volets.tsx            # Volets/stores
     temperatures.tsx      # Capteurs de température + thermostats
-    parametres.tsx        # Paramètres de l'application
-  components/             # Composants de niveau écran (device, temperature, thermostat, liste de paramètres)
+    parametres.tab.tsx    # Maison (paramètres interactifs + section À propos)
+  components/             # Composants de niveau écran (device, temperature, thermostat, liste de paramètres, barre d'actions volets)
   controllers/            # Fonctions de chargement des données ; pont entre l'UI et les services
   services/               # ClientHTTP.service.ts (client HTTP), fournisseur de contexte, utilitaires
   models/                 # Modèles TypeScript sous forme de classes (DomoticzDevice, DomoticzConfig, …)
@@ -89,6 +89,9 @@ Les variables d'environnement doivent être préfixées `EXPO_PUBLIC_` pour êtr
 - Accès à l'état global via `useContext(DomoticzContext)` — éviter le prop drilling.
 - Styles via `StyleSheet.create()` défini en bas du fichier.
 - Thème sombre uniquement (`userInterfaceStyle: "dark"` dans app.json).
+- **Labels métier pour les états des appareils** : utiliser "Allumé"/"Éteint" (lumières), "Ouvert"/"Fermé" (volets), "Déconnecté" (inactif), "Mixte" (groupe à niveaux incohérents) — jamais "On"/"Off" ou "-" dans l'UI.
+- **Chips/boutons segmentés** pour les paramètres interactifs (présence, phase) — ne pas utiliser de `Dropdown`.
+- **Volets** : les volets utilisent le slider + `onClickDeviceIcon` dans `IconDomoticzDevice.tsx` — ne pas remplacer ce mécanisme par une barre de boutons dédiée.
 
 ### Controllers
 - Reçoivent un callback setter (depuis le Context) plutôt que d'appeler setState directement.

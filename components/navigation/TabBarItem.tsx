@@ -41,8 +41,8 @@ export function TabBarItems({ activeTab, thisTab, selectNewTab}: Readonly<TabBar
         return 'reorder-four';
       case Tabs.TEMPERATURES:
         return 'thermometer';
-        case Tabs.PARAMETRES:
-          return 'cog';
+      case Tabs.MAISON:
+          return 'home';
       default:
         return '';
     }
@@ -55,6 +55,7 @@ const tabStyles = StyleSheet.create({
       backgroundColor: Colors.dark.titlebackground,
       alignItems: 'center',
       cursor: 'pointer',
+      minHeight: 44,
     }
     });
 

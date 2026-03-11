@@ -195,3 +195,150 @@ export function addActionForFavorite(device: DomoticzDevice | DomoticzThermostat
         showToast("Erreur lors de la mise à jour des favoris", ToastDuration.SHORT);
     })
 }
+
+
+
+/**
+ * retourrne le niveau de l'équipement
+ * @param device  équipement Domoticz
+ * @returns niveau de l'équipement :
+ */
+export function getLevel(device: DomoticzDevice): number {
+  return device.status === DomoticzDeviceStatus.OFF ? 0.1 : device.level
+}
+
+
+/**
+ * Surcharge de la valeur du slider pour la mettre à jour
+ * @param value prochain niveau de l'équipement
+ * @param setNextValue  fonction pour mettre à jour le prochain niveau de l'équipement
+ */
+export function overrideNextValue(value: number, setNextValue: React.Dispatch<React.SetStateAction<number>>) {
+  if (value <= 0) {
+    value = 0.1;
+  }
+  else if (value >= 99) {
+    value = 100;
+  }
+  setNextValue(value);
+}
+
+/**
+ * Retourne le label de l'édition en cours (slider déplacé)
+ */
+export function getEditingLabel(nextValue: number): string {
+  let nextLabel = "(";
+  if (nextValue <= 0.1) nextLabel += DomoticzDeviceStatus.OFF;
+  else nextLabel += nextValue;
+  nextLabel += ")";
+  return nextLabel;
+}
+
+/**
+ * Retourne le label pour un volet (T07)
+ */
+export function getBlindLabel(device: DomoticzDevice): string {
+  device.unit = "";
+  if (device.status === DomoticzDeviceStatus.OFF) return "Fermé";
+  if (device.status === DomoticzDeviceStatus.ON) return "Ouvert";
+  return device.status;
+}
+
+/**
+ * Retourne le label pour un groupe de volets
+ */
+export function getBlindGroupLabel(device: DomoticzDevice): string {
+  device.unit = "";
+  if (!device.consistantLevel) return "Mixte";
+  if (device.level === 0) return "Fermé";
+  if (device.level >= 100) return "Ouverts";
+  device.unit = "%";
+  return device.level + "";
+}
+
+/**
+ * Retourne le label pour un groupe de lumières (T04)
+ */
+export function getLightsGroupLabel(device: DomoticzDevice): string {
+  device.unit = "";
+  if (!device.consistantLevel) return "Mixte";
+  if (device.status === DomoticzDeviceStatus.OFF || device.level === 0) return "Éteintes";
+  if (device.level >= 100) return "Allumées";
+  device.unit = "%";
+  return device.level + "";
+}
+
+/**
+ * Retourne le label pour une lumière individuelle (T05)
+ */
+export function getSingleLightLabel(device: DomoticzDevice): string {
+  if (device.switchType === DomoticzSwitchType.ONOFF) {
+    device.unit = "";
+    return device.status === DomoticzDeviceStatus.OFF ? "Éteinte" : "Allumée";
+  }
+  // Variateur (SLIDER)
+  if (device.status === DomoticzDeviceStatus.OFF) {
+    device.unit = "";
+    return "Éteinte";
+  }
+  if (!device.consistantLevel) {
+    device.unit = "";
+    return "Mixte";
+  }
+  device.unit = "%";
+  return device.level + "";
+}
+
+/**
+ * Retourne le label par défaut
+ */
+export function getDefaultLabel(device: DomoticzDevice): string {
+  if (device.switchType === DomoticzSwitchType.ONOFF) {
+    device.unit = "";
+    return device.status;
+  }
+  if (device.status === DomoticzDeviceStatus.OFF) {
+    device.unit = "";
+    return DomoticzDeviceStatus.OFF;
+  }
+  if (!device.consistantLevel) {
+    device.unit = "";
+    return "Mixte";
+  }
+  device.unit = "%";
+  return device.level + "";
+}
+
+/**
+ * Fonction pour le label du statut de l'équipement. Si on est en mode édition, on affiche le prochain état entre parenthèses.
+ */
+export function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: boolean): string {
+  // T06 — inactif
+  if (!device.isActive) {
+    return "Déconnecté";
+  }
+
+  // Édition en cours (slider déplacé)
+  if (flagLabel) {
+    return getEditingLabel(nextValue);
+  }
+
+  // T07 — volets
+  if (device.type === DomoticzDeviceType.VOLET) {
+    return device.isGroup ? getBlindGroupLabel(device) : getBlindLabel(device);
+  }
+
+  // T04 — groupes de lumières
+  if (device.isGroup && device.type === DomoticzDeviceType.LUMIERE) {
+    return getLightsGroupLabel(device);
+  }
+
+  // T05 — lumières individuelles
+  if (!device.isGroup && device.type === DomoticzDeviceType.LUMIERE) {
+    return getSingleLightLabel(device);
+  }
+
+  // Comportement par défaut
+  return getDefaultLabel(device);
+}
+

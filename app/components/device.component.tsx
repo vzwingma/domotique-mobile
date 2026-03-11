@@ -2,9 +2,9 @@ import DomoticzDevice from "@/app/models/domoticzDevice.model";
 import { ThemedText } from "../../components/ThemedText";
 import { StyleSheet, View } from "react-native";
 import Slider from '@react-native-community/slider';
-import { updateDeviceLevel } from "../controllers/devices.controller";
+import { getLevel, getStatusLabel, overrideNextValue, updateDeviceLevel } from "../controllers/devices.controller";
 import { Colors, getGroupColor } from "../enums/Colors";
-import { DomoticzDeviceStatus, DomoticzSwitchType } from "../enums/DomoticzEnum";
+import { DomoticzSwitchType } from "../enums/DomoticzEnum";
 import { useContext, useState } from "react";
 import IconDomoticzDevice from "@/components/IconDomoticzDevice";
 import { DomoticzContext } from "../services/DomoticzContextProvider";
@@ -27,8 +27,42 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device }: Do
   const [nextValue, setNextValue] = useState<number>(getLevel(device));
   const { setDomoticzDevicesData } = useContext(DomoticzContext)!;
 
+  /**
+   * 
+   * @returns composant Slider
+   */
+  const getSliderComponent = () => {
+    if (device.switchType === DomoticzSwitchType.SLIDER) {
+      return (
+        <Slider
+          disabled={!device.isActive}
+          style={device.isActive ? stylesListsDevices.slider : stylesListsDevices.sliderDisabled}
+          minimumValue={0} value={getLevel(device)} maximumValue={100}
+          step={1}
+          minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor={Colors.domoticz.color}
+          onValueChange={(value) => { overrideNextValue(value, setNextValue) }}
+          onResponderStart={() => { setFlagLabel(true) }}
+          onResponderEnd={() => {
+            updateDeviceLevel(device.idx, device, nextValue, setDomoticzDevicesData);
+            setFlagLabel(false);
+          }}
+        />
+      );
+    }
+    return <Slider disabled style={stylesListsDevices.sliderDisabled} />;
+  };
+
+
+  const getViewBoxStyle = () => {
+    return device.isActive ? stylesListsDevices.viewBox : stylesListsDevices.viewBoxDisabled;
+  };
+
+  const getValueBoxStyle = () => {
+    return device.isActive ? stylesListsDevices.valueBox : stylesListsDevices.valueBoxDisabled;
+  };
+
   return (
-    <View key={device.idx} style={device.isActive ? stylesListsDevices.viewBox : stylesListsDevices.viewBoxDisabled}>
+    <View key={device.idx} style={getViewBoxStyle()}>
       <View key={device.idx} style={stylesListsDevices.iconBox}>
         <IconDomoticzDevice device={device} />
       </View>
@@ -37,106 +71,20 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device }: Do
           <View style={stylesListsDevices.libelleBox}>
             <ThemedText style={{ fontSize: 16, color: getGroupColor(device) }}>{device.name}</ThemedText>
           </View>
-          <View style={stylesListsDevices.valueBox}>
-            <ThemedText style={stylesListsDevices.textLevel}>{getStatusLabel(device, nextValue, flagLabel)}</ThemedText>
+          <View style={getValueBoxStyle()}>
+            <ThemedText numberOfLines={1} style={stylesListsDevices.textLevel}>{getStatusLabel(device, nextValue, flagLabel)}</ThemedText>
           </View>
+          { (device.isActive)  && 
           <View style={stylesListsDevices.unitBox}>
             <ThemedText style={stylesListsDevices.textLevel}>{device.unit}</ThemedText>
           </View>
+          }
         </View>
-        {device.switchType === DomoticzSwitchType.SLIDER ?
-          <Slider
-            disabled={!device.isActive}
-            style={device.isActive ? stylesListsDevices.slider : stylesListsDevices.sliderDisabled}
-            minimumValue={0} value={getLevel(device)} maximumValue={100}
-            step={1}
-            minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor={Colors.domoticz.color}
-            onValueChange={(value) => { overrideNextValue(value, setNextValue) }}
-            onResponderStart={() => { setFlagLabel(true) }}
-            onResponderEnd={() => {
-              updateDeviceLevel(device.idx, device, nextValue, setDomoticzDevicesData);
-              setFlagLabel(false);
-            }}
-          /> : <Slider disabled style={stylesListsDevices.sliderDisabled} />}
+        {getSliderComponent()}
       </View>
     </View>
   );
 };
-
-
-
-/**
- * retourrne le niveau de l'équipement
- * @param device  équipement Domoticz
- * @returns niveau de l'équipement :
- */
-function getLevel(device: DomoticzDevice): number {
-  return device.status === DomoticzDeviceStatus.OFF ? 0.1 : device.level
-}
-
-
-/**
- * Surcharge de la valeur du slider pour la mettre à jour
- * @param value prochain niveau de l'équipement
- * @param setNextValue  fonction pour mettre à jour le prochain niveau de l'équipement
- */
-function overrideNextValue(value: number, setNextValue: React.Dispatch<React.SetStateAction<number>>) {
-  if (value <= 0) {
-    value = 0.1;
-  }
-  else if (value >= 99) {
-    value = 100;
-  }
-  setNextValue(value);
-}
-
-/**
- * Fonction pour le label du statut de l'équipement. Si on est en mode édition, on affiche le prochain état entre parenthèses.
- */
-function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: boolean): string {
-
-
-  let getStatusLabel = "";
-  // Si l'équipement est désactivé
-  if (!device.isActive) {
-    getStatusLabel = "-";
-  }
-  // Si on est en mode édition
-  else if (flagLabel) {
-    let nextLabel = "(";
-    if (nextValue <= 0.1) {
-      nextLabel += DomoticzDeviceStatus.OFF;
-    }
-    else{
-      nextLabel += nextValue;
-    }
-    nextLabel += ")";
-    getStatusLabel = nextLabel;
-  }
-  // Si c'est un interrupteur
-  else if (device.switchType === DomoticzSwitchType.ONOFF) {
-    getStatusLabel = device.status;
-    device.unit = "";
-  }
-  // Si c'est un variateur
-  else if(device.status === DomoticzDeviceStatus.OFF){
-      getStatusLabel = DomoticzDeviceStatus.OFF;
-      device.unit = "";
-  }
-  else{
-      getStatusLabel = device.level + "";
-      device.unit = "%";
-  }
-  // Si le groupe n'est pas cohérent
-  if (!device.consistantLevel) {
-    device.unit = "?";
-  }
-  return getStatusLabel;
-
-}
-
-
-
 
 
 export const stylesListsDevices = StyleSheet.create({
@@ -189,7 +137,12 @@ export const stylesListsDevices = StyleSheet.create({
     flexDirection: "column",
     marginLeft: -80,
     width: 60
-  },  
+  },
+  valueBoxDisabled: {
+    flexDirection: "column",
+    marginLeft: -120,
+    width: 110,
+  },
   unitBox: {
     width: 20
   },
@@ -252,12 +205,13 @@ export const stylesListsDevices = StyleSheet.create({
     },
 
   infovalue: {
-        flexDirection: "column",
-        marginLeft: -150,
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontSize: 14,
         borderColor: 'gray',
         borderWidth: 0.5,
         borderRadius: 8,
-        width: 150,
+        width: 180,
         backgroundColor: Colors.dark.background,
         color: Colors.domoticz.color,
     },    

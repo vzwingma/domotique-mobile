@@ -74,7 +74,7 @@ Toutes les requêtes HTTP sont centralisées dans `app/services/ClientHTTP.servi
 
 ```
 app/
-  (tabs)/       # Écrans principaux : accueil, lumières, volets, températures, paramètres
+  (tabs)/       # Écrans principaux : accueil, lumières, volets, températures, maison
   components/   # Composants de niveau écran (*.component.tsx)
   controllers/  # Pont entre l'UI et les services (*.controller.tsx)
   services/     # Client HTTP, fournisseur de contexte (*.service.ts)
@@ -91,12 +91,21 @@ assets/         # Polices, icônes, images
 
 ## Fonctionnalités
 
-- Affichage et contrôle des lumières (on/off, variateur)
-- Gestion des volets/stores (ouverture, fermeture, arrêt, niveau)
-- Consultation des capteurs de température
-- Contrôle des thermostats (point de consigne)
-- Gestion des groupes d'équipements
-- Paramètres de l'application
+- Affichage et contrôle des lumières (on/off, variateur) avec labels métier "Allumé"/"Éteint" et état synthétique pour les groupes ("Éteintes" / "Allumées" / "Mixte" / niveau%)
+- Gestion des volets/stores (ouverture/fermeture via slider et clic icône) avec labels "Ouvert"/"Fermé" ; confirmation modale pour les actions sur groupe de volets (nom contenant "Tous")
+- Consultation des capteurs de température avec indicateurs "Déconnectée"/"Inconnu" pour les capteurs inactifs
+- Contrôle des thermostats (point de consigne ajustable par paliers de ±0,5°C, affichage distinct mesure vs consigne)
+- Gestion des groupes d'équipements (indicateur "Mixte" pour niveaux incohérents)
+- Écran **Maison** : paramètres interactifs (présence, phase) via chips segmentés + section "À propos" (version app, version serveur Domoticz, statut connexion)
+
+### Composants UI principaux
+
+| Composant | Fichier | Rôle |
+|---|---|---|
+| `DeviceComponent` | `app/components/device.component.tsx` | Affichage et contrôle d'un équipement (lumière, volet, groupe) via slider + clic icône |
+| `TemperatureComponent`| `app/components/temperature.component.tsx` | Card compacte (66 px) pour un capteur de température |
+| `ThermostatComponent` | `app/components/thermostat.component.tsx` | Contrôle de consigne thermostat avec boutons ±0,5°C |
+| `ParamListComponent` | `app/components/paramList.component.tsx` | Paramètres interactifs (présence, phase) via chips segmentés |
 
 ## Tests
 

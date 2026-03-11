@@ -1,4 +1,4 @@
-import { loadDomoticzDevices, onClickDeviceIcon, updateDeviceLevel, addActionForFavorite, refreshEquipementState } from '../devices.controller';
+import { loadDomoticzDevices, onClickDeviceIcon, updateDeviceLevel, addActionForFavorite, refreshEquipementState, getBlindGroupLabel, getStatusLabel } from '../devices.controller';
 import callDomoticz from '@/app/services/ClientHTTP.service';
 import { getFavoritesFromStorage, saveFavoritesToStorage } from '@/app/services/DataUtils.service';
 import { DomoticzDeviceType, DomoticzDeviceStatus, DomoticzSwitchType } from '@/app/enums/DomoticzEnum';
@@ -296,5 +296,47 @@ describe('refreshEquipementState', () => {
         jest.advanceTimersByTime(999);
 
         expect(mockCallDomoticz).toHaveBeenCalledTimes(1);
+    });
+});
+
+// ─── getBlindGroupLabel ────────────────────────────────────────────────────────
+
+describe('getBlindGroupLabel — libellé groupe de volets', () => {
+    it('retourne "Mixte" quand consistantLevel=false', () => {
+        const device = makeDevice({ type: DomoticzDeviceType.VOLET, isGroup: true, consistantLevel: false, level: 50 });
+        expect(getBlindGroupLabel(device)).toBe('Mixte');
+    });
+
+    it('retourne "Fermé" quand level=0', () => {
+        const device = makeDevice({ type: DomoticzDeviceType.VOLET, isGroup: true, consistantLevel: true, level: 0 });
+        expect(getBlindGroupLabel(device)).toBe('Fermé');
+    });
+
+    it('retourne "Ouvert" quand level=100', () => {
+        const device = makeDevice({ type: DomoticzDeviceType.VOLET, isGroup: true, consistantLevel: true, level: 100 });
+        expect(getBlindGroupLabel(device)).toBe('Ouverts');
+    });
+
+    it('retourne le niveau en % quand level est intermédiaire', () => {
+        const device = makeDevice({ type: DomoticzDeviceType.VOLET, isGroup: true, consistantLevel: true, level: 50 });
+        expect(getBlindGroupLabel(device)).toBe('50');
+        expect(device.unit).toBe('%');
+    });
+});
+
+describe('getStatusLabel — volets groupes via getBlindGroupLabel', () => {
+    it('retourne "Mixte" pour un groupe de volets avec niveaux incohérents', () => {
+        const device = makeDevice({ type: DomoticzDeviceType.VOLET, isGroup: true, consistantLevel: false, level: 50, isActive: true });
+        expect(getStatusLabel(device, 50, false)).toBe('Mixte');
+    });
+
+    it('retourne "Fermé" pour un groupe de volets fermés (level=0)', () => {
+        const device = makeDevice({ type: DomoticzDeviceType.VOLET, isGroup: true, consistantLevel: true, level: 0, isActive: true });
+        expect(getStatusLabel(device, 0, false)).toBe('Fermé');
+    });
+
+    it('retourne "Fermé" pour un volet individuel status=Off', () => {
+        const device = makeDevice({ type: DomoticzDeviceType.VOLET, isGroup: false, status: DomoticzDeviceStatus.OFF, isActive: true });
+        expect(getStatusLabel(device, 0, false)).toBe('Fermé');
     });
 });
