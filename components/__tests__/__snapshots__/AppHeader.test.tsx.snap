@@ -1,0 +1,122 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AppHeader snapshot du header 1`] = `
+<View
+  style={
+    {
+      "alignItems": "center",
+      "flexDirection": "row",
+      "gap": 8,
+      "justifyContent": "space-between",
+      "minHeight": 70,
+      "paddingBottom": 8,
+      "paddingHorizontal": 8,
+      "paddingTop": 26,
+      "width": "100%",
+    }
+  }
+>
+  <View
+    style={
+      {
+        "alignItems": "center",
+        "justifyContent": "center",
+        "width": 38,
+      }
+    }
+  >
+    <View
+      testID="header-icon"
+    />
+  </View>
+  <Text
+    numberOfLines={1}
+    style={
+      [
+        {
+          "color": "#ECEDEE",
+        },
+        undefined,
+        {
+          "fontSize": 32,
+          "fontWeight": "bold",
+          "lineHeight": 32,
+        },
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        {
+          "color": "#f5c727",
+          "flex": 1,
+          "fontSize": 28,
+          "lineHeight": 30,
+        },
+      ]
+    }
+  >
+    Maison
+  </Text>
+  <View
+    style={
+      {
+        "alignItems": "flex-end",
+        "justifyContent": "center",
+        "minWidth": 112,
+      }
+    }
+  >
+    <View
+      accessibilityLabel="Statut de connexion : Connecté"
+      accessibilityRole="text"
+      accessible={true}
+      style={
+        {
+          "alignItems": "center",
+          "backgroundColor": "#151718",
+          "borderColor": "#9BA1A6",
+          "borderRadius": 999,
+          "borderWidth": 1,
+          "flexDirection": "row",
+          "gap": 4,
+          "paddingHorizontal": 8,
+          "paddingVertical": 4,
+        }
+      }
+    >
+      <MaterialCommunityIcons
+        color="#4caf50"
+        name="check-circle-outline"
+        size={15}
+      />
+      <Text
+        style={
+          [
+            {
+              "color": "#ECEDEE",
+            },
+            {
+              "fontSize": 16,
+              "lineHeight": 24,
+            },
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            {
+              "color": "#ECEDEE",
+              "fontSize": 12,
+              "lineHeight": 14,
+            },
+          ]
+        }
+      >
+        Connecté
+      </Text>
+    </View>
+  </View>
+</View>
+`;

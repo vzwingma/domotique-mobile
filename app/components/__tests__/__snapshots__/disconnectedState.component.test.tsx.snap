@@ -1,0 +1,123 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DisconnectedState snapshot standard et compact 1`] = `
+<View
+  style={
+    [
+      {
+        "alignItems": "center",
+        "alignSelf": "flex-end",
+        "backgroundColor": "#2a1414",
+        "borderColor": "#7f2b2b",
+        "borderRadius": 999,
+        "borderWidth": 1,
+        "flexDirection": "row",
+        "gap": 4,
+        "paddingHorizontal": 8,
+        "paddingVertical": 4,
+      },
+      undefined,
+    ]
+  }
+>
+  <MaterialCommunityIcons
+    color="#ff8a80"
+    name="wifi-off"
+    size={15}
+  />
+  <Text
+    style={
+      [
+        {
+          "color": "#ECEDEE",
+        },
+        {
+          "fontSize": 16,
+          "lineHeight": 24,
+        },
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        [
+          {
+            "color": "#ffd7d7",
+            "fontSize": 12,
+            "fontWeight": "700",
+            "lineHeight": 14,
+          },
+          undefined,
+        ],
+      ]
+    }
+  >
+    Déconnecté
+  </Text>
+</View>
+`;
+
+exports[`DisconnectedState snapshot standard et compact 2`] = `
+<View
+  style={
+    [
+      {
+        "alignItems": "center",
+        "alignSelf": "flex-end",
+        "backgroundColor": "#2a1414",
+        "borderColor": "#7f2b2b",
+        "borderRadius": 999,
+        "borderWidth": 1,
+        "flexDirection": "row",
+        "gap": 4,
+        "paddingHorizontal": 8,
+        "paddingVertical": 4,
+      },
+      {
+        "paddingHorizontal": 6,
+        "paddingVertical": 3,
+      },
+    ]
+  }
+>
+  <MaterialCommunityIcons
+    color="#ff8a80"
+    name="wifi-off"
+    size={13}
+  />
+  <Text
+    style={
+      [
+        {
+          "color": "#ECEDEE",
+        },
+        {
+          "fontSize": 16,
+          "lineHeight": 24,
+        },
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        [
+          {
+            "color": "#ffd7d7",
+            "fontSize": 12,
+            "fontWeight": "700",
+            "lineHeight": 14,
+          },
+          {
+            "fontSize": 11,
+            "lineHeight": 13,
+          },
+        ],
+      ]
+    }
+  >
+    Déconnecté
+  </Text>
+</View>
+`;

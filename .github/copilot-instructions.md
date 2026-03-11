@@ -29,13 +29,12 @@ eas build --profile production
 app/
   _layout.tsx             # Layout racine : ThemeProvider (dark) + DomoticzContextProvider + Stack
   (tabs)/
-    _layout.tsx           # Barre d'onglets personnalisée (5 onglets : accueil, lumières, volets, températures, maison)
-    index.tsx             # Accueil / état de la connexion
-    lumieres.tsx          # Lumières
-    volets.tsx            # Volets/stores
-    temperatures.tsx      # Capteurs de température + thermostats
-    parametres.tab.tsx    # Maison (paramètres interactifs + section À propos)
-  components/             # Composants de niveau écran (device, temperature, thermostat, liste de paramètres, barre d'actions volets)
+    _layout.tsx           # Barre d'onglets personnalisée (5 onglets : Favoris, Lumières, Volets, Températures, Maison) + header unifié
+    index.tsx             # Favoris (mode actions rapides)
+    devices.tabs.tsx      # Lumières / Volets
+    temperatures.tab.tsx  # Capteurs de température + thermostats
+    parametrages.tab.tsx  # Maison (pilotage global + section À propos)
+  components/             # Composants de niveau écran (device, temperature, thermostat, paramètres, favoris, groupes)
   controllers/            # Fonctions de chargement des données ; pont entre l'UI et les services
   services/               # ClientHTTP.service.ts (client HTTP), fournisseur de contexte, utilitaires
   models/                 # Modèles TypeScript sous forme de classes (DomoticzDevice, DomoticzConfig, …)
@@ -92,6 +91,14 @@ Les variables d'environnement doivent être préfixées `EXPO_PUBLIC_` pour êtr
 - **Labels métier pour les états des appareils** : utiliser "Allumé"/"Éteint" (lumières), "Ouvert"/"Fermé" (volets), "Déconnecté" (inactif), "Mixte" (groupe à niveaux incohérents) — jamais "On"/"Off" ou "-" dans l'UI.
 - **Chips/boutons segmentés** pour les paramètres interactifs (présence, phase) — ne pas utiliser de `Dropdown`.
 - **Volets** : les volets utilisent le slider + `onClickDeviceIcon` dans `IconDomoticzDevice.tsx` — ne pas remplacer ce mécanisme par une barre de boutons dédiée.
+
+### Conventions UX/UI (phase 2)
+- **Onglets** : conserver les 5 libellés FR existants (`Favoris`, `Lumières`, `Volets`, `Températures`, `Maison`) et leurs icônes associées.
+- **Header unifié** : tous les onglets passent par `AppHeader` via `ParallaxScrollView` avec triplet fixe **icône + titre + badge de connexion**.
+- **Statut de connexion** : utiliser exclusivement les états canoniques du badge (`Connecté`, `Synchronisation`, `Déconnecté`, `Erreur`) via `ConnectionBadge`.
+- **Favoris** : l'écran `index.tsx` est en mode **actions rapides** (`FavoriteQuickActionCard`) ; pas de slider ; maximum **8** favoris actifs affichés.
+- **Thermostats** : garder la distinction explicite **Mesure / Consigne** dans l'UI.
+- **Terminologie FR** : conserver les termes "Maison", "Mesure", "Consigne", "Favoris", "Déconnecté" (pas de variantes anglaises).
 
 ### Controllers
 - Reçoivent un callback setter (depuis le Context) plutôt que d'appeler setState directement.

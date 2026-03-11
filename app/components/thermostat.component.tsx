@@ -49,29 +49,32 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
       <View key={thermostat.idx} style={stylesListsDevices.iconBox}>
         <IconDomoticzThermostat/>
       </View>
-      <View style={stylesListsDevices.contentBox}>
-        <View style={thermostatStyles.titleControlBox}>
-          <View style={thermostatStyles.libelleBox}>
-            <ThemedText style={{ fontSize: 16, color: 'white' }}>{thermostat.name}</ThemedText>
-          </View>
-          {/* T11 — boutons +/- autour de la valeur consigne */}
-          <View style={thermostatStyles.controlBox}>
-            <TouchableOpacity
-              style={[thermostatStyles.adjustButton, !thermostat.isActive && thermostatStyles.adjustButtonDisabled]}
+        <View style={stylesListsDevices.contentBox}>
+          <View style={thermostatStyles.titleControlBox}>
+            <View style={thermostatStyles.libelleBox}>
+              <ThemedText style={{ fontSize: 16, color: 'white' }}>{thermostat.name}</ThemedText>
+            </View>
+            {/* T11 — boutons +/- autour de la valeur consigne */}
+            <View style={thermostatStyles.controlBox}>
+              <TouchableOpacity
+                style={[thermostatStyles.adjustButton, !thermostat.isActive && thermostatStyles.adjustButtonDisabled]}
               activeOpacity={0.7}
               onPress={handleDecrease}
               disabled={!thermostat.isActive}
               accessibilityRole="button"
               accessibilityLabel="Diminuer la consigne"
-            >
-              <ThemedText style={thermostatStyles.adjustButtonText}>−</ThemedText>
-            </TouchableOpacity>
-            <ThemedText style={thermostatStyles.textLevel}>{getStatusLabel(thermostat, nextValue, flagLabel)} {thermostat.unit}</ThemedText>
-            <TouchableOpacity
-              style={[thermostatStyles.adjustButton, !thermostat.isActive && thermostatStyles.adjustButtonDisabled]}
-              activeOpacity={0.7}
-              onPress={handleIncrease}
-              disabled={!thermostat.isActive}
+              >
+                <ThemedText style={thermostatStyles.adjustButtonText}>−</ThemedText>
+              </TouchableOpacity>
+              <View style={thermostatStyles.consigneControlBox}>
+                <ThemedText style={thermostatStyles.consigneControlLabel}>Consigne</ThemedText>
+                <ThemedText style={thermostatStyles.textLevel}>{getStatusLabel(thermostat, nextValue, flagLabel)} {thermostat.unit}</ThemedText>
+              </View>
+              <TouchableOpacity
+                style={[thermostatStyles.adjustButton, !thermostat.isActive && thermostatStyles.adjustButtonDisabled]}
+                activeOpacity={0.7}
+                onPress={handleIncrease}
+                disabled={!thermostat.isActive}
               accessibilityRole="button"
               accessibilityLabel="Augmenter la consigne"
             >
@@ -158,6 +161,15 @@ const thermostatStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     alignContent: 'center',
+    gap: 8,
+  },
+  consigneControlBox: {
+    minWidth: 90,
+    alignItems: 'center',
+  },
+  consigneControlLabel: {
+    fontSize: 11,
+    color: '#9BA1A6',
   },
   adjustButton: {
     minWidth: 44,
@@ -165,14 +177,16 @@ const thermostatStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 22,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: '#1f1a08',
+    borderWidth: 1,
+    borderColor: Colors.domoticz.color,
     paddingHorizontal: 10,
   },
   adjustButtonDisabled: {
-    opacity: 0.4,
+    opacity: 0.35,
   },
   adjustButtonText: {
-    color: '#fff',
+    color: Colors.domoticz.color,
     fontSize: 20,
     fontWeight: 'bold',
   },
@@ -204,20 +218,20 @@ const thermostatStyles = StyleSheet.create({
     flex: 1,
   },
   measuredLabel: {
-    fontSize: 11,
+    fontSize: 12,
     color: '#9BA1A6',
   },
   measuredValue: {
-    fontSize: 11,
-    color: '#9BA1A6',
+    fontSize: 12,
+    color: '#d5d5d5',
     fontWeight: 'bold',
   },
   consigneLabel: {
-    fontSize: 11,
+    fontSize: 12,
     color: '#9BA1A6',
   },
   consigneValue: {
-    fontSize: 11,
+    fontSize: 12,
     color: Colors.domoticz.color,
     fontWeight: 'bold',
   },

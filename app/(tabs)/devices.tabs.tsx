@@ -34,7 +34,7 @@ export default function TabDomoticzDevices({ dataType }: TabDomoticzDevicessProp
       .filter(data => data.type === dataType)
       .forEach((item, idx) => {
         item.rang = idx;
-        items.push(<ViewDomoticzDevice key={item.idx} device={item} />);
+        items.push(<ViewDomoticzDevice key={item.idx} device={item} enhancedUi />);
       });
 
   return items;

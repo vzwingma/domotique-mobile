@@ -1,4 +1,4 @@
-import { Colors, PROFILE, PROFILES_ENV } from "@/app/enums/Colors";
+import { PROFILE, PROFILES_ENV } from "@/app/enums/Colors";
 import { Tabs } from "@/app/enums/TabsEnums";
 import { Ionicons } from "@expo/vector-icons";
 import { Image, StyleSheet } from "react-native";
@@ -10,7 +10,7 @@ import { Image, StyleSheet } from "react-native";
  * Affiche l'image du logo de l'application suivant l'onglet sélectionné
  */
 export function getHeaderIcon(tab: Tabs) {
-    const iconSize = 60;
+    const iconSize = 30;
     switch (tab) {
       case Tabs.INDEX:
         return <Image source={PROFILE === PROFILES_ENV.C ? require('@/assets/images/c/partial-dlogo.png') : require('@/assets/images/v/partial-dlogo.png')} style={tabStyles.domoticzLogo} />
@@ -33,14 +33,10 @@ export function getHeaderIcon(tab: Tabs) {
 export const tabStyles = StyleSheet.create({
     headerImage: {
       color: '#808080',
-      position: 'absolute',
-      bottom: -20,
-      backgroundColor: Colors.dark.titlebackground,
     },
     domoticzLogo: {
-      width: 80,
-      height: 80,
-      position: 'absolute',
-      backgroundColor: Colors.dark.titlebackground,
+      width: 32,
+      height: 32,
+      resizeMode: 'contain',
     },
   });
