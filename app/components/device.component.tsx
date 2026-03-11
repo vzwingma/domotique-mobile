@@ -57,6 +57,10 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device }: Do
     return device.isActive ? stylesListsDevices.viewBox : stylesListsDevices.viewBoxDisabled;
   };
 
+  const getValueBoxStyle = () => {
+    return device.isActive ? stylesListsDevices.valueBox : stylesListsDevices.valueBoxDisabled;
+  };
+
   return (
     <View key={device.idx} style={getViewBoxStyle()}>
       <View key={device.idx} style={stylesListsDevices.iconBox}>
@@ -67,12 +71,14 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device }: Do
           <View style={stylesListsDevices.libelleBox}>
             <ThemedText style={{ fontSize: 16, color: getGroupColor(device) }}>{device.name}</ThemedText>
           </View>
-          <View style={stylesListsDevices.valueBox}>
-            <ThemedText style={stylesListsDevices.textLevel}>{getStatusLabel(device, nextValue, flagLabel)}</ThemedText>
+          <View style={getValueBoxStyle()}>
+            <ThemedText numberOfLines={1} style={stylesListsDevices.textLevel}>{getStatusLabel(device, nextValue, flagLabel)}</ThemedText>
           </View>
+          { (device.isActive)  && 
           <View style={stylesListsDevices.unitBox}>
             <ThemedText style={stylesListsDevices.textLevel}>{device.unit}</ThemedText>
           </View>
+          }
         </View>
         {getSliderComponent()}
       </View>
@@ -131,7 +137,12 @@ export const stylesListsDevices = StyleSheet.create({
     flexDirection: "column",
     marginLeft: -80,
     width: 60
-  },  
+  },
+  valueBoxDisabled: {
+    flexDirection: "column",
+    marginLeft: -120,
+    width: 110,
+  },
   unitBox: {
     width: 20
   },

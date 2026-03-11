@@ -245,6 +245,18 @@ export function getBlindLabel(device: DomoticzDevice): string {
 }
 
 /**
+ * Retourne le label pour un groupe de volets
+ */
+export function getBlindGroupLabel(device: DomoticzDevice): string {
+  device.unit = "";
+  if (!device.consistantLevel) return "Mixte";
+  if (device.level === 0) return "Fermé";
+  if (device.level >= 100) return "Ouvert";
+  device.unit = "%";
+  return device.level + "";
+}
+
+/**
  * Retourne le label pour un groupe de lumières (T04)
  */
 export function getLightsGroupLabel(device: DomoticzDevice): string {
@@ -313,7 +325,7 @@ export function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLa
 
   // T07 — volets
   if (device.type === DomoticzDeviceType.VOLET) {
-    return getBlindLabel(device);
+    return device.isGroup ? getBlindGroupLabel(device) : getBlindLabel(device);
   }
 
   // T04 — groupes de lumières
