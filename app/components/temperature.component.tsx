@@ -9,6 +9,7 @@ type DomoticzTempProps = {
   temperature: DomoticzTemperature;
 };
 
+
 /**
 * Composant pour afficher une mesure de température Domoticz.
 */
@@ -18,6 +19,11 @@ export const ViewDomoticzTemperature: React.FC<DomoticzTempProps> = ({ temperatu
   const inactiveLabel = temperature.isActive
     ? "Inconnu"
     : "Déconnectée";
+
+  const getValueBoxStyle = () => {
+    return temperature.isActive ? stylesListsDevices.valueBox : stylesListsDevices.valueBoxDisabled;
+  };
+
 
   return (
     <View key={temperature.idx} style={temperature.isActive ? temperatureStyles.viewBox : temperatureStyles.viewBoxDisabled}>
@@ -29,7 +35,7 @@ export const ViewDomoticzTemperature: React.FC<DomoticzTempProps> = ({ temperatu
           <View style={stylesListsDevices.libelleBox}>
             <ThemedText style={temperatureStyles.textName}>{temperature.name}</ThemedText>
           </View>
-          <View style={stylesListsDevices.valueBox}>
+          <View style={getValueBoxStyle()}>
             {showValue ? (
               <>
                 <ThemedText style={temperatureStyles.textLevel}>{temperature.temp}</ThemedText>
@@ -39,6 +45,7 @@ export const ViewDomoticzTemperature: React.FC<DomoticzTempProps> = ({ temperatu
               <ThemedText style={temperatureStyles.textLevel}>{inactiveLabel}</ThemedText>
             )}
           </View>
+          { (temperature.isActive)  &&           
           <View style={stylesListsDevices.unitBox}>
             {showValue ? (
               <>
@@ -46,7 +53,7 @@ export const ViewDomoticzTemperature: React.FC<DomoticzTempProps> = ({ temperatu
                 {temperature.humidity ? <ThemedText style={temperatureStyles.textLevel}>%</ThemedText> : <></>}
               </>
             ) : null}
-          </View>
+          </View> }
         </View>
       </View>
     </View>
