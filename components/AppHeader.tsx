@@ -5,10 +5,10 @@ import { ThemedText } from './ThemedText';
 import { Colors } from '@/app/enums/Colors';
 import { ConnectionBadge, type ConnectionBadgeState } from './ConnectionBadge';
 
-type AppHeaderProps = {
-  title: string;
-  icon: ReactElement;
-  connectionState: ConnectionBadgeState;
+export type AppHeaderProps = {
+  readonly title: string;
+  readonly icon: ReactElement;
+  readonly connectionState: ConnectionBadgeState;
 };
 
 export function AppHeader({ title, icon, connectionState }: AppHeaderProps) {

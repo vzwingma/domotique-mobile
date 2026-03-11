@@ -35,8 +35,8 @@ export const tabStyles = StyleSheet.create({
       color: '#808080',
     },
     domoticzLogo: {
-      width: 32,
-      height: 32,
+      width: 50,
+      height: 50,
       resizeMode: 'contain',
     },
   });
