@@ -9,7 +9,7 @@
  *  - Appareil inactif → "Déconnecté"
  *  - Volet fermé (status="Off") → "Fermé"
  *  - Volet ouvert (status="On") → "Ouvert"
- *  - Lumière individuelle Off → "Éteint"
+ *  - Lumière individuelle Off → "Éteinte"
  *  - Lumière individuelle On → "Allumé"
  *  - Groupe lumière Off → "Éteintes"
  *  - Groupe lumière On → "Allumées"
@@ -19,6 +19,7 @@ import { render } from '@testing-library/react-native';
 import { ViewDomoticzDevice } from '../device.component';
 import DomoticzDevice from '@/app/models/domoticzDevice.model';
 import { DomoticzDeviceType, DomoticzSwitchType } from '@/app/enums/DomoticzEnum';
+import { describe, expect, jest , it} from '@jest/globals';
 
 // ─── Mocks des dépendances externes ──────────────────────────────────────────
 
@@ -136,7 +137,7 @@ describe('device.component — volets (T07)', () => {
 // QA03-3 : Lumières individuelles (T05)
 // =============================================================================
 describe('device.component — lumières individuelles (T05)', () => {
-  it('affiche "Éteint" pour une lumière Off (ONOFF)', () => {
+  it('affiche "Éteinte" pour une lumière Off (ONOFF)', () => {
     const device = makeDevice({
       type: DomoticzDeviceType.LUMIERE,
       switchType: DomoticzSwitchType.ONOFF,
@@ -145,10 +146,10 @@ describe('device.component — lumières individuelles (T05)', () => {
       isActive: true,
     });
     const { getByText } = renderDevice(device);
-    expect(getByText('Éteint')).toBeTruthy();
+    expect(getByText('Éteinte')).toBeTruthy();
   });
 
-  it('affiche "Allumé" pour une lumière On (ONOFF)', () => {
+  it('affiche "Allumée" pour une lumière On (ONOFF)', () => {
     const device = makeDevice({
       type: DomoticzDeviceType.LUMIERE,
       switchType: DomoticzSwitchType.ONOFF,
@@ -157,10 +158,10 @@ describe('device.component — lumières individuelles (T05)', () => {
       isActive: true,
     });
     const { getByText } = renderDevice(device);
-    expect(getByText('Allumé')).toBeTruthy();
+    expect(getByText('Allumée')).toBeTruthy();
   });
 
-  it('affiche "Éteint" pour une lumière variateur Off', () => {
+  it('affiche "Éteinte" pour une lumière variateur Off', () => {
     const device = makeDevice({
       type: DomoticzDeviceType.LUMIERE,
       switchType: DomoticzSwitchType.SLIDER,
@@ -170,7 +171,7 @@ describe('device.component — lumières individuelles (T05)', () => {
       isActive: true,
     });
     const { getByText } = renderDevice(device);
-    expect(getByText('Éteint')).toBeTruthy();
+    expect(getByText('Éteinte')).toBeTruthy();
   });
 });
 

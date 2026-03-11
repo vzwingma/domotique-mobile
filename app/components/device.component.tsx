@@ -2,9 +2,9 @@ import DomoticzDevice from "@/app/models/domoticzDevice.model";
 import { ThemedText } from "../../components/ThemedText";
 import { StyleSheet, View } from "react-native";
 import Slider from '@react-native-community/slider';
-import { updateDeviceLevel } from "../controllers/devices.controller";
+import { getLevel, getStatusLabel, overrideNextValue, updateDeviceLevel } from "../controllers/devices.controller";
 import { Colors, getGroupColor } from "../enums/Colors";
-import { DomoticzDeviceStatus, DomoticzDeviceType, DomoticzSwitchType } from "../enums/DomoticzEnum";
+import { DomoticzSwitchType } from "../enums/DomoticzEnum";
 import { useContext, useState } from "react";
 import IconDomoticzDevice from "@/components/IconDomoticzDevice";
 import { DomoticzContext } from "../services/DomoticzContextProvider";
@@ -79,108 +79,6 @@ export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device }: Do
     </View>
   );
 };
-
-
-
-/**
- * retourrne le niveau de l'équipement
- * @param device  équipement Domoticz
- * @returns niveau de l'équipement :
- */
-function getLevel(device: DomoticzDevice): number {
-  return device.status === DomoticzDeviceStatus.OFF ? 0.1 : device.level
-}
-
-
-/**
- * Surcharge de la valeur du slider pour la mettre à jour
- * @param value prochain niveau de l'équipement
- * @param setNextValue  fonction pour mettre à jour le prochain niveau de l'équipement
- */
-function overrideNextValue(value: number, setNextValue: React.Dispatch<React.SetStateAction<number>>) {
-  if (value <= 0) {
-    value = 0.1;
-  }
-  else if (value >= 99) {
-    value = 100;
-  }
-  setNextValue(value);
-}
-
-/**
- * Fonction pour le label du statut de l'équipement. Si on est en mode édition, on affiche le prochain état entre parenthèses.
- */
-function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: boolean): string {
-  // T06 — inactif
-  if (!device.isActive) {
-    return "Déconnecté";
-  }
-
-  // Édition en cours (slider déplacé)
-  if (flagLabel) {
-    let nextLabel = "(";
-    if (nextValue <= 0.1) nextLabel += DomoticzDeviceStatus.OFF;
-    else nextLabel += nextValue;
-    nextLabel += ")";
-    return nextLabel;
-  }
-
-  // T07 — volets
-  if (device.type === DomoticzDeviceType.VOLET) {
-    device.unit = "";
-    if (device.status === DomoticzDeviceStatus.OFF) return "Fermé";
-    if (device.status === DomoticzDeviceStatus.ON) return "Ouvert";
-    return device.status;
-  }
-
-  // T04 — groupes de lumières
-  if (device.isGroup && device.type === DomoticzDeviceType.LUMIERE) {
-    device.unit = "";
-    if (!device.consistantLevel) return "Mixte";
-    if (device.status === DomoticzDeviceStatus.OFF || device.level === 0) return "Éteintes";
-    if (device.level >= 100) return "Allumées";
-    device.unit = "%";
-    return device.level + "";
-  }
-
-  // T05 — lumières individuelles
-  if (!device.isGroup && device.type === DomoticzDeviceType.LUMIERE) {
-    if (device.switchType === DomoticzSwitchType.ONOFF) {
-      device.unit = "";
-      if (device.status === DomoticzDeviceStatus.OFF) return "Éteint";
-      return "Allumé";
-    }
-    // Variateur (SLIDER)
-    if (device.status === DomoticzDeviceStatus.OFF) {
-      device.unit = "";
-      return "Éteint";
-    }
-    if (!device.consistantLevel) {
-      device.unit = "";
-      return "Mixte";
-    }
-    device.unit = "%";
-    return device.level + "";
-  }
-
-  // Comportement par défaut
-  if (device.switchType === DomoticzSwitchType.ONOFF) {
-    device.unit = "";
-    return device.status;
-  }
-  if (device.status === DomoticzDeviceStatus.OFF) {
-    device.unit = "";
-    return DomoticzDeviceStatus.OFF;
-  }
-  if (!device.consistantLevel) {
-    device.unit = "";
-    return "Mixte";
-  }
-  device.unit = "%";
-  return device.level + "";
-}
-
-
 
 
 export const stylesListsDevices = StyleSheet.create({

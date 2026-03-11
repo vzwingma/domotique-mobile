@@ -10,6 +10,7 @@
  */
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
+import { describe, expect, jest , it} from '@jest/globals';
 import { BlindActionsBar } from '../blindActionsBar.component';
 
 // Ionicons est importé via '@expo/vector-icons' — déjà mocké dans jest.setup.ts
