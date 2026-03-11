@@ -91,8 +91,8 @@ assets/         # Polices, icônes, images
 
 ## Fonctionnalités
 
-- Affichage et contrôle des lumières (on/off, variateur) avec labels métier "Allumé"/"Éteint"
-- Gestion des volets/stores (ouverture, fermeture, arrêt) via barre d'actions dédiée (`BlindActionsBar`) avec labels "Ouvert"/"Fermé"
+- Affichage et contrôle des lumières (on/off, variateur) avec labels métier "Allumé"/"Éteint" et état synthétique pour les groupes ("Éteintes" / "Allumées" / "Mixte" / niveau%)
+- Gestion des volets/stores (ouverture/fermeture via slider et clic icône) avec labels "Ouvert"/"Fermé" ; confirmation modale pour les actions sur groupe de volets (nom contenant "Tous")
 - Consultation des capteurs de température avec indicateurs "Déconnectée"/"Inconnu" pour les capteurs inactifs
 - Contrôle des thermostats (point de consigne ajustable par paliers de ±0,5°C, affichage distinct mesure vs consigne)
 - Gestion des groupes d'équipements (indicateur "Mixte" pour niveaux incohérents)
@@ -102,9 +102,8 @@ assets/         # Polices, icônes, images
 
 | Composant | Fichier | Rôle |
 |---|---|---|
-| `DeviceComponent` | `app/components/device.component.tsx` | Affichage et contrôle d'un équipement (lumière, volet, groupe) |
-| `BlindActionsBar` | `app/components/blindActionsBar.component.tsx` | Barre 3 boutons Ouvrir/Stop/Fermer pour les volets |
-| `TemperatureComponent` | `app/components/temperature.component.tsx` | Card compacte (66 px) pour un capteur de température |
+| `DeviceComponent` | `app/components/device.component.tsx` | Affichage et contrôle d'un équipement (lumière, volet, groupe) via slider + clic icône |
+| `TemperatureComponent`| `app/components/temperature.component.tsx` | Card compacte (66 px) pour un capteur de température |
 | `ThermostatComponent` | `app/components/thermostat.component.tsx` | Contrôle de consigne thermostat avec boutons ±0,5°C |
 | `ParamListComponent` | `app/components/paramList.component.tsx` | Paramètres interactifs (présence, phase) via chips segmentés |
 

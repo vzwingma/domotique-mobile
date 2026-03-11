@@ -91,7 +91,7 @@ Les variables d'environnement doivent être préfixées `EXPO_PUBLIC_` pour êtr
 - Thème sombre uniquement (`userInterfaceStyle: "dark"` dans app.json).
 - **Labels métier pour les états des appareils** : utiliser "Allumé"/"Éteint" (lumières), "Ouvert"/"Fermé" (volets), "Déconnecté" (inactif), "Mixte" (groupe à niveaux incohérents) — jamais "On"/"Off" ou "-" dans l'UI.
 - **Chips/boutons segmentés** pour les paramètres interactifs (présence, phase) — ne pas utiliser de `Dropdown`.
-- **`BlindActionsBar`** (`app/components/blindActionsBar.component.tsx`) : composant dédié aux actions volets (props `isActive`, `onOpen`, `onStop`, `onClose`) ; utiliser ce composant pour tout contrôle de volet, pas un slider.
+- **Volets** : les volets utilisent le slider + `onClickDeviceIcon` dans `IconDomoticzDevice.tsx` — ne pas remplacer ce mécanisme par une barre de boutons dédiée.
 
 ### Controllers
 - Reçoivent un callback setter (depuis le Context) plutôt que d'appeler setState directement.

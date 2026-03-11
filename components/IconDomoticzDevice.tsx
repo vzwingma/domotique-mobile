@@ -1,10 +1,10 @@
-import { DomoticzDeviceType } from "@/app/enums/DomoticzEnum";
+import { DomoticzDeviceStatus, DomoticzDeviceType } from "@/app/enums/DomoticzEnum";
 import DomoticzDevice from "@/app/models/domoticzDevice.model";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { getGroupColor } from "@/app/enums/Colors";
 import { DomoticzDeviceProps } from "@/app/components/device.component";
 import { onClickDeviceIcon } from "@/app/controllers/devices.controller";
-import { Image, ImageSourcePropType, Pressable } from "react-native";
+import { Alert, Image, ImageSourcePropType, Pressable } from "react-native";
 import { useContext } from "react";
 import { DomoticzContext } from "@/app/services/DomoticzContextProvider";
 
@@ -21,16 +21,56 @@ export const IconDomoticzDevice : React.FC<DomoticzDeviceProps> = ({ device } : 
       return <MaterialCommunityIcons name={getLightIcon(device)}
                                  size={60}
                                  color={getGroupColor(device)}
-                                 onPress={() => onClickDeviceIcon(device, setDomoticzDevicesData) }/>
+                                 onPress={() => handleLumierePress(device, () => onClickDeviceIcon(device, setDomoticzDevicesData)) }/>
 
     case DomoticzDeviceType.VOLET:
-      return <Pressable onPress={() => onClickDeviceIcon(device, setDomoticzDevicesData) }>
+      return <Pressable onPress={() => handleVoletPress(device, () => onClickDeviceIcon(device, setDomoticzDevicesData)) }>
                 <Image source={getVoletIcon(device)} 
                        style={{ width: 60, height: 60, tintColor: getGroupColor(device), cursor: 'pointer'}} />
               </Pressable>
 
     default:
       return <></>;
+  }
+}
+
+/**
+ * Gère le clic sur l'icône d'une lumière.
+ * Affiche une confirmation modale pour les groupes.
+ */
+function handleLumierePress(device: DomoticzDevice, action: () => void): void {
+  if (device.isGroup) {
+    const verb = (device.status === DomoticzDeviceStatus.OFF || device.level === 0) ? 'allumer' : 'éteindre';
+    Alert.alert(
+      'Confirmation',
+      `Voulez-vous ${verb} toutes les lumières du groupe ?`,
+      [
+        { text: 'Annuler', style: 'cancel' },
+        { text: 'Confirmer', onPress: action },
+      ]
+    );
+  } else {
+    action();
+  }
+}
+
+/**
+ * Gère le clic sur l'icône d'un volet.
+ * Affiche une confirmation modale pour les groupes (T10).
+ */
+function handleVoletPress(device: DomoticzDevice, action: () => void): void {
+  if (device.isGroup) {
+    const verb = device.level === 0 ? 'ouvrir' : 'fermer';
+    Alert.alert(
+      'Confirmation',
+      `Voulez-vous ${verb} tous les volets du groupe ?`,
+      [
+        { text: 'Annuler', style: 'cancel' },
+        { text: 'Confirmer', onPress: action },
+      ]
+    );
+  } else {
+    action();
   }
 }
 
