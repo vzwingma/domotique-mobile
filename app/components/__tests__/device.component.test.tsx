@@ -19,7 +19,6 @@ import { render } from '@testing-library/react-native';
 import { ViewDomoticzDevice } from '../device.component';
 import DomoticzDevice from '@/app/models/domoticzDevice.model';
 import { DomoticzDeviceType, DomoticzSwitchType } from '@/app/enums/DomoticzEnum';
-import { describe, expect, jest , it} from '@jest/globals';
 
 // ─── Mocks des dépendances externes ──────────────────────────────────────────
 
@@ -37,6 +36,17 @@ jest.mock('@/app/services/DomoticzContextProvider', () => ({
 jest.mock('@/app/controllers/devices.controller', () => ({
   updateDeviceLevel: jest.fn(),
   refreshEquipementState: jest.fn(),
+  getLevel: jest.fn((device: any) => device.level ?? 0),
+  overrideNextValue: jest.fn(),
+  getStatusLabel: jest.fn((device: any) => {
+    if (!device.isActive) return 'Déconnecté';
+    if (device.type === 'Volet') return device.status === 'On' ? 'Ouvert' : 'Fermé';
+    if (device.isGroup) {
+      if (!device.consistantLevel) return 'Mixte';
+      return device.status === 'On' ? 'Allumées' : 'Éteintes';
+    }
+    return device.status === 'On' ? 'Allumée' : 'Éteinte';
+  }),
 }));
 
 // Service HTTP
