@@ -8,7 +8,7 @@ type GroupCardProps = {
   accentColor: string;
   statusLabel: string;
   unit?: string;
-  summary: string;
+  summary?: string;
   isActive: boolean;
   primaryAction: React.ReactNode;
   commands?: React.ReactNode;
@@ -44,11 +44,11 @@ export const GroupCard: React.FC<GroupCardProps> = ({
               <DisconnectedState />
             )}
           </View>
-          <ThemedText style={styles.summary}>{summary}</ThemedText>
+          {summary ? <ThemedText style={styles.summary}>{summary}</ThemedText> : null}
+          {secondaryControl}
         </View>
       </View>
       {commands ? <View style={styles.commandsRow}>{commands}</View> : null}
-      {secondaryControl ? <View style={styles.secondaryRow}>{secondaryControl}</View> : null}
     </View>
   );
 };
@@ -68,6 +68,7 @@ const styles = StyleSheet.create({
   },
   topRow: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   primaryBox: {
     marginRight: 10,
@@ -103,15 +104,12 @@ const styles = StyleSheet.create({
     color: '#f5c727',
   },
   summary: {
-    marginTop: 2,
+    marginTop: -8,
     fontSize: 12,
     color: '#c8c8c8',
   },
   commandsRow: {
     marginTop: 8,
-  },
-  secondaryRow: {
-    marginTop: 4,
   },
 });
 

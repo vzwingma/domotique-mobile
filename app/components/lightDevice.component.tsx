@@ -1,8 +1,6 @@
 import React, { useContext, useState } from 'react';
-import { View } from 'react-native';
 import Slider from '@react-native-community/slider';
 import DomoticzDevice from '@/app/models/domoticzDevice.model';
-import { ThemedText } from '@/components/ThemedText';
 import { getLevel, getStatusLabel, overrideNextValue, updateDeviceLevel } from '../controllers/devices.controller';
 import { Colors, getGroupColor } from '../enums/Colors';
 import { DomoticzDeviceStatus, DomoticzLightsGroups, DomoticzSwitchType } from '../enums/DomoticzEnum';
@@ -10,7 +8,6 @@ import IconDomoticzDevice, { performDevicePrimaryAction } from '@/components/Ico
 import { DomoticzContext } from '../services/DomoticzContextProvider';
 import { PrimaryIconAction } from './primaryIconAction.component';
 import { GroupCard } from './groupCard.component';
-import { DisconnectedState } from './disconnectedState.component';
 import { stylesListsDevices } from './deviceRow.styles';
 
 type ViewLightDeviceProps = {
@@ -80,35 +77,16 @@ export const ViewLightDevice: React.FC<ViewLightDeviceProps> = ({ device }) => {
     );
   }
 
-  const viewBoxStyle = device.isActive
-    ? stylesListsDevices.viewBox
-    : stylesListsDevices.viewBoxDisconnected;
-
   return (
-    <View key={device.idx} style={viewBoxStyle}>
-      <View key={device.idx} style={stylesListsDevices.iconBox}>
-        {primaryAction}
-      </View>
-      <View style={stylesListsDevices.contentBox}>
-        <View style={device.consistantLevel ? stylesListsDevices.labelsBox : stylesListsDevices.labelsBoxUnconsistent}>
-          <View style={stylesListsDevices.libelleBox}>
-            <ThemedText style={{ fontSize: 16, color: getGroupColor(device) }}>{device.name}</ThemedText>
-          </View>
-          <View style={device.isActive ? stylesListsDevices.valueBox : stylesListsDevices.valueBoxDisconnected}>
-            {device.isActive
-              ? <ThemedText numberOfLines={1} style={stylesListsDevices.textLevel}>{statusLabel}</ThemedText>
-              : <DisconnectedState />
-            }
-          </View>
-          {device.isActive && (
-            <View style={stylesListsDevices.unitBox}>
-              <ThemedText style={stylesListsDevices.textLevel}>{device.unit}</ThemedText>
-            </View>
-          )}
-        </View>
-        {sliderComponent}
-      </View>
-    </View>
+    <GroupCard
+      title={device.name}
+      accentColor={getGroupColor(device)}
+      statusLabel={statusLabel}
+      unit={device.unit}
+      isActive={device.isActive}
+      primaryAction={primaryAction}
+      secondaryControl={sliderComponent}
+    />
   );
 };
 

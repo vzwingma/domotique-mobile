@@ -19,6 +19,7 @@ exports[`GroupCard snapshot actif et déconnecté 1`] = `
   <View
     style={
       {
+        "alignItems": "center",
         "flexDirection": "row",
       }
     }
@@ -166,7 +167,7 @@ exports[`GroupCard snapshot actif et déconnecté 1`] = `
             {
               "color": "#c8c8c8",
               "fontSize": 12,
-              "marginTop": 2,
+              "marginTop": -8,
             },
           ]
         }
@@ -211,6 +212,7 @@ exports[`GroupCard snapshot actif et déconnecté 2`] = `
   <View
     style={
       {
+        "alignItems": "center",
         "flexDirection": "row",
       }
     }
@@ -347,7 +349,7 @@ exports[`GroupCard snapshot actif et déconnecté 2`] = `
             {
               "color": "#c8c8c8",
               "fontSize": 12,
-              "marginTop": 2,
+              "marginTop": -8,
             },
           ]
         }

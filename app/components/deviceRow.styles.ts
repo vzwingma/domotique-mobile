@@ -42,9 +42,10 @@ export const stylesListsDevices = StyleSheet.create({
   },
   contentBox: {
     flexDirection: 'column',
-    width: '100%',
-    paddingRight: 75,
     justifyContent: 'center',
+    borderColor: '#ff0000',
+    borderWidth: 1,
+
   },
   labelsBox: {
     flexDirection: 'row',
@@ -81,12 +82,10 @@ export const stylesListsDevices = StyleSheet.create({
   },
   // SLIDER
   slider: {
-    height: 40,
-    marginTop: -10,
+    height: 30,
   },
   sliderDisabled: {
-    height: 40,
-    marginTop: -10,
+    height: 30,
     opacity: 0,
   },
   textLevel: {
