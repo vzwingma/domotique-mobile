@@ -30,11 +30,11 @@ export const IconDomoticzDevice : React.FC<IconDomoticzDeviceInternalProps> = ({
     case DomoticzDeviceType.VOLET:
       if (!interactive) {
         return <Image source={getVoletIcon(device)}
-                      style={{ width: 60, height: 60, tintColor: getGroupColor(device)}} />
+                      style={{ width: 40, height: 40, tintColor: getGroupColor(device)}} />
       }
       return <Pressable onPress={() => performDevicePrimaryAction(device, setDomoticzDevicesData) }>
                 <Image source={getVoletIcon(device)} 
-                       style={{ width: 60, height: 60, tintColor: getGroupColor(device), cursor: 'pointer'}} />
+                       style={{ width: 40, height: 40, tintColor: getGroupColor(device), cursor: 'pointer'}} />
               </Pressable>
 
     default:
