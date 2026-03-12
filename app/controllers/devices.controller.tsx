@@ -314,9 +314,8 @@ export function getDefaultLabel(device: DomoticzDevice): string {
 
 /**
  * Fonction pour le label du statut de l'équipement. Si on est en mode édition, on affiche le prochain état entre parenthèses.
- * Le paramètre optionnel `devices` est transmis à `getBlindGroupLabel` pour le calcul basé sur les membres du groupe.
  */
-export function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: boolean, devices?: DomoticzDevice[]): string {
+export function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: boolean): string {
   // T06 — inactif
   if (!device.isActive) {
     return "Déconnecté";

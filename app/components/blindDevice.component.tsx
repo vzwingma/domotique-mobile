@@ -27,7 +27,7 @@ export const ViewBlindDevice: React.FC<ViewBlindDeviceProps> = ({ device }) => {
 
   const isDimmable = device.switchType === DomoticzSwitchType.SLIDER;
   const sliderVisible = isDimmable;
-  const statusLabel = getStatusLabel(device, nextValue, flagLabel, domoticzDevicesData);
+  const statusLabel = getStatusLabel(device, nextValue, flagLabel);
   const isPrimaryActionActive = device.status !== 'Off' && device.level > 0;
 
   const primaryAction = (
