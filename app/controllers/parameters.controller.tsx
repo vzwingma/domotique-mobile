@@ -5,6 +5,8 @@ import { SERVICES_PARAMS, SERVICES_URL } from '../enums/APIconstants';
 import callDomoticz from '../services/ClientHTTP.service';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
 import DomoticzParameter from '../models/domoticzParameter.model';
+import { Alert } from 'react-native';
+import { clearFavoritesFromStorage } from '../services/DataUtils.service';
 
 
 /**
@@ -72,4 +74,22 @@ export function refreshEquipementState(setDomoticzParametersData: React.Dispatch
     // Update data immediately and again after 1 second delay
     loadDomoticzParameters(setDomoticzParametersData);
     setTimeout(() => loadDomoticzParameters(setDomoticzParametersData), 1000);
+}
+
+/**
+ * Displays a confirmation dialog and clears stored favorites when confirmed
+ */
+export function handleResetFavorites(): void {
+    Alert.alert(
+        'Remise à zéro des favoris',
+        'Voulez-vous supprimer la liste des favoris ? Cette action est irréversible.',
+        [
+            { text: 'Annuler', style: 'cancel' },
+            {
+                text: 'Réinitialiser',
+                style: 'destructive',
+                onPress: () => clearFavoritesFromStorage(),
+            },
+        ]
+    );
 }

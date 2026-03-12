@@ -121,6 +121,13 @@ export const saveFavoritesToStorage = (favorites: DomoticzFavorites[]) => {
     putValueInStorage(KEY_STORAGE.FAVORITES, favorites);
 }
 
+/**
+ * Remise à zéro de la liste des favoris
+ */
+export const clearFavoritesFromStorage = (): Promise<void> => {
+    return AsyncStorage.removeItem(KEY_STORAGE.FAVORITES);
+}
+
 
 
 /**

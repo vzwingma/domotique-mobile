@@ -181,6 +181,77 @@ describe('paramList.component — labels Présence (T17)', () => {
 });
 
 // =============================================================================
+// QA05-3b : Labels Mode — correction encodage "Ete" → "Été"
+// =============================================================================
+describe('paramList.component — labels Mode (encodage)', () => {
+  it('affiche "Été" pour levelName "Ete" d\'un paramètre Mode', () => {
+    const param = makeParameter({
+      name: 'Mode',
+      type: DomoticzDeviceType.PARAMETRE,
+      levelNames: ['Hiver', 'Ete'],
+      level: 0,
+    });
+    const { getByText } = renderParam(param);
+    expect(getByText('Été')).toBeTruthy();
+  });
+
+  it('affiche "Été" pour levelName "Été" (accentué) d\'un paramètre Mode', () => {
+    const param = makeParameter({
+      name: 'Mode',
+      type: DomoticzDeviceType.PARAMETRE,
+      levelNames: ['Hiver', 'Été'],
+      level: 0,
+    });
+    const { getByText } = renderParam(param);
+    expect(getByText('Été')).toBeTruthy();
+  });
+
+  it('affiche "Été" pour levelName "ete" (minuscules) d\'un paramètre Mode', () => {
+    const param = makeParameter({
+      name: 'Mode',
+      type: DomoticzDeviceType.PARAMETRE,
+      levelNames: ['Hiver', 'ete'],
+      level: 0,
+    });
+    const { getByText } = renderParam(param);
+    expect(getByText('Été')).toBeTruthy();
+  });
+
+  it("n'affiche pas \"Ete\" brut pour un paramètre Mode", () => {
+    const param = makeParameter({
+      name: 'Mode',
+      type: DomoticzDeviceType.PARAMETRE,
+      levelNames: ['Hiver', 'Ete'],
+      level: 0,
+    });
+    const { queryByText } = renderParam(param);
+    expect(queryByText('Ete')).toBeNull();
+  });
+
+  it('affiche "Hiver" tel quel pour un paramètre Mode', () => {
+    const param = makeParameter({
+      name: 'Mode',
+      type: DomoticzDeviceType.PARAMETRE,
+      levelNames: ['Hiver', 'Ete'],
+      level: 0,
+    });
+    const { getByText } = renderParam(param);
+    expect(getByText('Hiver')).toBeTruthy();
+  });
+
+  it("n'applique pas le mapping Mode pour un paramètre non-Mode", () => {
+    const param = makeParameter({
+      name: 'Saison',
+      type: DomoticzDeviceType.PARAMETRE,
+      levelNames: ['Hiver', 'Ete'],
+      level: 0,
+    });
+    const { getByText } = renderParam(param);
+    expect(getByText('Ete')).toBeTruthy();
+  });
+});
+
+// =============================================================================
 // QA05-4 : Click sur un chip appelle updateParameterValue
 // =============================================================================
 describe('paramList.component — click chip appelle updateParameterValue', () => {

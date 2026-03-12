@@ -25,14 +25,26 @@ function getParametreDisplayName(name: string): string {
 /**
  * T17 — Labels spéciaux pour le paramètre Présence
  */
+/**
+ * Normalise une chaîne en retirant les accents et en mettant en majuscules,
+ * pour une comparaison robuste indépendante de l'encodage Domoticz.
+ */
+function normalizeLevelName(s: string): string {
+  return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+}
+
 function getParametreDisplayLabel(parametreName: string, levelName: string): string {
+  const normalized = normalizeLevelName(levelName);
   if (parametreName.includes("Présence")) {
-    if (levelName === "Présent") return "Maison occupée";
-    else if (levelName === "Absent") return "Maison vide";
+    if (normalized === "PRESENT") return "Maison occupée";
+    else if (normalized === "ABSENT") return "Maison vide";
   }
-  if (parametreName.includes("Phase")) {
-    if (levelName === "Journee") return "Journée";
-    else if (levelName === "Soiree") return "Soirée";    
+  else if (parametreName.includes("Phase")) {
+    if (normalized === "JOURNEE") return "Journée";
+    else if (normalized === "SOIREE") return "Soirée";
+  }
+  else if (parametreName.includes("Mode")) {
+    if (normalized === "ETE") return "Été";
   }
   return levelName;
 }

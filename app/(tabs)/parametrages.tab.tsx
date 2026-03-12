@@ -2,7 +2,7 @@
  * Écran Maison : liste des paramètres + section À propos
  */
 import React, { JSX, useContext } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
 import { ViewDomoticzParamList } from '../components/paramList.component';
 import { ThemedText } from '@/components/ThemedText';
@@ -13,6 +13,7 @@ import {
   getConnectionBadgeLabel,
   mapDomoticzStatusToConnectionBadgeState,
 } from '@/components/ConnectionBadge';
+import { handleResetFavorites } from '../controllers/parameters.controller';
 
 /**
  * Composant de l'écran Maison : paramètres + section À propos
@@ -35,6 +36,26 @@ export default function TabDomoticzParametres(): JSX.Element {
         ))}
       </View>
 
+      {/* Section Favoris */}
+      <View style={favoritesStyles.section}>
+        <View style={favoritesStyles.row}>
+          <View style={favoritesStyles.textBlock}>
+            <ThemedText style={favoritesStyles.title}>Favoris</ThemedText>
+            <ThemedText style={favoritesStyles.label}>Historique d'utilisation</ThemedText>
+          </View>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Réinitialiser les favoris"
+            onPress={handleResetFavorites}
+            style={({ pressed }) => [
+              favoritesStyles.resetButton,
+              pressed && favoritesStyles.resetButtonPressed,
+            ]}>
+            <ThemedText style={favoritesStyles.resetButtonText}>Réinitialiser</ThemedText>
+          </Pressable>
+        </View>
+      </View>
+
       {/* T03 — Section À propos */}
       <View style={aboutStyles.section}>
         <ThemedText style={aboutStyles.title}>À propos</ThemedText>
@@ -47,7 +68,7 @@ export default function TabDomoticzParametres(): JSX.Element {
           <ThemedText style={aboutStyles.value}>v{domoticzConnexionData?.version ?? '?'}</ThemedText>
         </View>
         <View style={aboutStyles.row}>
-          <ThemedText style={aboutStyles.label}>Statut détaillé</ThemedText>
+          <ThemedText style={aboutStyles.label}>Statut</ThemedText>
           <ThemedText style={[aboutStyles.value, { color: connectionColor }]}>
             {connectionLabel} ({domoticzStatusRaw})
           </ThemedText>
@@ -68,6 +89,52 @@ const sectionStyles = StyleSheet.create({
     color: Colors.dark.text,
     marginTop: 4,
     marginBottom: 6,
+  },
+});
+
+const favoritesStyles = StyleSheet.create({
+  section: {
+    marginTop: 12,
+    padding: 12,
+    backgroundColor: '#1a1c1d',
+    borderRadius: 8,
+    borderColor: '#2a2c2d',
+    borderWidth: 1,
+    width: '100%',
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  textBlock: {
+    flexDirection: 'column',
+    gap: 2,
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: Colors.dark.text,
+  },
+  label: {
+    fontSize: 11,
+    color: '#9BA1A6',
+  },
+  resetButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: '#3a1c1c',
+    borderRadius: 6,
+    borderColor: '#7a2c2c',
+    borderWidth: 1,
+  },
+  resetButtonPressed: {
+    backgroundColor: '#5a2c2c',
+  },
+  resetButtonText: {
+    fontSize: 12,
+    color: '#ff6b6b',
+    fontWeight: '600',
   },
 });
 
