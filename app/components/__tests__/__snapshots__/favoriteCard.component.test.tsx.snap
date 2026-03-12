@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`FavoriteQuickActionCard snapshot favori actif 1`] = `
+exports[`FavoriteCard snapshot favori actif 1`] = `
 <View
   style={
     [

@@ -4,7 +4,7 @@ import { getFavoritesFromStorage, sortFavorites as sortFavoritesDevices } from '
 import React, { JSX, useContext, useEffect, useState } from 'react';
 import DomoticzFavorites from '../models/domoticzFavorites.model';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
-import { FavoriteQuickActionCard } from '../components/favoriteQuickActionCard.component';
+import { FavoriteCard } from '../components/favoriteCard.component';
 import { ThemedText } from '@/components/ThemedText';
 import { View } from 'react-native';
 
@@ -87,7 +87,7 @@ function getListFavoritesComponents(favoritesData: DomoticzDevice[]): JSX.Elemen
       .sort((favDeviceA: DomoticzDevice, favDeviceB: DomoticzDevice) => sortFavoritesDevices(favDeviceA, favDeviceB));
 
     visibleFavorites.forEach((fav: DomoticzDevice) => {
-      items.push(<FavoriteQuickActionCard key={fav.idx} device={fav} />);
+      items.push(<FavoriteCard key={fav.idx} device={fav} />);
     });
 
     if (hasMoreFavoritesThanVisibleLimit) {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import { FavoriteQuickActionCard } from '../favoriteQuickActionCard.component';
+import { FavoriteCard } from '../favoriteCard.component';
 import DomoticzDevice from '@/app/models/domoticzDevice.model';
 import { DomoticzDeviceStatus, DomoticzDeviceType, DomoticzSwitchType } from '@/app/enums/DomoticzEnum';
 import { DomoticzContext } from '@/app/services/DomoticzContextProvider';
@@ -58,13 +58,13 @@ function renderWithContext(device: DomoticzDevice) {
   const setDomoticzDevicesData = jest.fn();
   const rendered = render(
     <DomoticzContext.Provider value={{ setDomoticzDevicesData } as any}>
-      <FavoriteQuickActionCard device={device} />
+      <FavoriteCard device={device} />
     </DomoticzContext.Provider>,
   );
   return { ...rendered, setDomoticzDevicesData };
 }
 
-describe('FavoriteQuickActionCard', () => {
+describe('FavoriteCard', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockGetLevel.mockReturnValue(100);
@@ -115,7 +115,7 @@ describe('FavoriteQuickActionCard', () => {
     const setDomoticzDevicesData = jest.fn();
     const { toJSON } = render(
       <DomoticzContext.Provider value={{ setDomoticzDevicesData } as any}>
-        <FavoriteQuickActionCard device={makeDevice()} />
+        <FavoriteCard device={makeDevice()} />
       </DomoticzContext.Provider>,
     );
     expect(toJSON()).toMatchSnapshot();

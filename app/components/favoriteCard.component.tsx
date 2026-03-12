@@ -10,7 +10,7 @@ import { Colors, getGroupColor } from '../enums/Colors';
 import { getLevel, getStatusLabel, isDeviceOn } from '../controllers/devices.controller';
 import { DisconnectedState } from './disconnectedState.component';
 
-type FavoriteQuickActionCardProps = {
+type FavoriteCardProps = {
   device: DomoticzDevice;
 };
 
@@ -18,7 +18,7 @@ type FavoriteQuickActionCardProps = {
  * Carte favori orientée "action rapide" (1 tap).
  * Gère lumières (Allumer/Éteindre) et volets (Ouvrir/Fermer).
  */
-export const FavoriteQuickActionCard: React.FC<FavoriteQuickActionCardProps> = ({ device }) => {
+export const FavoriteCard: React.FC<FavoriteCardProps> = ({ device }) => {
   const { setDomoticzDevicesData } = useContext(DomoticzContext)!;
 
   const deviceOn = isDeviceOn(device);
