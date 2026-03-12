@@ -60,7 +60,7 @@ export const FavoriteBlindCard: React.FC<FavoriteBlindCardProps> = ({ device }) 
         style={({ pressed }) => [
           styles.quickActionButton,
           pressed && device.isActive ? styles.quickActionButtonPressed : undefined,
-          !device.isActive ? styles.quickActionButtonDisabled : undefined,
+          device.isActive ? undefined : styles.quickActionButtonDisabled,
         ]}>
         <ThemedText style={styles.quickActionText}>{actionLabel}</ThemedText>
       </Pressable>

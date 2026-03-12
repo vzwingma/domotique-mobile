@@ -40,25 +40,25 @@ export const ViewBlindDevice: React.FC<ViewBlindDeviceProps> = ({ device }) => {
     </PrimaryIconAction>
   );
 
-  const sliderComponent = sliderVisible
-    ? isDimmable
-      ? (
-        <Slider
-          disabled={!device.isActive}
-          style={device.isActive ? stylesListsDevices.slider : stylesListsDevices.sliderDisabled}
-          minimumValue={0} value={getLevel(device)} maximumValue={100}
-          step={1}
-          minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor={Colors.domoticz.color}
-          onValueChange={(value) => overrideNextValue(value, setNextValue)}
-          onResponderStart={() => setFlagLabel(true)}
-          onResponderEnd={() => {
-            updateDeviceLevel(device.idx, device, nextValue, setDomoticzDevicesData);
-            setFlagLabel(false);
-          }}
-        />
-      )
-      : <Slider disabled style={stylesListsDevices.sliderDisabled} />
-    : null;
+  const sliderContent = isDimmable
+    ? (
+      <Slider
+        disabled={!device.isActive}
+        style={device.isActive ? stylesListsDevices.slider : stylesListsDevices.sliderDisabled}
+        minimumValue={0} value={getLevel(device)} maximumValue={100}
+        step={1}
+        minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor={Colors.domoticz.color}
+        onValueChange={(value) => overrideNextValue(value, setNextValue)}
+        onResponderStart={() => setFlagLabel(true)}
+        onResponderEnd={() => {
+          updateDeviceLevel(device.idx, device, nextValue, setDomoticzDevicesData);
+          setFlagLabel(false);
+        }}
+      />
+    )
+    : <Slider disabled style={stylesListsDevices.sliderDisabled} />;
+
+  const sliderComponent = sliderVisible ? sliderContent : null;
 
   if (device.isGroup) {
     const summary = getBlindGroupSummary(device, domoticzDevicesData);
@@ -77,9 +77,9 @@ export const ViewBlindDevice: React.FC<ViewBlindDeviceProps> = ({ device }) => {
     );
   }
 
-  const viewBoxStyle = !device.isActive
-    ? stylesListsDevices.viewBoxDisconnected
-    : device.isActive ? stylesListsDevices.viewBox : stylesListsDevices.viewBoxDisabled;
+  const viewBoxStyle = device.isActive
+    ? stylesListsDevices.viewBox
+    : stylesListsDevices.viewBoxDisconnected;
 
   return (
     <View key={device.idx} style={viewBoxStyle}>
@@ -92,9 +92,9 @@ export const ViewBlindDevice: React.FC<ViewBlindDeviceProps> = ({ device }) => {
             <ThemedText style={{ fontSize: 16, color: getGroupColor(device) }}>{device.name}</ThemedText>
           </View>
           <View style={device.isActive ? stylesListsDevices.valueBox : stylesListsDevices.valueBoxDisconnected}>
-            {!device.isActive
-              ? <DisconnectedState />
-              : <ThemedText numberOfLines={1} style={stylesListsDevices.textLevel}>{statusLabel}</ThemedText>
+            {device.isActive
+              ? <ThemedText numberOfLines={1} style={stylesListsDevices.textLevel}>{statusLabel}</ThemedText>
+              : <DisconnectedState />
             }
           </View>
           {device.isActive && (
@@ -121,12 +121,14 @@ function getBlindGroupSummary(device: DomoticzDevice, devices: DomoticzDevice[])
   ).length;
   const connectedCount = connectedMembers.length;
   const mixtePrefix = device.consistantLevel ? '' : 'État mixte — ';
+  const disconnectedLabel = disconnectedCount > 1 ? 's' : '';
   const disconnectedSuffix = disconnectedCount > 0
-    ? ` • ${disconnectedCount} déconnecté${disconnectedCount > 1 ? 's' : ''}`
+    ? ` • ${disconnectedCount} déconnecté${disconnectedLabel}`
     : '';
 
   if (connectedCount === 0) {
-    return `${mixtePrefix}0/${members.length} ouverts • ${disconnectedCount} déconnecté${disconnectedCount > 1 ? 's' : ''}`;
+    const zeroStateLabel = disconnectedCount > 1 ? 's' : '';
+    return `${mixtePrefix}0/${members.length} ouverts • ${disconnectedCount} déconnecté${zeroStateLabel}`;
   }
   return `${mixtePrefix}${openedCount}/${connectedCount} ouverts${disconnectedSuffix}`;
 }
