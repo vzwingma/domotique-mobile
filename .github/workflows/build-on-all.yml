@@ -27,11 +27,11 @@ jobs:
           eas-version: latest
           packager: npm
           token: ${{ secrets.EXPO_TOKEN }}
-      - run: npx expo-env-info
-      - name: Run expo-doctor
-        run: npx expo-doctor@latest      
       - name: 📦 Install dependencies
         run: npm install --ignore-scripts
+      - run: npx expo-env-info
+      - name: Run expo-doctor
+        run: npx expo-doctor@latest
       - name: 🧪 Run unit tests
         run: npm test -- --ci --watchAll=false --coverage
       - name: 🔎 SonarQube Cloud Scan
