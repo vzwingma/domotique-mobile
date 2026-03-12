@@ -8,8 +8,8 @@ import { FavoriteQuickActionCard } from '../components/favoriteQuickActionCard.c
 import { ThemedText } from '@/components/ThemedText';
 import { View } from 'react-native';
 
-// Règle métier explicite Favoris (F01-01) : l'écran rapide n'affiche jamais plus de 8 éléments.
-const FAVORITES_MAX_QUICK_ACTIONS = 8;
+// Règle métier explicite Favoris (F01-01) : l'écran rapide n'affiche jamais plus de 7 éléments.
+const FAVORITES_MAX_QUICK_ACTIONS = 7;
 
 /**
  * Ecran d'accueil avec les équipements favoris

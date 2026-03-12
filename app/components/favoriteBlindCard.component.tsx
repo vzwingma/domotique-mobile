@@ -28,27 +28,25 @@ export const FavoriteBlindCard: React.FC<FavoriteBlindCardProps> = ({ device }) 
 
   return (
     <View style={[styles.card, !device.isActive && styles.cardDisconnected]}>
-      <View style={styles.topRow}>
-        <PrimaryIconAction
-          accessibilityLabel={`Action rapide ${actionLabel.toLowerCase()} ${device.name}`}
-          active={isOpen}
-          disabled={!device.isActive}
-          onPress={triggerPrimaryAction}>
-          <IconDomoticzDevice device={device} interactive={false} />
-        </PrimaryIconAction>
+      <PrimaryIconAction
+        accessibilityLabel={`Action rapide ${actionLabel.toLowerCase()} ${device.name}`}
+        active={isOpen}
+        disabled={!device.isActive}
+        onPress={triggerPrimaryAction}>
+        <IconDomoticzDevice device={device} interactive={false} />
+      </PrimaryIconAction>
 
-        <View style={styles.content}>
-          <ThemedText style={[styles.title, { color: getGroupColor(device) }]} numberOfLines={1}>
-            {device.name}
+      <View style={styles.content}>
+        <ThemedText style={[styles.title, { color: getGroupColor(device) }]} numberOfLines={1}>
+          {device.name}
+        </ThemedText>
+        {device.isActive ? (
+          <ThemedText style={styles.status} numberOfLines={1}>
+            État : {statusLabel}
           </ThemedText>
-          {device.isActive ? (
-            <ThemedText style={styles.status} numberOfLines={1}>
-              État : {statusLabel}
-            </ThemedText>
-          ) : (
-            <DisconnectedState />
-          )}
-        </View>
+        ) : (
+          <DisconnectedState />
+        )}
       </View>
 
       <Pressable
@@ -71,24 +69,21 @@ export const FavoriteBlindCard: React.FC<FavoriteBlindCardProps> = ({ device }) 
 const styles = StyleSheet.create({
   card: {
     width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 10,
     margin: 1,
     borderColor: '#3A3A3A',
     borderWidth: 1,
     backgroundColor: '#0b0b0b',
-    gap: 8,
+    gap: 10,
   },
   cardDisconnected: {
     borderColor: '#7f2b2b',
     backgroundColor: '#1a1212',
   },
-  topRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   content: {
     flex: 1,
-    marginLeft: 10,
     justifyContent: 'center',
     gap: 2,
   },
@@ -101,7 +96,9 @@ const styles = StyleSheet.create({
     color: '#d6d6d6',
   },
   quickActionButton: {
+    minWidth: 90,
     minHeight: 44,
+    alignSelf: 'stretch',
     borderWidth: 1,
     borderColor: Colors.domoticz.color,
     borderRadius: 10,
