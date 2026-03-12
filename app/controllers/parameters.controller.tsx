@@ -5,7 +5,6 @@ import { SERVICES_PARAMS, SERVICES_URL } from '../enums/APIconstants';
 import callDomoticz from '../services/ClientHTTP.service';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
 import DomoticzParameter from '../models/domoticzParameter.model';
-import { Buffer } from 'buffer';
 
 
 /**
@@ -27,7 +26,7 @@ export function loadDomoticzParameters(storeParameters: (parameters: DomoticzPar
                             lastUpdate: rawDevice.LastUpdate,
                             data: rawDevice.Data,
                             level: rawDevice.Level,
-                            levelNames: rawDevice.LevelNames ? Buffer.from(rawDevice.LevelNames, 'base64').toString('utf-8').split('|') : [],
+                            levelNames: rawDevice.LevelNames ? atob(rawDevice.LevelNames).split('|') : [],
                             switchType: rawDevice.SwitchType
                         }
                         return tdevice;
