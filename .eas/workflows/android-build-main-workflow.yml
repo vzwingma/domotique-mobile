@@ -13,6 +13,8 @@ jobs:
       profile: previewV
   build_android_C:
     type: build
+    after:
+      - build_android_V
     params:
       platform: android
       profile: previewC
