@@ -30,7 +30,7 @@ function getParametreDisplayName(name: string): string {
  * pour une comparaison robuste indépendante de l'encodage Domoticz.
  */
 function normalizeLevelName(s: string): string {
-  return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+  return s.normalize('NFD').replaceAll(/[\u0300-\u036f]/g, '').toUpperCase();
 }
 
 function getParametreDisplayLabel(parametreName: string, levelName: string): string {
