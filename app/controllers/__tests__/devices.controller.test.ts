@@ -374,3 +374,118 @@ describe('getStatusLabel — volets groupes via getBlindGroupLabel', () => {
         expect(getStatusLabel(device, 0, false)).toBe('Fermé');
     });
 });
+
+// ─── getBlindGroupLabel — membres mappés ───────────────────────────────────────
+
+describe('getBlindGroupLabel — avec membres mappés', () => {
+    // Groupe idx=85, membres : 66, 55, 67, 68
+
+    it('1. retourne "Fermé" quand tous les membres ont level=0 (même si status=On)', () => {
+        const groupDevice = makeDevice({ idx: 85, type: DomoticzDeviceType.VOLET, isGroup: true });
+        const members = [66, 55, 67, 68].map(idx =>
+            makeDevice({ idx, type: DomoticzDeviceType.VOLET, level: 0, status: DomoticzDeviceStatus.ON })
+        );
+        expect(getBlindGroupLabel(groupDevice, members)).toBe('Fermé');
+    });
+
+    it('2. retourne "Fermé" quand tous les membres ont status=Off (même si level > 0)', () => {
+        const groupDevice = makeDevice({ idx: 85, type: DomoticzDeviceType.VOLET, isGroup: true });
+        const members = [66, 55, 67, 68].map(idx =>
+            makeDevice({ idx, type: DomoticzDeviceType.VOLET, level: 50, status: DomoticzDeviceStatus.OFF })
+        );
+        expect(getBlindGroupLabel(groupDevice, members)).toBe('Fermé');
+    });
+
+    it('3. retourne "Fermé" quand certains membres ont level=0 et d\'autres status=Off', () => {
+        const groupDevice = makeDevice({ idx: 85, type: DomoticzDeviceType.VOLET, isGroup: true });
+        const members = [
+            makeDevice({ idx: 66, type: DomoticzDeviceType.VOLET, level: 0,  status: DomoticzDeviceStatus.ON }),
+            makeDevice({ idx: 55, type: DomoticzDeviceType.VOLET, level: 0,  status: DomoticzDeviceStatus.ON }),
+            makeDevice({ idx: 67, type: DomoticzDeviceType.VOLET, level: 30, status: DomoticzDeviceStatus.OFF }),
+            makeDevice({ idx: 68, type: DomoticzDeviceType.VOLET, level: 60, status: DomoticzDeviceStatus.OFF }),
+        ];
+        expect(getBlindGroupLabel(groupDevice, members)).toBe('Fermé');
+    });
+
+    it('4. retourne "Ouvert" quand tous les membres ont level=99', () => {
+        const groupDevice = makeDevice({ idx: 85, type: DomoticzDeviceType.VOLET, isGroup: true });
+        const members = [66, 55, 67, 68].map(idx =>
+            makeDevice({ idx, type: DomoticzDeviceType.VOLET, level: 99, status: DomoticzDeviceStatus.ON })
+        );
+        expect(getBlindGroupLabel(groupDevice, members)).toBe('Ouvert');
+    });
+
+    it('5. retourne "Ouvert" quand tous les membres ont level=100 (au-delà du seuil)', () => {
+        const groupDevice = makeDevice({ idx: 85, type: DomoticzDeviceType.VOLET, isGroup: true });
+        const members = [66, 55, 67, 68].map(idx =>
+            makeDevice({ idx, type: DomoticzDeviceType.VOLET, level: 100, status: DomoticzDeviceStatus.ON })
+        );
+        expect(getBlindGroupLabel(groupDevice, members)).toBe('Ouvert');
+    });
+
+    it('6. retourne "Mixte" quand certains membres ont level=0 et d\'autres level=50', () => {
+        const groupDevice = makeDevice({ idx: 85, type: DomoticzDeviceType.VOLET, isGroup: true });
+        const members = [
+            makeDevice({ idx: 66, type: DomoticzDeviceType.VOLET, level: 0,  status: DomoticzDeviceStatus.ON }),
+            makeDevice({ idx: 55, type: DomoticzDeviceType.VOLET, level: 50, status: DomoticzDeviceStatus.ON }),
+            makeDevice({ idx: 67, type: DomoticzDeviceType.VOLET, level: 0,  status: DomoticzDeviceStatus.ON }),
+            makeDevice({ idx: 68, type: DomoticzDeviceType.VOLET, level: 50, status: DomoticzDeviceStatus.ON }),
+        ];
+        expect(getBlindGroupLabel(groupDevice, members)).toBe('Mixte');
+    });
+
+    it('7. retourne "Fermé" avec membres inactifs (isActive=false) ayant level=0 — les inactifs sont inclus dans le calcul', () => {
+        const groupDevice = makeDevice({ idx: 85, type: DomoticzDeviceType.VOLET, isGroup: true });
+        const members = [
+            makeDevice({ idx: 66, type: DomoticzDeviceType.VOLET, level: 0, status: DomoticzDeviceStatus.ON, isActive: false }),
+            makeDevice({ idx: 55, type: DomoticzDeviceType.VOLET, level: 0, status: DomoticzDeviceStatus.ON, isActive: false }),
+            makeDevice({ idx: 67, type: DomoticzDeviceType.VOLET, level: 0, status: DomoticzDeviceStatus.ON, isActive: true }),
+            makeDevice({ idx: 68, type: DomoticzDeviceType.VOLET, level: 0, status: DomoticzDeviceStatus.ON, isActive: true }),
+        ];
+        expect(getBlindGroupLabel(groupDevice, members)).toBe('Fermé');
+    });
+
+    it('8. retourne "Mixte" quand membres inactifs ont level=0 mais membres actifs ont level=50', () => {
+        const groupDevice = makeDevice({ idx: 85, type: DomoticzDeviceType.VOLET, isGroup: true });
+        const members = [
+            makeDevice({ idx: 66, type: DomoticzDeviceType.VOLET, level: 0,  status: DomoticzDeviceStatus.ON, isActive: false }),
+            makeDevice({ idx: 55, type: DomoticzDeviceType.VOLET, level: 0,  status: DomoticzDeviceStatus.ON, isActive: false }),
+            makeDevice({ idx: 67, type: DomoticzDeviceType.VOLET, level: 50, status: DomoticzDeviceStatus.ON, isActive: true }),
+            makeDevice({ idx: 68, type: DomoticzDeviceType.VOLET, level: 50, status: DomoticzDeviceStatus.ON, isActive: true }),
+        ];
+        expect(getBlindGroupLabel(groupDevice, members)).toBe('Mixte');
+    });
+});
+
+// ─── getStatusLabel — groupe volet avec membres mappés ────────────────────────
+
+describe('getStatusLabel — groupe volet avec membres mappés', () => {
+    // Groupe idx=84, membres : 66, 55
+
+    it('9. retourne "Fermé" via getStatusLabel quand tous les membres du groupe mappé sont fermés', () => {
+        const groupDevice = makeDevice({ idx: 84, type: DomoticzDeviceType.VOLET, isGroup: true, isActive: true });
+        const devices = [
+            makeDevice({ idx: 66, type: DomoticzDeviceType.VOLET, level: 0, status: DomoticzDeviceStatus.ON }),
+            makeDevice({ idx: 55, type: DomoticzDeviceType.VOLET, level: 0, status: DomoticzDeviceStatus.ON }),
+        ];
+        expect(getStatusLabel(groupDevice, 0, false, devices)).toBe('Fermé');
+    });
+
+    it('10. retourne "Ouvert" via getStatusLabel quand tous les membres du groupe mappé sont ouverts', () => {
+        const groupDevice = makeDevice({ idx: 84, type: DomoticzDeviceType.VOLET, isGroup: true, isActive: true });
+        const devices = [
+            makeDevice({ idx: 66, type: DomoticzDeviceType.VOLET, level: 99, status: DomoticzDeviceStatus.ON }),
+            makeDevice({ idx: 55, type: DomoticzDeviceType.VOLET, level: 99, status: DomoticzDeviceStatus.ON }),
+        ];
+        expect(getStatusLabel(groupDevice, 0, false, devices)).toBe('Ouvert');
+    });
+
+    it('11. retourne "Mixte" via getStatusLabel quand les membres du groupe mappé sont en état mixte', () => {
+        const groupDevice = makeDevice({ idx: 84, type: DomoticzDeviceType.VOLET, isGroup: true, isActive: true });
+        const devices = [
+            makeDevice({ idx: 66, type: DomoticzDeviceType.VOLET, level: 0,  status: DomoticzDeviceStatus.ON }),
+            makeDevice({ idx: 55, type: DomoticzDeviceType.VOLET, level: 50, status: DomoticzDeviceStatus.ON }),
+        ];
+        expect(getStatusLabel(groupDevice, 0, false, devices)).toBe('Mixte');
+    });
+});

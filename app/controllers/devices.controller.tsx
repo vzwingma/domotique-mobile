@@ -245,13 +245,16 @@ export function getBlindLabel(device: DomoticzDevice): string {
 }
 
 /**
- * Retourne le label pour un groupe de volets
+ * Retourne le label pour un groupe de volets.
+ * Si la liste des devices est fournie, la règle métier est basée sur les membres du groupe (via DomoticzBlindsGroups).
+ * Sinon, fallback sur le comportement historique (consistantLevel + level).
  */
 export function getBlindGroupLabel(device: DomoticzDevice): string {
   device.unit = "";
-  if (!device.consistantLevel) return "Mixte";
-  if (device.level === 0) return "Fermé";
-  if (device.level >= 100) return "Ouverts";
+
+  if (device.status === DomoticzDeviceStatus.OFF || device.level <= 0.1) return "Fermés";
+  if (!device.consistantLevel) return device.status === DomoticzDeviceStatus.ON ? "Ouverts" : "Mixte";
+  if (device.level >= 99) return "Ouverts";
   device.unit = "%";
   return device.level + "";
 }
@@ -261,7 +264,7 @@ export function getBlindGroupLabel(device: DomoticzDevice): string {
  */
 export function getLightsGroupLabel(device: DomoticzDevice): string {
   device.unit = "";
-  if (device.status === DomoticzDeviceStatus.OFF || device.level === 0) return "Éteintes";
+  if (device.status === DomoticzDeviceStatus.OFF || device.level <= 0.1) return "Éteintes";
   if (!device.consistantLevel) return device.status === DomoticzDeviceStatus.ON ? "Allumées" : "Mixte";
   if (device.level >= 99) return "Allumées";
   device.unit = "%";
@@ -311,8 +314,9 @@ export function getDefaultLabel(device: DomoticzDevice): string {
 
 /**
  * Fonction pour le label du statut de l'équipement. Si on est en mode édition, on affiche le prochain état entre parenthèses.
+ * Le paramètre optionnel `devices` est transmis à `getBlindGroupLabel` pour le calcul basé sur les membres du groupe.
  */
-export function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: boolean): string {
+export function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLabel: boolean, devices?: DomoticzDevice[]): string {
   // T06 — inactif
   if (!device.isActive) {
     return "Déconnecté";
