@@ -7,7 +7,7 @@ import DomoticzThermostat from "../models/domoticzThermostat.model";
 import IconDomoticzThermostat from "@/components/IconDomoticzThermostat";
 import { DomoticzThermostatLevelValue } from "../enums/DomoticzEnum";
 import { updateThermostatPoint } from "../controllers/thermostats.controller";
-import { stylesListsDevices } from "./device.component";
+
 
 // Définition des propriétés d'un équipement Domoticz
 export type DomoticzThermostatProps = {
@@ -43,15 +43,13 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
   };
 
   return (
-    <View key={thermostat.idx} style={thermostat.isActive ? thermostatStyles.viewBox : thermostatStyles.viewBoxDisabled}>
-      <View key={thermostat.idx} style={stylesListsDevices.iconBox}>
+    <View style={[thermostatStyles.viewBox, !thermostat.isActive && thermostatStyles.viewBoxDisabled]}>
+      <View style={thermostatStyles.iconBox}>
         <IconDomoticzThermostat />
       </View>
       <View style={thermostatStyles.contentBox}>
         <View style={thermostatStyles.titleControlBox}>
-          <View style={thermostatStyles.libelleBox}>
-            <ThemedText style={{ fontSize: 16, color: 'white' }}>{thermostat.name}</ThemedText>
-          </View>
+          <ThemedText style={thermostatStyles.title}>{thermostat.name}</ThemedText>
           {/* T11 — boutons +/- autour de la valeur consigne */}
           <View style={thermostatStyles.controlBox}>
             <TouchableOpacity
@@ -65,7 +63,7 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
               <ThemedText style={thermostatStyles.adjustButtonText}>−</ThemedText>
             </TouchableOpacity>
             <View style={thermostatStyles.consigneControlBox}>
-              <ThemedText style={thermostatStyles.consigneControlLabel}>Consigne</ThemedText>
+              <ThemedText style={thermostatStyles.secondaryLabel}>Consigne</ThemedText>
               <ThemedText style={thermostatStyles.textLevel}>{getStatusLabel(thermostat, nextValue)} {thermostat.unit}</ThemedText>
             </View>
             <TouchableOpacity
@@ -84,11 +82,11 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
         {measuredTemp && (
           <View style={thermostatStyles.measuredRow}>
             <View style={thermostatStyles.measuredSection}>
-              <ThemedText style={thermostatStyles.measuredLabel}>Mesure : </ThemedText>
+              <ThemedText style={thermostatStyles.secondaryLabel}>Mesure : </ThemedText>
               <ThemedText style={thermostatStyles.measuredValue}>{measuredTemp.temp}°C</ThemedText>
             </View>
             <View style={thermostatStyles.consigneSection}>
-              <ThemedText style={thermostatStyles.consigneLabel}>Consigne : </ThemedText>
+              <ThemedText style={thermostatStyles.secondaryLabel}>Consigne : </ThemedText>
               <ThemedText style={thermostatStyles.consigneValue}>{thermostat.temp}°C</ThemedText>
             </View>
           </View>
@@ -110,11 +108,6 @@ function getStatusLabel(device: DomoticzThermostat, nextValue: number): string {
 }
 
 const thermostatStyles = StyleSheet.create({
-  contentBox: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-  },
   viewBox: {
     flexDirection: 'row',
     width: '100%',
@@ -126,30 +119,38 @@ const thermostatStyles = StyleSheet.create({
     minHeight: 84,
   },
   viewBoxDisabled: {
-    flexDirection: 'row',
-    width: '100%',
-    padding: 10,
-    margin: 1,
     opacity: 0.2,
-    minHeight: 84,
+  },
+  iconBox: {
+    marginRight: 10,
+    height: 60,
+    width: 60,
+  },
+  contentBox: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
   },
   titleControlBox: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  title: {
+    flex: 1,
+    fontSize: 16,
+    color: 'white',
+  },
   controlBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    alignContent: 'center',
     gap: 4,
   },
   consigneControlBox: {
     minWidth: 70,
     alignItems: 'center',
   },
-  consigneControlLabel: {
+  secondaryLabel: {
     fontSize: 11,
     color: '#9BA1A6',
   },
@@ -176,7 +177,7 @@ const thermostatStyles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: Colors.domoticz.color,
-    textAlign: "right",
+    textAlign: 'right',
   },
   measuredRow: {
     flexDirection: 'row',
@@ -196,21 +197,10 @@ const thermostatStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
   },
-  libelleBox: {
-    flex: 1,
-  },
-  measuredLabel: {
-    fontSize: 12,
-    color: '#9BA1A6',
-  },
   measuredValue: {
     fontSize: 12,
     color: '#d5d5d5',
     fontWeight: 'bold',
-  },
-  consigneLabel: {
-    fontSize: 12,
-    color: '#9BA1A6',
   },
   consigneValue: {
     fontSize: 12,
