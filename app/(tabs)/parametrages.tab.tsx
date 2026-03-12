@@ -47,7 +47,7 @@ export default function TabDomoticzParametres(): JSX.Element {
           <ThemedText style={aboutStyles.value}>v{domoticzConnexionData?.version ?? '?'}</ThemedText>
         </View>
         <View style={aboutStyles.row}>
-          <ThemedText style={aboutStyles.label}>Statut détaillé</ThemedText>
+          <ThemedText style={aboutStyles.label}>Statut</ThemedText>
           <ThemedText style={[aboutStyles.value, { color: connectionColor }]}>
             {connectionLabel} ({domoticzStatusRaw})
           </ThemedText>
