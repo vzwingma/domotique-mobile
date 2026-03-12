@@ -195,6 +195,28 @@ describe('paramList.component — labels Mode (encodage)', () => {
     expect(getByText('Été')).toBeTruthy();
   });
 
+  it('affiche "Été" pour levelName "Été" (accentué) d\'un paramètre Mode', () => {
+    const param = makeParameter({
+      name: 'Mode',
+      type: DomoticzDeviceType.PARAMETRE,
+      levelNames: ['Hiver', 'Été'],
+      level: 0,
+    });
+    const { getByText } = renderParam(param);
+    expect(getByText('Été')).toBeTruthy();
+  });
+
+  it('affiche "Été" pour levelName "ete" (minuscules) d\'un paramètre Mode', () => {
+    const param = makeParameter({
+      name: 'Mode',
+      type: DomoticzDeviceType.PARAMETRE,
+      levelNames: ['Hiver', 'ete'],
+      level: 0,
+    });
+    const { getByText } = renderParam(param);
+    expect(getByText('Été')).toBeTruthy();
+  });
+
   it("n'affiche pas \"Ete\" brut pour un paramètre Mode", () => {
     const param = makeParameter({
       name: 'Mode',
