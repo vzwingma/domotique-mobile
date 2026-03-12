@@ -23,7 +23,6 @@ export const ViewBlindDevice: React.FC<ViewBlindDeviceProps> = ({ device }) => {
   const { domoticzDevicesData, setDomoticzDevicesData } = useContext(DomoticzContext)!;
 
   const isDimmable = device.switchType === DomoticzSwitchType.SLIDER;
-  const sliderVisible = isDimmable;
   const statusLabel = getStatusLabel(device, nextValue, flagLabel);
   const isPrimaryActionActive = device.status !== 'Off' && device.level > 0;
 
@@ -37,7 +36,7 @@ export const ViewBlindDevice: React.FC<ViewBlindDeviceProps> = ({ device }) => {
     </PrimaryIconAction>
   );
 
-  const sliderContent = isDimmable
+  const sliderComponent = isDimmable
     ? (
       <Slider
         disabled={!device.isActive}
@@ -53,9 +52,7 @@ export const ViewBlindDevice: React.FC<ViewBlindDeviceProps> = ({ device }) => {
         }}
       />
     )
-    : <Slider disabled style={stylesListsDevices.sliderDisabled} />;
-
-  const sliderComponent = sliderVisible ? sliderContent : null;
+    : null;
 
   const summary = device.isGroup
     ? getBlindGroupSummary(device, domoticzDevicesData)

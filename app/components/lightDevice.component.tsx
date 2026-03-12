@@ -23,7 +23,6 @@ export const ViewLightDevice: React.FC<ViewLightDeviceProps> = ({ device }) => {
   const { domoticzDevicesData, setDomoticzDevicesData } = useContext(DomoticzContext)!;
 
   const isDimmable = device.switchType === DomoticzSwitchType.SLIDER;
-  const sliderVisible = isDimmable;
   const statusLabel = getStatusLabel(device, nextValue, flagLabel);
   const isPrimaryActionActive = device.switchType === DomoticzSwitchType.ONOFF
     ? device.status === 'On'
@@ -55,10 +54,7 @@ export const ViewLightDevice: React.FC<ViewLightDeviceProps> = ({ device }) => {
     />
   );
 
-  const disabledSlider = <Slider disabled style={stylesListsDevices.sliderDisabled} />;
-
-  const sliderContent = isDimmable ? dimmableSlider : disabledSlider;
-  const sliderComponent = sliderVisible ? sliderContent : null;
+  const sliderComponent = isDimmable ? dimmableSlider : null;
 
   const summary = device.isGroup
     ? getLightGroupSummary(device, domoticzDevicesData)

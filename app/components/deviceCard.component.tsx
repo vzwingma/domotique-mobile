@@ -104,9 +104,10 @@ const styles = StyleSheet.create({
     color: '#f5c727',
   },
   summary: {
-    marginTop: -8,
+    marginTop: -6,
     fontSize: 12,
     color: '#c8c8c8',
+    marginBottom: -4,
   },
   commandsRow: {
     marginTop: 8,
