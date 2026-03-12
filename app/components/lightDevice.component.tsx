@@ -80,9 +80,9 @@ export const ViewLightDevice: React.FC<ViewLightDeviceProps> = ({ device }) => {
     );
   }
 
-  const viewBoxStyle = !device.isActive
-    ? stylesListsDevices.viewBoxDisconnected
-    : device.isActive ? stylesListsDevices.viewBox : stylesListsDevices.viewBoxDisabled;
+  const viewBoxStyle = device.isActive
+    ? stylesListsDevices.viewBox
+    : stylesListsDevices.viewBoxDisconnected;
 
   return (
     <View key={device.idx} style={viewBoxStyle}>
@@ -95,9 +95,9 @@ export const ViewLightDevice: React.FC<ViewLightDeviceProps> = ({ device }) => {
             <ThemedText style={{ fontSize: 16, color: getGroupColor(device) }}>{device.name}</ThemedText>
           </View>
           <View style={device.isActive ? stylesListsDevices.valueBox : stylesListsDevices.valueBoxDisconnected}>
-            {!device.isActive
-              ? <DisconnectedState />
-              : <ThemedText numberOfLines={1} style={stylesListsDevices.textLevel}>{statusLabel}</ThemedText>
+            {device.isActive
+              ? <ThemedText numberOfLines={1} style={stylesListsDevices.textLevel}>{statusLabel}</ThemedText>
+              : <DisconnectedState />
             }
           </View>
           {device.isActive && (
@@ -124,12 +124,13 @@ function getLightGroupSummary(device: DomoticzDevice, devices: DomoticzDevice[])
   ).length;
   const connectedCount = connectedMembers.length;
   const mixtePrefix = device.consistantLevel ? '' : 'État mixte — ';
+  const disconnectedPlural = disconnectedCount > 1 ? 's' : '';
   const disconnectedSuffix = disconnectedCount > 0
-    ? ` • ${disconnectedCount} déconnectée${disconnectedCount > 1 ? 's' : ''}`
+    ? ` • ${disconnectedCount} déconnectée${disconnectedPlural}`
     : '';
 
   if (connectedCount === 0) {
-    return `${mixtePrefix}0/${members.length} allumées • ${disconnectedCount} déconnectée${disconnectedCount > 1 ? 's' : ''}`;
+    return `${mixtePrefix}0/${members.length} allumées • ${disconnectedCount} déconnectée${disconnectedPlural}`;
   }
   return `${mixtePrefix}${activeCount}/${connectedCount} allumées${disconnectedSuffix}`;
 }
