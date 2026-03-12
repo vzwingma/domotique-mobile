@@ -33,6 +33,7 @@ export const stylesListsDevices = StyleSheet.create({
     borderColor: '#7f2b2b',
     borderWidth: 1,
     backgroundColor: '#1a1212',
+    opacity: 0.5,
   },
   iconBox: {
     marginRight: 10,

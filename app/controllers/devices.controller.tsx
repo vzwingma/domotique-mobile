@@ -262,8 +262,8 @@ export function getBlindGroupLabel(device: DomoticzDevice): string {
 export function getLightsGroupLabel(device: DomoticzDevice): string {
   device.unit = "";
   if (device.status === DomoticzDeviceStatus.OFF || device.level === 0) return "Éteintes";
-  else if (!device.consistantLevel) return "Mixte";
-  else if (device.level >= 99) return "Allumées";
+  if (!device.consistantLevel) return device.status === DomoticzDeviceStatus.ON ? "Allumées" : "Mixte";
+  if (device.level >= 99) return "Allumées";
   device.unit = "%";
   return device.level + "";
 }

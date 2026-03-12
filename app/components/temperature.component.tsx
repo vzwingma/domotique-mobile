@@ -19,7 +19,7 @@ export const ViewDomoticzTemperature: React.FC<DomoticzTempProps> = ({ temperatu
   const showValue = temperature.isActive && temperature.temp !== null && temperature.temp !== undefined;
 
   return (
-    <View key={temperature.idx} style={temperatureStyles.viewBox}>
+    <View key={temperature.idx} style={temperature.isActive ? temperatureStyles.viewBox : temperatureStyles.viewBoxDisconnected}>
       <View key={temperature.idx} style={temperatureStyles.iconBox}>
         <IconDomoticzTemperature name={getTemperatureIcon(temperature)} color={(temperature.idx === '101' ? "#F8C969" : "white")} size={44} />
       </View>
@@ -56,6 +56,18 @@ const temperatureStyles = StyleSheet.create({
     borderWidth: 1,
     backgroundColor: '#0b0b0b',
     alignItems: 'center',
+  },
+  viewBoxDisconnected: {
+    flexDirection: 'row',
+    height: 66,
+    width: '100%',
+    padding: 10,
+    margin: 1,
+    borderColor: '#7f2b2b',
+    borderWidth: 1,
+    backgroundColor: '#1a1212',
+    alignItems: 'center',
+    opacity: 0.5,
   },
   iconBox: {
     marginRight: 10,

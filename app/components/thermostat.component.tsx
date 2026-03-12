@@ -1,13 +1,12 @@
 import { ThemedText } from "../../components/ThemedText";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import Slider from '@react-native-community/slider';
 import { Colors } from "../enums/Colors";
 import { useContext, useState } from "react";
 import { DomoticzContext } from "../services/DomoticzContextProvider";
 import DomoticzThermostat from "../models/domoticzThermostat.model";
 import IconDomoticzThermostat from "@/components/IconDomoticzThermostat";
 import { DomoticzThermostatLevelValue } from "../enums/DomoticzEnum";
-import { evaluateThermostatPoint, updateThermostatPoint } from "../controllers/thermostats.controller";
+import { updateThermostatPoint } from "../controllers/thermostats.controller";
 import { stylesListsDevices } from "./device.component";
 
 // Définition des propriétés d'un équipement Domoticz
@@ -22,7 +21,6 @@ export type DomoticzThermostatProps = {
  */
 export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ thermostat }: DomoticzThermostatProps) => {
 
-  const [flagLabel, setFlagLabel] = useState<boolean>(false);
   const [nextValue, setNextValue] = useState<number>(thermostat.temp);
   const { setDomoticzThermostatData, domoticzTemperaturesData } = useContext(DomoticzContext)!;
 
@@ -68,7 +66,7 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
               </TouchableOpacity>
               <View style={thermostatStyles.consigneControlBox}>
                 <ThemedText style={thermostatStyles.consigneControlLabel}>Consigne</ThemedText>
-                <ThemedText style={thermostatStyles.textLevel}>{getStatusLabel(thermostat, nextValue, flagLabel)} {thermostat.unit}</ThemedText>
+                <ThemedText style={thermostatStyles.textLevel}>{getStatusLabel(thermostat, nextValue)} {thermostat.unit}</ThemedText>
               </View>
               <TouchableOpacity
                 style={[thermostatStyles.adjustButton, !thermostat.isActive && thermostatStyles.adjustButtonDisabled]}
@@ -95,19 +93,6 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
             </View>
           </View>
         )}
-        <Slider
-          disabled={!thermostat.isActive}
-          style={thermostat.isActive ? stylesListsDevices.slider : stylesListsDevices.sliderDisabled}
-          minimumValue={DomoticzThermostatLevelValue.MIN} value={thermostat.temp} maximumValue={DomoticzThermostatLevelValue.MAX}
-          step={1}
-          minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor={Colors.domoticz.color}
-          onValueChange={(value) => { overrideNextValue(value, setNextValue) }}
-          onResponderStart={() => { setFlagLabel(true) }}
-          onResponderEnd={() => {
-            updateThermostatPoint(thermostat.idx, thermostat, nextValue, setDomoticzThermostatData);
-            setFlagLabel(false);
-          }}
-        />
       </View>
     </View>
   );
@@ -117,19 +102,11 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
 
 
 /**
- * Surcharge de la valeur du slider pour la mettre à jour
+ * Label du statut du thermostat (consigne courante).
  */
-function overrideNextValue(value: number, setNextValue: React.Dispatch<React.SetStateAction<number>>) {
-  setNextValue(evaluateThermostatPoint(value));
-}
-
-/**
- * Label du statut du thermostat (consigne courante ou valeur en cours d'édition).
- */
-function getStatusLabel(device: DomoticzThermostat, nextValue: number, flagLabel: boolean): string {
+function getStatusLabel(device: DomoticzThermostat, nextValue: number): string {
   if (!device.isActive) return "-";
-  if (flagLabel) return "(" + nextValue + ")";
-  return device.temp + "";
+  return nextValue + "";
 }
 
 const thermostatStyles = StyleSheet.create({
@@ -161,10 +138,10 @@ const thermostatStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     alignContent: 'center',
-    gap: 8,
+    gap: 4,
   },
   consigneControlBox: {
-    minWidth: 90,
+    minWidth: 70,
     alignItems: 'center',
   },
   consigneControlLabel: {
@@ -172,11 +149,11 @@ const thermostatStyles = StyleSheet.create({
     color: '#9BA1A6',
   },
   adjustButton: {
-    minWidth: 44,
-    minHeight: 44,
+    minWidth: 36,
+    minHeight: 36,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 22,
+    borderRadius: 18,
     backgroundColor: '#1f1a08',
     borderWidth: 1,
     borderColor: Colors.domoticz.color,

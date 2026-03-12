@@ -47,6 +47,7 @@ export const GroupCard: React.FC<GroupCardProps> = ({
           <ThemedText style={styles.summary}>{summary}</ThemedText>
         </View>
       </View>
+      {commands ? <View style={styles.commandsRow}>{commands}</View> : null}
       {secondaryControl ? <View style={styles.secondaryRow}>{secondaryControl}</View> : null}
     </View>
   );

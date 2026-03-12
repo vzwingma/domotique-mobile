@@ -289,17 +289,13 @@ exports[`GroupCard snapshot actif et déconnecté 2`] = `
                 "paddingHorizontal": 8,
                 "paddingVertical": 4,
               },
-              {
-                "paddingHorizontal": 6,
-                "paddingVertical": 3,
-              },
             ]
           }
         >
           <MaterialCommunityIcons
             color="#ff8a80"
             name="wifi-off"
-            size={13}
+            size={18}
           />
           <Text
             style={
@@ -323,10 +319,6 @@ exports[`GroupCard snapshot actif et déconnecté 2`] = `
                     "fontSize": 12,
                     "fontWeight": "700",
                     "lineHeight": 14,
-                  },
-                  {
-                    "fontSize": 11,
-                    "lineHeight": 13,
                   },
                 ],
               ]
