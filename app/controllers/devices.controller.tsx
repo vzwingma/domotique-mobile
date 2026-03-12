@@ -330,15 +330,9 @@ export function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLa
   if (device.type === DomoticzDeviceType.VOLET) {
     return device.isGroup ? getBlindGroupLabel(device) : getBlindLabel(device);
   }
-
   // T04 — groupes de lumières
-  if (device.isGroup && device.type === DomoticzDeviceType.LUMIERE) {
-    return getLightsGroupLabel(device);
-  }
-
-  // T05 — lumières individuelles
-  if (!device.isGroup && device.type === DomoticzDeviceType.LUMIERE) {
-    return getSingleLightLabel(device);
+  else if (device.type === DomoticzDeviceType.LUMIERE) {
+    return device.isGroup ? getLightsGroupLabel(device) : getSingleLightLabel(device);    
   }
 
   // Comportement par défaut
