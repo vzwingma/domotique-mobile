@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { DisconnectedState } from './disconnectedState.component';
 
-type GroupCardProps = {
+type DeviceCardProps = {
   title: string;
   accentColor: string;
   statusLabel: string;
@@ -15,7 +15,7 @@ type GroupCardProps = {
   secondaryControl?: React.ReactNode;
 };
 
-export const GroupCard: React.FC<GroupCardProps> = ({
+export const DeviceCard: React.FC<DeviceCardProps> = ({
   title,
   accentColor,
   statusLabel,
@@ -112,4 +112,3 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
 });
-

@@ -1,11 +1,11 @@
 import React from 'react';
 import { View } from 'react-native';
 import { render } from '@testing-library/react-native';
-import { GroupCard } from '../groupCard.component';
+import { DeviceCard } from '../deviceCard.component';
 
-function renderGroupCard(overrides: Partial<React.ComponentProps<typeof GroupCard>> = {}) {
+function renderDeviceCard(overrides: Partial<React.ComponentProps<typeof DeviceCard>> = {}) {
   return render(
-    <GroupCard
+    <DeviceCard
       title="Salon"
       accentColor="#f5c727"
       statusLabel="Allumées"
@@ -20,22 +20,22 @@ function renderGroupCard(overrides: Partial<React.ComponentProps<typeof GroupCar
   );
 }
 
-describe('GroupCard', () => {
+describe('DeviceCard', () => {
   it('affiche statut + unité quand le groupe est actif', () => {
-    const { getByText, queryByText } = renderGroupCard();
+    const { getByText, queryByText } = renderDeviceCard();
     expect(getByText('Allumées')).toBeTruthy();
     expect(getByText('%')).toBeTruthy();
     expect(queryByText('Déconnecté')).toBeNull();
   });
 
   it('affiche un état déconnecté lisible quand isActive=false', () => {
-    const { getByText, queryByText } = renderGroupCard({ isActive: false });
+    const { getByText, queryByText } = renderDeviceCard({ isActive: false });
     expect(getByText('Déconnecté')).toBeTruthy();
     expect(queryByText('Allumées')).toBeNull();
   });
 
   it('rend les zones primary/commands/secondary', () => {
-    const { getByTestId } = renderGroupCard();
+    const { getByTestId } = renderDeviceCard();
     expect(getByTestId('primary-action')).toBeTruthy();
     expect(getByTestId('commands-row')).toBeTruthy();
     expect(getByTestId('secondary-control')).toBeTruthy();
@@ -43,7 +43,7 @@ describe('GroupCard', () => {
 
   it('snapshot actif et déconnecté', () => {
     const { toJSON: toJSONActive } = render(
-      <GroupCard
+      <DeviceCard
         title="Salon"
         accentColor="#f5c727"
         statusLabel="Allumées"
@@ -56,7 +56,7 @@ describe('GroupCard', () => {
     );
 
     const { toJSON: toJSONDisconnected } = render(
-      <GroupCard
+      <DeviceCard
         title="Salon"
         accentColor="#f5c727"
         statusLabel="Allumées"
@@ -72,4 +72,3 @@ describe('GroupCard', () => {
     expect(toJSONDisconnected()).toMatchSnapshot();
   });
 });
-

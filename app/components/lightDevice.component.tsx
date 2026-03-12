@@ -7,7 +7,7 @@ import { DomoticzDeviceStatus, DomoticzLightsGroups, DomoticzSwitchType } from '
 import IconDomoticzDevice, { performDevicePrimaryAction } from '@/components/IconDomoticzDevice';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
 import { PrimaryIconAction } from './primaryIconAction.component';
-import { GroupCard } from './groupCard.component';
+import { DeviceCard } from './deviceCard.component';
 import { stylesListsDevices } from './deviceRow.styles';
 
 type ViewLightDeviceProps = {
@@ -60,29 +60,17 @@ export const ViewLightDevice: React.FC<ViewLightDeviceProps> = ({ device }) => {
   const sliderContent = isDimmable ? dimmableSlider : disabledSlider;
   const sliderComponent = sliderVisible ? sliderContent : null;
 
-  if (device.isGroup) {
-    const summary = getLightGroupSummary(device, domoticzDevicesData);
-
-    return (
-      <GroupCard
-        title={device.name}
-        accentColor={getGroupColor(device)}
-        statusLabel={statusLabel}
-        unit={device.unit}
-        summary={summary}
-        isActive={device.isActive}
-        primaryAction={primaryAction}
-        secondaryControl={sliderComponent}
-      />
-    );
-  }
+  const summary = device.isGroup
+    ? getLightGroupSummary(device, domoticzDevicesData)
+    : undefined;
 
   return (
-    <GroupCard
+    <DeviceCard
       title={device.name}
       accentColor={getGroupColor(device)}
       statusLabel={statusLabel}
       unit={device.unit}
+      summary={summary}
       isActive={device.isActive}
       primaryAction={primaryAction}
       secondaryControl={sliderComponent}

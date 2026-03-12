@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`GroupCard snapshot actif et déconnecté 1`] = `
+exports[`DeviceCard snapshot actif et déconnecté 1`] = `
 <View
   style={
     [
@@ -190,7 +190,7 @@ exports[`GroupCard snapshot actif et déconnecté 1`] = `
 </View>
 `;
 
-exports[`GroupCard snapshot actif et déconnecté 2`] = `
+exports[`DeviceCard snapshot actif et déconnecté 2`] = `
 <View
   style={
     [
