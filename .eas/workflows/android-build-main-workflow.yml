@@ -7,12 +7,14 @@ on:
 
 jobs:
   build_android_V:
+    name: Build Android Version V
     type: build
     params:
       platform: android
       profile: previewV
   build_android_C:
     type: build
+    name: Build Android Version C
     after:
       - build_android_V
     params:
