@@ -18,9 +18,12 @@ jest.mock('@/components/IconDomoticzDevice', () => {
   };
 });
 
+const mockIsDeviceOn = jest.fn();
+
 jest.mock('@/app/controllers/devices.controller', () => ({
   getLevel: (...args: any[]) => mockGetLevel(...args),
   getStatusLabel: (...args: any[]) => mockGetStatusLabel(...args),
+  isDeviceOn: (...args: any[]) => mockIsDeviceOn(...args),
 }));
 
 jest.mock('@/app/enums/Colors', () => ({

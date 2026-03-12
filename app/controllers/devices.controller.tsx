@@ -1,7 +1,7 @@
 import callDomoticz from '@/app/services/ClientHTTP.service';
 import { SERVICES_PARAMS, SERVICES_URL } from '@/app/enums/APIconstants';
 import { evaluateGroupLevelConsistency, getDeviceType, sortEquipements, saveFavoritesToStorage, getFavoritesFromStorage } from '@/app/services/DataUtils.service';
-import { DomoticzBlindsGroups, DomoticzBlindsSort, DomoticzDeviceStatus, DomoticzLightsGroups, DomoticzLightsSort, DomoticzSwitchType, DomoticzDeviceType, DomoticzDeviceLevelValue } from '@/app/enums/DomoticzEnum';
+import { DomoticzBlindsGroups, DomoticzBlindsSort, DomoticzDeviceStatus, DomoticzDeviceLabel, DomoticzLightsGroups, DomoticzLightsSort, DomoticzSwitchType, DomoticzDeviceType, DomoticzDeviceLevelValue } from '@/app/enums/DomoticzEnum';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
 import DomoticzFavorites from '../models/domoticzFavorites.model';
@@ -207,6 +207,15 @@ export function getLevel(device: DomoticzDevice): number {
   return device.status === DomoticzDeviceStatus.OFF ? 0.1 : device.level
 }
 
+/**
+ * Détermine si un équipement est actif (allumé ou ouvert).
+ * Un équipement est considéré actif si son statut n'est pas OFF et que son niveau est supérieur à 0.
+ * @param device équipement Domoticz
+ * @returns true si l'équipement est allumé/ouvert
+ */
+export function isDeviceOn(device: DomoticzDevice): boolean {
+  return device.status !== DomoticzDeviceStatus.OFF && device.level > 0.1;
+}
 
 /**
  * Surcharge de la valeur du slider pour la mettre à jour
@@ -239,8 +248,8 @@ export function getEditingLabel(nextValue: number): string {
  */
 export function getBlindLabel(device: DomoticzDevice): string {
   device.unit = "";
-  if (device.status === DomoticzDeviceStatus.OFF) return "Fermé";
-  if (device.status === DomoticzDeviceStatus.ON) return "Ouvert";
+  if (device.status === DomoticzDeviceStatus.OFF) return DomoticzDeviceLabel.BLIND_CLOSED;
+  if (device.status === DomoticzDeviceStatus.ON) return DomoticzDeviceLabel.BLIND_OPEN;
   return device.status;
 }
 
@@ -252,9 +261,9 @@ export function getBlindLabel(device: DomoticzDevice): string {
 export function getBlindGroupLabel(device: DomoticzDevice): string {
   device.unit = "";
 
-  if (device.status === DomoticzDeviceStatus.OFF || device.level <= 0.1) return "Fermés";
-  if (!device.consistantLevel) return device.status === DomoticzDeviceStatus.ON ? "Ouverts" : "Mixte";
-  if (device.level >= 99) return "Ouverts";
+  if (device.status === DomoticzDeviceStatus.OFF || device.level <= 0.1) return DomoticzDeviceLabel.BLIND_CLOSED_GROUP;
+  if (!device.consistantLevel) return device.status === DomoticzDeviceStatus.ON ? DomoticzDeviceLabel.BLIND_OPEN_GROUP : DomoticzDeviceLabel.MIXTE;
+  if (device.level >= 99) return DomoticzDeviceLabel.BLIND_OPEN_GROUP;
   device.unit = "%";
   return device.level + "";
 }
@@ -264,9 +273,9 @@ export function getBlindGroupLabel(device: DomoticzDevice): string {
  */
 export function getLightsGroupLabel(device: DomoticzDevice): string {
   device.unit = "";
-  if (device.status === DomoticzDeviceStatus.OFF || device.level <= 0.1) return "Éteintes";
-  if (!device.consistantLevel) return device.status === DomoticzDeviceStatus.ON ? "Allumées" : "Mixte";
-  if (device.level >= 99) return "Allumées";
+  if (device.status === DomoticzDeviceStatus.OFF || device.level <= 0.1) return DomoticzDeviceLabel.LIGHT_OFF_GROUP;
+  if (!device.consistantLevel) return device.status === DomoticzDeviceStatus.ON ? DomoticzDeviceLabel.LIGHT_ON_GROUP : DomoticzDeviceLabel.MIXTE;
+  if (device.level >= 99) return DomoticzDeviceLabel.LIGHT_ON_GROUP;
   device.unit = "%";
   return device.level + "";
 }
@@ -277,16 +286,16 @@ export function getLightsGroupLabel(device: DomoticzDevice): string {
 export function getSingleLightLabel(device: DomoticzDevice): string {
   if (device.switchType === DomoticzSwitchType.ONOFF) {
     device.unit = "";
-    return device.status === DomoticzDeviceStatus.OFF ? "Éteinte" : "Allumée";
+    return device.status === DomoticzDeviceStatus.OFF ? DomoticzDeviceLabel.LIGHT_OFF : DomoticzDeviceLabel.LIGHT_ON;
   }
   // Variateur (SLIDER)
   if (device.status === DomoticzDeviceStatus.OFF) {
     device.unit = "";
-    return "Éteinte";
+    return DomoticzDeviceLabel.LIGHT_OFF;
   }
   if (!device.consistantLevel) {
     device.unit = "";
-    return "Mixte";
+    return DomoticzDeviceLabel.MIXTE;
   }
   device.unit = "%";
   return device.level + "";
@@ -306,7 +315,7 @@ export function getDefaultLabel(device: DomoticzDevice): string {
   }
   if (!device.consistantLevel) {
     device.unit = "";
-    return "Mixte";
+    return DomoticzDeviceLabel.MIXTE;
   }
   device.unit = "%";
   return device.level + "";

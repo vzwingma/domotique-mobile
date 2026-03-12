@@ -1,9 +1,9 @@
 import React, { useContext, useState } from 'react';
 import Slider from '@react-native-community/slider';
 import DomoticzDevice from '@/app/models/domoticzDevice.model';
-import { getLevel, getStatusLabel, overrideNextValue, updateDeviceLevel } from '../controllers/devices.controller';
+import { getLevel, getStatusLabel, isDeviceOn, overrideNextValue, updateDeviceLevel } from '../controllers/devices.controller';
 import { Colors, getGroupColor } from '../enums/Colors';
-import { DomoticzDeviceStatus, DomoticzBlindsGroups , DomoticzSwitchType } from '../enums/DomoticzEnum';
+import { DomoticzBlindsGroups , DomoticzSwitchType } from '../enums/DomoticzEnum';
 import IconDomoticzDevice, { performDevicePrimaryAction } from '@/components/IconDomoticzDevice';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
 import { PrimaryIconAction } from './primaryIconAction.component';
@@ -24,7 +24,7 @@ export const ViewBlindDevice: React.FC<ViewBlindDeviceProps> = ({ device }) => {
 
   const isDimmable = device.switchType === DomoticzSwitchType.SLIDER;
   const statusLabel = getStatusLabel(device, nextValue, flagLabel);
-  const isPrimaryActionActive = device.status !== 'Off' && device.level > 0;
+  const isPrimaryActionActive = isDeviceOn(device);
 
   const primaryAction = (
     <PrimaryIconAction
@@ -80,7 +80,7 @@ function getBlindGroupSummary(device: DomoticzDevice, devices: DomoticzDevice[])
   if (members.length === 0) return 'Résumé indisponible';
 
   const openedCount = connectedMembers.filter(
-    m => m.status !== DomoticzDeviceStatus.OFF && m.level > 0,
+    m => isDeviceOn(m),
   ).length;
   const connectedCount = connectedMembers.length;
   const mixtePrefix = device.consistantLevel ? '' : 'État mixte — ';

@@ -3,11 +3,11 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
-import { DomoticzDeviceStatus, DomoticzDeviceType, DomoticzSwitchType } from '../enums/DomoticzEnum';
+import { DomoticzDeviceStatus, DomoticzDeviceLabel, DomoticzDeviceType, DomoticzSwitchType } from '../enums/DomoticzEnum';
 import IconDomoticzDevice, { performDevicePrimaryAction } from '@/components/IconDomoticzDevice';
 import { PrimaryIconAction } from './primaryIconAction.component';
 import { Colors, getGroupColor } from '../enums/Colors';
-import { getLevel, getStatusLabel } from '../controllers/devices.controller';
+import { getLevel, getStatusLabel, isDeviceOn } from '../controllers/devices.controller';
 import { DisconnectedState } from './disconnectedState.component';
 
 type FavoriteQuickActionCardProps = {
@@ -21,16 +21,16 @@ type FavoriteQuickActionCardProps = {
 export const FavoriteQuickActionCard: React.FC<FavoriteQuickActionCardProps> = ({ device }) => {
   const { setDomoticzDevicesData } = useContext(DomoticzContext)!;
 
-  const isDeviceOn = device.status !== DomoticzDeviceStatus.OFF && device.level > 0;
+  const deviceOn = isDeviceOn(device);
   const statusLabel = getStatusLabel(device, getLevel(device), false);
   
-  const voletActionLabel = isDeviceOn ? 'Fermer' : 'Ouvrir';
-  const lightActionLabel = isDeviceOn ? 'Éteindre' : 'Allumer';
+  const voletActionLabel = deviceOn ? DomoticzDeviceLabel.BLIND_CLOSE_ACTION : DomoticzDeviceLabel.BLIND_OPEN_ACTION;
+  const lightActionLabel = deviceOn ? DomoticzDeviceLabel.LIGHT_OFF_ACTION : DomoticzDeviceLabel.LIGHT_ON_ACTION;
   const actionLabel = device.type === DomoticzDeviceType.VOLET ? voletActionLabel : lightActionLabel;
 
   const isPrimaryActionActive = device.switchType === DomoticzSwitchType.ONOFF
     ? device.status === DomoticzDeviceStatus.ON
-    : isDeviceOn;
+    : deviceOn;
 
   const triggerPrimaryAction = () => performDevicePrimaryAction(device, setDomoticzDevicesData);
 

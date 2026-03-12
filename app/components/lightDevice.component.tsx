@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import Slider from '@react-native-community/slider';
 import DomoticzDevice from '@/app/models/domoticzDevice.model';
-import { getLevel, getStatusLabel, overrideNextValue, updateDeviceLevel } from '../controllers/devices.controller';
+import { getLevel, getStatusLabel, isDeviceOn, overrideNextValue, updateDeviceLevel } from '../controllers/devices.controller';
 import { Colors, getGroupColor } from '../enums/Colors';
 import { DomoticzDeviceStatus, DomoticzLightsGroups, DomoticzSwitchType } from '../enums/DomoticzEnum';
 import IconDomoticzDevice, { performDevicePrimaryAction } from '@/components/IconDomoticzDevice';
@@ -25,8 +25,8 @@ export const ViewLightDevice: React.FC<ViewLightDeviceProps> = ({ device }) => {
   const isDimmable = device.switchType === DomoticzSwitchType.SLIDER;
   const statusLabel = getStatusLabel(device, nextValue, flagLabel);
   const isPrimaryActionActive = device.switchType === DomoticzSwitchType.ONOFF
-    ? device.status === 'On'
-    : device.status !== 'Off' && device.level > 0;
+    ? device.status === DomoticzDeviceStatus.ON
+    : isDeviceOn(device);
 
   const primaryAction = (
     <PrimaryIconAction
@@ -82,7 +82,7 @@ function getLightGroupSummary(device: DomoticzDevice, devices: DomoticzDevice[])
   if (members.length === 0) return 'Résumé indisponible';
 
   const activeCount = connectedMembers.filter(
-    m => m.status !== DomoticzDeviceStatus.OFF && m.level > 0,
+    m => isDeviceOn(m),
   ).length;
   const connectedCount = connectedMembers.length;
   const mixtePrefix = device.consistantLevel ? '' : 'État mixte — ';
