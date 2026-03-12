@@ -1,0 +1,253 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ConnectionBadge - affichage des 4 états snapshot state="connecte" 1`] = `
+<View
+  accessibilityLabel="Statut de connexion : Connecté"
+  accessibilityRole="text"
+  accessible={true}
+  style={
+    [
+      {
+        "alignItems": "center",
+        "backgroundColor": "#151718",
+        "borderColor": "#9BA1A6",
+        "borderRadius": 999,
+        "borderWidth": 1,
+        "flexDirection": "row",
+        "gap": 4,
+        "paddingHorizontal": 8,
+        "paddingVertical": 4,
+      },
+      {
+        "borderColor": "#4caf50",
+      },
+    ]
+  }
+>
+  <MaterialCommunityIcons
+    color="#4caf50"
+    name="check-circle-outline"
+    size={15}
+  />
+  <Text
+    style={
+      [
+        {
+          "color": "#ECEDEE",
+        },
+        {
+          "fontSize": 16,
+          "lineHeight": 24,
+        },
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        [
+          {
+            "color": "#ECEDEE",
+            "fontSize": 12,
+            "lineHeight": 14,
+          },
+          {
+            "color": "#4caf50",
+          },
+        ],
+      ]
+    }
+  >
+    Connecté
+  </Text>
+</View>
+`;
+
+exports[`ConnectionBadge - affichage des 4 états snapshot state="deconnecte" 1`] = `
+<View
+  accessibilityLabel="Statut de connexion : Déconnecté"
+  accessibilityRole="text"
+  accessible={true}
+  style={
+    [
+      {
+        "alignItems": "center",
+        "backgroundColor": "#151718",
+        "borderColor": "#9BA1A6",
+        "borderRadius": 999,
+        "borderWidth": 1,
+        "flexDirection": "row",
+        "gap": 4,
+        "paddingHorizontal": 8,
+        "paddingVertical": 4,
+      },
+      {
+        "borderColor": "#f44336",
+      },
+    ]
+  }
+>
+  <MaterialCommunityIcons
+    color="#f44336"
+    name="wifi-off"
+    size={15}
+  />
+  <Text
+    style={
+      [
+        {
+          "color": "#ECEDEE",
+        },
+        {
+          "fontSize": 16,
+          "lineHeight": 24,
+        },
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        [
+          {
+            "color": "#ECEDEE",
+            "fontSize": 12,
+            "lineHeight": 14,
+          },
+          {
+            "color": "#f44336",
+          },
+        ],
+      ]
+    }
+  >
+    Déconnecté
+  </Text>
+</View>
+`;
+
+exports[`ConnectionBadge - affichage des 4 états snapshot state="erreur" 1`] = `
+<View
+  accessibilityLabel="Statut de connexion : Erreur"
+  accessibilityRole="text"
+  accessible={true}
+  style={
+    [
+      {
+        "alignItems": "center",
+        "backgroundColor": "#151718",
+        "borderColor": "#9BA1A6",
+        "borderRadius": 999,
+        "borderWidth": 1,
+        "flexDirection": "row",
+        "gap": 4,
+        "paddingHorizontal": 8,
+        "paddingVertical": 4,
+      },
+      {
+        "borderColor": "#ff8a65",
+      },
+    ]
+  }
+>
+  <MaterialCommunityIcons
+    color="#ff8a65"
+    name="alert-circle-outline"
+    size={15}
+  />
+  <Text
+    style={
+      [
+        {
+          "color": "#ECEDEE",
+        },
+        {
+          "fontSize": 16,
+          "lineHeight": 24,
+        },
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        [
+          {
+            "color": "#ECEDEE",
+            "fontSize": 12,
+            "lineHeight": 14,
+          },
+          {
+            "color": "#ff8a65",
+          },
+        ],
+      ]
+    }
+  >
+    Erreur
+  </Text>
+</View>
+`;
+
+exports[`ConnectionBadge - affichage des 4 états snapshot state="synchronisation" 1`] = `
+<View
+  accessibilityLabel="Statut de connexion : Synchronisation"
+  accessibilityRole="text"
+  accessible={true}
+  style={
+    [
+      {
+        "alignItems": "center",
+        "backgroundColor": "#151718",
+        "borderColor": "#9BA1A6",
+        "borderRadius": 999,
+        "borderWidth": 1,
+        "flexDirection": "row",
+        "gap": 4,
+        "paddingHorizontal": 8,
+        "paddingVertical": 4,
+      },
+      {
+        "borderColor": "#f5c727",
+      },
+    ]
+  }
+>
+  <MaterialCommunityIcons
+    color="#f5c727"
+    name="sync"
+    size={15}
+  />
+  <Text
+    style={
+      [
+        {
+          "color": "#ECEDEE",
+        },
+        {
+          "fontSize": 16,
+          "lineHeight": 24,
+        },
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        [
+          {
+            "color": "#ECEDEE",
+            "fontSize": 12,
+            "lineHeight": 14,
+          },
+          {
+            "color": "#f5c727",
+          },
+        ],
+      ]
+    }
+  >
+    Synchronisation
+  </Text>
+</View>
+`;

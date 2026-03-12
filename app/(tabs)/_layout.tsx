@@ -8,7 +8,7 @@ import { Tabs } from '../enums/TabsEnums';
 import { TabBarItems } from '@/components/navigation/TabBarItem';
 import DomoticzConfig from '../models/domoticzConfig.model';
 import { ThemedText } from '@/components/ThemedText';
-import { DomoticzStatus, DomoticzDeviceType } from '../enums/DomoticzEnum';
+import { DomoticzDeviceType } from '../enums/DomoticzEnum';
 import HomeScreen from '.';
 import TabDomoticzTemperatures from './temperatures.tab';
 import { loadDomoticzDevices } from '../controllers/devices.controller';
@@ -19,6 +19,7 @@ import { DomoticzContext } from '../services/DomoticzContextProvider';
 import { loadDomoticzThermostats } from '../controllers/thermostats.controller';
 import TabDomoticzParametres from './parametrages.tab';
 import { loadDomoticzParameters } from '../controllers/parameters.controller';
+import { mapDomoticzStatusToConnectionBadgeState } from '@/components/ConnectionBadge';
 
 /**
  * Composant racine de l'application.
@@ -71,11 +72,14 @@ export default function TabLayout() {
   /**
    * Récupère le statut de connexion à Domoticz
    *
-   * @returns Le statut de connexion suivant l'énumération DomoticzStatus
+   * @returns Le statut de connexion pour le badge du header
    */
-  function getDomoticzStatus(): DomoticzStatus {
-    if (isLoading) return DomoticzStatus.INCONNU;
-    return domoticzConnexionData?.status === "OK" ? DomoticzStatus.CONNECTE : DomoticzStatus.DECONNECTE;
+  function getConnectionBadgeState() {
+    return mapDomoticzStatusToConnectionBadgeState({
+      status: domoticzConnexionData?.status,
+      isLoading,
+      hasError: error !== null,
+    });
   }
 
 
@@ -98,7 +102,7 @@ export default function TabLayout() {
       <ParallaxScrollView
         headerImage={getHeaderIcon(tab)}
         headerTitle={tab.toString()}
-        connexionStatus={getDomoticzStatus()}
+        connectionState={getConnectionBadgeState()}
         setRefreshing={setRefreshing}>
 
         <View style={tabStyles.titleContainer}>

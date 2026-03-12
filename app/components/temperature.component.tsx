@@ -3,6 +3,7 @@ import DomoticzTemperature from "../models/domoticzTemperature.model";
 import { ThemedText } from "@/components/ThemedText";
 import { StyleSheet, View } from "react-native";
 import { Colors } from "../enums/Colors";
+import { DisconnectedState } from "./disconnectedState.component";
 
 // Définition des propriétés d'une température Domoticz
 type DomoticzTempProps = {
@@ -14,12 +15,26 @@ type DomoticzTempProps = {
 * Composant pour afficher une mesure de température Domoticz.
 */
 export const ViewDomoticzTemperature: React.FC<DomoticzTempProps> = ({ temperature }) => {
-  // T06/T14 — label inactif ou valeur inconnue
+  // T06/T14 — valeur disponible uniquement si actif et temp non-nulle
   const showValue = temperature.isActive && temperature.temp !== null && temperature.temp !== undefined;
-  const inactiveLabel = temperature.isActive ? "Inconnu" : "Déconnecté";
+
+  const humidityElement = temperature.humidity
+    ? <ThemedText style={temperatureStyles.textLevel}>{temperature.humidity}%</ThemedText>
+    : null;
+
+  const valueContent = showValue ? (
+    <>
+      <ThemedText style={temperatureStyles.textLevel}>{temperature.temp}°C</ThemedText>
+      {humidityElement}
+    </>
+  ) : (
+    <ThemedText style={temperatureStyles.textLevel}>Inconnu</ThemedText>
+  );
+
+  const renderValues = temperature.isActive ? valueContent : <DisconnectedState />;
 
   return (
-    <View key={temperature.idx} style={temperature.isActive ? temperatureStyles.viewBox : temperatureStyles.viewBoxDisabled}>
+    <View key={temperature.idx} style={temperature.isActive ? temperatureStyles.viewBox : temperatureStyles.viewBoxDisconnected}>
       <View key={temperature.idx} style={temperatureStyles.iconBox}>
         <IconDomoticzTemperature name={getTemperatureIcon(temperature)} color={(temperature.idx === '101' ? "#F8C969" : "white")} size={44} />
       </View>
@@ -27,16 +42,7 @@ export const ViewDomoticzTemperature: React.FC<DomoticzTempProps> = ({ temperatu
         <ThemedText style={temperatureStyles.textName}>{temperature.name}</ThemedText>
       </View>
       <View style={temperatureStyles.valuesBox}>
-        {showValue ? (
-          <>
-            <ThemedText style={temperatureStyles.textLevel}>{temperature.temp}°C</ThemedText>
-            {temperature.humidity
-              ? <ThemedText style={temperatureStyles.textLevel}>{temperature.humidity}%</ThemedText>
-              : null}
-          </>
-        ) : (
-          <ThemedText style={temperatureStyles.textLevel}>{inactiveLabel}</ThemedText>
-        )}
+        {renderValues}
       </View>
     </View>
   );
@@ -55,14 +61,17 @@ const temperatureStyles = StyleSheet.create({
     backgroundColor: '#0b0b0b',
     alignItems: 'center',
   },
-  viewBoxDisabled: {
+  viewBoxDisconnected: {
     flexDirection: 'row',
     height: 66,
     width: '100%',
     padding: 10,
     margin: 1,
-    opacity: 0.2,
+    borderColor: '#7f2b2b',
+    borderWidth: 1,
+    backgroundColor: '#1a1212',
     alignItems: 'center',
+    opacity: 0.5,
   },
   iconBox: {
     marginRight: 10,

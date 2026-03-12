@@ -5,7 +5,7 @@ import { getGroupColor } from "@/app/enums/Colors";
 import { DomoticzDeviceProps } from "@/app/components/device.component";
 import { onClickDeviceIcon } from "@/app/controllers/devices.controller";
 import { Alert, Image, ImageSourcePropType, Pressable } from "react-native";
-import { useContext } from "react";
+import { Dispatch, SetStateAction, useContext } from "react";
 import { DomoticzContext } from "@/app/services/DomoticzContextProvider";
 
 
@@ -13,25 +13,52 @@ import { DomoticzContext } from "@/app/services/DomoticzContextProvider";
  * Icone d'un équipement Domoticz, suivant le type et le statut de l'équipement.
  *  >Icone du volet : https://oblador.github.io/react-native-vector-icons/ 
  */
-export const IconDomoticzDevice : React.FC<DomoticzDeviceProps> = ({ device } : DomoticzDeviceProps) => {
+type IconDomoticzDeviceInternalProps = DomoticzDeviceProps & {
+  interactive?: boolean;
+};
+
+export const IconDomoticzDevice : React.FC<IconDomoticzDeviceInternalProps> = ({ device, interactive = true } : IconDomoticzDeviceInternalProps) => {
   const { setDomoticzDevicesData } = useContext(DomoticzContext)!;
 
   switch (device.type) {
     case DomoticzDeviceType.LUMIERE:
       return <MaterialCommunityIcons name={getLightIcon(device)}
-                                 size={60}
+                                 size={58}
                                  color={getGroupColor(device)}
-                                 onPress={() => handleLumierePress(device, () => onClickDeviceIcon(device, setDomoticzDevicesData)) }/>
+                                 onPress={interactive ? () => performDevicePrimaryAction(device, setDomoticzDevicesData) : undefined}/>
 
     case DomoticzDeviceType.VOLET:
-      return <Pressable onPress={() => handleVoletPress(device, () => onClickDeviceIcon(device, setDomoticzDevicesData)) }>
+      if (!interactive) {
+        return <Image source={getVoletIcon(device)}
+                      style={{ width: 40, height: 40, tintColor: getGroupColor(device)}} />
+      }
+      return <Pressable onPress={() => performDevicePrimaryAction(device, setDomoticzDevicesData) }>
                 <Image source={getVoletIcon(device)} 
-                       style={{ width: 60, height: 60, tintColor: getGroupColor(device), cursor: 'pointer'}} />
+                       style={{ width: 40, height: 40, tintColor: getGroupColor(device), cursor: 'pointer'}} />
               </Pressable>
 
     default:
       return <></>;
   }
+}
+
+export function performDevicePrimaryAction(
+  device: DomoticzDevice,
+  setDomoticzDevicesData: Dispatch<SetStateAction<DomoticzDevice[]>>,
+): void {
+  const action = () => onClickDeviceIcon(device, setDomoticzDevicesData);
+
+  if (device.type === DomoticzDeviceType.LUMIERE) {
+    handleLumierePress(device, action);
+    return;
+  }
+
+  if (device.type === DomoticzDeviceType.VOLET) {
+    handleVoletPress(device, action);
+    return;
+  }
+
+  action();
 }
 
 /**

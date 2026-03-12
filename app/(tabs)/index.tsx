@@ -1,10 +1,15 @@
 
 import DomoticzDevice from '../models/domoticzDevice.model';
-import { ViewDomoticzDevice } from '../components/device.component';
 import { getFavoritesFromStorage, sortFavorites as sortFavoritesDevices } from '../services/DataUtils.service';
 import React, { JSX, useContext, useEffect, useState } from 'react';
 import DomoticzFavorites from '../models/domoticzFavorites.model';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
+import { FavoriteQuickActionCard } from '../components/favoriteQuickActionCard.component';
+import { ThemedText } from '@/components/ThemedText';
+import { View } from 'react-native';
+
+// Règle métier explicite Favoris (F01-01) : l'écran rapide n'affiche jamais plus de 8 éléments.
+const FAVORITES_MAX_QUICK_ACTIONS = 8;
 
 /**
  * Ecran d'accueil avec les équipements favoris
@@ -25,9 +30,7 @@ export default function HomeScreen() {
 
 
   return (
-    <>
-      {getListFavoritesComponents(favorites)}
-    </>
+    <>{getListFavoritesComponents(favorites)}</>
   );
 
 }
@@ -76,15 +79,26 @@ function getListFavoritesComponents(favoritesData: DomoticzDevice[]): JSX.Elemen
     return items;
   }
   else {
-    favoritesData
-    // On ne garde que les 8 premiers favoris actifs
-      .filter((favDevice: DomoticzDevice) => favDevice.isActive)
-      .slice(0, 6)
+    const activeFavorites = favoritesData.filter((favDevice: DomoticzDevice) => favDevice.isActive);
+    const hasMoreFavoritesThanVisibleLimit = activeFavorites.length > FAVORITES_MAX_QUICK_ACTIONS;
+    const visibleFavorites = activeFavorites
+      .slice(0, FAVORITES_MAX_QUICK_ACTIONS)
       // Et on les retrie suivant la mise en page
-      .sort((favDeviceA: DomoticzDevice, favDeviceB: DomoticzDevice) => sortFavoritesDevices(favDeviceA, favDeviceB))
-      .forEach((fav: DomoticzDevice) => {
-        items.push(<ViewDomoticzDevice key={fav.idx} device={fav}/>);
-      });
+      .sort((favDeviceA: DomoticzDevice, favDeviceB: DomoticzDevice) => sortFavoritesDevices(favDeviceA, favDeviceB));
+
+    visibleFavorites.forEach((fav: DomoticzDevice) => {
+      items.push(<FavoriteQuickActionCard key={fav.idx} device={fav} />);
+    });
+
+    if (hasMoreFavoritesThanVisibleLimit) {
+      items.push(
+        <View key="favorites-limit-info" style={{ width: '100%', paddingVertical: 4 }}>
+          <ThemedText style={{ textAlign: 'center', fontSize: 12, color: '#9BA1A6' }}>
+            Seuls les {FAVORITES_MAX_QUICK_ACTIONS} favoris les plus utilisés sont affichés.
+          </ThemedText>
+        </View>
+      );
+    }
   }
   return items;
 }

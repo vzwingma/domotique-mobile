@@ -1,4 +1,4 @@
-import { loadDomoticzDevices, onClickDeviceIcon, updateDeviceLevel, addActionForFavorite, refreshEquipementState, getBlindGroupLabel, getStatusLabel } from '../devices.controller';
+import { loadDomoticzDevices, onClickDeviceIcon, updateDeviceLevel, addActionForFavorite, refreshEquipementState, getBlindGroupLabel, getLightsGroupLabel, getStatusLabel } from '../devices.controller';
 import callDomoticz from '@/app/services/ClientHTTP.service';
 import { getFavoritesFromStorage, saveFavoritesToStorage } from '@/app/services/DataUtils.service';
 import { DomoticzDeviceType, DomoticzDeviceStatus, DomoticzSwitchType } from '@/app/enums/DomoticzEnum';
@@ -303,13 +303,13 @@ describe('refreshEquipementState', () => {
 
 describe('getBlindGroupLabel — libellé groupe de volets', () => {
     it('retourne "Mixte" quand consistantLevel=false', () => {
-        const device = makeDevice({ type: DomoticzDeviceType.VOLET, isGroup: true, consistantLevel: false, level: 50 });
+        const device = makeDevice({ type: DomoticzDeviceType.VOLET, isGroup: true, consistantLevel: false, level: 50, status: '40 %' as DomoticzDeviceStatus });
         expect(getBlindGroupLabel(device)).toBe('Mixte');
     });
 
-    it('retourne "Fermé" quand level=0', () => {
+    it('retourne "Fermés" quand level=0', () => {
         const device = makeDevice({ type: DomoticzDeviceType.VOLET, isGroup: true, consistantLevel: true, level: 0 });
-        expect(getBlindGroupLabel(device)).toBe('Fermé');
+        expect(getBlindGroupLabel(device)).toBe('Fermés');
     });
 
     it('retourne "Ouvert" quand level=100', () => {
@@ -324,15 +324,54 @@ describe('getBlindGroupLabel — libellé groupe de volets', () => {
     });
 });
 
+describe('getLightsGroupLabel — libellé groupe lumières', () => {
+    it('retourne "Allumées" pour un groupe non cohérent mais status=On et level>0 (mix dimmer/switch)', () => {
+        const device = makeDevice({
+            type: DomoticzDeviceType.LUMIERE,
+            isGroup: true,
+            consistantLevel: false,
+            status: DomoticzDeviceStatus.ON,
+            level: 40,
+        });
+        expect(getLightsGroupLabel(device)).toBe('Allumées');
+    });
+
+    it('retourne "Éteintes" pour un groupe status=Off', () => {
+        const device = makeDevice({
+            type: DomoticzDeviceType.LUMIERE,
+            isGroup: true,
+            status: DomoticzDeviceStatus.OFF,
+            level: 0,
+        });
+        expect(getLightsGroupLabel(device)).toBe('Éteintes');
+    });
+
+    it('retourne "Mixte" pour un groupe non cohérent sans status On explicite', () => {
+        const device = makeDevice({
+            type: DomoticzDeviceType.LUMIERE,
+            isGroup: true,
+            consistantLevel: false,
+            status: '40 %' as DomoticzDeviceStatus,
+            level: 40,
+        });
+        expect(getLightsGroupLabel(device)).toBe('Mixte');
+    });
+});
+
 describe('getStatusLabel — volets groupes via getBlindGroupLabel', () => {
-    it('retourne "Mixte" pour un groupe de volets avec niveaux incohérents', () => {
+    it('retourne "Ouverts" pour un groupe de volets avec niveaux incohérents et status=On', () => {
         const device = makeDevice({ type: DomoticzDeviceType.VOLET, isGroup: true, consistantLevel: false, level: 50, isActive: true });
+        expect(getStatusLabel(device, 50, false)).toBe('Ouverts');
+    });
+
+    it('retourne "Mixte" pour un groupe de volets avec niveaux incohérents et status non-On', () => {
+        const device = makeDevice({ type: DomoticzDeviceType.VOLET, isGroup: true, consistantLevel: false, level: 50, isActive: true, status: '40 %' as DomoticzDeviceStatus });
         expect(getStatusLabel(device, 50, false)).toBe('Mixte');
     });
 
-    it('retourne "Fermé" pour un groupe de volets fermés (level=0)', () => {
+    it('retourne "Fermés" pour un groupe de volets fermés (level=0)', () => {
         const device = makeDevice({ type: DomoticzDeviceType.VOLET, isGroup: true, consistantLevel: true, level: 0, isActive: true });
-        expect(getStatusLabel(device, 0, false)).toBe('Fermé');
+        expect(getStatusLabel(device, 0, false)).toBe('Fermés');
     });
 
     it('retourne "Fermé" pour un volet individuel status=Off', () => {

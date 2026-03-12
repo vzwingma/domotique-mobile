@@ -8,7 +8,11 @@ import { ViewDomoticzParamList } from '../components/paramList.component';
 import { ThemedText } from '@/components/ThemedText';
 import Constants from 'expo-constants';
 import { Colors } from '../enums/Colors';
-import { DomoticzStatus } from '../enums/DomoticzEnum';
+import {
+  getConnectionBadgeColor,
+  getConnectionBadgeLabel,
+  mapDomoticzStatusToConnectionBadgeState,
+} from '@/components/ConnectionBadge';
 
 /**
  * Composant de l'écran Maison : paramètres + section À propos
@@ -16,15 +20,20 @@ import { DomoticzStatus } from '../enums/DomoticzEnum';
 export default function TabDomoticzParametres(): JSX.Element {
   const { domoticzParametersData, domoticzConnexionData } = useContext(DomoticzContext)!;
   const appVersion = Constants.expoConfig?.version ?? 'inconnue';
-
-  const isConnected = domoticzConnexionData?.status === "OK";
-  const connexionStatus = isConnected ? DomoticzStatus.CONNECTE : DomoticzStatus.DECONNECTE;
+  const connectionState = mapDomoticzStatusToConnectionBadgeState({
+    status: domoticzConnexionData?.status,
+  });
+  const connectionLabel = getConnectionBadgeLabel(connectionState);
+  const connectionColor = getConnectionBadgeColor(connectionState);
+  const domoticzStatusRaw = domoticzConnexionData?.status ?? 'non disponible';
 
   return (
     <>
-      {domoticzParametersData.map((item) => (
-        <ViewDomoticzParamList key={item.idx} parametre={item} />
-      ))}
+      <View style={sectionStyles.section}>
+        {domoticzParametersData.map((item) => (
+          <ViewDomoticzParamList key={item.idx} parametre={item} />
+        ))}
+      </View>
 
       {/* T03 — Section À propos */}
       <View style={aboutStyles.section}>
@@ -38,11 +47,9 @@ export default function TabDomoticzParametres(): JSX.Element {
           <ThemedText style={aboutStyles.value}>v{domoticzConnexionData?.version ?? '?'}</ThemedText>
         </View>
         <View style={aboutStyles.row}>
-          <ThemedText style={aboutStyles.label}>Statut de connexion</ThemedText>
-          <ThemedText style={[aboutStyles.value, {
-            color: connexionStatus === DomoticzStatus.CONNECTE ? '#4caf50' : '#f44336'
-          }]}>
-            {connexionStatus === DomoticzStatus.CONNECTE ? 'Connecté' : 'Déconnecté'}
+          <ThemedText style={aboutStyles.label}>Statut détaillé</ThemedText>
+          <ThemedText style={[aboutStyles.value, { color: connectionColor }]}>
+            {connectionLabel} ({domoticzStatusRaw})
           </ThemedText>
         </View>
       </View>
@@ -50,9 +57,23 @@ export default function TabDomoticzParametres(): JSX.Element {
   );
 }
 
+const sectionStyles = StyleSheet.create({
+  section: {
+    width: '100%',
+    gap: 10,
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: Colors.dark.text,
+    marginTop: 4,
+    marginBottom: 6,
+  },
+});
+
 const aboutStyles = StyleSheet.create({
   section: {
-    marginTop: 10,
+    marginTop: 12,
     padding: 12,
     backgroundColor: '#1a1c1d',
     borderRadius: 8,

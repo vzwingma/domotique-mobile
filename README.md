@@ -74,7 +74,7 @@ Toutes les requêtes HTTP sont centralisées dans `app/services/ClientHTTP.servi
 
 ```
 app/
-  (tabs)/       # Écrans principaux : accueil, lumières, volets, températures, maison
+  (tabs)/       # Écrans principaux : favoris, lumières/volets, températures, maison
   components/   # Composants de niveau écran (*.component.tsx)
   controllers/  # Pont entre l'UI et les services (*.controller.tsx)
   services/     # Client HTTP, fournisseur de contexte (*.service.ts)
@@ -91,10 +91,13 @@ assets/         # Polices, icônes, images
 
 ## Fonctionnalités
 
+- Navigation par 5 onglets (`Favoris`, `Lumières`, `Volets`, `Températures`, `Maison`) avec header unifié (icône d'onglet + titre + badge de connexion)
+- Badge de connexion unifié sur tous les onglets avec 4 états UI canoniques : `Connecté`, `Synchronisation`, `Déconnecté`, `Erreur`
+- Écran **Favoris** orienté actions rapides : cartes 1 tap (action principale + bouton), **sans slider**, limité aux **8 favoris actifs** les plus utilisés
 - Affichage et contrôle des lumières (on/off, variateur) avec labels métier "Allumé"/"Éteint" et état synthétique pour les groupes ("Éteintes" / "Allumées" / "Mixte" / niveau%)
 - Gestion des volets/stores (ouverture/fermeture via slider et clic icône) avec labels "Ouvert"/"Fermé" ; confirmation modale pour les actions sur groupe de volets (nom contenant "Tous")
-- Consultation des capteurs de température avec indicateurs "Déconnectée"/"Inconnu" pour les capteurs inactifs
-- Contrôle des thermostats (point de consigne ajustable par paliers de ±0,5°C, affichage distinct mesure vs consigne)
+- Consultation des capteurs de température avec indicateurs "Déconnecté"/"Inconnu" pour les capteurs inactifs
+- Contrôle des thermostats (point de consigne ajustable par paliers de ±0,5°C, affichage distinct **Mesure / Consigne**)
 - Gestion des groupes d'équipements (indicateur "Mixte" pour niveaux incohérents)
 - Écran **Maison** : paramètres interactifs (présence, phase) via chips segmentés + section "À propos" (version app, version serveur Domoticz, statut connexion)
 

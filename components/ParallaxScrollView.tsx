@@ -9,16 +9,15 @@ import Animated, {
 
 import React from 'react';
 import { Colors } from '@/app/enums/Colors';
-import { ThemedText } from './ThemedText';
-import { DomoticzStatus } from '@/app/enums/DomoticzEnum';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { AppHeader } from './AppHeader';
+import type { ConnectionBadgeState } from './ConnectionBadge';
 
 const HEADER_HEIGHT = 70;
 
 type Props = PropsWithChildren<{
   headerImage: ReactElement;
   headerTitle: string;
-  connexionStatus?: DomoticzStatus;
+  connectionState: ConnectionBadgeState;
   setRefreshing: React.Dispatch<React.SetStateAction<boolean>>;
 }>;
 
@@ -26,7 +25,7 @@ export default function ParallaxScrollView({
   children,
   headerImage,
   headerTitle,
-  connexionStatus,
+  connectionState,
   setRefreshing
 }: Props) {
 
@@ -69,38 +68,13 @@ export default function ParallaxScrollView({
             { backgroundColor: Colors.dark.titlebackground },
             headerAnimatedStyle,
           ]}>
-          {headerImage}
-          <View style={styles.titleHeader}>
-            {connexionStatus && getConnexionStatusIcon(connexionStatus)}
-            <ThemedText type="title" style={styles.domoticzColor}>{headerTitle}</ThemedText>
-          </View>
+          <AppHeader title={headerTitle} icon={headerImage} connectionState={connectionState} />
         </Animated.View>
         <View style={styles.content}>{children}</View>
       </Animated.ScrollView>
     </View>
   );
 }
-
-/**
- * Retourne l'icône de connexion en fonction du statut de connexion
- * @param connexionStatus Le statut de connexion
- * @returns L'icône de connexion
- * @see DomoticzStatus
- * @see MaterialCommunityIcons
- * @see MaterialCommunityIconsProps
- * @see Colors
- */
-function getConnexionStatusIcon(connexionStatus: DomoticzStatus) {
-  switch (connexionStatus) {
-    case DomoticzStatus.CONNECTE:
-      return <MaterialCommunityIcons name="check-circle" size={24} color="green" style={{padding: 5}} />;
-    case DomoticzStatus.DECONNECTE:
-      return <MaterialCommunityIcons name="alert-circle" size={24} color="red" style={{padding: 5}}/>;
-    default:
-      return <MaterialCommunityIcons name="help-circle" size={24} color="grey" style={{padding: 5}}/>;
-  }
-}
-
 
 const styles = StyleSheet.create({
   container: {
@@ -117,13 +91,4 @@ const styles = StyleSheet.create({
     gap: 10,
     overflow: 'hidden',
   },
-  titleHeader: {
-    alignItems: 'flex-end',
-    flexDirection: 'row-reverse',
-    top: 30,
-    right: 8,
-  },
-  domoticzColor: {
-    color: Colors.domoticz.color
-  }
 });
