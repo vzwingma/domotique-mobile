@@ -42,25 +42,26 @@ export const ViewLightDevice: React.FC<ViewLightDeviceProps> = ({ device }) => {
     </PrimaryIconAction>
   );
 
-  const sliderComponent = sliderVisible
-    ? isDimmable
-      ? (
-        <Slider
-          disabled={!device.isActive}
-          style={device.isActive ? stylesListsDevices.slider : stylesListsDevices.sliderDisabled}
-          minimumValue={0} value={getLevel(device)} maximumValue={100}
-          step={1}
-          minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor={Colors.domoticz.color}
-          onValueChange={(value) => overrideNextValue(value, setNextValue)}
-          onResponderStart={() => setFlagLabel(true)}
-          onResponderEnd={() => {
-            updateDeviceLevel(device.idx, device, nextValue, setDomoticzDevicesData);
-            setFlagLabel(false);
-          }}
-        />
-      )
-      : <Slider disabled style={stylesListsDevices.sliderDisabled} />
-    : null;
+  const dimmableSlider = (
+    <Slider
+      disabled={!device.isActive}
+      style={device.isActive ? stylesListsDevices.slider : stylesListsDevices.sliderDisabled}
+      minimumValue={0} value={getLevel(device)} maximumValue={100}
+      step={1}
+      minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor={Colors.domoticz.color}
+      onValueChange={(value) => overrideNextValue(value, setNextValue)}
+      onResponderStart={() => setFlagLabel(true)}
+      onResponderEnd={() => {
+        updateDeviceLevel(device.idx, device, nextValue, setDomoticzDevicesData);
+        setFlagLabel(false);
+      }}
+    />
+  );
+
+  const disabledSlider = <Slider disabled style={stylesListsDevices.sliderDisabled} />;
+
+  const sliderContent = isDimmable ? dimmableSlider : disabledSlider;
+  const sliderComponent = sliderVisible ? sliderContent : null;
 
   if (device.isGroup) {
     const summary = getLightGroupSummary(device, domoticzDevicesData);

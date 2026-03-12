@@ -27,17 +27,19 @@ export const ViewDomoticzTemperature: React.FC<DomoticzTempProps> = ({ temperatu
         <ThemedText style={temperatureStyles.textName}>{temperature.name}</ThemedText>
       </View>
       <View style={temperatureStyles.valuesBox}>
-        {!temperature.isActive ? (
-          <DisconnectedState />
-        ) : showValue ? (
-          <>
-            <ThemedText style={temperatureStyles.textLevel}>{temperature.temp}°C</ThemedText>
-            {temperature.humidity
-              ? <ThemedText style={temperatureStyles.textLevel}>{temperature.humidity}%</ThemedText>
-              : null}
-          </>
+        {temperature.isActive ? (
+          showValue ? (
+            <>
+              <ThemedText style={temperatureStyles.textLevel}>{temperature.temp}°C</ThemedText>
+              {temperature.humidity
+                ? <ThemedText style={temperatureStyles.textLevel}>{temperature.humidity}%</ThemedText>
+                : null}
+            </>
+          ) : (
+            <ThemedText style={temperatureStyles.textLevel}>Inconnu</ThemedText>
+          )
         ) : (
-          <ThemedText style={temperatureStyles.textLevel}>Inconnu</ThemedText>
+          <DisconnectedState />
         )}
       </View>
     </View>
