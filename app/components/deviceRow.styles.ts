@@ -101,30 +101,6 @@ export const stylesListsDevices = StyleSheet.create({
     fontWeight: 'bold',
     width: 200,
   },
-  groupCommandsRow: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  groupCommandButton: {
-    borderWidth: 1,
-    borderColor: '#4a4a4a',
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    minHeight: 32,
-    backgroundColor: '#141414',
-  },
-  groupCommandButtonPressed: {
-    backgroundColor: '#242424',
-  },
-  groupCommandButtonDisabled: {
-    opacity: 0.45,
-  },
-  groupCommandText: {
-    color: '#e8e8e8',
-    fontWeight: '600',
-    fontSize: 12,
-  },
   // DROPDOWN
   dropdown: {
     flexDirection: 'column',

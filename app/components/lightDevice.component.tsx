@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import Slider from '@react-native-community/slider';
 import DomoticzDevice from '@/app/models/domoticzDevice.model';
 import { ThemedText } from '@/components/ThemedText';
@@ -64,36 +64,6 @@ export const ViewLightDevice: React.FC<ViewLightDeviceProps> = ({ device }) => {
 
   if (device.isGroup) {
     const summary = getLightGroupSummary(device, domoticzDevicesData);
-    const commands = (
-      <View style={stylesListsDevices.groupCommandsRow}>
-        <Pressable
-          style={({ pressed }) => [
-            stylesListsDevices.groupCommandButton,
-            device.isActive ? undefined : stylesListsDevices.groupCommandButtonDisabled,
-            pressed && device.isActive ? stylesListsDevices.groupCommandButtonPressed : undefined,
-          ]}
-          accessibilityRole="button"
-          accessibilityLabel={`Tout allumer le groupe ${device.name}`}
-          accessibilityState={{ disabled: !device.isActive }}
-          disabled={!device.isActive}
-          onPress={() => updateDeviceLevel(device.idx, device, 100, setDomoticzDevicesData)}>
-          <ThemedText style={stylesListsDevices.groupCommandText}>Tout allumer</ThemedText>
-        </Pressable>
-        <Pressable
-          style={({ pressed }) => [
-            stylesListsDevices.groupCommandButton,
-            device.isActive ? undefined : stylesListsDevices.groupCommandButtonDisabled,
-            pressed && device.isActive ? stylesListsDevices.groupCommandButtonPressed : undefined,
-          ]}
-          accessibilityRole="button"
-          accessibilityLabel={`Tout éteindre le groupe ${device.name}`}
-          accessibilityState={{ disabled: !device.isActive }}
-          disabled={!device.isActive}
-          onPress={() => updateDeviceLevel(device.idx, device, 0, setDomoticzDevicesData)}>
-          <ThemedText style={stylesListsDevices.groupCommandText}>Tout éteindre</ThemedText>
-        </Pressable>
-      </View>
-    );
 
     return (
       <GroupCard
@@ -104,7 +74,6 @@ export const ViewLightDevice: React.FC<ViewLightDeviceProps> = ({ device }) => {
         summary={summary}
         isActive={device.isActive}
         primaryAction={primaryAction}
-        commands={commands}
         secondaryControl={sliderComponent}
       />
     );

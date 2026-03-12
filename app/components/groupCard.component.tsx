@@ -11,7 +11,7 @@ type GroupCardProps = {
   summary: string;
   isActive: boolean;
   primaryAction: React.ReactNode;
-  commands: React.ReactNode;
+  commands?: React.ReactNode;
   secondaryControl?: React.ReactNode;
 };
 

@@ -1,12 +1,11 @@
 import React, { useContext, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import Slider from '@react-native-community/slider';
 import DomoticzDevice from '@/app/models/domoticzDevice.model';
 import { ThemedText } from '@/components/ThemedText';
 import { getLevel, getStatusLabel, overrideNextValue, updateDeviceLevel } from '../controllers/devices.controller';
 import { Colors, getGroupColor } from '../enums/Colors';
-import { DomoticzDeviceStatus, DomoticzBlindsGroups } from '../enums/DomoticzEnum';
-import { DomoticzSwitchType } from '../enums/DomoticzEnum';
+import { DomoticzDeviceStatus, DomoticzBlindsGroups , DomoticzSwitchType } from '../enums/DomoticzEnum';
 import IconDomoticzDevice, { performDevicePrimaryAction } from '@/components/IconDomoticzDevice';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
 import { PrimaryIconAction } from './primaryIconAction.component';
@@ -63,36 +62,6 @@ export const ViewBlindDevice: React.FC<ViewBlindDeviceProps> = ({ device }) => {
 
   if (device.isGroup) {
     const summary = getBlindGroupSummary(device, domoticzDevicesData);
-    const commands = (
-      <View style={stylesListsDevices.groupCommandsRow}>
-        <Pressable
-          style={({ pressed }) => [
-            stylesListsDevices.groupCommandButton,
-            device.isActive ? undefined : stylesListsDevices.groupCommandButtonDisabled,
-            pressed && device.isActive ? stylesListsDevices.groupCommandButtonPressed : undefined,
-          ]}
-          accessibilityRole="button"
-          accessibilityLabel={`Ouvrir le groupe ${device.name}`}
-          accessibilityState={{ disabled: !device.isActive }}
-          disabled={!device.isActive}
-          onPress={() => updateDeviceLevel(device.idx, device, 100, setDomoticzDevicesData)}>
-          <ThemedText style={stylesListsDevices.groupCommandText}>Ouvrir</ThemedText>
-        </Pressable>
-        <Pressable
-          style={({ pressed }) => [
-            stylesListsDevices.groupCommandButton,
-            device.isActive ? undefined : stylesListsDevices.groupCommandButtonDisabled,
-            pressed && device.isActive ? stylesListsDevices.groupCommandButtonPressed : undefined,
-          ]}
-          accessibilityRole="button"
-          accessibilityLabel={`Fermer le groupe ${device.name}`}
-          accessibilityState={{ disabled: !device.isActive }}
-          disabled={!device.isActive}
-          onPress={() => updateDeviceLevel(device.idx, device, 0, setDomoticzDevicesData)}>
-          <ThemedText style={stylesListsDevices.groupCommandText}>Fermer</ThemedText>
-        </Pressable>
-      </View>
-    );
 
     return (
       <GroupCard
@@ -103,7 +72,6 @@ export const ViewBlindDevice: React.FC<ViewBlindDeviceProps> = ({ device }) => {
         summary={summary}
         isActive={device.isActive}
         primaryAction={primaryAction}
-        commands={commands}
         secondaryControl={sliderComponent}
       />
     );
