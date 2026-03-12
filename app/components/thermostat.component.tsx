@@ -45,34 +45,34 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
   return (
     <View key={thermostat.idx} style={thermostat.isActive ? thermostatStyles.viewBox : thermostatStyles.viewBoxDisabled}>
       <View key={thermostat.idx} style={stylesListsDevices.iconBox}>
-        <IconDomoticzThermostat/>
+        <IconDomoticzThermostat />
       </View>
-        <View style={stylesListsDevices.contentBox}>
-          <View style={thermostatStyles.titleControlBox}>
-            <View style={thermostatStyles.libelleBox}>
-              <ThemedText style={{ fontSize: 16, color: 'white' }}>{thermostat.name}</ThemedText>
-            </View>
-            {/* T11 — boutons +/- autour de la valeur consigne */}
-            <View style={thermostatStyles.controlBox}>
-              <TouchableOpacity
-                style={[thermostatStyles.adjustButton, !thermostat.isActive && thermostatStyles.adjustButtonDisabled]}
+      <View style={thermostatStyles.contentBox}>
+        <View style={thermostatStyles.titleControlBox}>
+          <View style={thermostatStyles.libelleBox}>
+            <ThemedText style={{ fontSize: 16, color: 'white' }}>{thermostat.name}</ThemedText>
+          </View>
+          {/* T11 — boutons +/- autour de la valeur consigne */}
+          <View style={thermostatStyles.controlBox}>
+            <TouchableOpacity
+              style={[thermostatStyles.adjustButton, !thermostat.isActive && thermostatStyles.adjustButtonDisabled]}
               activeOpacity={0.7}
               onPress={handleDecrease}
               disabled={!thermostat.isActive}
               accessibilityRole="button"
               accessibilityLabel="Diminuer la consigne"
-              >
-                <ThemedText style={thermostatStyles.adjustButtonText}>−</ThemedText>
-              </TouchableOpacity>
-              <View style={thermostatStyles.consigneControlBox}>
-                <ThemedText style={thermostatStyles.consigneControlLabel}>Consigne</ThemedText>
-                <ThemedText style={thermostatStyles.textLevel}>{getStatusLabel(thermostat, nextValue)} {thermostat.unit}</ThemedText>
-              </View>
-              <TouchableOpacity
-                style={[thermostatStyles.adjustButton, !thermostat.isActive && thermostatStyles.adjustButtonDisabled]}
-                activeOpacity={0.7}
-                onPress={handleIncrease}
-                disabled={!thermostat.isActive}
+            >
+              <ThemedText style={thermostatStyles.adjustButtonText}>−</ThemedText>
+            </TouchableOpacity>
+            <View style={thermostatStyles.consigneControlBox}>
+              <ThemedText style={thermostatStyles.consigneControlLabel}>Consigne</ThemedText>
+              <ThemedText style={thermostatStyles.textLevel}>{getStatusLabel(thermostat, nextValue)} {thermostat.unit}</ThemedText>
+            </View>
+            <TouchableOpacity
+              style={[thermostatStyles.adjustButton, !thermostat.isActive && thermostatStyles.adjustButtonDisabled]}
+              activeOpacity={0.7}
+              onPress={handleIncrease}
+              disabled={!thermostat.isActive}
               accessibilityRole="button"
               accessibilityLabel="Augmenter la consigne"
             >
@@ -110,6 +110,11 @@ function getStatusLabel(device: DomoticzThermostat, nextValue: number): string {
 }
 
 const thermostatStyles = StyleSheet.create({
+  contentBox: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
   viewBox: {
     flexDirection: 'row',
     width: '100%',
@@ -172,7 +177,7 @@ const thermostatStyles = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.domoticz.color,
     textAlign: "right",
-  },  
+  },
   measuredRow: {
     flexDirection: 'row',
     alignItems: 'center',

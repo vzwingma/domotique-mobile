@@ -18,6 +18,21 @@ export const ViewDomoticzTemperature: React.FC<DomoticzTempProps> = ({ temperatu
   // T06/T14 — valeur disponible uniquement si actif et temp non-nulle
   const showValue = temperature.isActive && temperature.temp !== null && temperature.temp !== undefined;
 
+  const humidityElement = temperature.humidity
+    ? <ThemedText style={temperatureStyles.textLevel}>{temperature.humidity}%</ThemedText>
+    : null;
+
+  const valueContent = showValue ? (
+    <>
+      <ThemedText style={temperatureStyles.textLevel}>{temperature.temp}°C</ThemedText>
+      {humidityElement}
+    </>
+  ) : (
+    <ThemedText style={temperatureStyles.textLevel}>Inconnu</ThemedText>
+  );
+
+  const renderValues = temperature.isActive ? valueContent : <DisconnectedState />;
+
   return (
     <View key={temperature.idx} style={temperature.isActive ? temperatureStyles.viewBox : temperatureStyles.viewBoxDisconnected}>
       <View key={temperature.idx} style={temperatureStyles.iconBox}>
@@ -27,20 +42,7 @@ export const ViewDomoticzTemperature: React.FC<DomoticzTempProps> = ({ temperatu
         <ThemedText style={temperatureStyles.textName}>{temperature.name}</ThemedText>
       </View>
       <View style={temperatureStyles.valuesBox}>
-        {temperature.isActive ? (
-          showValue ? (
-            <>
-              <ThemedText style={temperatureStyles.textLevel}>{temperature.temp}°C</ThemedText>
-              {temperature.humidity
-                ? <ThemedText style={temperatureStyles.textLevel}>{temperature.humidity}%</ThemedText>
-                : null}
-            </>
-          ) : (
-            <ThemedText style={temperatureStyles.textLevel}>Inconnu</ThemedText>
-          )
-        ) : (
-          <DisconnectedState />
-        )}
+        {renderValues}
       </View>
     </View>
   );

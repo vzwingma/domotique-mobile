@@ -40,13 +40,7 @@ export const stylesListsDevices = StyleSheet.create({
     height: 60,
     width: 60,
   },
-  contentBox: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-    borderColor: '#ff0000',
-    borderWidth: 1,
 
-  },
   labelsBox: {
     flexDirection: 'row',
     justifyContent: 'space-between',
