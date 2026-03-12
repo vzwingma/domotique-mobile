@@ -38,6 +38,7 @@ jest.mock('@/app/controllers/devices.controller', () => ({
   refreshEquipementState: jest.fn(),
   getLevel: jest.fn((device: any) => device.level ?? 0),
   overrideNextValue: jest.fn(),
+  isDeviceOn: jest.fn((device: any) => device.status !== 'Off' && device.level > 0),
   getStatusLabel: jest.fn((device: any) => {
     if (!device.isActive) return 'Déconnecté';
     if (device.type === 'Volet') return device.status === 'On' ? 'Ouvert' : 'Fermé';

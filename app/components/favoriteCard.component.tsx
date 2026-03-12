@@ -3,52 +3,58 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
-import { DomoticzDeviceStatus } from '../enums/DomoticzEnum';
+import { DomoticzDeviceStatus, DomoticzDeviceLabel, DomoticzDeviceType, DomoticzSwitchType } from '../enums/DomoticzEnum';
 import IconDomoticzDevice, { performDevicePrimaryAction } from '@/components/IconDomoticzDevice';
 import { PrimaryIconAction } from './primaryIconAction.component';
 import { Colors, getGroupColor } from '../enums/Colors';
-import { getLevel, getStatusLabel } from '../controllers/devices.controller';
+import { getLevel, getStatusLabel, isDeviceOn } from '../controllers/devices.controller';
 import { DisconnectedState } from './disconnectedState.component';
 
-type FavoriteBlindCardProps = {
+type FavoriteCardProps = {
   device: DomoticzDevice;
 };
 
 /**
- * Carte favori pour un volet : action rapide Ouvrir / Fermer.
+ * Carte favori orientée "action rapide" (1 tap).
+ * Gère lumières (Allumer/Éteindre) et volets (Ouvrir/Fermer).
  */
-export const FavoriteBlindCard: React.FC<FavoriteBlindCardProps> = ({ device }) => {
+export const FavoriteCard: React.FC<FavoriteCardProps> = ({ device }) => {
   const { setDomoticzDevicesData } = useContext(DomoticzContext)!;
 
-  const isOpen = device.status !== DomoticzDeviceStatus.OFF && device.level > 0;
+  const deviceOn = isDeviceOn(device);
   const statusLabel = getStatusLabel(device, getLevel(device), false);
-  const actionLabel = isOpen ? 'Fermer' : 'Ouvrir';
+  
+  const voletActionLabel = deviceOn ? DomoticzDeviceLabel.BLIND_CLOSE_ACTION : DomoticzDeviceLabel.BLIND_OPEN_ACTION;
+  const lightActionLabel = deviceOn ? DomoticzDeviceLabel.LIGHT_OFF_ACTION : DomoticzDeviceLabel.LIGHT_ON_ACTION;
+  const actionLabel = device.type === DomoticzDeviceType.VOLET ? voletActionLabel : lightActionLabel;
+
+  const isPrimaryActionActive = device.switchType === DomoticzSwitchType.ONOFF
+    ? device.status === DomoticzDeviceStatus.ON
+    : deviceOn;
 
   const triggerPrimaryAction = () => performDevicePrimaryAction(device, setDomoticzDevicesData);
 
   return (
     <View style={[styles.card, !device.isActive && styles.cardDisconnected]}>
-      <View style={styles.topRow}>
-        <PrimaryIconAction
-          accessibilityLabel={`Action rapide ${actionLabel.toLowerCase()} ${device.name}`}
-          active={isOpen}
-          disabled={!device.isActive}
-          onPress={triggerPrimaryAction}>
-          <IconDomoticzDevice device={device} interactive={false} />
-        </PrimaryIconAction>
+      <PrimaryIconAction
+        accessibilityLabel={`Action rapide ${actionLabel.toLowerCase()} ${device.name}`}
+        active={isPrimaryActionActive}
+        disabled={!device.isActive}
+        onPress={triggerPrimaryAction}>
+        <IconDomoticzDevice device={device} interactive={false} />
+      </PrimaryIconAction>
 
-        <View style={styles.content}>
-          <ThemedText style={[styles.title, { color: getGroupColor(device) }]} numberOfLines={1}>
-            {device.name}
+      <View style={styles.content}>
+        <ThemedText style={[styles.title, { color: getGroupColor(device) }]} numberOfLines={1}>
+          {device.name}
+        </ThemedText>
+        {device.isActive ? (
+          <ThemedText style={styles.status} numberOfLines={1}>
+            État : {statusLabel} {device.unit}
           </ThemedText>
-          {device.isActive ? (
-            <ThemedText style={styles.status} numberOfLines={1}>
-              État : {statusLabel}
-            </ThemedText>
-          ) : (
-            <DisconnectedState />
-          )}
-        </View>
+        ) : (
+          <DisconnectedState />
+        )}
       </View>
 
       <Pressable
@@ -71,24 +77,21 @@ export const FavoriteBlindCard: React.FC<FavoriteBlindCardProps> = ({ device }) 
 const styles = StyleSheet.create({
   card: {
     width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 10,
     margin: 1,
     borderColor: '#3A3A3A',
     borderWidth: 1,
     backgroundColor: '#0b0b0b',
-    gap: 8,
+    gap: 10,
   },
   cardDisconnected: {
     borderColor: '#7f2b2b',
     backgroundColor: '#1a1212',
   },
-  topRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   content: {
     flex: 1,
-    marginLeft: 10,
     justifyContent: 'center',
     gap: 2,
   },
@@ -101,7 +104,9 @@ const styles = StyleSheet.create({
     color: '#d6d6d6',
   },
   quickActionButton: {
+    minWidth: 90,
     minHeight: 44,
+    alignSelf: 'stretch',
     borderWidth: 1,
     borderColor: Colors.domoticz.color,
     borderRadius: 10,

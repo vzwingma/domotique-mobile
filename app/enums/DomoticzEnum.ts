@@ -49,6 +49,33 @@ export enum DomoticzDeviceLevelValue {
 }
 
 /**
+ * Labels d'affichage UI pour les équipements Domoticz.
+ * Centralise tous les libellés métier visibles par l'utilisateur.
+ */
+export enum DomoticzDeviceLabel {
+  // Volets — état individuel
+  BLIND_OPEN   = "Ouvert",
+  BLIND_CLOSED = "Fermé",
+  // Volets — état groupe
+  BLIND_OPEN_GROUP   = "Ouverts",
+  BLIND_CLOSED_GROUP = "Fermés",
+  // Volets — actions
+  BLIND_OPEN_ACTION  = "Ouvrir",
+  BLIND_CLOSE_ACTION = "Fermer",
+  // Lumières — état individuel
+  LIGHT_ON  = "Allumée",
+  LIGHT_OFF = "Éteinte",
+  // Lumières — état groupe
+  LIGHT_ON_GROUP  = "Allumées",
+  LIGHT_OFF_GROUP = "Éteintes",
+  // Lumières — actions
+  LIGHT_ON_ACTION  = "Allumer",
+  LIGHT_OFF_ACTION = "Éteindre",
+  // Commun
+  MIXTE = "Mixte",
+}
+
+/**
  * Tri des équipements Domoticz
  */
 export const DomoticzLightsSort: number[] = [122, 128, 131, 72, 117, 113, 114, 118];
