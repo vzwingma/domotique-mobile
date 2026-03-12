@@ -71,7 +71,6 @@ const temperatureStyles = StyleSheet.create({
     borderWidth: 1,
     backgroundColor: '#1a1212',
     alignItems: 'center',
-    opacity: 0.5,
   },
   iconBox: {
     marginRight: 10,

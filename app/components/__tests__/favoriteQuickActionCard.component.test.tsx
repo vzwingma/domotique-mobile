@@ -69,6 +69,7 @@ describe('FavoriteQuickActionCard', () => {
     jest.clearAllMocks();
     mockGetLevel.mockReturnValue(100);
     mockGetStatusLabel.mockReturnValue('Allumée');
+    mockIsDeviceOn.mockImplementation((d: any) => d.status !== 'Off' && d.level > 0);
   });
 
   it('rend un favori actif sans slider (quick action uniquement)', () => {
