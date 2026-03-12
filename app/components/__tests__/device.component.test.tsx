@@ -103,8 +103,8 @@ jest.mock('@/app/services/DomoticzContextProvider', () => {
   return { DomoticzContext: MockCtx };
 });
 
-function renderDevice(device: DomoticzDevice, enhancedUi = false) {
-  return render(<ViewDomoticzDevice device={device} enhancedUi={enhancedUi} />);
+function renderDevice(device: DomoticzDevice) {
+  return render(<ViewDomoticzDevice device={device} />);
 }
 
 // =============================================================================
@@ -172,7 +172,7 @@ describe('device.component — lumières individuelles (T05)', () => {
     expect(getByText('Allumée')).toBeTruthy();
   });
 
-  it("marque l'action principale comme active pour une lumière switch allumée en mode enhanced UI", () => {
+  it("marque l'action principale comme active pour une lumière switch allumée", () => {
     const device = makeDevice({
       name: 'Lumière Salon',
       type: DomoticzDeviceType.LUMIERE,
@@ -182,7 +182,7 @@ describe('device.component — lumières individuelles (T05)', () => {
       level: 0,
       isActive: true,
     });
-    const { getByLabelText } = renderDevice(device, true);
+    const { getByLabelText } = renderDevice(device);
     expect(getByLabelText('Action principale lumière Lumière Salon')).toHaveProp('accessibilityState', expect.objectContaining({ selected: true }));
   });
 

@@ -16,19 +16,18 @@ import { stylesListsDevices } from './deviceRow.styles';
 
 type ViewBlindDeviceProps = {
   device: DomoticzDevice;
-  enhancedUi?: boolean;
 };
 
 /**
  * Composant pour afficher un volet Domoticz (individuel ou groupe).
  */
-export const ViewBlindDevice: React.FC<ViewBlindDeviceProps> = ({ device, enhancedUi = false }) => {
+export const ViewBlindDevice: React.FC<ViewBlindDeviceProps> = ({ device }) => {
   const [flagLabel, setFlagLabel] = useState<boolean>(false);
   const [nextValue, setNextValue] = useState<number>(getLevel(device));
   const { domoticzDevicesData, setDomoticzDevicesData } = useContext(DomoticzContext)!;
 
   const isDimmable = device.switchType === DomoticzSwitchType.SLIDER;
-  const sliderVisible = enhancedUi ? isDimmable : true;
+  const sliderVisible = isDimmable;
   const statusLabel = getStatusLabel(device, nextValue, flagLabel);
   const isPrimaryActionActive = device.status !== 'Off' && device.level > 0;
 
@@ -62,7 +61,7 @@ export const ViewBlindDevice: React.FC<ViewBlindDeviceProps> = ({ device, enhanc
       : <Slider disabled style={stylesListsDevices.sliderDisabled} />
     : null;
 
-  if (enhancedUi && device.isGroup) {
+  if (device.isGroup) {
     const summary = getBlindGroupSummary(device, domoticzDevicesData);
     const commands = (
       <View style={stylesListsDevices.groupCommandsRow}>
@@ -110,14 +109,14 @@ export const ViewBlindDevice: React.FC<ViewBlindDeviceProps> = ({ device, enhanc
     );
   }
 
-  const viewBoxStyle = enhancedUi && !device.isActive
+  const viewBoxStyle = !device.isActive
     ? stylesListsDevices.viewBoxDisconnected
     : device.isActive ? stylesListsDevices.viewBox : stylesListsDevices.viewBoxDisabled;
 
   return (
     <View key={device.idx} style={viewBoxStyle}>
       <View key={device.idx} style={stylesListsDevices.iconBox}>
-        {enhancedUi ? primaryAction : <IconDomoticzDevice device={device} />}
+        {primaryAction}
       </View>
       <View style={stylesListsDevices.contentBox}>
         <View style={device.consistantLevel ? stylesListsDevices.labelsBox : stylesListsDevices.labelsBoxUnconsistent}>
@@ -125,7 +124,7 @@ export const ViewBlindDevice: React.FC<ViewBlindDeviceProps> = ({ device, enhanc
             <ThemedText style={{ fontSize: 16, color: getGroupColor(device) }}>{device.name}</ThemedText>
           </View>
           <View style={device.isActive ? stylesListsDevices.valueBox : stylesListsDevices.valueBoxDisconnected}>
-            {!device.isActive && enhancedUi
+            {!device.isActive
               ? <DisconnectedState />
               : <ThemedText numberOfLines={1} style={stylesListsDevices.textLevel}>{statusLabel}</ThemedText>
             }

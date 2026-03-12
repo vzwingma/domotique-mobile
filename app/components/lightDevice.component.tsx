@@ -5,8 +5,7 @@ import DomoticzDevice from '@/app/models/domoticzDevice.model';
 import { ThemedText } from '@/components/ThemedText';
 import { getLevel, getStatusLabel, overrideNextValue, updateDeviceLevel } from '../controllers/devices.controller';
 import { Colors, getGroupColor } from '../enums/Colors';
-import { DomoticzDeviceStatus, DomoticzLightsGroups } from '../enums/DomoticzEnum';
-import { DomoticzSwitchType } from '../enums/DomoticzEnum';
+import { DomoticzDeviceStatus, DomoticzLightsGroups, DomoticzSwitchType } from '../enums/DomoticzEnum';
 import IconDomoticzDevice, { performDevicePrimaryAction } from '@/components/IconDomoticzDevice';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
 import { PrimaryIconAction } from './primaryIconAction.component';
@@ -16,19 +15,18 @@ import { stylesListsDevices } from './deviceRow.styles';
 
 type ViewLightDeviceProps = {
   device: DomoticzDevice;
-  enhancedUi?: boolean;
 };
 
 /**
  * Composant pour afficher une lumière Domoticz (individuelle ou groupe).
  */
-export const ViewLightDevice: React.FC<ViewLightDeviceProps> = ({ device, enhancedUi = false }) => {
+export const ViewLightDevice: React.FC<ViewLightDeviceProps> = ({ device }) => {
   const [flagLabel, setFlagLabel] = useState<boolean>(false);
   const [nextValue, setNextValue] = useState<number>(getLevel(device));
   const { domoticzDevicesData, setDomoticzDevicesData } = useContext(DomoticzContext)!;
 
   const isDimmable = device.switchType === DomoticzSwitchType.SLIDER;
-  const sliderVisible = enhancedUi ? isDimmable : true;
+  const sliderVisible = isDimmable;
   const statusLabel = getStatusLabel(device, nextValue, flagLabel);
   const isPrimaryActionActive = device.switchType === DomoticzSwitchType.ONOFF
     ? device.status === 'On'
@@ -64,7 +62,7 @@ export const ViewLightDevice: React.FC<ViewLightDeviceProps> = ({ device, enhanc
       : <Slider disabled style={stylesListsDevices.sliderDisabled} />
     : null;
 
-  if (enhancedUi && device.isGroup) {
+  if (device.isGroup) {
     const summary = getLightGroupSummary(device, domoticzDevicesData);
     const commands = (
       <View style={stylesListsDevices.groupCommandsRow}>
@@ -112,14 +110,14 @@ export const ViewLightDevice: React.FC<ViewLightDeviceProps> = ({ device, enhanc
     );
   }
 
-  const viewBoxStyle = enhancedUi && !device.isActive
+  const viewBoxStyle = !device.isActive
     ? stylesListsDevices.viewBoxDisconnected
     : device.isActive ? stylesListsDevices.viewBox : stylesListsDevices.viewBoxDisabled;
 
   return (
     <View key={device.idx} style={viewBoxStyle}>
       <View key={device.idx} style={stylesListsDevices.iconBox}>
-        {enhancedUi ? primaryAction : <IconDomoticzDevice device={device} />}
+        {primaryAction}
       </View>
       <View style={stylesListsDevices.contentBox}>
         <View style={device.consistantLevel ? stylesListsDevices.labelsBox : stylesListsDevices.labelsBoxUnconsistent}>
@@ -127,7 +125,7 @@ export const ViewLightDevice: React.FC<ViewLightDeviceProps> = ({ device, enhanc
             <ThemedText style={{ fontSize: 16, color: getGroupColor(device) }}>{device.name}</ThemedText>
           </View>
           <View style={device.isActive ? stylesListsDevices.valueBox : stylesListsDevices.valueBoxDisconnected}>
-            {!device.isActive && enhancedUi
+            {!device.isActive
               ? <DisconnectedState />
               : <ThemedText numberOfLines={1} style={stylesListsDevices.textLevel}>{statusLabel}</ThemedText>
             }

@@ -27,6 +27,15 @@ jest.mock('@/components/IconDomoticzTemperature', () => {
   };
 });
 
+// DisconnectedState — rendu simplifié pour les tests
+jest.mock('../disconnectedState.component', () => {
+  const React = require('react');
+  const { Text } = require('react-native');
+  return {
+    DisconnectedState: () => <Text>Déconnecté</Text>,
+  };
+});
+
 // ─── Factory ──────────────────────────────────────────────────────────────────
 // Le constructeur de DomoticzTemperature ne gère pas `isActive` (readonly avec default false).
 // On utilise un objet littéral casté pour pouvoir tester tous les cas.

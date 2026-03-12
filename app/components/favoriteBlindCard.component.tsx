@@ -41,12 +41,12 @@ export const FavoriteBlindCard: React.FC<FavoriteBlindCardProps> = ({ device }) 
           <ThemedText style={[styles.title, { color: getGroupColor(device) }]} numberOfLines={1}>
             {device.name}
           </ThemedText>
-          {!device.isActive ? (
-            <DisconnectedState compact />
-          ) : (
+          {device.isActive ? (
             <ThemedText style={styles.status} numberOfLines={1}>
               État : {statusLabel}
             </ThemedText>
+          ) : (
+            <DisconnectedState />
           )}
         </View>
       </View>

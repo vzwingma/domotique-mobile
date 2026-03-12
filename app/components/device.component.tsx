@@ -10,18 +10,17 @@ export { stylesListsDevices } from './deviceRow.styles';
 // Définition des propriétés d'un équipement Domoticz
 export type DomoticzDeviceProps = {
   device: DomoticzDevice;
-  enhancedUi?: boolean;
 };
 
 /**
  * Composant dispatcher : délègue à ViewLightDevice ou ViewBlindDevice selon le type.
  */
-export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device, enhancedUi = false }) => {
+export const ViewDomoticzDevice: React.FC<DomoticzDeviceProps> = ({ device }) => {
   if (device.type === DomoticzDeviceType.LUMIERE) {
-    return <ViewLightDevice device={device} enhancedUi={enhancedUi} />;
+    return <ViewLightDevice device={device} />;
   }
   if (device.type === DomoticzDeviceType.VOLET) {
-    return <ViewBlindDevice device={device} enhancedUi={enhancedUi} />;
+    return <ViewBlindDevice device={device} />;
   }
   return null;
 };

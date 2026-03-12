@@ -10,24 +10,21 @@ describe('DisconnectedState', () => {
 
     const icon = root.findByType('MaterialCommunityIcons');
     expect(icon.props.name).toBe('wifi-off');
-    expect(icon.props.size).toBe(15);
+    expect(icon.props.size).toBe(18);
   });
 
-  it('affiche un état compact (icône réduite) en mode compact', () => {
-    const { getByText, root } = render(<DisconnectedState compact />);
-
-    expect(getByText('Déconnecté')).toBeTruthy();
+  it('affiche l\'icône wifi-off avec la taille standard', () => {
+    const { root } = render(<DisconnectedState />);
 
     const icon = root.findByType('MaterialCommunityIcons');
-    expect(icon.props.size).toBe(13);
+    expect(icon.props.name).toBe('wifi-off');
+    expect(icon.props.size).toBe(18);
   });
 
-  it('snapshot standard et compact', () => {
-    const { toJSON: toJSONStandard } = render(<DisconnectedState />);
-    const { toJSON: toJSONCompact } = render(<DisconnectedState compact />);
+  it('snapshot du composant', () => {
+    const { toJSON } = render(<DisconnectedState />);
 
-    expect(toJSONStandard()).toMatchSnapshot();
-    expect(toJSONCompact()).toMatchSnapshot();
+    expect(toJSON()).toMatchSnapshot();
   });
 });
 
