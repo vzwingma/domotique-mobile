@@ -19,7 +19,7 @@ type FavoriteCardProps = {
 /**
  * Carte favori orientée "action rapide" (1 tap).
  * Gère lumières (Allumer/Éteindre) et volets (Ouvrir/Fermer).
- * En mode previewV (EXPO_PUBLIC_MY_ENVIRONMENT=previewV), affiche un slider
+ * En mode previewC (EXPO_PUBLIC_MY_ENVIRONMENT=previewC), affiche un slider
  * pour les volets et les lumières dimmables.
  */
 export const FavoriteCard: React.FC<FavoriteCardProps> = ({ device }) => {
@@ -27,7 +27,7 @@ export const FavoriteCard: React.FC<FavoriteCardProps> = ({ device }) => {
   const [flagLabel, setFlagLabel] = useState<boolean>(false);
   const [nextValue, setNextValue] = useState<number>(getLevel(device));
 
-  const hasDimmableSlider = process.env.EXPO_PUBLIC_MY_ENVIRONMENT === PROFILES_ENV.V
+  const hasDimmableSlider = process.env.EXPO_PUBLIC_MY_ENVIRONMENT === PROFILES_ENV.C
     && device.isActive
     && (device.type === DomoticzDeviceType.VOLET || device.switchType === DomoticzSwitchType.SLIDER);
 
