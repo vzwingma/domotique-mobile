@@ -1,4 +1,5 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
+import Slider from '@react-native-community/slider';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import DomoticzDevice from '../models/domoticzDevice.model';
@@ -6,9 +7,10 @@ import { DomoticzContext } from '../services/DomoticzContextProvider';
 import { DomoticzDeviceStatus, DomoticzDeviceLabel, DomoticzDeviceType, DomoticzSwitchType } from '../enums/DomoticzEnum';
 import IconDomoticzDevice, { performDevicePrimaryAction } from '@/components/IconDomoticzDevice';
 import { PrimaryIconAction } from './primaryIconAction.component';
-import { Colors, getGroupColor } from '../enums/Colors';
-import { getLevel, getStatusLabel, isDeviceOn } from '../controllers/devices.controller';
+import { Colors, getGroupColor, PROFILES_ENV } from '../enums/Colors';
+import { getLevel, getStatusLabel, isDeviceOn, overrideNextValue, updateDeviceLevel } from '../controllers/devices.controller';
 import { DisconnectedState } from './disconnectedState.component';
+import { stylesListsDevices } from './deviceRow.styles';
 
 type FavoriteCardProps = {
   device: DomoticzDevice;
@@ -17,13 +19,21 @@ type FavoriteCardProps = {
 /**
  * Carte favori orientée "action rapide" (1 tap).
  * Gère lumières (Allumer/Éteindre) et volets (Ouvrir/Fermer).
+ * En mode previewV (EXPO_PUBLIC_MY_ENVIRONMENT=previewV), affiche un slider
+ * pour les volets et les lumières dimmables.
  */
 export const FavoriteCard: React.FC<FavoriteCardProps> = ({ device }) => {
   const { setDomoticzDevicesData } = useContext(DomoticzContext)!;
+  const [flagLabel, setFlagLabel] = useState<boolean>(false);
+  const [nextValue, setNextValue] = useState<number>(getLevel(device));
+
+  const hasDimmableSlider = process.env.EXPO_PUBLIC_MY_ENVIRONMENT === PROFILES_ENV.V
+    && device.isActive
+    && (device.type === DomoticzDeviceType.VOLET || device.switchType === DomoticzSwitchType.SLIDER);
 
   const deviceOn = isDeviceOn(device);
-  const statusLabel = getStatusLabel(device, getLevel(device), false);
-  
+  const statusLabel = getStatusLabel(device, nextValue, flagLabel);
+
   const voletActionLabel = deviceOn ? DomoticzDeviceLabel.BLIND_CLOSE_ACTION : DomoticzDeviceLabel.BLIND_OPEN_ACTION;
   const lightActionLabel = deviceOn ? DomoticzDeviceLabel.LIGHT_OFF_ACTION : DomoticzDeviceLabel.LIGHT_ON_ACTION;
   const actionLabel = device.type === DomoticzDeviceType.VOLET ? voletActionLabel : lightActionLabel;
@@ -33,6 +43,26 @@ export const FavoriteCard: React.FC<FavoriteCardProps> = ({ device }) => {
     : deviceOn;
 
   const triggerPrimaryAction = () => performDevicePrimaryAction(device, setDomoticzDevicesData);
+
+  const sliderComponent = hasDimmableSlider ? (
+    <Slider
+      disabled={!device.isActive}
+      style={stylesListsDevices.slider}
+      minimumValue={0}
+      value={getLevel(device)}
+      maximumValue={100}
+      step={1}
+      minimumTrackTintColor="#FFFFFF"
+      maximumTrackTintColor="#606060"
+      thumbTintColor={Colors.domoticz.color}
+      onValueChange={(value) => overrideNextValue(value, setNextValue)}
+      onResponderStart={() => setFlagLabel(true)}
+      onResponderEnd={() => {
+        updateDeviceLevel(device.idx, device, nextValue, setDomoticzDevicesData);
+        setFlagLabel(false);
+      }}
+    />
+  ) : null;
 
   return (
     <View style={[styles.card, !device.isActive && styles.cardDisconnected]}>
@@ -44,17 +74,18 @@ export const FavoriteCard: React.FC<FavoriteCardProps> = ({ device }) => {
         <IconDomoticzDevice device={device} interactive={false} />
       </PrimaryIconAction>
 
-      <View style={styles.content}>
-        <ThemedText style={[styles.title, { color: getGroupColor(device) }]} numberOfLines={1}>
+      <View style={[styles.content, hasDimmableSlider && styles.contentWithSlider]}>
+        <ThemedText style={[styles.title, hasDimmableSlider && styles.titleCompact, { color: getGroupColor(device) }]} numberOfLines={1}>
           {device.name}
         </ThemedText>
         {device.isActive ? (
-          <ThemedText style={styles.status} numberOfLines={1}>
+          <ThemedText style={[styles.status, hasDimmableSlider && styles.statusCompact]} numberOfLines={1}>
             État : {statusLabel} {device.unit}
           </ThemedText>
         ) : (
           <DisconnectedState />
         )}
+        {sliderComponent}
       </View>
 
       <Pressable
@@ -95,13 +126,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 2,
   },
+  contentWithSlider: {
+    justifyContent: 'flex-start',
+    gap: 0,
+  },
   title: {
     fontSize: 16,
     color: '#fff',
   },
+  titleCompact: {
+    lineHeight: 18,
+  },
   status: {
-    fontSize: 13,
+    fontSize: 11,
     color: '#d6d6d6',
+  },
+  statusCompact: {
+    lineHeight: 13,
   },
   quickActionButton: {
     minWidth: 90,
