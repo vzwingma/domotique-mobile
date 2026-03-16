@@ -44,7 +44,7 @@ function getParametreDisplayLabel(parametreName: string, levelName: string): str
     else if (normalized === "SOIREE") return "Soirée";
   }
   else if (parametreName.includes("Mode")) {
-    if (normalized === "ETE") return "Été";
+    if (normalized === "SUMMER") return "Été";
   }
   return levelName;
 }
