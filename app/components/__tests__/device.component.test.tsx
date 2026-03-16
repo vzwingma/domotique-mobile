@@ -41,11 +41,18 @@ jest.mock('@/app/controllers/devices.controller', () => ({
   isDeviceOn: jest.fn((device: any) => device.status !== 'Off' && device.level > 0),
   getStatusLabel: jest.fn((device: any) => {
     if (!device.isActive) return 'Déconnecté';
-    if (device.type === 'Volet') return device.status === 'On' ? 'Ouvert' : 'Fermé';
+    if (device.type === 'Volet') {
+      if (device.status === 'Off') return 'Fermé';
+      if (device.level >= 99) return 'Ouvert';
+      if (device.status === 'On') return 'Ouvert';
+      return 'Fermé';
+    }
     if (device.isGroup) {
       if (!device.consistantLevel) return 'Mixte';
       return device.status === 'On' ? 'Allumées' : 'Éteintes';
     }
+    // Lumière individuelle : variateur >= 99 → Allumée
+    if (device.switchType === 'Dimmer' && device.status !== 'Off' && device.level >= 99) return 'Allumée';
     return device.status === 'On' ? 'Allumée' : 'Éteinte';
   }),
 }));
@@ -271,5 +278,60 @@ describe('device.component — slider pour les volets', () => {
     expect(queryByLabelText('Ouvrir le volet')).toBeNull();
     expect(queryByLabelText('Stopper le volet')).toBeNull();
     expect(queryByLabelText('Fermer le volet')).toBeNull();
+  });
+});
+
+// =============================================================================
+// QA03-6 : Règle level >= 99 → état plein (volet individuel et lumière variateur)
+// =============================================================================
+describe('device.component — niveau >= 99 → état plein', () => {
+  it('affiche "Ouvert" pour un volet individuel avec level=99', () => {
+    const device = makeDevice({
+      type: DomoticzDeviceType.VOLET,
+      isGroup: false,
+      status: '99',
+      level: 99,
+      isActive: true,
+    });
+    const { getByText } = renderDevice(device);
+    expect(getByText('Ouvert')).toBeTruthy();
+  });
+
+  it('affiche "Ouvert" pour un volet individuel avec level=100 et status=On', () => {
+    const device = makeDevice({
+      type: DomoticzDeviceType.VOLET,
+      isGroup: false,
+      status: 'On',
+      level: 100,
+      isActive: true,
+    });
+    const { getByText } = renderDevice(device);
+    expect(getByText('Ouvert')).toBeTruthy();
+  });
+
+  it('affiche "Allumée" pour une lumière variateur avec level=99', () => {
+    const device = makeDevice({
+      type: DomoticzDeviceType.LUMIERE,
+      switchType: DomoticzSwitchType.SLIDER,
+      isGroup: false,
+      status: 'On',
+      level: 99,
+      isActive: true,
+    });
+    const { getByText } = renderDevice(device);
+    expect(getByText('Allumée')).toBeTruthy();
+  });
+
+  it('affiche "Allumée" pour une lumière variateur avec level=100', () => {
+    const device = makeDevice({
+      type: DomoticzDeviceType.LUMIERE,
+      switchType: DomoticzSwitchType.SLIDER,
+      isGroup: false,
+      status: 'On',
+      level: 100,
+      isActive: true,
+    });
+    const { getByText } = renderDevice(device);
+    expect(getByText('Allumée')).toBeTruthy();
   });
 });

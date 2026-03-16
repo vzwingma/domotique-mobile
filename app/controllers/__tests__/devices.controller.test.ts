@@ -1,4 +1,4 @@
-import { loadDomoticzDevices, onClickDeviceIcon, updateDeviceLevel, addActionForFavorite, refreshEquipementState, getBlindGroupLabel, getLightsGroupLabel, getStatusLabel } from '../devices.controller';
+import { loadDomoticzDevices, onClickDeviceIcon, updateDeviceLevel, addActionForFavorite, refreshEquipementState, getBlindGroupLabel, getLightsGroupLabel, getBlindLabel, getSingleLightLabel, getStatusLabel } from '../devices.controller';
 import callDomoticz from '@/app/services/ClientHTTP.service';
 import { getFavoritesFromStorage, saveFavoritesToStorage } from '@/app/services/DataUtils.service';
 import { DomoticzDeviceType, DomoticzDeviceStatus, DomoticzSwitchType } from '@/app/enums/DomoticzEnum';
@@ -377,5 +377,78 @@ describe('getStatusLabel — volets groupes via getBlindGroupLabel', () => {
     it('retourne "Fermé" pour un volet individuel status=Off', () => {
         const device = makeDevice({ type: DomoticzDeviceType.VOLET, isGroup: false, status: DomoticzDeviceStatus.OFF, isActive: true });
         expect(getStatusLabel(device, 0, false)).toBe('Fermé');
+    });
+});
+
+// ─── getBlindLabel ─────────────────────────────────────────────────────────────
+
+describe('getBlindLabel — libellé volet individuel', () => {
+    it('retourne "Fermé" quand status=Off', () => {
+        const device = makeDevice({ type: DomoticzDeviceType.VOLET, isGroup: false, status: DomoticzDeviceStatus.OFF, level: 0 });
+        expect(getBlindLabel(device)).toBe('Fermé');
+    });
+
+    it('retourne "Ouvert" quand status=On', () => {
+        const device = makeDevice({ type: DomoticzDeviceType.VOLET, isGroup: false, status: DomoticzDeviceStatus.ON, level: 50 });
+        expect(getBlindLabel(device)).toBe('Ouvert');
+    });
+
+    it('retourne "Ouvert" quand level=99 (seuil plein)', () => {
+        const device = makeDevice({ type: DomoticzDeviceType.VOLET, isGroup: false, status: '99' as DomoticzDeviceStatus, level: 99 });
+        expect(getBlindLabel(device)).toBe('Ouvert');
+        expect(device.unit).toBe('');
+    });
+
+    it('retourne "Ouvert" quand level=100', () => {
+        const device = makeDevice({ type: DomoticzDeviceType.VOLET, isGroup: false, status: DomoticzDeviceStatus.ON, level: 100 });
+        expect(getBlindLabel(device)).toBe('Ouvert');
+        expect(device.unit).toBe('');
+    });
+
+    it('ne retourne pas "Ouvert" pour un niveau intermédiaire non-Off', () => {
+        const device = makeDevice({ type: DomoticzDeviceType.VOLET, isGroup: false, status: '50' as DomoticzDeviceStatus, level: 50 });
+        expect(getBlindLabel(device)).toBe('50');
+    });
+});
+
+// ─── getSingleLightLabel ───────────────────────────────────────────────────────
+
+describe('getSingleLightLabel — libellé lumière individuelle', () => {
+    it('retourne "Éteinte" pour un switch Off', () => {
+        const device = makeDevice({ type: DomoticzDeviceType.LUMIERE, switchType: DomoticzSwitchType.ONOFF, status: DomoticzDeviceStatus.OFF, level: 0 });
+        expect(getSingleLightLabel(device)).toBe('Éteinte');
+    });
+
+    it('retourne "Allumée" pour un switch On', () => {
+        const device = makeDevice({ type: DomoticzDeviceType.LUMIERE, switchType: DomoticzSwitchType.ONOFF, status: DomoticzDeviceStatus.ON, level: 100 });
+        expect(getSingleLightLabel(device)).toBe('Allumée');
+    });
+
+    it('retourne "Éteinte" pour un variateur Off', () => {
+        const device = makeDevice({ type: DomoticzDeviceType.LUMIERE, switchType: DomoticzSwitchType.SLIDER as any, status: DomoticzDeviceStatus.OFF, level: 0 });
+        expect(getSingleLightLabel(device)).toBe('Éteinte');
+    });
+
+    it('retourne le niveau en % pour un variateur intermédiaire', () => {
+        const device = makeDevice({ type: DomoticzDeviceType.LUMIERE, switchType: DomoticzSwitchType.SLIDER as any, status: DomoticzDeviceStatus.ON, level: 50 });
+        expect(getSingleLightLabel(device)).toBe('50');
+        expect(device.unit).toBe('%');
+    });
+
+    it('retourne "Allumée" pour un variateur à level=99 (seuil plein)', () => {
+        const device = makeDevice({ type: DomoticzDeviceType.LUMIERE, switchType: DomoticzSwitchType.SLIDER as any, status: DomoticzDeviceStatus.ON, level: 99 });
+        expect(getSingleLightLabel(device)).toBe('Allumée');
+        expect(device.unit).toBe('');
+    });
+
+    it('retourne "Allumée" pour un variateur à level=100', () => {
+        const device = makeDevice({ type: DomoticzDeviceType.LUMIERE, switchType: DomoticzSwitchType.SLIDER as any, status: DomoticzDeviceStatus.ON, level: 100 });
+        expect(getSingleLightLabel(device)).toBe('Allumée');
+        expect(device.unit).toBe('');
+    });
+
+    it('retourne "Mixte" pour un variateur On avec niveau incohérent', () => {
+        const device = makeDevice({ type: DomoticzDeviceType.LUMIERE, switchType: DomoticzSwitchType.SLIDER as any, status: DomoticzDeviceStatus.ON, level: 50, consistantLevel: false });
+        expect(getSingleLightLabel(device)).toBe('Mixte');
     });
 });

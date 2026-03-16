@@ -245,10 +245,12 @@ export function getEditingLabel(nextValue: number): string {
 
 /**
  * Retourne le label pour un volet (T07)
+ * Un volet est considéré ouvert quand son niveau atteint 99 ou plus.
  */
 export function getBlindLabel(device: DomoticzDevice): string {
   device.unit = "";
   if (device.status === DomoticzDeviceStatus.OFF) return DomoticzDeviceLabel.BLIND_CLOSED;
+  if (device.level >= 99) return DomoticzDeviceLabel.BLIND_OPEN;
   if (device.status === DomoticzDeviceStatus.ON) return DomoticzDeviceLabel.BLIND_OPEN;
   return device.status;
 }
@@ -282,6 +284,7 @@ export function getLightsGroupLabel(device: DomoticzDevice): string {
 
 /**
  * Retourne le label pour une lumière individuelle (T05)
+ * Un variateur est considéré allumé à plein quand son niveau atteint 99 ou plus.
  */
 export function getSingleLightLabel(device: DomoticzDevice): string {
   if (device.switchType === DomoticzSwitchType.ONOFF) {
@@ -296,6 +299,10 @@ export function getSingleLightLabel(device: DomoticzDevice): string {
   if (!device.consistantLevel) {
     device.unit = "";
     return DomoticzDeviceLabel.MIXTE;
+  }
+  if (device.level >= 99) {
+    device.unit = "";
+    return DomoticzDeviceLabel.LIGHT_ON;
   }
   device.unit = "%";
   return device.level + "";
