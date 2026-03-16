@@ -88,7 +88,7 @@ export function handleResetFavorites(): void {
             {
                 text: 'Réinitialiser',
                 style: 'destructive',
-                onPress: () => clearFavoritesFromStorage(),
+                onPress: () => { void clearFavoritesFromStorage(); },
             },
         ]
     );
