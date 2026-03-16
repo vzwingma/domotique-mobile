@@ -89,11 +89,14 @@ exports[`FavoriteCard snapshot favori actif 1`] = `
   </View>
   <View
     style={
-      {
-        "flex": 1,
-        "gap": 2,
-        "justifyContent": "center",
-      }
+      [
+        {
+          "flex": 1,
+          "gap": 2,
+          "justifyContent": "center",
+        },
+        false,
+      ]
     }
   >
     <Text
@@ -118,6 +121,7 @@ exports[`FavoriteCard snapshot favori actif 1`] = `
               "color": "#fff",
               "fontSize": 16,
             },
+            false,
             {
               "color": "#ffffff",
             },
@@ -144,10 +148,13 @@ exports[`FavoriteCard snapshot favori actif 1`] = `
           undefined,
           undefined,
           undefined,
-          {
-            "color": "#d6d6d6",
-            "fontSize": 13,
-          },
+          [
+            {
+              "color": "#d6d6d6",
+              "fontSize": 11,
+            },
+            false,
+          ],
         ]
       }
     >

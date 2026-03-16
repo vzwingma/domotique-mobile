@@ -8,6 +8,8 @@ import { DomoticzContext } from '@/app/services/DomoticzContextProvider';
 const mockPerformDevicePrimaryAction = jest.fn();
 const mockGetStatusLabel = jest.fn();
 const mockGetLevel = jest.fn();
+const mockUpdateDeviceLevel = jest.fn();
+const mockOverrideNextValue = jest.fn();
 
 jest.mock('@/components/IconDomoticzDevice', () => {
   const { View } = require('react-native');
@@ -18,12 +20,19 @@ jest.mock('@/components/IconDomoticzDevice', () => {
   };
 });
 
+jest.mock('@react-native-community/slider', () => {
+  const { View } = require('react-native');
+  return (props: any) => <View testID="slider" {...props} />;
+});
+
 const mockIsDeviceOn = jest.fn();
 
 jest.mock('@/app/controllers/devices.controller', () => ({
   getLevel: (...args: any[]) => mockGetLevel(...args),
   getStatusLabel: (...args: any[]) => mockGetStatusLabel(...args),
   isDeviceOn: (...args: any[]) => mockIsDeviceOn(...args),
+  updateDeviceLevel: (...args: any[]) => mockUpdateDeviceLevel(...args),
+  overrideNextValue: (...args: any[]) => mockOverrideNextValue(...args),
 }));
 
 jest.mock('@/app/enums/Colors', () => ({
@@ -32,6 +41,7 @@ jest.mock('@/app/enums/Colors', () => ({
     dark: { icon: '#ffffff', text: '#ECEDEE', background: '#151718' },
   },
   getGroupColor: jest.fn(() => '#ffffff'),
+  PROFILES_ENV: { C: 'previewC', V: 'previewV' },
 }));
 
 function makeDevice(overrides: Partial<DomoticzDevice> = {}): DomoticzDevice {
@@ -67,6 +77,7 @@ function renderWithContext(device: DomoticzDevice) {
 describe('FavoriteCard', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    delete process.env.EXPO_PUBLIC_MY_ENVIRONMENT;
     mockGetLevel.mockReturnValue(100);
     mockGetStatusLabel.mockReturnValue('Allumée');
     mockIsDeviceOn.mockImplementation((d: any) => d.status !== 'Off' && d.level > 0);
@@ -119,6 +130,97 @@ describe('FavoriteCard', () => {
       </DomoticzContext.Provider>,
     );
     expect(toJSON()).toMatchSnapshot();
+  });
+});
+
+// =============================================================================
+// Mode previewC — slider dans la tuile favori
+// =============================================================================
+describe('FavoriteCard — mode previewC', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    process.env.EXPO_PUBLIC_MY_ENVIRONMENT = 'previewC';
+    mockGetLevel.mockReturnValue(50);
+    mockGetStatusLabel.mockReturnValue('50');
+    mockIsDeviceOn.mockImplementation((d: any) => d.status !== 'Off' && d.level > 0);
+  });
+
+  afterEach(() => {
+    delete process.env.EXPO_PUBLIC_MY_ENVIRONMENT;
+  });
+
+  it('affiche un slider pour un volet actif en previewC', () => {
+    const device = makeDevice({
+      type: DomoticzDeviceType.VOLET,
+      switchType: DomoticzSwitchType.SLIDER,
+      status: DomoticzDeviceStatus.ON,
+      level: 50,
+      isActive: true,
+    });
+    const { getByTestId } = renderWithContext(device);
+    expect(getByTestId('slider')).toBeTruthy();
+  });
+
+  it('affiche un slider pour une lumière dimmable active en previewC', () => {
+    const device = makeDevice({
+      type: DomoticzDeviceType.LUMIERE,
+      switchType: DomoticzSwitchType.SLIDER,
+      status: DomoticzDeviceStatus.ON,
+      level: 50,
+      isActive: true,
+    });
+    const { getByTestId } = renderWithContext(device);
+    expect(getByTestId('slider')).toBeTruthy();
+  });
+
+  it("n'affiche pas de slider pour une lumière switch (ONOFF) en previewC", () => {
+    const device = makeDevice({
+      type: DomoticzDeviceType.LUMIERE,
+      switchType: DomoticzSwitchType.ONOFF,
+      status: DomoticzDeviceStatus.ON,
+      level: 0,
+      isActive: true,
+    });
+    const { queryByTestId } = renderWithContext(device);
+    expect(queryByTestId('slider')).toBeNull();
+  });
+
+  it("n'affiche pas de slider pour un appareil inactif en previewC", () => {
+    const device = makeDevice({
+      type: DomoticzDeviceType.VOLET,
+      switchType: DomoticzSwitchType.SLIDER,
+      isActive: false,
+    });
+    const { queryByTestId } = renderWithContext(device);
+    expect(queryByTestId('slider')).toBeNull();
+  });
+
+  it("n'affiche pas de slider hors mode previewC", () => {
+    process.env.EXPO_PUBLIC_MY_ENVIRONMENT = 'production';
+    const device = makeDevice({
+      type: DomoticzDeviceType.VOLET,
+      switchType: DomoticzSwitchType.SLIDER,
+      status: DomoticzDeviceStatus.ON,
+      level: 50,
+      isActive: true,
+    });
+    const { queryByTestId } = renderWithContext(device);
+    expect(queryByTestId('slider')).toBeNull();
+  });
+
+  it('les icône et bouton action sont toujours présents avec le slider', () => {
+    const device = makeDevice({
+      name: 'Volet salon',
+      type: DomoticzDeviceType.VOLET,
+      switchType: DomoticzSwitchType.SLIDER,
+      status: DomoticzDeviceStatus.ON,
+      level: 50,
+      isActive: true,
+    });
+    const { getByTestId, getByLabelText } = renderWithContext(device);
+    expect(getByTestId('device-icon')).toBeTruthy();
+    expect(getByLabelText('Fermer Volet salon')).toBeTruthy();
+    expect(getByTestId('slider')).toBeTruthy();
   });
 });
 

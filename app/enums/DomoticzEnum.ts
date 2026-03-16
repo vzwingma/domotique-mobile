@@ -78,7 +78,7 @@ export enum DomoticzDeviceLabel {
 /**
  * Tri des équipements Domoticz
  */
-export const DomoticzLightsSort: number[] = [122, 128, 131, 72, 117, 113, 114, 118];
+export const DomoticzLightsSort: number[] = [122, 128, 131, 72, 117, 113, 114, 118, 161];
 
 
 /**
@@ -114,7 +114,7 @@ export const DomoticzBlindsGroups : {[key: number]: number[]}[] = [
  */
 export const DomoticzLightsGroups : {[key: number]: number[]}[] = [
     // Lumières salon
-    {117 : [113, 114, 118]},
+    {117 : [113, 114, 118, 161]},
     // Toutes les lumières
-    {122 : [113, 114, 118, 128, 131, 72]}
+    {122 : [113, 114, 118, 128, 131, 72, 161]}
 ] ;
