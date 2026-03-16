@@ -151,7 +151,7 @@ exports[`FavoriteCard snapshot favori actif 1`] = `
           [
             {
               "color": "#d6d6d6",
-              "fontSize": 13,
+              "fontSize": 11,
             },
             false,
           ],

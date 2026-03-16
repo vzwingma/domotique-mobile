@@ -41,6 +41,7 @@ jest.mock('@/app/enums/Colors', () => ({
     dark: { icon: '#ffffff', text: '#ECEDEE', background: '#151718' },
   },
   getGroupColor: jest.fn(() => '#ffffff'),
+  PROFILES_ENV: { C: 'previewC', V: 'previewV' },
 }));
 
 function makeDevice(overrides: Partial<DomoticzDevice> = {}): DomoticzDevice {
@@ -133,12 +134,12 @@ describe('FavoriteCard', () => {
 });
 
 // =============================================================================
-// Mode previewV — slider dans la tuile favori
+// Mode previewC — slider dans la tuile favori
 // =============================================================================
-describe('FavoriteCard — mode previewV', () => {
+describe('FavoriteCard — mode previewC', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    process.env.EXPO_PUBLIC_MY_ENVIRONMENT = 'previewV';
+    process.env.EXPO_PUBLIC_MY_ENVIRONMENT = 'previewC';
     mockGetLevel.mockReturnValue(50);
     mockGetStatusLabel.mockReturnValue('50');
     mockIsDeviceOn.mockImplementation((d: any) => d.status !== 'Off' && d.level > 0);
@@ -148,7 +149,7 @@ describe('FavoriteCard — mode previewV', () => {
     delete process.env.EXPO_PUBLIC_MY_ENVIRONMENT;
   });
 
-  it('affiche un slider pour un volet actif en previewV', () => {
+  it('affiche un slider pour un volet actif en previewC', () => {
     const device = makeDevice({
       type: DomoticzDeviceType.VOLET,
       switchType: DomoticzSwitchType.SLIDER,
@@ -160,7 +161,7 @@ describe('FavoriteCard — mode previewV', () => {
     expect(getByTestId('slider')).toBeTruthy();
   });
 
-  it('affiche un slider pour une lumière dimmable active en previewV', () => {
+  it('affiche un slider pour une lumière dimmable active en previewC', () => {
     const device = makeDevice({
       type: DomoticzDeviceType.LUMIERE,
       switchType: DomoticzSwitchType.SLIDER,
@@ -172,7 +173,7 @@ describe('FavoriteCard — mode previewV', () => {
     expect(getByTestId('slider')).toBeTruthy();
   });
 
-  it("n'affiche pas de slider pour une lumière switch (ONOFF) en previewV", () => {
+  it("n'affiche pas de slider pour une lumière switch (ONOFF) en previewC", () => {
     const device = makeDevice({
       type: DomoticzDeviceType.LUMIERE,
       switchType: DomoticzSwitchType.ONOFF,
@@ -184,7 +185,7 @@ describe('FavoriteCard — mode previewV', () => {
     expect(queryByTestId('slider')).toBeNull();
   });
 
-  it("n'affiche pas de slider pour un appareil inactif en previewV", () => {
+  it("n'affiche pas de slider pour un appareil inactif en previewC", () => {
     const device = makeDevice({
       type: DomoticzDeviceType.VOLET,
       switchType: DomoticzSwitchType.SLIDER,
@@ -194,7 +195,7 @@ describe('FavoriteCard — mode previewV', () => {
     expect(queryByTestId('slider')).toBeNull();
   });
 
-  it("n'affiche pas de slider hors mode previewV", () => {
+  it("n'affiche pas de slider hors mode previewC", () => {
     process.env.EXPO_PUBLIC_MY_ENVIRONMENT = 'production';
     const device = makeDevice({
       type: DomoticzDeviceType.VOLET,
