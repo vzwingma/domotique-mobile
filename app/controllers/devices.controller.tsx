@@ -209,11 +209,15 @@ export function getLevel(device: DomoticzDevice): number {
 
 /**
  * Détermine si un équipement est actif (allumé ou ouvert).
- * Un équipement est considéré actif si son statut n'est pas OFF et que son niveau est supérieur à 0.
+ * Pour les switches On/Off, le niveau est toujours 0 : on se base uniquement sur le statut.
+ * Pour les variateurs et volets, on vérifie que le niveau est supérieur à 0.
  * @param device équipement Domoticz
  * @returns true si l'équipement est allumé/ouvert
  */
 export function isDeviceOn(device: DomoticzDevice): boolean {
+  if (device.switchType === DomoticzSwitchType.ONOFF) {
+    return device.status === DomoticzDeviceStatus.ON;
+  }
   return device.status !== DomoticzDeviceStatus.OFF && device.level > 0.1;
 }
 

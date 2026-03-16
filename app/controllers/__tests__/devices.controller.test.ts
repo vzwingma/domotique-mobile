@@ -1,4 +1,4 @@
-import { loadDomoticzDevices, onClickDeviceIcon, updateDeviceLevel, addActionForFavorite, refreshEquipementState, getBlindGroupLabel, getLightsGroupLabel, getBlindLabel, getSingleLightLabel, getStatusLabel } from '../devices.controller';
+import { loadDomoticzDevices, onClickDeviceIcon, updateDeviceLevel, addActionForFavorite, refreshEquipementState, getBlindGroupLabel, getLightsGroupLabel, getBlindLabel, getSingleLightLabel, getStatusLabel, isDeviceOn } from '../devices.controller';
 import callDomoticz from '@/app/services/ClientHTTP.service';
 import { getFavoritesFromStorage, saveFavoritesToStorage } from '@/app/services/DataUtils.service';
 import { DomoticzDeviceType, DomoticzDeviceStatus, DomoticzSwitchType } from '@/app/enums/DomoticzEnum';
@@ -450,5 +450,34 @@ describe('getSingleLightLabel — libellé lumière individuelle', () => {
     it('retourne "Mixte" pour un variateur On avec niveau incohérent', () => {
         const device = makeDevice({ type: DomoticzDeviceType.LUMIERE, switchType: DomoticzSwitchType.SLIDER as any, status: DomoticzDeviceStatus.ON, level: 50, consistantLevel: false });
         expect(getSingleLightLabel(device)).toBe('Mixte');
+    });
+});
+
+// ─── isDeviceOn ────────────────────────────────────────────────────────────────
+
+describe('isDeviceOn — détection état actif', () => {
+    it('retourne true pour un switch ONOFF avec status=On (level=0)', () => {
+        const device = makeDevice({ switchType: DomoticzSwitchType.ONOFF, status: DomoticzDeviceStatus.ON, level: 0 });
+        expect(isDeviceOn(device)).toBe(true);
+    });
+
+    it('retourne false pour un switch ONOFF avec status=Off (level=0)', () => {
+        const device = makeDevice({ switchType: DomoticzSwitchType.ONOFF, status: DomoticzDeviceStatus.OFF, level: 0 });
+        expect(isDeviceOn(device)).toBe(false);
+    });
+
+    it('retourne true pour un variateur avec status=On et level=50', () => {
+        const device = makeDevice({ switchType: DomoticzSwitchType.SLIDER as any, status: DomoticzDeviceStatus.ON, level: 50 });
+        expect(isDeviceOn(device)).toBe(true);
+    });
+
+    it('retourne false pour un variateur avec status=Off et level=0', () => {
+        const device = makeDevice({ switchType: DomoticzSwitchType.SLIDER as any, status: DomoticzDeviceStatus.OFF, level: 0 });
+        expect(isDeviceOn(device)).toBe(false);
+    });
+
+    it('retourne false pour un variateur avec status=On mais level=0 (éteint via slider)', () => {
+        const device = makeDevice({ switchType: DomoticzSwitchType.SLIDER as any, status: DomoticzDeviceStatus.ON, level: 0 });
+        expect(isDeviceOn(device)).toBe(false);
     });
 });
