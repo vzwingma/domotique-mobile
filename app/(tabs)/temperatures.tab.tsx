@@ -7,6 +7,7 @@ import { JSX, useContext } from 'react';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
 import { ViewDomoticzThermostat } from '../components/thermostat.component';
 import { View } from 'react-native';
+import { Colors } from '../enums/Colors';
 
 
 /**
@@ -24,7 +25,7 @@ export default function TabDomoticzTemperatures(): JSX.Element[] {
       items.push(<ViewDomoticzThermostat key={item.idx} thermostat={item} />);
     });
     
-  items.push(<View key="separator" style={{ height: 1, backgroundColor: 'red', marginVertical: 10 }} />);
+  items.push(<View key="separator" style={{ height: 1, backgroundColor: Colors.dark.separator, marginVertical: 10 }} />);
 
   domoticzTemperaturesData.forEach(item => {
     items.push(<ViewDomoticzTemperature key={item.idx} temperature={item} />);

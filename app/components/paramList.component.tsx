@@ -59,11 +59,11 @@ export const ViewDomoticzParamList: React.FC<DomoticzParamListProps> = ({ parame
   return (
     <View key={parametre.idx} style={paramStyles.viewBox}>
       <View key={parametre.idx} style={stylesListsDevices.iconBox}>
-        <IconDomoticzParametre name={getIconDomoticzParametre(parametre)} color={"white"} size={60} />
+        <IconDomoticzParametre name={getIconDomoticzParametre(parametre)} color={Colors.dark.tint} size={60} />
       </View>
       <View style={paramStyles.nameBox}>
         {/* T16 — nom d'affichage */}
-        <ThemedText style={{ fontSize: 16, color: 'white' }}>{getParametreDisplayName(parametre.name)}</ThemedText>
+        <ThemedText style={{ fontSize: 16, color: Colors.dark.tint }}>{getParametreDisplayName(parametre.name)}</ThemedText>
       </View>
 
       {/* T15 — chips segmentés */}
@@ -107,9 +107,10 @@ const paramStyles = StyleSheet.create({
     padding: 10,
     margin: 1,
     minHeight: 84,
-    borderColor: '#3A3A3A',
+    borderColor: Colors.dark.border,
     borderWidth: 1,
-    backgroundColor: '#0b0b0b',
+    backgroundColor: Colors.dark.surface,
+    borderRadius: 8,
     alignItems: 'center',
   },
   nameBox: {
@@ -132,7 +133,7 @@ const chipStyles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#555',
+    borderColor: Colors.dark.chip.border,
     minHeight: 44,
     justifyContent: 'center',
     alignItems: 'center',
@@ -144,11 +145,11 @@ const chipStyles = StyleSheet.create({
   },
   chipText: {
     fontSize: 10,
-    color: '#ccc',
+    color: Colors.dark.chip.text,
     textAlign: 'center',
   },
   chipTextSelected: {
-    color: '#000',
+    color: Colors.dark.chip.textSelected,
     fontWeight: 'bold',
   },
 });

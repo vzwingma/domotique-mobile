@@ -96,9 +96,9 @@ const favoritesStyles = StyleSheet.create({
   section: {
     marginTop: 12,
     padding: 12,
-    backgroundColor: '#1a1c1d',
+    backgroundColor: Colors.dark.surfaceAlt,
     borderRadius: 8,
-    borderColor: '#2a2c2d',
+    borderColor: Colors.dark.borderAlt,
     borderWidth: 1,
     width: '100%',
   },
@@ -118,22 +118,22 @@ const favoritesStyles = StyleSheet.create({
   },
   label: {
     fontSize: 11,
-    color: '#9BA1A6',
+    color: Colors.dark.label,
   },
   resetButton: {
     paddingHorizontal: 12,
     paddingVertical: 6,
-    backgroundColor: '#3a1c1c',
+    backgroundColor: Colors.dark.error.background,
     borderRadius: 6,
-    borderColor: '#7a2c2c',
+    borderColor: Colors.dark.error.border,
     borderWidth: 1,
   },
   resetButtonPressed: {
-    backgroundColor: '#5a2c2c',
+    backgroundColor: Colors.dark.error.backgroundPressed,
   },
   resetButtonText: {
     fontSize: 12,
-    color: '#ff6b6b',
+    color: Colors.dark.error.text,
     fontWeight: '600',
   },
 });
@@ -142,9 +142,9 @@ const aboutStyles = StyleSheet.create({
   section: {
     marginTop: 12,
     padding: 12,
-    backgroundColor: '#1a1c1d',
+    backgroundColor: Colors.dark.surfaceAlt,
     borderRadius: 8,
-    borderColor: '#2a2c2d',
+    borderColor: Colors.dark.borderAlt,
     borderWidth: 1,
     width: '100%',
   },
@@ -161,7 +161,7 @@ const aboutStyles = StyleSheet.create({
   },
   label: {
     fontSize: 12,
-    color: '#9BA1A6',
+    color: Colors.dark.label,
   },
   value: {
     fontSize: 12,

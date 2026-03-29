@@ -113,9 +113,9 @@ const thermostatStyles = StyleSheet.create({
     width: '100%',
     padding: 10,
     margin: 1,
-    borderColor: '#3A3A3A',
+    borderColor: Colors.dark.border,
     borderWidth: 1,
-    backgroundColor: '#0b0b0b',
+    backgroundColor: Colors.dark.surface,
     minHeight: 84,
   },
   viewBoxDisabled: {
@@ -139,7 +139,7 @@ const thermostatStyles = StyleSheet.create({
   title: {
     flex: 1,
     fontSize: 16,
-    color: 'white',
+    color: Colors.dark.tint,
   },
   controlBox: {
     flexDirection: 'row',
@@ -152,7 +152,7 @@ const thermostatStyles = StyleSheet.create({
   },
   secondaryLabel: {
     fontSize: 11,
-    color: '#9BA1A6',
+    color: Colors.dark.label,
   },
   adjustButton: {
     minWidth: 36,
@@ -160,7 +160,7 @@ const thermostatStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 18,
-    backgroundColor: '#1f1a08',
+    backgroundColor: Colors.dark.emphasis.active,
     borderWidth: 1,
     borderColor: Colors.domoticz.color,
     paddingHorizontal: 10,
@@ -199,7 +199,7 @@ const thermostatStyles = StyleSheet.create({
   },
   measuredValue: {
     fontSize: 12,
-    color: '#d5d5d5',
+    color: Colors.dark.labelSecondary,
     fontWeight: 'bold',
   },
   consigneValue: {

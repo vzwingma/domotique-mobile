@@ -36,7 +36,7 @@ export const ViewDomoticzTemperature: React.FC<DomoticzTempProps> = ({ temperatu
   return (
     <View key={temperature.idx} style={temperature.isActive ? temperatureStyles.viewBox : temperatureStyles.viewBoxDisconnected}>
       <View key={temperature.idx} style={temperatureStyles.iconBox}>
-        <IconDomoticzTemperature name={getTemperatureIcon(temperature)} color={(temperature.idx === '101' ? "#F8C969" : "white")} size={44} />
+        <IconDomoticzTemperature name={getTemperatureIcon(temperature)} color={(temperature.idx === '101' ? '#F8C969' : Colors.dark.tint)} size={44} />
       </View>
       <View style={temperatureStyles.titleValueBox}>
         <ThemedText style={temperatureStyles.textName}>{temperature.name}</ThemedText>
@@ -56,9 +56,10 @@ const temperatureStyles = StyleSheet.create({
     width: '100%',
     padding: 10,
     margin: 1,
-    borderColor: '#3A3A3A',
+    borderColor: Colors.dark.border,
     borderWidth: 1,
-    backgroundColor: '#0b0b0b',
+    backgroundColor: Colors.dark.surface,
+    borderRadius: 8,
     alignItems: 'center',
   },
   viewBoxDisconnected: {
@@ -67,9 +68,10 @@ const temperatureStyles = StyleSheet.create({
     width: '100%',
     padding: 10,
     margin: 1,
-    borderColor: '#7f2b2b',
+    borderColor: Colors.dark.disconnected.border,
     borderWidth: 1,
-    backgroundColor: '#1a1212',
+    backgroundColor: Colors.dark.disconnected.background,
+    borderRadius: 8,
     alignItems: 'center',
   },
   iconBox: {
@@ -94,6 +96,6 @@ const temperatureStyles = StyleSheet.create({
   },
   textName: {
     fontSize: 14,
-    color: 'white',
+    color: Colors.dark.tint,
   },
 });
