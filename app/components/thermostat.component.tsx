@@ -81,8 +81,9 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
   // Affichage de la valeur de consigne : partie entière (blanc) + décimale (accent)
   const intPart = thermostat.isActive ? Math.floor(nextValue).toString() : "−";
   const frac = nextValue % 1;
+  const fracStr = frac === 0 ? "0" : Math.round(frac * 10).toString();
   const decPart = thermostat.isActive
-    ? "." + (frac === 0 ? "0" : Math.round(frac * 10).toString()) + "°"
+    ? "." + fracStr + "°"
     : "";
 
   return (
@@ -116,15 +117,19 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
           <Circle cx={knob.x} cy={knob.y} r={KNOB_R} fill={Colors.domoticz.color} />
         </Svg>
 
-        {/* Contenu superposé : étiquette, température, boutons */}
-        <View style={styles.dialContent}>
-          <ThemedText style={styles.consigneLabel}>Consigne</ThemedText>
-          <View style={styles.tempRow}>
-            <ThemedText style={styles.tempInt}>{intPart}</ThemedText>
-            {thermostat.isActive && (
-              <ThemedText style={styles.tempDec}>{decPart}</ThemedText>
-            )}
+        {/* Contenu superposé : étiquette + température centrées sur le disque, boutons en dessous */}
+        <View style={styles.dialOverlay}>
+          {/* CONSIGNE + valeur : centrés sur le centre géométrique du disque (CY) */}
+          <View style={styles.innerGroup}>
+            <ThemedText style={styles.consigneLabel}>Consigne</ThemedText>
+            <View style={styles.tempRow}>
+              <ThemedText style={styles.tempInt}>{intPart}</ThemedText>
+              {thermostat.isActive && (
+                <ThemedText style={styles.tempDec}>{decPart}</ThemedText>
+              )}
+            </View>
           </View>
+          {/* Boutons positionnés sous la valeur */}
           <View style={styles.controls}>
             <TouchableOpacity
               style={styles.ctrlBtn}
@@ -168,6 +173,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     backgroundColor: Colors.dark.background,
     width: '100%',
+    borderRadius: 12,
   },
   name: {
     fontSize: 14,
@@ -185,12 +191,17 @@ const styles = StyleSheet.create({
   disabledOpacity: {
     opacity: 0.3,
   },
-  dialContent: {
+  dialOverlay: {
     position: 'absolute',
     width: DIAL_SIZE,
     height: DIAL_SIZE,
     alignItems: 'center',
-    justifyContent: 'center',
+  },
+  /** Groupe CONSIGNE + température : positionné pour centrer la valeur sur CY */
+  innerGroup: {
+    position: 'absolute',
+    top: CY - 60,   // tempRow center ≈ CY : 52 = lineHeight/2 (36) + consigneLabel (~14) + gap (2)
+    alignItems: 'center',
   },
   consigneLabel: {
     fontSize: 11,
@@ -218,15 +229,20 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },
   controls: {
+    position: 'absolute',
+    top: CY + 46,   // sous la valeur : CY + lineHeight/2 (36) + gap (10)
     flexDirection: 'row',
     gap: 40,
-    marginTop: 10,
   },
   ctrlBtn: {
-    padding: 8,
-    minWidth: 36,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: Colors.domoticz.color,
+    backgroundColor: Colors.dark.surface,
   },
   ctrlText: {
     fontSize: 28,
