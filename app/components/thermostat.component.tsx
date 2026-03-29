@@ -1,210 +1,252 @@
-import { ThemedText } from "../../components/ThemedText";
+import React, { useContext, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
+import Svg, { Circle, Defs, Path, RadialGradient, Stop } from "react-native-svg";
+import { ThemedText } from "../../components/ThemedText";
 import { Colors } from "../enums/Colors";
-import { useContext, useState } from "react";
 import { DomoticzContext } from "../services/DomoticzContextProvider";
 import DomoticzThermostat from "../models/domoticzThermostat.model";
-import IconDomoticzThermostat from "@/components/IconDomoticzThermostat";
 import { DomoticzThermostatLevelValue } from "../enums/DomoticzEnum";
 import { updateThermostatPoint } from "../controllers/thermostats.controller";
 
+// ── Constantes du cadran ──────────────────────────────────────────────────────
+const DIAL_SIZE = 180;
+const CX = DIAL_SIZE / 2;
+const CY = DIAL_SIZE / 2;
+const TRACK_R = 85;
+const TRACK_W = 12;
+const KNOB_R = 8;
+/** Angle de départ de la piste (7h30, sens horaire depuis le haut) */
+const START_ANGLE = 225;
+/** Arc total de la piste en degrés */
+const TOTAL_SPAN = 270;
 
-// Définition des propriétés d'un équipement Domoticz
+/** Convertit un angle (sens horaire depuis le haut) en coordonnées SVG */
+function polarToXY(angleDeg: number, r: number): { x: number; y: number } {
+  const rad = ((angleDeg - 90) * Math.PI) / 180;
+  return { x: CX + r * Math.cos(rad), y: CY + r * Math.sin(rad) };
+}
+
+/** Génère un chemin SVG d'arc à partir d'un angle de départ et d'une amplitude */
+function describeArc(startAngle: number, span: number, r: number): string {
+  if (span <= 0) return '';
+  const s = span >= 360 ? 359.99 : span;
+  const start = polarToXY(startAngle, r);
+  const end = polarToXY(startAngle + s, r);
+  const largeArc = s > 180 ? 1 : 0;
+  return `M ${start.x.toFixed(2)} ${start.y.toFixed(2)} A ${r} ${r} 0 ${largeArc} 1 ${end.x.toFixed(2)} ${end.y.toFixed(2)}`;
+}
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+
 export type DomoticzThermostatProps = {
   thermostat: DomoticzThermostat;
 };
 
-
+// ── Composant ─────────────────────────────────────────────────────────────────
 
 /**
- * Composant pour afficher un thermostat Domoticz avec boutons +/- et mesure vs consigne.
+ * Cadran circulaire pour afficher et piloter la consigne d'un thermostat Domoticz.
+ * L'arc actif (jaune) indique visuellement le niveau de consigne sur la piste de fond.
  */
-export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ thermostat }: DomoticzThermostatProps) => {
-
+export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ thermostat }) => {
   const [nextValue, setNextValue] = useState<number>(thermostat.temp);
   const { setDomoticzThermostatData, domoticzTemperaturesData } = useContext(DomoticzContext)!;
 
-  // T12 — mesure du salon
   const measuredTemp = domoticzTemperaturesData.find(t => t.name.toLowerCase().includes('salon'));
 
-  // T11 — boutons +/- 0.5°C
   const handleDecrease = () => {
     if (!thermostat.isActive) return;
-    const newValue = Math.max(DomoticzThermostatLevelValue.MIN, nextValue - 0.5);
+    const newValue = Math.max(DomoticzThermostatLevelValue.MIN, Math.round((nextValue - 0.5) * 10) / 10);
     setNextValue(newValue);
     updateThermostatPoint(thermostat.idx, thermostat, newValue, setDomoticzThermostatData);
   };
 
   const handleIncrease = () => {
     if (!thermostat.isActive) return;
-    const newValue = Math.min(DomoticzThermostatLevelValue.MAX, nextValue + 0.5);
+    const newValue = Math.min(DomoticzThermostatLevelValue.MAX, Math.round((nextValue + 0.5) * 10) / 10);
     setNextValue(newValue);
     updateThermostatPoint(thermostat.idx, thermostat, newValue, setDomoticzThermostatData);
   };
 
+  // Calcul de la progression de l'arc actif
+  const range = DomoticzThermostatLevelValue.MAX - DomoticzThermostatLevelValue.MIN;
+  const pct = thermostat.isActive ? (nextValue - DomoticzThermostatLevelValue.MIN) / range : 0;
+  const activeSpan = TOTAL_SPAN * pct;
+  const knobAngle = START_ANGLE + activeSpan;
+  const knob = polarToXY(knobAngle, TRACK_R);
+
+  const trackPath = describeArc(START_ANGLE, TOTAL_SPAN, TRACK_R);
+  const activePath = activeSpan > 1 ? describeArc(START_ANGLE, activeSpan, TRACK_R) : null;
+
+  // Affichage de la valeur de consigne : partie entière (blanc) + décimale (accent)
+  const intPart = thermostat.isActive ? Math.floor(nextValue).toString() : "−";
+  const frac = nextValue % 1;
+  const decPart = thermostat.isActive
+    ? "." + (frac === 0 ? "0" : Math.round(frac * 10).toString()) + "°"
+    : "";
+
   return (
-    <View style={[thermostatStyles.viewBox, !thermostat.isActive && thermostatStyles.viewBoxDisabled]}>
-      <View style={thermostatStyles.iconBox}>
-        <IconDomoticzThermostat />
-      </View>
-      <View style={thermostatStyles.contentBox}>
-        <View style={thermostatStyles.titleControlBox}>
-          <ThemedText style={thermostatStyles.title}>{thermostat.name}</ThemedText>
-          {/* T11 — boutons +/- autour de la valeur consigne */}
-          <View style={thermostatStyles.controlBox}>
+    <View style={styles.container}>
+      <ThemedText style={styles.name}>{thermostat.name}</ThemedText>
+
+      {/* Cadran circulaire */}
+      <View style={[styles.dialWrapper, !thermostat.isActive && styles.disabledOpacity]}>
+        <Svg width={DIAL_SIZE} height={DIAL_SIZE}>
+          <Defs>
+            <RadialGradient id="innerGrad" cx="50%" cy="50%" r="50%">
+              <Stop offset="0%" stopColor="#2a3350" stopOpacity="1" />
+              <Stop offset="100%" stopColor="#1a2240" stopOpacity="1" />
+            </RadialGradient>
+          </Defs>
+
+          {/* Disque intérieur */}
+          <Circle cx={CX} cy={CY} r={TRACK_R - TRACK_W / 2 - 2} fill="url(#innerGrad)" />
+
+          {/* Piste de fond */}
+          <Path d={trackPath} stroke="#1a2a4a" strokeWidth={TRACK_W} strokeLinecap="round" fill="none" />
+
+          {/* Arc actif (consigne) */}
+          {activePath && (
+            <Path d={activePath} stroke={Colors.domoticz.color} strokeWidth={TRACK_W} strokeLinecap="round" fill="none" />
+          )}
+
+          {/* Curseur avec halo lumineux */}
+          <Circle cx={knob.x} cy={knob.y} r={KNOB_R + 7} fill={Colors.domoticz.color} opacity={0.15} />
+          <Circle cx={knob.x} cy={knob.y} r={KNOB_R + 3} fill={Colors.domoticz.color} opacity={0.3} />
+          <Circle cx={knob.x} cy={knob.y} r={KNOB_R} fill={Colors.domoticz.color} />
+        </Svg>
+
+        {/* Contenu superposé : étiquette, température, boutons */}
+        <View style={styles.dialContent}>
+          <ThemedText style={styles.consigneLabel}>Consigne</ThemedText>
+          <View style={styles.tempRow}>
+            <ThemedText style={styles.tempInt}>{intPart}</ThemedText>
+            {thermostat.isActive && (
+              <ThemedText style={styles.tempDec}>{decPart}</ThemedText>
+            )}
+          </View>
+          <View style={styles.controls}>
             <TouchableOpacity
-              style={[thermostatStyles.adjustButton, !thermostat.isActive && thermostatStyles.adjustButtonDisabled]}
-              activeOpacity={0.7}
+              style={styles.ctrlBtn}
               onPress={handleDecrease}
               disabled={!thermostat.isActive}
               accessibilityRole="button"
               accessibilityLabel="Diminuer la consigne"
             >
-              <ThemedText style={thermostatStyles.adjustButtonText}>−</ThemedText>
+              <ThemedText style={styles.ctrlText}>−</ThemedText>
             </TouchableOpacity>
-            <View style={thermostatStyles.consigneControlBox}>
-              <ThemedText style={thermostatStyles.secondaryLabel}>Consigne</ThemedText>
-              <ThemedText style={thermostatStyles.textLevel}>{getStatusLabel(thermostat, nextValue)} {thermostat.unit}</ThemedText>
-            </View>
             <TouchableOpacity
-              style={[thermostatStyles.adjustButton, !thermostat.isActive && thermostatStyles.adjustButtonDisabled]}
-              activeOpacity={0.7}
+              style={styles.ctrlBtn}
               onPress={handleIncrease}
               disabled={!thermostat.isActive}
               accessibilityRole="button"
               accessibilityLabel="Augmenter la consigne"
             >
-              <ThemedText style={thermostatStyles.adjustButtonText}>+</ThemedText>
+              <ThemedText style={styles.ctrlText}>+</ThemedText>
             </TouchableOpacity>
           </View>
         </View>
-        {/* T12 — mesure vs consigne */}
-        {measuredTemp && (
-          <View style={thermostatStyles.measuredRow}>
-            <View style={thermostatStyles.measuredSection}>
-              <ThemedText style={thermostatStyles.secondaryLabel}>Mesure : </ThemedText>
-              <ThemedText style={thermostatStyles.measuredValue}>{measuredTemp.temp}°C</ThemedText>
-            </View>
-            <View style={thermostatStyles.consigneSection}>
-              <ThemedText style={thermostatStyles.secondaryLabel}>Consigne : </ThemedText>
-              <ThemedText style={thermostatStyles.consigneValue}>{thermostat.temp}°C</ThemedText>
-            </View>
-          </View>
-        )}
       </View>
+
+      {/* Section Mesure */}
+      {measuredTemp && (
+        <View style={styles.measureRow}>
+          <ThemedText style={styles.measureLabel}>Mesure</ThemedText>
+          <ThemedText style={styles.measureValue}>{measuredTemp.temp}°C</ThemedText>
+        </View>
+      )}
     </View>
   );
 };
 
+// ── Styles ────────────────────────────────────────────────────────────────────
 
-
-
-/**
- * Label du statut du thermostat (consigne courante).
- */
-function getStatusLabel(device: DomoticzThermostat, nextValue: number): string {
-  if (!device.isActive) return "-";
-  return nextValue + "";
-}
-
-const thermostatStyles = StyleSheet.create({
-  viewBox: {
-    flexDirection: 'row',
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+    backgroundColor: Colors.dark.background,
     width: '100%',
-    padding: 10,
-    margin: 1,
-    borderColor: Colors.dark.border,
-    borderWidth: 1,
-    backgroundColor: Colors.dark.surface,
-    minHeight: 84,
   },
-  viewBoxDisabled: {
-    opacity: 0.2,
-  },
-  iconBox: {
-    marginRight: 10,
-    height: 60,
-    width: 60,
-  },
-  contentBox: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-  },
-  titleControlBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  title: {
-    flex: 1,
-    fontSize: 16,
+  name: {
+    fontSize: 14,
     color: Colors.dark.tint,
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    marginBottom: 16,
   },
-  controlBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  consigneControlBox: {
-    minWidth: 70,
-    alignItems: 'center',
-  },
-  secondaryLabel: {
-    fontSize: 11,
-    color: Colors.dark.label,
-  },
-  adjustButton: {
-    minWidth: 36,
-    minHeight: 36,
+  dialWrapper: {
+    width: DIAL_SIZE,
+    height: DIAL_SIZE,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 18,
-    backgroundColor: Colors.dark.emphasis.active,
-    borderWidth: 1,
-    borderColor: Colors.domoticz.color,
-    paddingHorizontal: 10,
   },
-  adjustButtonDisabled: {
-    opacity: 0.35,
+  disabledOpacity: {
+    opacity: 0.3,
   },
-  adjustButtonText: {
-    color: Colors.domoticz.color,
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  textLevel: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.domoticz.color,
-    textAlign: 'right',
-  },
-  measuredRow: {
-    flexDirection: 'row',
+  dialContent: {
+    position: 'absolute',
+    width: DIAL_SIZE,
+    height: DIAL_SIZE,
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 2,
+    justifyContent: 'center',
+  },
+  consigneLabel: {
+    fontSize: 11,
+    color: '#7a8aaa',
+    letterSpacing: 3,
     marginBottom: 2,
   },
-  measuredSection: {
-    flex: 1,
+  tempRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
   },
-  consigneSection: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
+  tempInt: {
+    fontSize: 68,
+    fontWeight: '800',
+    color: '#f0f0f0',
+    lineHeight: 72,
+    includeFontPadding: false,
   },
-  measuredValue: {
-    fontSize: 12,
-    color: Colors.dark.labelSecondary,
-    fontWeight: 'bold',
-  },
-  consigneValue: {
-    fontSize: 12,
+  tempDec: {
+    fontSize: 26,
+    fontWeight: '600',
     color: Colors.domoticz.color,
+    marginBottom: 10,
+    marginLeft: 2,
+    includeFontPadding: false,
+  },
+  controls: {
+    flexDirection: 'row',
+    gap: 40,
+    marginTop: 10,
+  },
+  ctrlBtn: {
+    padding: 8,
+    minWidth: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ctrlText: {
+    fontSize: 28,
+    color: '#7a8aaa',
+    fontWeight: '300',
+    lineHeight: 32,
+  },
+  measureRow: {
+    alignItems: 'center',
+    marginTop: 3,
+  },
+  measureLabel: {
+    fontSize: 12,
+    color: '#7a8aaa',
+    letterSpacing: 2,
+  },
+  measureValue: {
+    fontSize: 28,
     fontWeight: 'bold',
+    color: '#6fc8e8',
+    marginTop: 4,
   },
 });
