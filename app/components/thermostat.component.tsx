@@ -1,6 +1,7 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Svg, { Circle, Defs, Path, RadialGradient, Stop } from "react-native-svg";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { ThemedText } from "../../components/ThemedText";
 import { Colors } from "../enums/Colors";
 import { DomoticzContext } from "../services/DomoticzContextProvider";
@@ -36,6 +37,25 @@ function describeArc(startAngle: number, span: number, r: number): string {
   return `M ${start.x.toFixed(2)} ${start.y.toFixed(2)} A ${r} ${r} 0 ${largeArc} 1 ${end.x.toFixed(2)} ${end.y.toFixed(2)}`;
 }
 
+/**
+ * Convertit une position tactile (relative au SVG) en valeur de température,
+ * en projetant l'angle sur la plage de l'arc (arrondi au 0,5°C le plus proche).
+ */
+function touchToTemp(x: number, y: number): number {
+  const dx = x - CX;
+  const dy = y - CY;
+  const angleDeg = ((Math.atan2(dy, dx) * 180 / Math.PI) + 90 + 360) % 360;
+  const relAngle = (angleDeg - START_ANGLE + 360) % 360;
+  // Zone morte (gap du bas) : snap vers l'extrémité la plus proche
+  const deadZoneThreshold = TOTAL_SPAN + (360 - TOTAL_SPAN) / 2;
+  const snapToMax = relAngle < deadZoneThreshold ? 1 : 0;
+  const pct = relAngle > TOTAL_SPAN
+    ? snapToMax
+    : relAngle / TOTAL_SPAN;
+  const range = DomoticzThermostatLevelValue.MAX - DomoticzThermostatLevelValue.MIN;
+  return Math.round((DomoticzThermostatLevelValue.MIN + pct * range) * 2) / 2;
+}
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 export type DomoticzThermostatProps = {
@@ -50,6 +70,8 @@ export type DomoticzThermostatProps = {
  */
 export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ thermostat }) => {
   const [nextValue, setNextValue] = useState<number>(thermostat.temp);
+  /** Valeur courante pendant le drag, lue dans onEnd sans dépendre du state React */
+  const draggingValue = useRef<number>(thermostat.temp);
   const { setDomoticzThermostatData, domoticzTemperaturesData } = useContext(DomoticzContext)!;
 
   const measuredTemp = domoticzTemperaturesData.find(t => t.name.toLowerCase().includes('salon'));
@@ -57,6 +79,7 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
   const handleDecrease = () => {
     if (!thermostat.isActive) return;
     const newValue = Math.max(DomoticzThermostatLevelValue.MIN, Math.round((nextValue - 0.5) * 10) / 10);
+    draggingValue.current = newValue;
     setNextValue(newValue);
     updateThermostatPoint(thermostat.idx, thermostat, newValue, setDomoticzThermostatData);
   };
@@ -64,9 +87,30 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
   const handleIncrease = () => {
     if (!thermostat.isActive) return;
     const newValue = Math.min(DomoticzThermostatLevelValue.MAX, Math.round((nextValue + 0.5) * 10) / 10);
+    draggingValue.current = newValue;
     setNextValue(newValue);
     updateThermostatPoint(thermostat.idx, thermostat, newValue, setDomoticzThermostatData);
   };
+
+  /** Gesture pan sur l'arc : mise à jour visuelle en temps réel, appel API au relâchement */
+  const panGesture = Gesture.Pan()
+    .runOnJS(true)
+    .onBegin((e) => {
+      if (!thermostat.isActive) return;
+      const temp = touchToTemp(e.x, e.y);
+      draggingValue.current = temp;
+      setNextValue(temp);
+    })
+    .onUpdate((e) => {
+      if (!thermostat.isActive) return;
+      const temp = touchToTemp(e.x, e.y);
+      draggingValue.current = temp;
+      setNextValue(temp);
+    })
+    .onEnd(() => {
+      if (!thermostat.isActive) return;
+      updateThermostatPoint(thermostat.idx, thermostat, draggingValue.current, setDomoticzThermostatData);
+    });
 
   // Calcul de la progression de l'arc actif
   const range = DomoticzThermostatLevelValue.MAX - DomoticzThermostatLevelValue.MIN;
@@ -92,7 +136,8 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
 
       {/* Cadran circulaire */}
       <View style={[styles.dialWrapper, !thermostat.isActive && styles.disabledOpacity]}>
-        <Svg width={DIAL_SIZE} height={DIAL_SIZE}>
+        <GestureDetector gesture={panGesture}>
+          <Svg width={DIAL_SIZE} height={DIAL_SIZE}>
           <Defs>
             <RadialGradient id="innerGrad" cx="50%" cy="50%" r="50%">
               <Stop offset="0%" stopColor="#2a3350" stopOpacity="1" />
@@ -115,7 +160,8 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
           <Circle cx={knob.x} cy={knob.y} r={KNOB_R + 7} fill={Colors.domoticz.color} opacity={0.15} />
           <Circle cx={knob.x} cy={knob.y} r={KNOB_R + 3} fill={Colors.domoticz.color} opacity={0.3} />
           <Circle cx={knob.x} cy={knob.y} r={KNOB_R} fill={Colors.domoticz.color} />
-        </Svg>
+          </Svg>
+        </GestureDetector>
 
         {/* Contenu superposé : étiquette + température centrées sur le disque, boutons en dessous */}
         <View style={styles.dialOverlay}>
@@ -196,6 +242,7 @@ const styles = StyleSheet.create({
     width: DIAL_SIZE,
     height: DIAL_SIZE,
     alignItems: 'center',
+    pointerEvents: 'box-none',
   },
   /** Groupe CONSIGNE + température : positionné pour centrer la valeur sur CY */
   innerGroup: {
@@ -256,13 +303,13 @@ const styles = StyleSheet.create({
   },
   measureLabel: {
     fontSize: 12,
-    color: '#7a8aaa',
+    color: Colors.dark.labelSecondary,
     letterSpacing: 2,
   },
   measureValue: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#6fc8e8',
+    color: Colors.dark.labelSecondary,
     marginTop: 4,
   },
 });
