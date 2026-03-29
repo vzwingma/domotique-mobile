@@ -3,23 +3,17 @@
  *
  * Fonctions pures :
  *   - getLightIcon(device)
- *   - getVoletIcon(device)
  *
  * Composant IconDomoticzDevice :
  *   - handleLumierePress : clic lumière individuelle / groupe
  *   - handleVoletPress   : clic volet individuel / groupe
+ *
+ * Composant IconVoletSVG :
+ *   - nombre de lames selon le niveau d'ouverture
  */
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { Alert } from 'react-native';
-
-// ─── Mocks des assets PNG ──────────────────────────────────────────────────────
-jest.mock('../../assets/icons/window-shutter-closed.png',           () => 'window-shutter-closed');
-jest.mock('../../assets/icons/window-shutter-opened.png',           () => 'window-shutter-opened');
-jest.mock('../../assets/icons/window-shutter-mid-opened.png',       () => 'window-shutter-mid-opened');
-jest.mock('../../assets/icons/window-shutter-group-closed.png',     () => 'window-shutter-group-closed');
-jest.mock('../../assets/icons/window-shutter-group-opened.png',     () => 'window-shutter-group-opened');
-jest.mock('../../assets/icons/window-shutter-group-mid-opened.png', () => 'window-shutter-group-mid-opened');
 
 // ─── Mock @expo/vector-icons ── remplace MaterialCommunityIcons par un composant pressable
 jest.mock('@expo/vector-icons', () => {
@@ -53,8 +47,9 @@ jest.mock('@/app/enums/Colors', () => ({
   getGroupColor: jest.fn(() => 'white'),
 }));
 
-import { getLightIcon, getVoletIcon } from '../IconDomoticzDevice';
+import { getLightIcon } from '../IconDomoticzDevice';
 import IconDomoticzDevice from '../IconDomoticzDevice';
+import { IconVoletSVG } from '../IconVoletSVG';
 import DomoticzDevice from '@/app/models/domoticzDevice.model';
 import { DomoticzDeviceType, DomoticzSwitchType } from '@/app/enums/DomoticzEnum';
 import { DomoticzContext } from '@/app/services/DomoticzContextProvider';
@@ -132,108 +127,80 @@ describe('getLightIcon', () => {
 });
 
 // ─── getVoletIcon ──────────────────────────────────────────────────────────────
+// La fonction getVoletIcon (PNG statique) a été remplacée par IconVoletSVG (SVG dynamique).
+// Les tests ci-dessous vérifient le calcul du nombre de lames selon le niveau.
 
-describe('getVoletIcon – volet simple (isGroup = false)', () => {
+const MAX_SLATS = 8;
 
-  it('level=0  (status Off) → volet fermé', () => {
-    const device = makeDevice({
-      isGroup: false, level: 0, status: 'Off',
-      type: DomoticzDeviceType.VOLET,
-    });
-    expect(getVoletIcon(device)).toBe('window-shutter-closed');
+function computeSlatCount(level: number, status = 'On'): number {
+  const effectiveLevel = status === 'Off' ? 0 : level;
+  return Math.round(MAX_SLATS * (100 - effectiveLevel) / 100);
+}
+
+describe('IconVoletSVG – nombre de lames selon le niveau', () => {
+
+  it('status=Off (level=100) → toutes les lames visibles (fermé, status prévaut)', () => {
+    expect(computeSlatCount(100, 'Off')).toBe(MAX_SLATS);
   });
 
-  it('level=0  (status On)  → volet fermé (level prévaut)', () => {
-    const device = makeDevice({
-      isGroup: false, level: 0, status: 'On',
-      type: DomoticzDeviceType.VOLET,
-    });
-    expect(getVoletIcon(device)).toBe('window-shutter-closed');
+  it('status=Off (level=50) → toutes les lames visibles (fermé, status prévaut)', () => {
+    expect(computeSlatCount(50, 'Off')).toBe(MAX_SLATS);
   });
 
-  it('status=Off (level>0) → volet fermé (status prévaut)', () => {
-    const device = makeDevice({
-      isGroup: false, level: 50, status: 'Off',
-      type: DomoticzDeviceType.VOLET,
-    });
-    expect(getVoletIcon(device)).toBe('window-shutter-closed');
+  it('level=0  (fermé)  → toutes les lames visibles (MAX_SLATS)', () => {
+    expect(computeSlatCount(0)).toBe(MAX_SLATS);
   });
 
-  it('level=100 → volet ouvert', () => {
-    const device = makeDevice({
-      isGroup: false, level: 100, status: 'On',
-      type: DomoticzDeviceType.VOLET,
-    });
-    expect(getVoletIcon(device)).toBe('window-shutter-opened');
+  it('level=100 (ouvert) → aucune lame visible (0)', () => {
+    expect(computeSlatCount(100)).toBe(0);
   });
 
-  it('level=50  → volet mi-ouvert', () => {
-    const device = makeDevice({
-      isGroup: false, level: 50, status: 'On',
-      type: DomoticzDeviceType.VOLET,
-    });
-    expect(getVoletIcon(device)).toBe('window-shutter-mid-opened');
+  it('level=50  → moitié des lames visibles', () => {
+    expect(computeSlatCount(50)).toBe(Math.round(MAX_SLATS / 2));
   });
 
-  it('level=1 (intermédiaire minimum) → volet mi-ouvert', () => {
-    const device = makeDevice({
-      isGroup: false, level: 1, status: 'On',
-      type: DomoticzDeviceType.VOLET,
-    });
-    expect(getVoletIcon(device)).toBe('window-shutter-mid-opened');
+  it('level=25  → 75% des lames visibles', () => {
+    expect(computeSlatCount(25)).toBe(Math.round(MAX_SLATS * 0.75));
+  });
+
+  it('level=75  → 25% des lames visibles', () => {
+    expect(computeSlatCount(75)).toBe(Math.round(MAX_SLATS * 0.25));
+  });
+
+  it('le nombre de lames décroît strictement quand le niveau augmente', () => {
+    const counts = [0, 25, 50, 75, 100].map(computeSlatCount);
+    for (let i = 1; i < counts.length; i++) {
+      expect(counts[i]).toBeLessThanOrEqual(counts[i - 1]);
+    }
   });
 });
 
-describe('getVoletIcon – groupe de volets (isGroup = true)', () => {
+describe('IconVoletSVG – rendu', () => {
+  function makeVoletDevice(level: number, isGroup = false): DomoticzDevice {
+    return {
+      idx: 1, rang: 0, name: 'Volet Test', isGroup,
+      isActive: true, level, unit: '%', consistantLevel: true,
+      type: DomoticzDeviceType.VOLET, subType: 'Switch',
+      switchType: DomoticzSwitchType.ONOFF, status: level === 0 ? 'Off' : 'On',
+      data: '', lastUpdate: '2024-01-01',
+    } as unknown as DomoticzDevice;
+  }
 
-  it('level=0  (status Off) → groupe fermé', () => {
-    const device = makeDevice({
-      isGroup: true, level: 0, status: 'Off',
-      type: DomoticzDeviceType.VOLET,
-    });
-    expect(getVoletIcon(device)).toBe('window-shutter-group-closed');
+  it('se rend sans erreur pour un volet fermé (level=0)', () => {
+    expect(() => render(<IconVoletSVG device={makeVoletDevice(0)} />)).not.toThrow();
   });
 
-  it('status=Off (level>0) → groupe fermé (status prévaut)', () => {
-    const device = makeDevice({
-      isGroup: true, level: 50, status: 'Off',
-      type: DomoticzDeviceType.VOLET,
-    });
-    expect(getVoletIcon(device)).toBe('window-shutter-group-closed');
+  it('se rend sans erreur pour un volet ouvert (level=100)', () => {
+    expect(() => render(<IconVoletSVG device={makeVoletDevice(100)} />)).not.toThrow();
   });
 
-  it('level=100 → groupe ouvert', () => {
-    const device = makeDevice({
-      isGroup: true, level: 100, status: 'On',
-      type: DomoticzDeviceType.VOLET,
-    });
-    expect(getVoletIcon(device)).toBe('window-shutter-group-opened');
+  it('se rend sans erreur pour un groupe mi-ouvert (level=50)', () => {
+    expect(() => render(<IconVoletSVG device={makeVoletDevice(50, true)} />)).not.toThrow();
   });
 
-  it('level=50  → groupe mi-ouvert', () => {
-    const device = makeDevice({
-      isGroup: true, level: 50, status: 'On',
-      type: DomoticzDeviceType.VOLET,
-    });
-    expect(getVoletIcon(device)).toBe('window-shutter-group-mid-opened');
-  });
-
-  it('level=1 (intermédiaire minimum) → groupe mi-ouvert', () => {
-    const device = makeDevice({
-      isGroup: true, level: 1, status: 'On',
-      type: DomoticzDeviceType.VOLET,
-    });
-    expect(getVoletIcon(device)).toBe('window-shutter-group-mid-opened');
-  });
-});
-
-// ─── Cohérence entre simples et groupes ───────────────────────────────────────
-
-describe('getVoletIcon – cohérence simple vs groupe', () => {
-  it('les icônes simple et groupe sont différentes pour le même niveau', () => {
-    const simple = makeDevice({ isGroup: false, level: 50, status: 'On' });
-    const group  = makeDevice({ isGroup: true,  level: 50, status: 'On' });
-    expect(getVoletIcon(simple)).not.toBe(getVoletIcon(group));
+  it('se rend sans erreur pour un groupe mixte (!consistantLevel)', () => {
+    const mixed = { ...makeVoletDevice(50, true), consistantLevel: false } as unknown as DomoticzDevice;
+    expect(() => render(<IconVoletSVG device={mixed} />)).not.toThrow();
   });
 });
 
