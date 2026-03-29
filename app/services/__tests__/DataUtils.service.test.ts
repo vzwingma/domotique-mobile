@@ -190,6 +190,66 @@ describe('evaluateGroupLevelConsistency', () => {
         evaluateGroupLevelConsistency(group, [{ 10: [1, 2] }], [sub1, sub2]);
         expect(group.consistantLevel).toBe(true);
     });
+
+    it('ignore les équipements déconnectés : 3 allumés + 1 déconnecté → consistantLevel=true, statut=Allumées', () => {
+        const group = makeDevice({ idx: 10, isGroup: true, level: 0, status: DomoticzDeviceStatus.OFF });
+        const sub1 = makeDevice({ idx: 1, level: 100, status: DomoticzDeviceStatus.ON, isActive: true });
+        const sub2 = makeDevice({ idx: 2, level: 100, status: DomoticzDeviceStatus.ON, isActive: true });
+        const sub3 = makeDevice({ idx: 3, level: 100, status: DomoticzDeviceStatus.ON, isActive: true });
+        const sub4 = makeDevice({ idx: 4, level: 0, status: DomoticzDeviceStatus.OFF, isActive: false });
+        evaluateGroupLevelConsistency(group, [{ 10: [1, 2, 3, 4] }], [sub1, sub2, sub3, sub4]);
+        expect(group.consistantLevel).toBe(true);
+        expect(group.level).toBe(100);
+        expect(group.status).toBe(DomoticzDeviceStatus.ON);
+    });
+
+    it('ignore les équipements déconnectés (ONOFF switch) : 3 ON (level=0) + 1 déconnecté → consistantLevel=true, statut=ON, level=100', () => {
+        // Cas réel : switch ONOFF allumé → level=0 dans Domoticz, état porté par status
+        const group = makeDevice({ idx: 10, isGroup: true, level: 0, status: DomoticzDeviceStatus.OFF });
+        const sub1 = makeDevice({ idx: 1, level: 0, status: DomoticzDeviceStatus.ON, isActive: true });
+        const sub2 = makeDevice({ idx: 2, level: 0, status: DomoticzDeviceStatus.ON, isActive: true });
+        const sub3 = makeDevice({ idx: 3, level: 0, status: DomoticzDeviceStatus.ON, isActive: true });
+        const sub4 = makeDevice({ idx: 4, level: 0, status: DomoticzDeviceStatus.OFF, isActive: false });
+        evaluateGroupLevelConsistency(group, [{ 10: [1, 2, 3, 4] }], [sub1, sub2, sub3, sub4]);
+        expect(group.consistantLevel).toBe(true);
+        expect(group.level).toBe(100);
+        expect(group.status).toBe(DomoticzDeviceStatus.ON);
+    });
+
+    it('ignore les équipements déconnectés : 2 allumés + 1 éteint + 1 déconnecté → consistantLevel=false, level=100, status=Mixed', () => {
+        const group = makeDevice({ idx: 10, isGroup: true, level: 0, status: DomoticzDeviceStatus.OFF });
+        const sub1 = makeDevice({ idx: 1, level: 100, status: DomoticzDeviceStatus.ON, isActive: true });
+        const sub2 = makeDevice({ idx: 2, level: 100, status: DomoticzDeviceStatus.ON, isActive: true });
+        const sub3 = makeDevice({ idx: 3, level: 0, status: DomoticzDeviceStatus.OFF, isActive: true });
+        const sub4 = makeDevice({ idx: 4, level: 0, status: DomoticzDeviceStatus.OFF, isActive: false });
+        evaluateGroupLevelConsistency(group, [{ 10: [1, 2, 3, 4] }], [sub1, sub2, sub3, sub4]);
+        expect(group.consistantLevel).toBe(false);
+        expect(group.level).toBe(100);
+        expect(group.status).toBe('Mixed');
+    });
+
+    it('niveaux hétérogènes (21%, 2%, switch ON) + 1 déconnecté → consistantLevel=false, status=ON, level=100', () => {
+        // Cas réel : dimmers à des niveaux différents + switch ONOFF + 1 déconnecté
+        const group = makeDevice({ idx: 10, isGroup: true, level: 0, status: DomoticzDeviceStatus.OFF });
+        const sub1 = makeDevice({ idx: 1, level: 21, status: '21' as any, isActive: true });
+        const sub2 = makeDevice({ idx: 2, level: 2, status: '2' as any, isActive: true });
+        const sub3 = makeDevice({ idx: 3, level: 0, status: DomoticzDeviceStatus.ON, isActive: true });
+        const sub4 = makeDevice({ idx: 4, level: 0, status: DomoticzDeviceStatus.OFF, isActive: false });
+        evaluateGroupLevelConsistency(group, [{ 10: [1, 2, 3, 4] }], [sub1, sub2, sub3, sub4]);
+        expect(group.consistantLevel).toBe(false);
+        expect(group.level).toBe(100);
+        expect(group.status).toBe(DomoticzDeviceStatus.ON);
+    });
+
+    it('replie sur tous les sous-équipements quand aucun n\'est actif', () => {
+        const group = makeDevice({ idx: 10, isGroup: true, level: 50 });
+        const sub1 = makeDevice({ idx: 1, level: 0, status: DomoticzDeviceStatus.OFF, isActive: false });
+        const sub2 = makeDevice({ idx: 2, level: 0, status: DomoticzDeviceStatus.OFF, isActive: false });
+        evaluateGroupLevelConsistency(group, [{ 10: [1, 2] }], [sub1, sub2]);
+        expect(group.consistantLevel).toBe(true);
+        expect(group.level).toBe(0);
+        expect(group.status).toBe(DomoticzDeviceStatus.OFF);
+    });
 });
 
 // ─── Stockage AsyncStorage ─────────────────────────────────────────────────────

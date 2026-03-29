@@ -82,17 +82,40 @@ export function evaluateGroupLevelConsistency(device: DomoticzDevice, idsSubDevi
     // Calcul uniquement pour les groupes
     if (device.isGroup === false) return;
 
-
     // Recherche des équipements du groupe
-    let idsSubDevicesOfGroup = idsSubDevices.find((subDevice: any) => subDevice[device.idx]);
+    const idsSubDevicesOfGroup = idsSubDevices.find((subDevice: any) => subDevice[device.idx]);
     if (idsSubDevicesOfGroup !== undefined) {
-        let arrayIdsSubdevicesOfGroup: number[] = idsSubDevicesOfGroup[device.idx];
-        // recherche des niveaux des équipements du groupe, filtrage des doublons  et comptage
-        // Si =1 alors le groupe est cohérent
-        device.consistantLevel = devices.filter((device: DomoticzDevice) => arrayIdsSubdevicesOfGroup.includes(device.idx))
-            .map((device: DomoticzDevice) => device.status === DomoticzDeviceStatus.OFF ? 0 : device.level)
-            .filter((value, index, current_value) => current_value.indexOf(value) === index)
-            .length === 1;
+        const arrayIdsSubdevicesOfGroup: number[] = idsSubDevicesOfGroup[device.idx];
+
+        // On n'évalue que les équipements connectés (isActive=true) pour ne pas pénaliser
+        // le statut du groupe à cause d'appareils déconnectés.
+        // Si aucun équipement n'est actif, on évalue tous les équipements du groupe.
+        const subDevicesInGroup = devices.filter((d: DomoticzDevice) => arrayIdsSubdevicesOfGroup.includes(d.idx));
+        const activeSubDevices = subDevicesInGroup.filter((d: DomoticzDevice) => d.isActive);
+        const subDevicesToEvaluate = activeSubDevices.length > 0 ? activeSubDevices : subDevicesInGroup;
+
+        if (subDevicesToEvaluate.length === 0) return;
+
+        // Mapping du niveau effectif :
+        //   - OFF          → 0
+        //   - ON dimmer    → level (ex: 50)
+        //   - ON switch    → 100  (level=0 pour un switch ONOFF allumé, on le normalise à 100)
+        const levelValues = subDevicesToEvaluate.map((d: DomoticzDevice) => d.status === DomoticzDeviceStatus.OFF ? 0 : (d.level > 0 ? d.level : 100));
+        const uniqueLevels = levelValues.filter((value, index, arr) => arr.indexOf(value) === index);
+
+        device.consistantLevel = uniqueLevels.length === 1;
+
+        if (device.consistantLevel) {
+            // Tous les équipements actifs au même niveau : on surcharge le niveau et statut du groupe
+            device.level = uniqueLevels[0];
+            device.status = uniqueLevels[0] === 0 ? DomoticzDeviceStatus.OFF : DomoticzDeviceStatus.ON;
+        } else {
+            // Niveaux hétérogènes parmi les équipements actifs
+            device.level = Math.max(...levelValues);
+            // Si tous les actifs sont allumés (niveaux différents) → "On", sinon "Mixed"
+            const allActiveOn = levelValues.every(v => v > 0);
+            device.status = allActiveOn ? DomoticzDeviceStatus.ON : 'Mixed';
+        }
     }
 }
 
