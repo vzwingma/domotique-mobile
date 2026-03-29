@@ -6,8 +6,6 @@ import { ViewDomoticzTemperature } from '../components/temperature.component';
 import { JSX, useContext } from 'react';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
 import { ViewDomoticzThermostat } from '../components/thermostat.component';
-import { View } from 'react-native';
-import { Colors } from '../enums/Colors';
 
 
 /**

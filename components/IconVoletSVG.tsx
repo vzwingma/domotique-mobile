@@ -1,5 +1,5 @@
 import React from 'react';
-import Svg, { Rect } from 'react-native-svg';
+import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import DomoticzDevice from '@/app/models/domoticzDevice.model';
 import { getGroupColor } from '@/app/enums/Colors';
 import { DomoticzDeviceStatus } from '@/app/enums/DomoticzEnum';
@@ -50,6 +50,20 @@ export const IconVoletSVG: React.FC<IconVoletSVGProps> = ({ device }) => {
   return (
     <Svg width={W} height={H} viewBox={`0 0 ${W} ${H}`}>
 
+      {/* Dégradés pour le mode mixte — IDs uniques par device pour éviter les conflits SVG/web */}
+      {isMixed && (
+        <Defs>
+          <LinearGradient id={`mixteL-${device.idx}`} x1="0" y1="0" x2="1" y2="0">
+            <Stop offset="0%" stopColor={color} stopOpacity="1" />
+            <Stop offset="100%" stopColor={color} stopOpacity="0.08" />
+          </LinearGradient>
+          <LinearGradient id={`mixteR-${device.idx}`} x1="1" y1="0" x2="0" y2="0">
+            <Stop offset="0%" stopColor={color} stopOpacity="1" />
+            <Stop offset="100%" stopColor={color} stopOpacity="0.08" />
+          </LinearGradient>
+        </Defs>
+      )}
+
       {/* Fond sombre du conteneur */}
       <Rect x={0} y={0} width={W} height={H}
             rx={BORDER_R} ry={BORDER_R}
@@ -77,17 +91,35 @@ export const IconVoletSVG: React.FC<IconVoletSVGProps> = ({ device }) => {
 
       {/* Lames pleines */}
       {Array.from({ length: MAX_SLATS }, (_, i) => {
-        // Mode mixte : zébrure — une lame sur deux colorée (positions paires)
-        const visible = isMixed ? i % 2 === 0 : i < slatCount;
-        if (!visible) return null;
+        if (isMixed) {
+          // Mode mixte : une lame sur deux, dégradé alternant gauche↔droite
+          // + opacité décroissante vers le bas pour insister sur l'incohérence
+          if (i % 2 !== 0) return null;
+          const slotIndex = i / 2;                         // 0,1,2,3
+          const gradId = slotIndex % 2 === 0
+            ? `mixteL-${device.idx}`                       // gauche→droite
+            : `mixteR-${device.idx}`;                      // droite→gauche
+          const opacity = 1 - slotIndex * 0.2;             // 1.0 → 0.8 → 0.6 → 0.4
+          return (
+            <Rect key={`slat-${i}`}
+                  x={SLAT_X}
+                  y={PADDING + i * CELL_H + (CELL_H - SLAT_H) / 2}
+                  width={SLAT_W} height={SLAT_H}
+                  rx={SLAT_R} ry={SLAT_R}
+                  fill={`url(#${gradId})`}
+                  opacity={opacity} />
+          );
+        }
+
+        // Mode normal : remplissage continu depuis le haut
+        if (i >= slatCount) return null;
         return (
           <Rect key={`slat-${i}`}
                 x={SLAT_X}
                 y={PADDING + i * CELL_H + (CELL_H - SLAT_H) / 2}
                 width={SLAT_W} height={SLAT_H}
                 rx={SLAT_R} ry={SLAT_R}
-                fill={color}
-                opacity={isMixed ? 0.7 : 1} />
+                fill={color} />
         );
       })}
 
