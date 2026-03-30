@@ -6,8 +6,9 @@ exports[`FavoriteCard snapshot favori actif 1`] = `
     [
       {
         "alignItems": "center",
-        "backgroundColor": "#0b0b0b",
+        "backgroundColor": "#222a3d",
         "borderColor": "#3A3A3A",
+        "borderRadius": 8,
         "borderWidth": 1,
         "flexDirection": "row",
         "gap": 10,
@@ -56,7 +57,7 @@ exports[`FavoriteCard snapshot favori actif 1`] = `
       [
         {
           "alignItems": "center",
-          "backgroundColor": "#141414",
+          "backgroundColor": "#222a3d",
           "borderRadius": 14,
           "borderWidth": 1.5,
           "height": 60,
@@ -66,7 +67,7 @@ exports[`FavoriteCard snapshot favori actif 1`] = `
           "width": 60,
         },
         {
-          "backgroundColor": "#1f1a08",
+          "backgroundColor": "#060e20",
           "borderColor": "#f5c727",
         },
         undefined,
@@ -123,7 +124,7 @@ exports[`FavoriteCard snapshot favori actif 1`] = `
             },
             false,
             {
-              "color": "#ffffff",
+              "color": "#fff",
             },
           ],
         ]
@@ -150,7 +151,7 @@ exports[`FavoriteCard snapshot favori actif 1`] = `
           undefined,
           [
             {
-              "color": "#d6d6d6",
+              "color": "#d5d5d5",
               "fontSize": 11,
             },
             false,
@@ -200,7 +201,7 @@ exports[`FavoriteCard snapshot favori actif 1`] = `
         {
           "alignItems": "center",
           "alignSelf": "stretch",
-          "backgroundColor": "#1f1a08",
+          "backgroundColor": "#060e20",
           "borderColor": "#f5c727",
           "borderRadius": 10,
           "borderWidth": 1,

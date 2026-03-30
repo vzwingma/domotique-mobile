@@ -35,15 +35,6 @@ jest.mock('@/app/controllers/devices.controller', () => ({
   overrideNextValue: (...args: any[]) => mockOverrideNextValue(...args),
 }));
 
-jest.mock('@/app/enums/Colors', () => ({
-  Colors: {
-    domoticz: { color: '#f5c727' },
-    dark: { icon: '#ffffff', text: '#ECEDEE', background: '#151718' },
-  },
-  getGroupColor: jest.fn(() => '#ffffff'),
-  PROFILES_ENV: { C: 'previewC', V: 'previewV' },
-}));
-
 function makeDevice(overrides: Partial<DomoticzDevice> = {}): DomoticzDevice {
   return {
     idx: 101,
