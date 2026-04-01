@@ -4,7 +4,17 @@ import renderer from 'react-test-renderer';
 import { ThemedText } from '../ThemedText';
 
 it(`renders correctly`, () => {
-  const tree = renderer.create(<ThemedText>Snapshot test!</ThemedText>).toJSON();
+  let tree: renderer.ReactTestRendererJSON | renderer.ReactTestRendererJSON[] | null = null;
+  let root: renderer.ReactTestRenderer;
+
+  renderer.act(() => {
+    root = renderer.create(<ThemedText>Snapshot test!</ThemedText>);
+    tree = root.toJSON();
+  });
+
+  renderer.act(() => {
+    root.unmount();
+  });
 
   expect(tree).toMatchSnapshot();
 });

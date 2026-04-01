@@ -24,12 +24,12 @@ describe('useThemeColor', () => {
       expect(useThemeColor('text')).toBe('#ECEDEE');
     });
 
-    it('retourne la couleur de fond #151718', () => {
-      expect(useThemeColor('background')).toBe('#151718');
+    it('retourne la couleur de fond courante', () => {
+      expect(useThemeColor('background')).toBe(Colors.dark.background);
     });
 
-    it('retourne la couleur de fond du titre #353636', () => {
-      expect(useThemeColor('titlebackground')).toBe('#353636');
+    it('retourne la couleur de fond du titre courante', () => {
+      expect(useThemeColor('titlebackground')).toBe(Colors.dark.titlebackground);
     });
 
     it('retourne la couleur tint #fff', () => {

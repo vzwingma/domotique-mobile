@@ -44,7 +44,7 @@ export const ViewLightDevice: React.FC<ViewLightDeviceProps> = ({ device }) => {
       style={device.isActive ? stylesListsDevices.slider : stylesListsDevices.sliderDisabled}
       minimumValue={0} value={getLevel(device)} maximumValue={100}
       step={1}
-      minimumTrackTintColor="#FFFFFF" maximumTrackTintColor="#606060" thumbTintColor={Colors.domoticz.color}
+      minimumTrackTintColor={Colors.dark.slider.trackActive} maximumTrackTintColor={Colors.dark.slider.trackInactive} thumbTintColor={Colors.domoticz.color}
       onValueChange={(value) => overrideNextValue(value, setNextValue)}
       onResponderStart={() => setFlagLabel(true)}
       onResponderEnd={() => {

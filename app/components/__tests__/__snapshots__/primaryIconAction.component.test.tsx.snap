@@ -38,7 +38,7 @@ exports[`PrimaryIconAction snapshot actif vs disabled 1`] = `
     [
       {
         "alignItems": "center",
-        "backgroundColor": "#141414",
+        "backgroundColor": "#222a3d",
         "borderRadius": 14,
         "borderWidth": 1.5,
         "height": 60,
@@ -48,7 +48,7 @@ exports[`PrimaryIconAction snapshot actif vs disabled 1`] = `
         "width": 60,
       },
       {
-        "backgroundColor": "#1f1a08",
+        "backgroundColor": "#060e20",
         "borderColor": "#f5c727",
       },
       undefined,
@@ -109,7 +109,7 @@ exports[`PrimaryIconAction snapshot actif vs disabled 2`] = `
     [
       {
         "alignItems": "center",
-        "backgroundColor": "#141414",
+        "backgroundColor": "#222a3d",
         "borderRadius": 14,
         "borderWidth": 1.5,
         "height": 60,
@@ -119,7 +119,7 @@ exports[`PrimaryIconAction snapshot actif vs disabled 2`] = `
         "width": 60,
       },
       {
-        "backgroundColor": "#1f1a08",
+        "backgroundColor": "#060e20",
         "borderColor": "#f5c727",
       },
       undefined,

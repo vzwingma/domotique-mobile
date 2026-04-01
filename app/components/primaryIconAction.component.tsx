@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#141414',
+    backgroundColor: Colors.dark.emphasis.base,
   },
   content: {
     alignItems: 'center',
@@ -58,15 +58,15 @@ const styles = StyleSheet.create({
   },
   active: {
     borderColor: Colors.domoticz.color,
-    backgroundColor: '#1f1a08',
+    backgroundColor: Colors.dark.emphasis.active,
   },
   inactive: {
-    borderColor: '#4f4f4f',
-    backgroundColor: '#111111',
+    borderColor: Colors.dark.emphasis.inactiveBorder,
+    backgroundColor: Colors.dark.emphasis.inactive,
   },
   pressed: {
     transform: [{ scale: 0.97 }],
-    backgroundColor: '#2a2a2a',
+    backgroundColor: Colors.dark.emphasis.inactivePressed,
   },
   disabled: {
     opacity: 0.45,

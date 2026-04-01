@@ -12,9 +12,10 @@ export const stylesListsDevices = StyleSheet.create({
     width: '100%',
     padding: 10,
     margin: 1,
-    borderColor: '#3A3A3A',
+    borderColor: Colors.dark.border,
     borderWidth: 1,
-    backgroundColor: '#0b0b0b',
+    backgroundColor: Colors.dark.surface,
+    borderRadius: 8
   },
   viewBoxDisabled: {
     flexDirection: 'row',
@@ -30,9 +31,9 @@ export const stylesListsDevices = StyleSheet.create({
     width: '100%',
     padding: 10,
     margin: 1,
-    borderColor: '#7f2b2b',
+    borderColor: Colors.dark.disconnected.border,
     borderWidth: 1,
-    backgroundColor: '#1a1212',
+    backgroundColor: Colors.dark.disconnected.background,
     opacity: 0.5,
   },
   iconBox: {
@@ -98,7 +99,7 @@ export const stylesListsDevices = StyleSheet.create({
   dropdown: {
     flexDirection: 'column',
     marginLeft: -150,
-    borderColor: 'gray',
+    borderColor: Colors.dark.label,
     borderWidth: 0.5,
     borderRadius: 8,
     width: 150,
@@ -118,7 +119,7 @@ export const stylesListsDevices = StyleSheet.create({
   placeholderStyle: {
     fontWeight: 'normal',
     paddingLeft: 10,
-    color: 'gray',
+    color: Colors.dark.label,
   },
   selectedTextStyle: {
     color: Colors.domoticz.color,
@@ -129,7 +130,7 @@ export const stylesListsDevices = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     fontSize: 14,
-    borderColor: 'gray',
+    borderColor: Colors.dark.label,
     borderWidth: 0.5,
     borderRadius: 8,
     width: 180,

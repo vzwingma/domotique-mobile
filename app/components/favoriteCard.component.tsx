@@ -52,8 +52,8 @@ export const FavoriteCard: React.FC<FavoriteCardProps> = ({ device }) => {
       value={getLevel(device)}
       maximumValue={100}
       step={1}
-      minimumTrackTintColor="#FFFFFF"
-      maximumTrackTintColor="#606060"
+      minimumTrackTintColor={Colors.dark.slider.trackActive}
+      maximumTrackTintColor={Colors.dark.slider.trackInactive}
       thumbTintColor={Colors.domoticz.color}
       onValueChange={(value) => overrideNextValue(value, setNextValue)}
       onResponderStart={() => setFlagLabel(true)}
@@ -112,14 +112,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     margin: 1,
-    borderColor: '#3A3A3A',
+    borderColor: Colors.dark.border,
     borderWidth: 1,
-    backgroundColor: '#0b0b0b',
+    backgroundColor: Colors.dark.surface,
+    borderRadius: 8,
     gap: 10,
   },
   cardDisconnected: {
-    borderColor: '#7f2b2b',
-    backgroundColor: '#1a1212',
+    borderColor: Colors.dark.disconnected.border,
+    backgroundColor: Colors.dark.disconnected.background,
   },
   content: {
     flex: 1,
@@ -132,14 +133,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    color: '#fff',
+    color: Colors.dark.tint,
   },
   titleCompact: {
     lineHeight: 18,
   },
   status: {
     fontSize: 11,
-    color: '#d6d6d6',
+    color: Colors.dark.labelSecondary,
   },
   statusCompact: {
     lineHeight: 13,
@@ -153,10 +154,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#1f1a08',
+    backgroundColor: Colors.dark.emphasis.active,
   },
   quickActionButtonPressed: {
-    backgroundColor: '#2b2410',
+    backgroundColor: Colors.dark.emphasis.activePressed,
   },
   quickActionButtonDisabled: {
     opacity: 0.4,

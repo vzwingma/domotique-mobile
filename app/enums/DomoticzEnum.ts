@@ -36,8 +36,8 @@ export enum DomoticzDeviceStatus {
  * Valeurs min et max pour les thermostats
  */
 export enum DomoticzThermostatLevelValue {
-    MIN = 10,
-    MAX = 40
+    MIN = 5,
+    MAX = 30
 }
 
 /**

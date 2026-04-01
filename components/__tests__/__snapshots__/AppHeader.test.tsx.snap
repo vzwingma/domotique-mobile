@@ -75,7 +75,7 @@ exports[`AppHeader snapshot du header 1`] = `
         [
           {
             "alignItems": "center",
-            "backgroundColor": "#151718",
+            "backgroundColor": "#0b1326",
             "borderColor": "#9BA1A6",
             "borderRadius": 999,
             "borderWidth": 1,

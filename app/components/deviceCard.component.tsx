@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
+import { Colors } from '../enums/Colors';
 import { DisconnectedState } from './disconnectedState.component';
 
 type DeviceCardProps = {
@@ -58,13 +59,14 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 10,
     margin: 1,
-    borderColor: '#3A3A3A',
+    borderColor: Colors.dark.border,
     borderWidth: 1,
-    backgroundColor: '#0b0b0b',
+    backgroundColor: Colors.dark.surface,
+    borderRadius: 8,
   },
   cardDisconnected: {
-    borderColor: '#7f2b2b',
-    backgroundColor: '#1a1212',
+    borderColor: Colors.dark.disconnected.border,
+    backgroundColor: Colors.dark.disconnected.background,
   },
   topRow: {
     flexDirection: 'row',
@@ -97,16 +99,16 @@ const styles = StyleSheet.create({
   status: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#f5c727',
+    color: Colors.domoticz.color,
   },
   unit: {
     fontSize: 14,
-    color: '#f5c727',
+    color: Colors.domoticz.color,
   },
   summary: {
     marginTop: -6,
     fontSize: 12,
-    color: '#c8c8c8',
+    color: Colors.dark.labelSecondary,
     marginBottom: -4,
   },
   commandsRow: {

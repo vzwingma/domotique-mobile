@@ -5,8 +5,9 @@ exports[`DeviceCard snapshot actif et déconnecté 1`] = `
   style={
     [
       {
-        "backgroundColor": "#0b0b0b",
+        "backgroundColor": "#222a3d",
         "borderColor": "#3A3A3A",
+        "borderRadius": 8,
         "borderWidth": 1,
         "margin": 1,
         "padding": 10,
@@ -165,7 +166,7 @@ exports[`DeviceCard snapshot actif et déconnecté 1`] = `
             undefined,
             undefined,
             {
-              "color": "#c8c8c8",
+              "color": "#d5d5d5",
               "fontSize": 12,
               "marginBottom": -4,
               "marginTop": -6,
@@ -196,15 +197,16 @@ exports[`DeviceCard snapshot actif et déconnecté 2`] = `
   style={
     [
       {
-        "backgroundColor": "#0b0b0b",
+        "backgroundColor": "#222a3d",
         "borderColor": "#3A3A3A",
+        "borderRadius": 8,
         "borderWidth": 1,
         "margin": 1,
         "padding": 10,
         "width": "100%",
       },
       {
-        "backgroundColor": "#1a1212",
+        "backgroundColor": "#382132",
         "borderColor": "#7f2b2b",
       },
     ]
@@ -348,7 +350,7 @@ exports[`DeviceCard snapshot actif et déconnecté 2`] = `
             undefined,
             undefined,
             {
-              "color": "#c8c8c8",
+              "color": "#d5d5d5",
               "fontSize": 12,
               "marginBottom": -4,
               "marginTop": -6,
