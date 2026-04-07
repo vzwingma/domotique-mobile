@@ -98,7 +98,9 @@ export function onClickDeviceIcon(device: DomoticzDevice, storeDeviceData: React
         updateDeviceState(device.idx, device, device.status === DomoticzDeviceStatus.OFF, storeDeviceData);
       }
       else {
-        updateDeviceLevel(device.idx, device, device.status === DomoticzDeviceStatus.OFF ? device.level : 0, storeDeviceData);
+        // Si fermé/éteint → ouvrir à MAX ; sinon → fermer à 0
+        const targetLevel = isDeviceOn(device) ? DomoticzDeviceLevelValue.MIN : DomoticzDeviceLevelValue.MAX;
+        updateDeviceLevel(device.idx, device, targetLevel, storeDeviceData);
       }
     }
   }

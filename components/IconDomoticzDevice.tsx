@@ -3,7 +3,7 @@ import DomoticzDevice from "@/app/models/domoticzDevice.model";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { getGroupColor } from "@/app/enums/Colors";
 import { DomoticzDeviceProps } from "@/app/components/device.component";
-import { onClickDeviceIcon } from "@/app/controllers/devices.controller";
+import { isDeviceOn, onClickDeviceIcon } from "@/app/controllers/devices.controller";
 import { Alert, Pressable } from "react-native";
 import { Dispatch, SetStateAction, useContext } from "react";
 import { DomoticzContext } from "@/app/services/DomoticzContextProvider";
@@ -87,7 +87,7 @@ function handleLumierePress(device: DomoticzDevice, action: () => void): void {
  */
 function handleVoletPress(device: DomoticzDevice, action: () => void): void {
   if (device.isGroup) {
-    const verb = device.level === 0 ? 'ouvrir' : 'fermer';
+    const verb = isDeviceOn(device) ? 'fermer' : 'ouvrir';
     Alert.alert(
       'Confirmation',
       `Voulez-vous ${verb} tous les volets du groupe ?`,
