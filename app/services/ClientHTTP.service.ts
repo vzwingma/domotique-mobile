@@ -84,7 +84,15 @@ function callDomoticz(path: SERVICES_URL, params?: KeyValueParams[]): Promise<an
             }
             return data; })
         .catch(e => {
-            console.error("[WS traceId=" + traceId + "] < Erreur lors de l'appel HTTP [" + fullURL + "]", e);
+            const isSSLError = e.message?.toLowerCase().includes('ssl') 
+                            || e.message?.toLowerCase().includes('certificate')
+                            || e.message?.toLowerCase().includes('trust')
+                            || e.message?.toLowerCase().includes('handshake');
+            if (isSSLError) {
+                console.error("[WS traceId=" + traceId + "] < Erreur SSL/TLS - Vérifiez que le certificat domoticz.crt est bien bundlé dans l'app et que EXPO_PUBLIC_DOMOTICZ_DOMAIN est configuré [" + fullURL + "]", e);
+            } else {
+                console.error("[WS traceId=" + traceId + "] < Erreur lors de l'appel HTTP [" + fullURL + "]", e);
+            }
             throw new Error(fullURL+" - "+API_AUTH+" - " +e.message);
         })
 

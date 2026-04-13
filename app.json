@@ -41,6 +41,7 @@
           }
         }
       ],
+      "./plugins/withNetworkSecurity",
       "expo-font",
       "expo-web-browser"
     ],
