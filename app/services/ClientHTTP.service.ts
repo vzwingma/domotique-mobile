@@ -45,11 +45,34 @@ function stopWatch(traceId: string, res: Response): number {
 }
 
 /**
+ * Diagnostic de connectivité SSL — appelé en cas d'erreur réseau sur HTTPS.
+ * Teste successivement :
+ *   1. Connectivité HTTPS générale (google.com) → distingue SSL spécifique vs réseau global
+ *   2. Accessibilité HTTP du host Domoticz → vérifie si le port est joignable
+ */
+function runSSLDiagnostic(failedUrl: string): void {
+    fetch('https://www.google.com', { method: 'HEAD' })
+        .then(() => {
+            console.warn('[SSL Diagnostic] ✅ Internet HTTPS (google.com) OK — l\'erreur est spécifique au certificat Domoticz');
+            console.warn('[SSL Diagnostic]    Cause probable : certificat auto-signé non approuvé par le build actuel');
+            console.warn('[SSL Diagnostic]    → Vérifiez le build : npm run android:clean (rebuild natif force-clean)');
+            console.warn('[SSL Diagnostic]    → Logs Android natifs : npm run android:logs');
+        })
+        .catch(() => {
+            console.warn('[SSL Diagnostic] ❌ Internet HTTPS (google.com) ÉCHEC — problème réseau général');
+            if (failedUrl.startsWith('https://')) {
+                const httpUrl = failedUrl.replace('https://', 'http://');
+                fetch(httpUrl, { method: 'HEAD' })
+                    .then(() => console.warn('[SSL Diagnostic] ✅ Host Domoticz en HTTP accessible — le port HTTPS est bloqué ou le serveur n\'écoute pas'))
+                    .catch(() => console.warn('[SSL Diagnostic] ❌ Host Domoticz inaccessible — vérifiez réseau/Wi-Fi/pare-feu'));
+            }
+        });
+}
+
+/**
  * Appel HTTP vers le backend
- * @param httpMethod méthode HTTP
  * @param path chemin de la ressource
  * @param params paramètres (optionnels)
- * @param body body de la requête (optionnel)
  * @returns réponse
  */
 function callDomoticz(path: SERVICES_URL, params?: KeyValueParams[]): Promise<any> {
@@ -91,7 +114,8 @@ function callDomoticz(path: SERVICES_URL, params?: KeyValueParams[]): Promise<an
                             || e.message?.toLowerCase().includes('handshake')
                             || (isHttps && e.message?.toLowerCase().includes('network request failed'));
             if (isSSLError) {
-                console.error("[WS traceId=" + traceId + "] < Erreur SSL/TLS sur " + fullURL + "\n  → Vérifiez que le build EAS a été relancé avec le plugin withNetworkSecurity et le domaine configuré dans app.json\n  → Alternativement : installez le certificat manuellement sur l'appareil (Paramètres > Sécurité > Installer un certificat)", e);
+                console.error("[WS traceId=" + traceId + "] < Erreur SSL/TLS sur " + fullURL, e);
+                runSSLDiagnostic(fullURL);
             } else {
                 console.error("[WS traceId=" + traceId + "] < Erreur lors de l'appel HTTP [" + fullURL + "]", e);
             }
@@ -100,3 +124,4 @@ function callDomoticz(path: SERVICES_URL, params?: KeyValueParams[]): Promise<an
 
 }
 export default callDomoticz;
+

@@ -8,6 +8,7 @@
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
     "android:clean": "expo run:android --clean",
+    "android:logs": "adb logcat -s ReactNativeJS:V NetworkSecurityConfig:V CONSCRYPT:W",
     "ios": "expo run:ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
