@@ -64,28 +64,46 @@ assets/
     domoticz.crt   ← votre certificat ici (format PEM)
 ```
 
-### 3. Configurer le domaine dans `.env.local`
+### 3. Configurer l'URL dans `.env.local`
 
 ```env
-EXPO_PUBLIC_DOMOTICZ_DOMAIN=192.168.1.x
-EXPO_PUBLIC_DOMOTICZ_URL=https://192.168.1.x:8443/
+EXPO_PUBLIC_DOMOTICZ_URL=https://domatique.freeboxos.fr:38243/
 ```
 
-### 4. Rebuilder l'app via EAS
+> Le domaine est configuré directement dans `app.json` en option du plugin (pas via variable d'environnement).
 
+### 4. Lancer le build natif
+
+Le plugin SSL ne s'applique **pas** avec `npm start` (Expo Go). Il faut un build natif :
+
+| Commande | Contexte | SSL |
+|---|---|---|
+| `npm start` | Expo Go — développement rapide | ❌ |
+| `npm run android` | Build local Android (nécessite SDK + JDK) | ✅ |
+| `npm run android:clean` | Build local force-clean (plugin garanti) | ✅ |
+| `npm run start:dev-client` | Dev-client déjà buildé (EAS development) | ✅ |
+| `eas build --profile previewV` | APK distribution interne | ✅ |
+
+**Pour développer localement avec SSL :**
 ```bash
-eas build --profile preview
+npm run android          # prebuild + compile + installe sur l'appareil/émulateur
 ```
+Les modifications JS sont ensuite rechargées à chaud sans recompiler.
 
-Le plugin `withNetworkSecurity` se charge automatiquement de bundler le certificat et de configurer Android pour l'accepter. Voir `assets/certificates/README.md` pour plus de détails.
+Si le premier build ne résout pas le problème (fichiers natifs en cache) :
+```bash
+npm run android:clean    # force un prebuild complet
+```
 
 > **Note Web :** Pour le navigateur, acceptez l'exception de sécurité en naviguant manuellement vers l'URL HTTPS de Domoticz une première fois.
 
 ## Scripts npm
 
 ```bash
-npm start                                           # Serveur de développement Expo
-npm run android                                     # Lancer sur émulateur/appareil Android
+npm start                                           # Serveur Metro (Expo Go — sans SSL)
+npm run start:dev-client                            # Serveur Metro pour expo-dev-client (avec SSL)
+npm run android                                     # Build natif Android + lancement (avec SSL)
+npm run android:clean                               # Build natif Android force-clean (avec SSL)
 npm run web                                         # Lancer dans le navigateur
 npm test                                            # Tests Jest en mode watch
 npm test -- path/to/file.test.tsx                   # Un fichier de test précis
@@ -96,12 +114,11 @@ npm run lint                                        # ESLint via Expo
 Builds EAS (distribution APK Android) :
 
 ```bash
-eas build --profile development   # Build de développement
-eas build --profile preview       # APK à distribution interne
+eas build --profile development   # Dev-client (à utiliser avec npm run start:dev-client)
+eas build --profile previewV      # APK à distribution interne (variante V)
+eas build --profile previewC      # APK à distribution interne (variante C)
 eas build --profile production    # Build de production
 ```
-
-Une fois `npm start` lancé, scannez le QR code avec l'application Expo Go sur votre appareil.
 
 ## Architecture
 
