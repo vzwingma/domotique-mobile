@@ -36,7 +36,7 @@ app/
     parametrages.tab.tsx  # Maison (pilotage global + section À propos)
   components/             # Composants de niveau écran (device, temperature, thermostat, paramètres, favoris, groupes)
   controllers/            # Fonctions de chargement des données ; pont entre l'UI et les services
-  services/               # ClientHTTP.service.ts (client HTTP), fournisseur de contexte, utilitaires
+  services/               # ClientHTTP.service.ts (client HTTP), DataUtils.service.ts (tri, groupes, AsyncStorage favoris), fournisseur de contexte
   models/                 # Modèles TypeScript sous forme de classes (DomoticzDevice, DomoticzConfig, …)
   enums/                  # Constantes et enums (Colors, DomoticzEnum, APIconstants, TabsEnums)
 
@@ -96,7 +96,7 @@ Les variables d'environnement doivent être préfixées `EXPO_PUBLIC_` pour êtr
 - **Onglets** : conserver les 5 libellés FR existants (`Favoris`, `Lumières`, `Volets`, `Températures`, `Maison`) et leurs icônes associées.
 - **Header unifié** : tous les onglets passent par `AppHeader` via `ParallaxScrollView` avec triplet fixe **icône + titre + badge de connexion**.
 - **Statut de connexion** : utiliser exclusivement les états canoniques du badge (`Connecté`, `Synchronisation`, `Déconnecté`, `Erreur`) via `ConnectionBadge`.
-- **Favoris** : l'écran `index.tsx` est en mode **actions rapides** (`FavoriteQuickActionCard`) ; pas de slider ; maximum **8** favoris actifs affichés.
+- **Favoris** : l'écran `index.tsx` est en mode **actions rapides** (`FavoriteCard`) ; slider conditionnel disponible en mode `previewC` ; maximum **8** favoris actifs affichés.
 - **Thermostats** : garder la distinction explicite **Mesure / Consigne** dans l'UI.
 - **Terminologie FR** : conserver les termes "Maison", "Mesure", "Consigne", "Favoris", "Déconnecté" (pas de variantes anglaises).
 
