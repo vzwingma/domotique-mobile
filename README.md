@@ -32,9 +32,54 @@ EXPO_PUBLIC_DOMOTICZ_AUTH=<Base64 de login:password>
 
 # Environnement courant (optionnel)
 EXPO_PUBLIC_MY_ENVIRONMENT=development
+
+# Domaine du serveur Domoticz pour la configuration SSL (sans protocole ni port)
+# Requis pour le support HTTPS avec certificat auto-signé
+EXPO_PUBLIC_DOMOTICZ_DOMAIN=192.168.1.x
 ```
 
 > **Générer la valeur Base64 :** `echo -n "monlogin:monmotdepasse" | base64`
+
+## Certificat SSL auto-signé (HTTPS)
+
+Si votre serveur Domoticz utilise HTTPS avec un certificat auto-signé, suivez ces étapes :
+
+### 1. Exporter le certificat depuis votre serveur
+
+```bash
+openssl s_client -connect <HOST>:<PORT> -showcerts </dev/null 2>/dev/null \
+  | openssl x509 -outform PEM > domoticz.crt
+# Exemple :
+openssl s_client -connect 192.168.1.100:8443 -showcerts </dev/null 2>/dev/null \
+  | openssl x509 -outform PEM > domoticz.crt
+```
+
+Ou via un navigateur : cadenas → Certificat → Exporter au format PEM/Base64.
+
+### 2. Placer le certificat dans le projet
+
+```
+assets/
+  certificates/
+    domoticz.crt   ← votre certificat ici (format PEM)
+```
+
+### 3. Configurer le domaine dans `.env.local`
+
+```env
+EXPO_PUBLIC_DOMOTICZ_DOMAIN=192.168.1.x
+EXPO_PUBLIC_DOMOTICZ_URL=https://192.168.1.x:8443/
+```
+
+### 4. Rebuilder l'app via EAS
+
+```bash
+eas build --profile preview
+```
+
+Le plugin `withNetworkSecurity` se charge automatiquement de bundler le certificat et de configurer Android pour l'accepter. Voir `assets/certificates/README.md` pour plus de détails.
+
+> **Note Web :** Pour le navigateur, acceptez l'exception de sécurité en naviguant manuellement vers l'URL HTTPS de Domoticz une première fois.
 
 ## Scripts npm
 
