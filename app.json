@@ -41,7 +41,7 @@
           }
         }
       ],
-      "./plugins/withNetworkSecurity",
+      ["./plugins/withNetworkSecurity", { "domain": "domatique.freeboxos.fr" }],
       "expo-font",
       "expo-web-browser"
     ],

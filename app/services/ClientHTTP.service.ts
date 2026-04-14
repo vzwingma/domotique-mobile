@@ -84,12 +84,14 @@ function callDomoticz(path: SERVICES_URL, params?: KeyValueParams[]): Promise<an
             }
             return data; })
         .catch(e => {
+            const isHttps = fullURL.startsWith('https://');
             const isSSLError = e.message?.toLowerCase().includes('ssl') 
                             || e.message?.toLowerCase().includes('certificate')
                             || e.message?.toLowerCase().includes('trust')
-                            || e.message?.toLowerCase().includes('handshake');
+                            || e.message?.toLowerCase().includes('handshake')
+                            || (isHttps && e.message?.toLowerCase().includes('network request failed'));
             if (isSSLError) {
-                console.error("[WS traceId=" + traceId + "] < Erreur SSL/TLS - Vérifiez que le certificat domoticz.crt est bien bundlé dans l'app et que EXPO_PUBLIC_DOMOTICZ_DOMAIN est configuré [" + fullURL + "]", e);
+                console.error("[WS traceId=" + traceId + "] < Erreur SSL/TLS sur " + fullURL + "\n  → Vérifiez que le build EAS a été relancé avec le plugin withNetworkSecurity et le domaine configuré dans app.json\n  → Alternativement : installez le certificat manuellement sur l'appareil (Paramètres > Sécurité > Installer un certificat)", e);
             } else {
                 console.error("[WS traceId=" + traceId + "] < Erreur lors de l'appel HTTP [" + fullURL + "]", e);
             }
