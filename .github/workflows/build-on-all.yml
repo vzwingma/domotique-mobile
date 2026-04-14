@@ -32,6 +32,44 @@ jobs:
       - run: npx expo-env-info
       - name: Run expo-doctor
         run: npx expo-doctor@latest
+      - name: 🔧 Prebuild Android (vérifie les plugins natifs)
+        run: npx expo prebuild --platform android --no-install --clean
+      - name: ✅ Vérifier la configuration SSL (network_security_config.xml)
+        run: |
+          CONFIG_FILE="android/app/src/main/res/xml/network_security_config.xml"
+          CERT_FILE="android/app/src/main/res/raw/domoticz.pem"
+
+          echo "=== Vérification du certificat SSL ==="
+
+          if [ ! -f "$CERT_FILE" ]; then
+            echo "❌ Certificat introuvable : $CERT_FILE"
+            exit 1
+          fi
+          echo "✅ Certificat présent : $CERT_FILE"
+
+          if [ ! -f "$CONFIG_FILE" ]; then
+            echo "❌ network_security_config.xml introuvable : $CONFIG_FILE"
+            exit 1
+          fi
+          echo "✅ network_security_config.xml présent"
+
+          if ! grep -q "domain-config" "$CONFIG_FILE"; then
+            echo "❌ Aucun <domain-config> dans network_security_config.xml — le domaine Domoticz n'est pas configuré dans app.json"
+            echo "--- Contenu actuel ---"
+            cat "$CONFIG_FILE"
+            exit 1
+          fi
+          echo "✅ <domain-config> présent dans network_security_config.xml"
+
+          if ! grep -q "@raw/domoticz" "$CONFIG_FILE"; then
+            echo "❌ Le certificat @raw/domoticz n'est pas référencé dans network_security_config.xml"
+            cat "$CONFIG_FILE"
+            exit 1
+          fi
+          echo "✅ Certificat @raw/domoticz référencé"
+
+          echo "--- Contenu network_security_config.xml ---"
+          cat "$CONFIG_FILE"
       - name: 🧪 Run unit tests
         run: npm test -- --ci --watchAll=false --coverage
       - name: 🔎 SonarQube Cloud Scan
