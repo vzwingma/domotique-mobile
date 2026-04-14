@@ -40,6 +40,8 @@ jest.mock('@/app/services/DomoticzContextProvider', () => {
 const mockOnClickDeviceIcon = jest.fn();
 jest.mock('@/app/controllers/devices.controller', () => ({
   onClickDeviceIcon: (...args: any[]) => mockOnClickDeviceIcon(...args),
+  // isDeviceOn reflète la logique réelle pour ONOFF (status === 'On')
+  isDeviceOn: (device: any) => device.status === 'On',
 }));
 
 // ─── Mock des couleurs ─────────────────────────────────────────────────────────
