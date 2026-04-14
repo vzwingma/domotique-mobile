@@ -9,7 +9,17 @@
       "matchUpdateTypes": ["minor", "patch"],
       "matchCurrentVersion": "!/^0/",
       "automerge": true
+    },
+    {
+      "description": "Disable auto-updates for packages whose versions are managed by the Expo SDK. These must stay in sync with the installed Expo SDK version.",
+      "matchPackageNames": [
+        "react",
+        "react-dom",
+        "react-native-svg",
+        "react-test-renderer"
+      ],
+      "enabled": false
     }
   ],
-"platformAutomerge": true
+  "platformAutomerge": true
 }
