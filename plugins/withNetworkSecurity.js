@@ -35,12 +35,12 @@ const withGradleVersion = (config) => {
       if (currentMatch) {
         const currentUrl = currentMatch[0];
         const newUrl = `distributionUrl=https\\://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip`;
-        if (currentUrl !== newUrl) {
+        if (currentUrl === newUrl) {
+          console.log(`[withNetworkSecurity] Gradle déjà à ${GRADLE_VERSION}`);
+        } else {
           content = content.replace(gradleUrlRegex, newUrl);
           fs.writeFileSync(wrapperPropsPath, content, 'utf8');
           console.log(`[withNetworkSecurity] Gradle rétrogradé → ${GRADLE_VERSION} (était : ${currentUrl.split('gradle-')[1]?.split('-')[0]})`);
-        } else {
-          console.log(`[withNetworkSecurity] Gradle déjà à ${GRADLE_VERSION}`);
         }
       }
 
@@ -78,14 +78,14 @@ const withCertificateFiles = (config, options) => {
       // Résolution du domaine : option plugin (prioritaire) > env var (fallback)
       const domoticzDomain = options?.domain ?? process.env.EXPO_PUBLIC_DOMOTICZ_DOMAIN ?? '';
 
-      if (!domoticzDomain) {
+      if (domoticzDomain) {
+        console.log('[withNetworkSecurity] Domaine configuré : ' + domoticzDomain);
+      } else {
         console.warn(
           '[withNetworkSecurity] ⚠️  Domaine non configuré.' +
           '\n  → Passez le domaine en option dans app.json :' +
           '\n     ["./plugins/withNetworkSecurity", { "domain": "votre-domaine.fr" }]'
         );
-      } else {
-        console.log('[withNetworkSecurity] Domaine configuré : ' + domoticzDomain);
       }
 
       // Génération du network_security_config.xml dans res/xml/
@@ -334,7 +334,9 @@ public final class DomoticzSSLHelper {
       if (fs.existsSync(mainAppPath)) {
         let content = fs.readFileSync(mainAppPath, 'utf8');
 
-        if (!content.includes('DomoticzSSLHelper.configureSsl')) {
+        if (content.includes('DomoticzSSLHelper.configureSsl')) {
+          console.log('[withNetworkSecurity] MainApplication.kt déjà patché');
+        } else {
           // Insertion avant loadReactNative(this) en préservant l'indentation
           content = content.replace(
             /^(\s+)(loadReactNative\(this\))/m,
@@ -342,8 +344,6 @@ public final class DomoticzSSLHelper {
           );
           fs.writeFileSync(mainAppPath, content, 'utf8');
           console.log('[withNetworkSecurity] MainApplication.kt patché avec DomoticzSSLHelper.configureSsl');
-        } else {
-          console.log('[withNetworkSecurity] MainApplication.kt déjà patché');
         }
       } else {
         console.warn('[withNetworkSecurity] ⚠️  MainApplication.kt introuvable : ' + mainAppPath);
