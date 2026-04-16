@@ -10,6 +10,7 @@
     "android:device": "expo run:android --device",
     "android:clean": "expo prebuild --platform android --clean && expo run:android",
     "android:clean:device": "expo prebuild --platform android --clean && expo run:android --device",
+    "android:reinstall:device": "adb uninstall io.github.vzwingma.domatique.mobile ; expo prebuild --platform android --clean && expo run:android --device",
     "android:logs": "adb logcat -s ReactNativeJS:V NetworkSecurityConfig:V CONSCRYPT:W",
     "ios": "expo run:ios",
     "web": "expo start --web",
