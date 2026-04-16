@@ -7,13 +7,51 @@ const CERT_SRC = path.join(__dirname, '..', 'assets', 'certificates', 'domoticz.
 const CERT_DEST_NAME = 'domoticz';
 const NETWORK_SECURITY_CONFIG_NAME = 'network_security_config';
 
+// Gradle 8.13 : dernière version stable 8.x compatible JDK 17/21 et avec le plugin foojay d'Expo
+const GRADLE_VERSION = '8.13';
+
+/**
+ * Corrige la version Gradle dans gradle-wrapper.properties.
+ * Gradle 9.x est incompatible avec le plugin foojay-resolver généré par Expo.
+ */
+const withGradleVersion = (config) => {
+  return withDangerousMod(config, [
+    'android',
+    async (cfg) => {
+      const wrapperPropsPath = path.join(
+        cfg.modRequest.projectRoot,
+        'android', 'gradle', 'wrapper', 'gradle-wrapper.properties'
+      );
+
+      if (!fs.existsSync(wrapperPropsPath)) {
+        console.warn('[withNetworkSecurity] gradle-wrapper.properties introuvable, ignoré');
+        return cfg;
+      }
+
+      let content = fs.readFileSync(wrapperPropsPath, 'utf8');
+      const gradleUrlRegex = /distributionUrl=.*gradle-[\d.]+-.*\.zip/;
+      const currentMatch = content.match(gradleUrlRegex);
+
+      if (currentMatch) {
+        const currentUrl = currentMatch[0];
+        const newUrl = `distributionUrl=https\\://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip`;
+        if (currentUrl !== newUrl) {
+          content = content.replace(gradleUrlRegex, newUrl);
+          fs.writeFileSync(wrapperPropsPath, content, 'utf8');
+          console.log(`[withNetworkSecurity] Gradle rétrogradé → ${GRADLE_VERSION} (était : ${currentUrl.split('gradle-')[1]?.split('-')[0]})`);
+        } else {
+          console.log(`[withNetworkSecurity] Gradle déjà à ${GRADLE_VERSION}`);
+        }
+      }
+
+      return cfg;
+    },
+  ]);
+};
+
 /**
  * Copie le certificat dans android/app/src/main/res/raw/
  * et génère le network_security_config.xml dans android/app/src/main/res/xml/
- *
- * @param {object} options - Options du plugin
- * @param {string} [options.domain] - Domaine du serveur Domoticz (ex: "domatique.freeboxos.fr").
- *   Doit être passé en option de plugin dans app.json (pas via env var, non disponible en build EAS).
  */
 const withCertificateFiles = (config, options) => {
   return withDangerousMod(config, [
@@ -28,7 +66,6 @@ const withCertificateFiles = (config, options) => {
 
       const certExists = fs.existsSync(CERT_SRC);
       if (certExists) {
-        // Android raw resources n'acceptent que des noms sans extension — on copie en .pem pour éviter tout conflit
         fs.copyFileSync(CERT_SRC, path.join(rawDir, CERT_DEST_NAME + '.pem'));
         console.log('[withNetworkSecurity] Certificat copié dans res/raw/' + CERT_DEST_NAME + '.pem');
       } else {
@@ -119,19 +156,14 @@ const withNetworkSecurityManifest = (config) => {
  * Configuration dans app.json (domaine obligatoire en option directe, pas via env var) :
  *   ["./plugins/withNetworkSecurity", { "domain": "domatique.freeboxos.fr" }]
  *
- * Prérequis :
- *   - Placer le certificat PEM dans : assets/certificates/domoticz.crt
- *
  * Ce plugin :
- *   1. Copie domoticz.crt dans android/app/src/main/res/raw/domoticz.pem
- *   2. Génère network_security_config.xml dans android/app/src/main/res/xml/
- *   3. Injecte android:networkSecurityConfig dans AndroidManifest.xml
- *
- * Stratégie de confiance SSL pour le domaine Domoticz :
- *   - Certificat bundlé (@raw/domoticz) : fonctionne sans action utilisateur
- *   - Certificats utilisateur (user) : fallback si cert installé manuellement sur l'appareil
+ *   1. Rétrograde Gradle à 8.13 (compatible JDK 17/21, incompatibilité Gradle 9.x + foojay)
+ *   2. Copie domoticz.crt dans android/app/src/main/res/raw/domoticz.pem
+ *   3. Génère network_security_config.xml dans android/app/src/main/res/xml/
+ *   4. Injecte android:networkSecurityConfig dans AndroidManifest.xml
  */
 const withNetworkSecurity = (config, options) => {
+  config = withGradleVersion(config);
   config = withCertificateFiles(config, options);
   config = withNetworkSecurityManifest(config);
   return config;
