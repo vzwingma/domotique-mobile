@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1777033364303" clover="3.2.0">
-  <project timestamp="1777033364304" name="All files">
+<coverage generated="1777033766345" clover="3.2.0">
+  <project timestamp="1777033766346" name="All files">
     <metrics statements="806" coveredstatements="539" conditionals="524" coveredconditionals="349" methods="232" coveredmethods="166" elements="1562" coveredelements="1054" complexity="0" loc="806" ncloc="806" packages="10" files="53" classes="53"/>
     <package name="app">
       <metrics statements="12" coveredstatements="0" conditionals="4" coveredconditionals="0" methods="4" coveredmethods="0"/>
@@ -603,10 +603,10 @@
       </file>
       <file name="DomoticzEnum.ts" path="C:\Users\vzwingma\IdeaProjects\domoticz-mobile\app\enums\DomoticzEnum.ts">
         <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <line num="81" count="15" type="stmt"/>
-        <line num="87" count="15" type="stmt"/>
-        <line num="97" count="15" type="stmt"/>
-        <line num="115" count="15" type="stmt"/>
+        <line num="81" count="16" type="stmt"/>
+        <line num="87" count="16" type="stmt"/>
+        <line num="97" count="16" type="stmt"/>
+        <line num="115" count="16" type="stmt"/>
       </file>
       <file name="TabsEnums.ts" path="C:\Users\vzwingma\IdeaProjects\domoticz-mobile\app\enums\TabsEnums.ts">
         <metrics statements="0" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
