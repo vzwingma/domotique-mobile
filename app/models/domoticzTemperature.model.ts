@@ -1,6 +1,9 @@
-               
+
 /**
  * Température Domoticz (Thermostat, capteur de température & humidité)
+ * 
+ * Modèle immuable pour représenter une sonde de température avec getters
+ * pour propriétés calculées (détection intérieur/extérieur, formatage).
  */
 class DomoticzTemperature {
     // Index de l'équipement
@@ -57,6 +60,33 @@ class DomoticzTemperature {
         this.status = status;
         this.data = data;
     }
+
+    /**
+     * Getter: La sonde est-elle en extérieur ?
+     * Heuristique: le nom contient "extérieur", "dehors", "ext", "outside", etc.
+     */
+    get isOutdoor(): boolean {
+        const lowerName = this.name.toLowerCase();
+        return /exté(rieur)?|dehors|ext|outside|outdoor|terrasse/.test(lowerName);
+    }
+
+    /**
+     * Getter: Formatage de la température pour affichage
+     * @returns "22.5°C" ou "72°F" selon le contexte
+     */
+    get displayTemp(): string {
+        return `${this.temp}°C`;
+    }
+
+    /**
+     * Getter: Formatage de l'humidité pour affichage
+     * @returns "65%" ou "65% (Confortable)"
+     */
+    get displayHumidity(): string {
+        if (this.humidityStatus) {
+            return `${this.humidity}% (${this.humidityStatus})`;
+        }
+        return `${this.humidity}%`;
+    }
 }
 export default DomoticzTemperature;
-
