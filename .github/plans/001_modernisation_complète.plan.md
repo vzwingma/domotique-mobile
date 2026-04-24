@@ -167,6 +167,11 @@ Moderniser l'application **domoticz-mobile** de façon exhaustive et progressive
 - **Actions :** `npm install && npm test && npm run lint && npm run web`
 - **Acceptation :** Aucune erreur, tous les tests passent
 
+#### T2.9 - Validez avec Expo Doctor (NEW)
+- **Action :** Exécuter `npx expo-doctor` pour vérifier l'installation Expo
+- **Vérifier :** Tous les checks passent (18/18 minimum)
+- **Acceptation :** Expo ecosystem validation OK
+
 ---
 
 ## 📋 Phase 3 : Architecture & Services (Developer Agent)
