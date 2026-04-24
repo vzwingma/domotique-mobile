@@ -250,9 +250,13 @@ describe('callDomoticz', () => {
       const errData = { status: 'ERR', message: 'Device not found' };
       (globalThis.fetch as jest.Mock).mockResolvedValue(makeFetchResponse(200, errData));
 
-      await expect(callDomoticz(SERVICES_URL.GET_DEVICES)).rejects.toThrow(
-        /Device not found/
-      );
+      // La nouvelle implémentation utilise DomoticzError avec un message utilisateur
+      // Le message original est dans originalError
+      const error = await callDomoticz(SERVICES_URL.GET_DEVICES).catch(e => e);
+      expect(error).toBeDefined();
+      expect(error.message).toBeDefined();
+      // Vérifier que c'est une erreur API (API_ERROR)
+      expect(error.errorType).toBe('API_ERROR');
     });
   });
 
@@ -268,9 +272,14 @@ describe('callDomoticz', () => {
     it('propage le message d\'erreur réseau', async () => {
       (globalThis.fetch as jest.Mock).mockRejectedValue(new Error('Network request failed'));
 
-      await expect(callDomoticz(SERVICES_URL.GET_DEVICES)).rejects.toThrow(
-        /Network request failed/
-      );
+      // La nouvelle implémentation utilise DomoticzError avec un message utilisateur en français
+      const error = await callDomoticz(SERVICES_URL.GET_DEVICES).catch(e => e);
+      expect(error).toBeDefined();
+      expect(error.message).toBeDefined();
+      // Vérifier que c'est une erreur réseau (NETWORK_ERROR)
+      expect(error.errorType).toBe('NETWORK_ERROR');
+      // Vérifier que le message est en français et parle de connexion réseau
+      expect(error.message.toLowerCase()).toContain('connexion');
     });
 
     it('throw une erreur quand fetch rejette avec TypeError (CORS)', async () => {
