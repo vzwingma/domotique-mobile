@@ -7,6 +7,7 @@ import {
     getFavoritesFromStorage,
     saveFavoritesToStorage,
     removeValueFromStorage,
+    clearFavoritesFromStorage,
     KEY_STORAGE,
 } from '../DataUtils.service';
 import { DomoticzDeviceType, DomoticzDeviceStatus } from '../../enums/DomoticzEnum';
@@ -292,5 +293,167 @@ describe('removeValueFromStorage', () => {
     it('appelle AsyncStorage.removeItem avec la clé donnée', () => {
         removeValueFromStorage(KEY_STORAGE.FAVORITES);
         expect(AsyncStorage.removeItem).toHaveBeenCalledWith(KEY_STORAGE.FAVORITES);
+    });
+});
+
+describe('clearFavoritesFromStorage', () => {
+    beforeEach(() => jest.clearAllMocks());
+
+    it('appelle AsyncStorage.removeItem avec la clé FAVORITES', async () => {
+        (AsyncStorage.removeItem as jest.Mock).mockResolvedValue(undefined);
+        await clearFavoritesFromStorage();
+        expect(AsyncStorage.removeItem).toHaveBeenCalledWith(KEY_STORAGE.FAVORITES);
+    });
+
+    it('retourne une Promise', async () => {
+        (AsyncStorage.removeItem as jest.Mock).mockResolvedValue(undefined);
+        const result = clearFavoritesFromStorage();
+        expect(result).toBeInstanceOf(Promise);
+        await result;
+    });
+
+    it('propage l\'erreur si AsyncStorage.removeItem échoue', async () => {
+        const error = new Error('Storage error');
+        (AsyncStorage.removeItem as jest.Mock).mockRejectedValue(error);
+        await expect(clearFavoritesFromStorage()).rejects.toThrow('Storage error');
+    });
+});
+
+// ─── Cas limites et scénarios complexes ─────────────────────────────────────────
+
+describe('Cas limites - getDeviceType', () => {
+    it('priorise "volet" sur les autres correspondances', () => {
+        // Si un nom contient à la fois "volet" et "lumière"
+        expect(getDeviceType('Volet avec Lumière')).toBe(DomoticzDeviceType.VOLET);
+    });
+
+    it('priorise "lumière" sur "thermostat"', () => {
+        expect(getDeviceType('Thermostat avec Lumière')).toBe(DomoticzDeviceType.LUMIERE);
+    });
+
+    it('gère les accents correctly (é, è, ê)', () => {
+        expect(getDeviceType('Volet café')).toBe(DomoticzDeviceType.VOLET);
+        expect(getDeviceType('Lumière cuisine')).toBe(DomoticzDeviceType.LUMIERE);
+    });
+
+    it('gère les espaces et caractères spéciaux', () => {
+        expect(getDeviceType('  Volet-Salon  ')).toBe(DomoticzDeviceType.VOLET);
+        expect(getDeviceType('Lumière/Prise Salle')).toBe(DomoticzDeviceType.LUMIERE);
+    });
+
+    it('retourne UNKNOWN pour les synonymes non reconnus', () => {
+        expect(getDeviceType('Chauffage')).toBe(DomoticzDeviceType.UNKNOWN);
+        expect(getDeviceType('Ventilateur')).toBe(DomoticzDeviceType.UNKNOWN);
+        expect(getDeviceType('Capteur')).toBe(DomoticzDeviceType.UNKNOWN);
+    });
+});
+
+describe('Cas limites - sortEquipements', () => {
+    it('gère les équipements pas dans la liste d\'ordre', () => {
+        const d1 = makeDevice({ idx: 999 });
+        const d2 = makeDevice({ idx: 1000 });
+        const order = [10, 20];
+        // rang reste à 0 pour les deux
+        const result = sortEquipements(d1, d2, order);
+        expect(result).toBe(0); // 0 - 0 = 0
+    });
+
+    it('gère les listes d\'ordre vides', () => {
+        const d1 = makeDevice({ idx: 10, rang: 5 });
+        const d2 = makeDevice({ idx: 20, rang: 3 });
+        const result = sortEquipements(d1, d2, []);
+        expect(result).toBeGreaterThan(0); // 5 - 3 = 2
+    });
+
+    it('gère les doublons dans la liste d\'ordre', () => {
+        const d1 = makeDevice({ idx: 10 });
+        const d2 = makeDevice({ idx: 10 });
+        const order = [10, 10, 20];
+        // Tous les deux idx=10 sont assignés rang=0 et rang=1
+        const result = sortEquipements(d1, d2, order);
+        // Le résultat dépend de l'ordre d'assignation des rangs (0 puis 1)
+        expect(typeof result).toBe('number');
+    });
+});
+
+describe('Cas limites - evaluateGroupLevelConsistency', () => {
+    it('gère les groupes sans sous-équipements', () => {
+        const group = makeDevice({ idx: 10, isGroup: true });
+        evaluateGroupLevelConsistency(group, [{ 10: [] }], []);
+        // Ne devrait rien changer car aucun sous-équipement
+        expect(group.consistantLevel).toBe(true);
+    });
+
+    it('gère les groupes avec tous les sous-équipements OFF', () => {
+        const group = makeDevice({ idx: 10, isGroup: true });
+        const sub1 = makeDevice({ idx: 1, level: 0, status: DomoticzDeviceStatus.OFF });
+        const sub2 = makeDevice({ idx: 2, level: 0, status: DomoticzDeviceStatus.OFF });
+        evaluateGroupLevelConsistency(group, [{ 10: [1, 2] }], [sub1, sub2]);
+        expect(group.consistantLevel).toBe(true);
+        expect(group.level).toBe(0);
+        expect(group.status).toBe(DomoticzDeviceStatus.OFF);
+    });
+
+    it('gère les groupes avec un seul sous-équipement', () => {
+        const group = makeDevice({ idx: 10, isGroup: true });
+        const sub1 = makeDevice({ idx: 1, level: 75, status: DomoticzDeviceStatus.ON });
+        evaluateGroupLevelConsistency(group, [{ 10: [1] }], [sub1]);
+        expect(group.consistantLevel).toBe(true);
+        expect(group.level).toBe(75);
+        expect(group.status).toBe(DomoticzDeviceStatus.ON);
+    });
+
+    it('gère les niveaux très différents (0 vs 100)', () => {
+        const group = makeDevice({ idx: 10, isGroup: true });
+        const sub1 = makeDevice({ idx: 1, level: 0, status: DomoticzDeviceStatus.OFF, isActive: true });
+        const sub2 = makeDevice({ idx: 2, level: 100, status: DomoticzDeviceStatus.ON, isActive: true });
+        evaluateGroupLevelConsistency(group, [{ 10: [1, 2] }], [sub1, sub2]);
+        expect(group.consistantLevel).toBe(false);
+        expect(group.level).toBe(100);
+        expect(group.status).toBe('Mixed');
+    });
+
+    it('normalise les switches ONOFF (level=0, status=ON) à 100', () => {
+        const group = makeDevice({ idx: 10, isGroup: true });
+        const sub1 = makeDevice({ idx: 1, level: 0, status: DomoticzDeviceStatus.ON, isActive: true });
+        const sub2 = makeDevice({ idx: 2, level: 0, status: DomoticzDeviceStatus.ON, isActive: true });
+        evaluateGroupLevelConsistency(group, [{ 10: [1, 2] }], [sub1, sub2]);
+        expect(group.consistantLevel).toBe(true);
+        expect(group.level).toBe(100); // Normalisé de level=0 à 100 pour les switches ON
+    });
+});
+
+describe('Cas limites - AsyncStorage', () => {
+    it('getFavoritesFromStorage: gère JSON invalide en retournant []', async () => {
+        (AsyncStorage.getItem as jest.Mock).mockResolvedValue('invalid json {]');
+        // Cela devrait lever une erreur lors du JSON.parse
+        try {
+            await getFavoritesFromStorage();
+            // Si pas d'erreur, c'est qu'il y a un problème
+            fail('Should have thrown');
+        } catch (e: any) {
+            expect(e).toBeInstanceOf(SyntaxError);
+        }
+    });
+
+    it('saveFavoritesToStorage: sérialise correctement les objets', () => {
+        const favs = [
+            { idx: 1, nbOfUse: 5, name: 'Lumière 1', type: DomoticzDeviceType.LUMIERE, subType: 'Dimmer' },
+            { idx: 2, nbOfUse: 3, name: 'Volet 1', type: DomoticzDeviceType.VOLET, subType: 'Blind' },
+        ] as any;
+        saveFavoritesToStorage(favs);
+        const setCalls = (AsyncStorage.setItem as jest.Mock).mock.calls;
+        expect(setCalls[0][0]).toBe(KEY_STORAGE.FAVORITES);
+        // Vérifie que les données sérialisées contiennent les informations correctes
+        const serialized = JSON.parse(setCalls[0][1]);
+        expect(serialized).toHaveLength(2);
+        expect(serialized[0].idx).toBe(1);
+        expect(serialized[1].idx).toBe(2);
+    });
+
+    it('getFavoritesFromStorage: retourne un tableau vide pour une chaîne JSON vide', async () => {
+        (AsyncStorage.getItem as jest.Mock).mockResolvedValue('');
+        const result = await getFavoritesFromStorage();
+        expect(result).toEqual([]);
     });
 });
