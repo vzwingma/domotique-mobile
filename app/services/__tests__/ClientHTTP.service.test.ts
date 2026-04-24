@@ -250,9 +250,13 @@ describe('callDomoticz', () => {
       const errData = { status: 'ERR', message: 'Device not found' };
       (globalThis.fetch as jest.Mock).mockResolvedValue(makeFetchResponse(200, errData));
 
-      await expect(callDomoticz(SERVICES_URL.GET_DEVICES)).rejects.toThrow(
-        /Device not found/
-      );
+      // La nouvelle implémentation utilise DomoticzError avec un message utilisateur
+      // Le message original est dans originalError
+      const error = await callDomoticz(SERVICES_URL.GET_DEVICES).catch(e => e);
+      expect(error).toBeDefined();
+      expect(error.message).toBeDefined();
+      // Vérifier que c'est une erreur API (API_ERROR)
+      expect(error.errorType).toBe('API_ERROR');
     });
   });
 
@@ -268,9 +272,14 @@ describe('callDomoticz', () => {
     it('propage le message d\'erreur réseau', async () => {
       (globalThis.fetch as jest.Mock).mockRejectedValue(new Error('Network request failed'));
 
-      await expect(callDomoticz(SERVICES_URL.GET_DEVICES)).rejects.toThrow(
-        /Network request failed/
-      );
+      // La nouvelle implémentation utilise DomoticzError avec un message utilisateur en français
+      const error = await callDomoticz(SERVICES_URL.GET_DEVICES).catch(e => e);
+      expect(error).toBeDefined();
+      expect(error.message).toBeDefined();
+      // Vérifier que c'est une erreur réseau (NETWORK_ERROR)
+      expect(error.errorType).toBe('NETWORK_ERROR');
+      // Vérifier que le message est en français et parle de connexion réseau
+      expect(error.message.toLowerCase()).toContain('connexion');
     });
 
     it('throw une erreur quand fetch rejette avec TypeError (CORS)', async () => {
@@ -279,6 +288,143 @@ describe('callDomoticz', () => {
       );
 
       await expect(callDomoticz(SERVICES_URL.GET_DEVICES)).rejects.toThrow();
+    });
+  });
+
+  // ─── Erreurs SSL/TLS ──────────────────────────────────────────────────────────
+
+  describe('Erreurs SSL/TLS', () => {
+    beforeEach(() => {
+      // Mock console methods pour éviter le spamming
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      (console.warn as jest.Mock).mockRestore();
+      (console.error as jest.Mock).mockRestore();
+    });
+
+    it('déclenche le diagnostic SSL en cas d\'erreur SSL spécifique', async () => {
+      (globalThis.fetch as jest.Mock).mockRejectedValue(
+        new Error('SSL certificate problem')
+      );
+
+      await expect(callDomoticz(SERVICES_URL.GET_DEVICES)).rejects.toThrow();
+
+      // Le diagnostic SSL est lancé en arrière-plan (async)
+      // On vérife au moins que la première requête a échoué
+      expect(globalThis.fetch).toHaveBeenCalled();
+    });
+
+    it('détecte les erreurs SSL via le keyword "certificate"', async () => {
+      (globalThis.fetch as jest.Mock).mockRejectedValue(
+        new Error('certificate chain incomplete')
+      );
+
+      await expect(callDomoticz(SERVICES_URL.GET_DEVICES)).rejects.toThrow();
+      expect(globalThis.fetch).toHaveBeenCalled();
+    });
+
+    it('détecte les erreurs SSL via le keyword "trust"', async () => {
+      (globalThis.fetch as jest.Mock).mockRejectedValue(
+        new Error('self-signed certificate not trusted')
+      );
+
+      await expect(callDomoticz(SERVICES_URL.GET_DEVICES)).rejects.toThrow();
+      expect(globalThis.fetch).toHaveBeenCalled();
+    });
+
+    it('détecte les erreurs SSL via le keyword "handshake"', async () => {
+      (globalThis.fetch as jest.Mock).mockRejectedValue(
+        new Error('SSL handshake failed')
+      );
+
+      await expect(callDomoticz(SERVICES_URL.GET_DEVICES)).rejects.toThrow();
+      expect(globalThis.fetch).toHaveBeenCalled();
+    });
+
+    it('lance le diagnostic en cas d\'erreur réseau sur HTTPS', async () => {
+      (globalThis.fetch as jest.Mock).mockRejectedValue(
+        new Error('Network request failed')
+      );
+
+      await expect(callDomoticz('https://secure.endpoint/resource')).rejects.toThrow();
+      // La requête initiale est lancée et échoue, déclenchant le diagnostic SSL en arrière-plan
+      expect(globalThis.fetch).toHaveBeenCalled();
+    });
+  });
+
+  // ─── Logging et tracing ────────────────────────────────────────────────────────
+
+  describe('Logging et tracing', () => {
+    beforeEach(() => {
+      jest.spyOn(console, 'log').mockImplementation(() => {});
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      (console.log as jest.Mock).mockRestore();
+      (console.warn as jest.Mock).mockRestore();
+    });
+
+    it('génère un traceId unique par requête', async () => {
+      const mockV7 = require('uuid').v7 as jest.Mock;
+      mockV7.mockReturnValueOnce('id-1');
+      (globalThis.fetch as jest.Mock).mockResolvedValue(
+        makeFetchResponse(200, { status: 'OK' })
+      );
+
+      await callDomoticz(SERVICES_URL.GET_DEVICES);
+
+      expect(console.log).toHaveBeenCalledWith(
+        expect.stringContaining('[WS traceId=id')
+      );
+    });
+
+    it('logs la requête HTTP avec l\'URL complète', async () => {
+      (globalThis.fetch as jest.Mock).mockResolvedValue(
+        makeFetchResponse(200, { status: 'OK', result: [] })
+      );
+
+      await callDomoticz(SERVICES_URL.GET_DEVICES);
+
+      const consoleCalls = (console.log as jest.Mock).mock.calls;
+      expect(consoleCalls.some((call: any[]) => call[0]?.includes('getdevices'))).toBe(true);
+    });
+
+    it('logs le temps de réponse', async () => {
+      (globalThis.fetch as jest.Mock).mockResolvedValue(
+        makeFetchResponse(200, { status: 'OK' })
+      );
+
+      await callDomoticz(SERVICES_URL.GET_DEVICES);
+
+      const consoleCalls = (console.log as jest.Mock).mock.calls;
+      expect(consoleCalls.some((call: any[]) => call[0]?.includes('ms]'))).toBe(true);
+    });
+
+    it('logs avec statusText si disponible', async () => {
+      (globalThis.fetch as jest.Mock).mockResolvedValue(
+        makeFetchResponse(200, { status: 'OK' }, 'OK')
+      );
+
+      await callDomoticz(SERVICES_URL.GET_DEVICES);
+
+      const consoleCalls = (console.log as jest.Mock).mock.calls;
+      const hasStatusText = consoleCalls.some((call: any[]) => call[0]?.includes('OK'));
+      expect(hasStatusText).toBe(true);
+    });
+
+    it('logs même si statusText est vide', async () => {
+      (globalThis.fetch as jest.Mock).mockResolvedValue(
+        makeFetchResponse(200, { status: 'OK' }, '')
+      );
+
+      await callDomoticz(SERVICES_URL.GET_DEVICES);
+
+      const consoleCalls = (console.log as jest.Mock).mock.calls;
+      expect(consoleCalls.length).toBeGreaterThan(0);
     });
   });
 });

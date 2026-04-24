@@ -4,6 +4,7 @@ import { DomoticzDeviceType } from '@/app/enums/DomoticzEnum';
 import { SERVICES_PARAMS, SERVICES_URL } from '../enums/APIconstants';
 import callDomoticz from '../services/ClientHTTP.service';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
+import { handleError, generateTraceId } from '@/app/services/ErrorHandler.service';
 import DomoticzParameter from '../models/domoticzParameter.model';
 import { Alert } from 'react-native';
 import { clearFavoritesFromStorage } from '../services/DataUtils.service';
@@ -14,6 +15,8 @@ import { clearFavoritesFromStorage } from '../services/DataUtils.service';
  * @param storeParameters Function to store the processed parameters
  */
 export function loadDomoticzParameters(storeParameters: (parameters: DomoticzParameter[]) => void) {
+    const traceId = generateTraceId();
+    
     // Call external service to get devices from Domoticz
     callDomoticz(SERVICES_URL.GET_DEVICES)
         .then(data => {
@@ -36,9 +39,8 @@ export function loadDomoticzParameters(storeParameters: (parameters: DomoticzPar
             storeParameters(parametersDevices);
         })
         .catch((e) => {
-            console.error('Une erreur est survenue pendant les chargements des paramètres', e);
+            handleError(e, 'loadDomoticzParameters', traceId, (msg) => showToast(msg, ToastDuration.SHORT));
             storeParameters([]);
-            showToast("Error loading devices", ToastDuration.SHORT);
         })
 }
 
@@ -50,20 +52,20 @@ export function loadDomoticzParameters(storeParameters: (parameters: DomoticzPar
  * @param setDomoticzThermostatData Function to update thermostat data state
  */
 export function updateParameterValue(idx: number, device: DomoticzParameter, level: any, setDomoticzParametersData: React.Dispatch<React.SetStateAction<DomoticzParameter[]>>) {
+    const traceId = generateTraceId();
 
-        console.log("Mise à jour du paramètre "  + device.name + " [" + idx + "]", level.libelle );
+    console.log("Mise à jour du paramètre "  + device.name + " [" + idx + "]", level.libelle );
 
-        let params = [{ key: SERVICES_PARAMS.IDX, value: String(idx) },
-        { key: SERVICES_PARAMS.LEVEL, value: String(level.id) }];
+    let params = [{ key: SERVICES_PARAMS.IDX, value: String(idx) },
+    { key: SERVICES_PARAMS.LEVEL, value: String(level.id) }];
 
-        callDomoticz(SERVICES_URL.CMD_BLINDS_LIGHTS_SET_LEVEL, params)
-            .catch((e) => {
-                console.error('Une erreur s\'est produite lors de la mise à jour du paramètre', e);
-                showToast("Erreur lors de la commande de l'équipement", ToastDuration.LONG);
-            })
-            .finally(() => {
-                refreshEquipementState(setDomoticzParametersData)
-            });
+    callDomoticz(SERVICES_URL.CMD_BLINDS_LIGHTS_SET_LEVEL, params)
+        .catch((e) => {
+            handleError(e, 'updateParameterValue', traceId, (msg) => showToast(msg, ToastDuration.LONG));
+        })
+        .finally(() => {
+            refreshEquipementState(setDomoticzParametersData)
+        });
 }
 
 /**

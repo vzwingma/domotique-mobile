@@ -5,6 +5,7 @@ import DomoticzThermostat from '../models/domoticzThermostat.model';
 import { SERVICES_PARAMS, SERVICES_URL } from '../enums/APIconstants';
 import callDomoticz from '../services/ClientHTTP.service';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
+import { handleError, generateTraceId } from '@/app/services/ErrorHandler.service';
 
 /**
  * Charge les équipements Domoticz.
@@ -15,6 +16,8 @@ import { showToast, ToastDuration } from '@/hooks/AndroidToast';
  */
 
 export function loadDomoticzThermostats(storeThermostatsData: (thermostats: DomoticzThermostat[]) => void) {
+    const traceId = generateTraceId();
+    
     // Appel du service externe de connexion à Domoticz pour les types d'équipements
     callDomoticz(SERVICES_URL.GET_DEVICES)
         .then(data => {
@@ -40,9 +43,8 @@ export function loadDomoticzThermostats(storeThermostatsData: (thermostats: Domo
             storeThermostatsData(thermostatsDevices);
         })
         .catch((e) => {
-            console.error('Une erreur s\'est produite lors du chargement des devices', e);
+            handleError(e, 'loadDomoticzThermostats', traceId, (msg) => showToast(msg, ToastDuration.SHORT));
             storeThermostatsData([]);
-            showToast("Erreur lors du chargement des devices", ToastDuration.SHORT);
         })
 }
 
@@ -78,6 +80,8 @@ export function evaluateThermostatPoint(devicePoint: any): number {
  * 
  */
 export function updateThermostatPoint(idx: number, device: DomoticzThermostat, temp: number, setDomoticzThermostatData: React.Dispatch<React.SetStateAction<DomoticzThermostat[]>>) {
+    const traceId = generateTraceId();
+    
     temp = evaluateThermostatPoint(temp);
     console.log("Mise à jour de l'équipement " + device.name + " [" + idx + "]", temp + device.unit);
 
@@ -86,8 +90,7 @@ export function updateThermostatPoint(idx: number, device: DomoticzThermostat, t
 
     callDomoticz(SERVICES_URL.CMD_THERMOSTAT_SET_POINT, params)
         .catch((e) => {
-            console.error('Une erreur s\'est produite lors de la mise à jour du thermostat', e);
-            showToast("Erreur lors de la commande du thermostat", ToastDuration.LONG);
+            handleError(e, 'updateThermostatPoint', traceId, (msg) => showToast(msg, ToastDuration.LONG));
         })
         .finally(() => {
             console.log("Mise à jour de l'équipement " + device.name + " [" + idx + "]", temp + device.unit);
