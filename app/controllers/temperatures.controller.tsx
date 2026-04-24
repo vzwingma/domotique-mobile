@@ -1,6 +1,7 @@
 import callDomoticz from '@/app/services/ClientHTTP.service';
 import { SERVICES_URL } from '@/app/enums/APIconstants';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
+import { handleError, generateTraceId } from '@/app/services/ErrorHandler.service';
 import DomoticzTemperature from '../models/domoticzTemperature.model';
 /**
  * Charge les températures Domoticz.
@@ -9,6 +10,7 @@ import DomoticzTemperature from '../models/domoticzTemperature.model';
  * @param storeTempsData - Fonction pour stocker les données des températures et thermostat dans l'état.
  */
 export function loadDomoticzTemperatures(storeTempsData: Function) {
+    const traceId = generateTraceId();
 
     // Appel du service externe de connexion à Domoticz
     callDomoticz(SERVICES_URL.GET_TEMPS)
@@ -35,8 +37,7 @@ export function loadDomoticzTemperatures(storeTempsData: Function) {
             );
         })
         .catch((e) => {
-            console.error('Une erreur s\'est produite lors du chargement des températures', e);
-            showToast("Erreur lors du chargement des températures", ToastDuration.SHORT);
+            handleError(e, 'loadDomoticzTemperatures', traceId, (msg) => showToast(msg, ToastDuration.SHORT));
         })
 }
 

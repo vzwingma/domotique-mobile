@@ -1,6 +1,7 @@
 import 'react-native-get-random-values';
 import { v7 as uuidGen } from 'uuid';
 import { API_AUTH, API_URL, SERVICES_URL, KeyValueParams } from '../enums/APIconstants';
+import { DomoticzError, handleError, generateTraceId } from './ErrorHandler.service';
 
 
 /** Client HTTP **/
@@ -74,12 +75,13 @@ function runSSLDiagnostic(failedUrl: string): void {
  * @param path chemin de la ressource
  * @param params paramètres (optionnels)
  * @returns réponse
+ * @throws DomoticzError En cas d'erreur réseau, API ou parsing
  */
 function callDomoticz(path: SERVICES_URL, params?: KeyValueParams[]): Promise<any> {
     // Calcul de l'URL complétée
     const fullURL = evaluateURL(path, params);
 
-    let traceId = uuidGen().replaceAll("-", "");
+    let traceId = generateTraceId();
     console.log("[WS traceId=" + traceId + "] > [" + fullURL + "]");
     // Début du watch
     startWatch();
@@ -98,14 +100,17 @@ function callDomoticz(path: SERVICES_URL, params?: KeyValueParams[]): Promise<an
             if (res.status >= 200 && res.status < 300) {
                 return res.json();
             } else {
-                throw new Error(res.statusText);
+                // Créer une erreur structurée pour les réponses HTTP non-2xx
+                throw new Error(`HTTP ${res.status}: ${res.statusText}`);
             }
         })
         .then(data => { 
+            // Vérifier le status Domoticz
             if(data.status === "ERR") {
-                throw new Error(fullURL+" - " +data.message);
+                throw new Error(`${fullURL} - API Error: ${data.message}`);
             }
-            return data; })
+            return data; 
+        })
         .catch(e => {
             const isHttps = fullURL.startsWith('https://');
             const isSSLError = e.message?.toLowerCase().includes('ssl') 
@@ -119,7 +124,17 @@ function callDomoticz(path: SERVICES_URL, params?: KeyValueParams[]): Promise<an
             } else {
                 console.error("[WS traceId=" + traceId + "] < Erreur lors de l'appel HTTP [" + fullURL + "]", e);
             }
-            throw new Error(fullURL+" - "+API_AUTH+" - " +e.message);
+            
+            // Déléguer la gestion d'erreur structurée au ErrorHandler
+            const domoticzError = handleError(
+                e,
+                `callDomoticz[${path}]`,
+                traceId
+                // Ne pas passer showToast ici - c'est au niveau du controller de le faire
+            );
+            
+            // Relancer l'erreur structurée
+            throw domoticzError;
         })
 
 }
