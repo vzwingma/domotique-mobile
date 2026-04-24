@@ -29,3 +29,5 @@ expo-env.d.ts
 # Environment variables
 .env
 
+coverage/
+coverage/*
