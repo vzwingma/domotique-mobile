@@ -1,4 +1,4 @@
-import React, { JSX, useContext, useEffect, useState } from 'react';
+import React, { JSX, Suspense, useContext, useEffect, useState } from 'react';
 
 import { Colors } from '@/app/enums/Colors';
 import connectToDomoticz from '../controllers/index.controller';
@@ -9,20 +9,23 @@ import { TabBarItems } from '@/components/navigation/TabBarItem';
 import DomoticzConfig from '../models/domoticzConfig.model';
 import { ThemedText } from '@/components/ThemedText';
 import { DomoticzDeviceType } from '../enums/DomoticzEnum';
-import HomeScreen from '.';
-import TabDomoticzTemperatures from './temperatures.tab';
+
+// T4.3 - Lazy-load screens for better performance
+const HomeScreen = React.lazy(() => import('.'));
+const TabDomoticzTemperatures = React.lazy(() => import('./temperatures.tab'));
+const TabDomoticzDevices = React.lazy(() => import('./devices.tabs'));
+const TabDomoticzParametres = React.lazy(() => import('./parametrages.tab'));
+
 import { loadDomoticzDevices } from '../controllers/devices.controller';
-import TabDomoticzDevices from './devices.tabs';
 import { loadDomoticzTemperatures } from '../controllers/temperatures.controller';
 import { getHeaderIcon } from '@/components/navigation/TabHeaderIcon';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
 import { loadDomoticzThermostats } from '../controllers/thermostats.controller';
-import TabDomoticzParametres from './parametrages.tab';
 import { loadDomoticzParameters } from '../controllers/parameters.controller';
 import { mapDomoticzStatusToConnectionBadgeState } from '@/components/ConnectionBadge';
 
 /**
- * Composant racine de l'application.
+ * Composant racine de l'application avec Profiler (T4.5).
  * Il contient les onglets de navigation.
  */
 export default function TabLayout() {
@@ -36,6 +39,13 @@ export default function TabLayout() {
   const [error, setError] = useState<Error | null>(null);
   const [tab, setTab] = useState(Tabs.INDEX);
 
+
+  /**
+   * T4.5 - Callback pour profiling de performance
+   */
+  const onRenderCallback = (id: string, phase: string, actualDuration: number) => {
+    console.log(`[PROFILER] ${id} (${phase}) - ${actualDuration.toFixed(2)}ms`);
+  };
 
   /**
    * Fonction pour changer d'onglet
@@ -98,54 +108,77 @@ export default function TabLayout() {
 
 
   return (
-    <>
-      <ParallaxScrollView
-        headerImage={getHeaderIcon(tab)}
-        headerTitle={tab.toString()}
-        connectionState={getConnectionBadgeState()}
-        setRefreshing={setRefreshing}>
+    <React.Profiler id="TabLayout" onRender={onRenderCallback}>
+      <>
+        <ParallaxScrollView
+          headerImage={getHeaderIcon(tab)}
+          headerTitle={tab.toString()}
+          connectionState={getConnectionBadgeState()}
+          setRefreshing={setRefreshing}>
 
-        <View style={tabStyles.titleContainer}>
-          {getPanelContent()}
+          <View style={tabStyles.titleContainer}>
+            {getPanelContent()}
+          </View>
+
+        </ParallaxScrollView>
+        <View style={tabStyles.tabsViewbox}>
+          {
+            (!isLoading && error === null) ?
+              <>
+                <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.INDEX} />
+                <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.LUMIERES} />
+                <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.VOLETS} />
+                <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.TEMPERATURES} />
+                <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.MAISON} />
+              </> : <></>
+          }
         </View>
-
-      </ParallaxScrollView>
-      <View style={tabStyles.tabsViewbox}>
-        {
-          (!isLoading && error === null) ?
-            <>
-              <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.INDEX} />
-              <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.LUMIERES} />
-              <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.VOLETS} />
-              <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.TEMPERATURES} />
-              <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.MAISON} />
-            </> : <></>
-        }
-      </View>
-    </>
+      </>
+    </React.Profiler>
   );
 }
 
 
 /**
- * Affiche le panneau de l'onglet sélectionné
+ * Affiche le panneau de l'onglet sélectionné avec lazy-loading (T4.3)
  *
  * @param tab L'onglet sélectionné
  */
 function showPanel(tab: Tabs): JSX.Element {
+  const fallback = <ActivityIndicator size={'large'} color={Colors.domoticz.color} />;
 
   switch (tab) {
     case Tabs.INDEX:
-      return <HomeScreen />
+      return (
+        <Suspense fallback={fallback}>
+          <HomeScreen />
+        </Suspense>
+      );
     case Tabs.LUMIERES:
-      return <TabDomoticzDevices dataType={DomoticzDeviceType.LUMIERE} />
+      return (
+        <Suspense fallback={fallback}>
+          <TabDomoticzDevices dataType={DomoticzDeviceType.LUMIERE} />
+        </Suspense>
+      );
     case Tabs.VOLETS:
-      return <TabDomoticzDevices dataType={DomoticzDeviceType.VOLET} />
+      return (
+        <Suspense fallback={fallback}>
+          <TabDomoticzDevices dataType={DomoticzDeviceType.VOLET} />
+        </Suspense>
+      );
     case Tabs.TEMPERATURES:
-      return <TabDomoticzTemperatures />
-      case Tabs.MAISON:
-        return <TabDomoticzParametres />
-      default:
+      return (
+        <Suspense fallback={fallback}>
+          <TabDomoticzTemperatures />
+        </Suspense>
+      );
+    case Tabs.MAISON:
+      return (
+        <Suspense fallback={fallback}>
+          <TabDomoticzParametres />
+        </Suspense>
+      );
+    default:
       return <ThemedText type="title" style={{ color: 'red' }}>404 - Page non définie</ThemedText>
   }
 }

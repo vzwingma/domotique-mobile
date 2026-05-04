@@ -8,6 +8,77 @@ import { DomoticzError, handleError, generateTraceId } from './ErrorHandler.serv
 
 let storageWatch = 0;
 
+/**
+ * Interface pour les entrées du cache HTTP (T4.1)
+ */
+interface CacheEntry {
+  data: any;
+  timestamp: number;
+  ttl: number; // durée de vie du cache en ms
+}
+
+/**
+ * Cache HTTP simple (Map + TTL) — T4.1 Performance Optimization
+ * Clé: URL complète
+ * Valeur: CacheEntry (données + timestamp + TTL)
+ * 
+ * Stratégie: Cache GET requests pendant 30s par défaut
+ * Bypass possible via paramètre bypassCache: true
+ */
+const httpCache: Map<string, CacheEntry> = new Map();
+
+/**
+ * Vérifie si une entrée de cache est encore valide
+ * @param entry Entrée du cache
+ * @returns true si le cache n'a pas expiré
+ */
+function isCacheValid(entry: CacheEntry): boolean {
+  return Date.now() - entry.timestamp < entry.ttl;
+}
+
+/**
+ * Récupère les données en cache si valides (T4.1)
+ * @param url URL complète
+ * @returns Données en cache ou null si absent/expiré
+ */
+function getCachedData(url: string): any | null {
+  const entry = httpCache.get(url);
+  if (!entry) return null;
+  
+  if (isCacheValid(entry)) {
+    console.log(`[CACHE HIT] ${url}`);
+    return entry.data;
+  }
+  
+  // Supprimer le cache expiré
+  httpCache.delete(url);
+  return null;
+}
+
+/**
+ * Sauvegarde les données en cache (T4.1)
+ * @param url URL complète
+ * @param data Données à cacher
+ * @param ttl Durée de vie en ms (défaut 30s)
+ */
+function setCachedData(url: string, data: any, ttl: number = 30000): void {
+  httpCache.set(url, {
+    data,
+    timestamp: Date.now(),
+    ttl
+  });
+  console.log(`[CACHE SET] ${url} (TTL: ${ttl}ms)`);
+}
+
+/**
+ * Vide complètement le cache HTTP (T4.1)
+ * Utile pour logout ou reset
+ */
+export function clearHttpCache(): void {
+  httpCache.clear();
+  console.log('[CACHE CLEARED] Cache HTTP vidé complètement');
+}
+
 
 /**
  * Calcul de l'URL complétée
@@ -71,18 +142,29 @@ function runSSLDiagnostic(failedUrl: string): void {
 }
 
 /**
- * Appel HTTP vers le backend
+ * Appel HTTP vers le backend avec support du cache (T4.1)
  * @param path chemin de la ressource
  * @param params paramètres (optionnels)
+ * @param bypassCache booléen pour forcer un fetch sans cache (défaut: false)
  * @returns réponse
  * @throws DomoticzError En cas d'erreur réseau, API ou parsing
  */
-function callDomoticz(path: SERVICES_URL, params?: KeyValueParams[]): Promise<any> {
+function callDomoticz(path: SERVICES_URL, params?: KeyValueParams[], bypassCache: boolean = false): Promise<any> {
     // Calcul de l'URL complétée
     const fullURL = evaluateURL(path, params);
 
+    // VÉRIFIER LE CACHE (T4.1) — sauf si bypass
+    if (!bypassCache) {
+        const cached = getCachedData(fullURL);
+        if (cached !== null) {
+            console.log("[WS traceId=CACHED] > [" + fullURL + "] (cache hit, returning immediately)");
+            return Promise.resolve(cached);
+        }
+    }
+
     let traceId = generateTraceId();
     console.log("[WS traceId=" + traceId + "] > [" + fullURL + "]");
+    console.log("[CACHE MISS] " + fullURL);
     // Début du watch
     startWatch();
 
@@ -109,6 +191,8 @@ function callDomoticz(path: SERVICES_URL, params?: KeyValueParams[]): Promise<an
             if(data.status === "ERR") {
                 throw new Error(`${fullURL} - API Error: ${data.message}`);
             }
+            // METTRE EN CACHE (T4.1) — si pas d'erreur
+            setCachedData(fullURL, data);
             return data; 
         })
         .catch(e => {
