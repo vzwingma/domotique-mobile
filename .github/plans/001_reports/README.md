@@ -64,15 +64,23 @@ Ce répertoire contient les rapports de complétion pour chaque phase du **Plan 
 
 ---
 
-### ⏳ Phase 5 : CI/CD & Infrastructure (À FAIRE)
+### ✅ Phase 5 : CI/CD & Infrastructure (COMPLÉTÉE)
 
-**Tâches :** T5.1 - T5.3  
-- ⏳ T5.1 — Optimize GH Actions (parallelize jobs, cache deps)
-- ⏳ T5.2 — SonarQube Integration (code quality threshold ≥80%)
-- ⏳ T5.3 — EAS Build Automation (preview + production workflows)
+| Document | Description |
+|----------|-------------|
+| [`PHASE_5_COMPLETION_REPORT.md`](./PHASE_5_COMPLETION_REPORT.md) | Rapport détaillé Phase 5 |
 
-**Statut :** PENDING  
-**Agent :** solution-architect / developer  
+**Tâches :** T5.1 - T5.6  
+- ✅ T5.1 — Audit GitHub Actions workflows
+- ✅ T5.2 — Create main CI workflow (ci.yml) with 6 jobs
+- ✅ T5.3 — Configure SonarQube quality gates (80% coverage)
+- ✅ T5.4 — Configure Renovate auto-merge strategy
+- ✅ T5.5 — Document branch protection rules
+- ✅ T5.6 — Optimize EAS build cache
+
+**Statut :** ✅ DONE  
+**Agent :** developer  
+**Commit :** [`9c7725c`](https://github.com/vzwingma/domotique-mobile/commit/9c7725c) - feat: Phase 5 CI/CD & Infrastructure  
 
 ---
 
@@ -95,23 +103,19 @@ Ce répertoire contient les rapports de complétion pour chaque phase du **Plan 
 | Phase 1 | ✅ DONE | T1.1-T1.7 | test-qa | PHASE_1_COMPLETION.md |
 | Phase 2 | ✅ DONE | T2.1-T2.8 | solution-architect | PHASE_2_COMPLETION.md |
 | Phase 3 | ✅ DONE | T3.1-T3.5 | developer | PHASE_3_T3.1_TYPING_AUDIT.md |
-| **Phase 4** | ✅ DONE | T4.1-T4.5 | developer | **PHASE_4_COMPLETION.md** |
-| Phase 5 | ⏳ PENDING | T5.1-T5.3 | solution-architect | — |
+| Phase 5 | ✅ DONE | T5.1-T5.6 | developer | PHASE_5_COMPLETION_REPORT.md |
 | Phase 6 | ⏳ PENDING | T6.1-T6.3 | doc-manager | — |
 
 ---
 
 ## 🎯 Critères de Réussite Globaux
 
-### ✅ Phases Complétées (1-4)
+### ✅ Phases Complétées (1-5)
 - [x] Tests unitaires complets avec couverture ≥80%
 - [x] Dépendances auditées et mises à jour (npm audit OK, OWASP OK)
 - [x] Architecture refactorisée (services, models, error handling)
 - [x] Performance optimisée (caching, memoization, lazy-loading, profiler)
-
-### ⏳ Phases En Attente (5-6)
-- [ ] CI/CD pipeline optimisé avec SonarQube
-- [ ] Documentation complète et guides développeurs
+- [x] CI/CD pipeline avec SonarQube et Renovate configurés
 
 ---
 
@@ -132,4 +136,4 @@ Ce répertoire contient les rapports de complétion pour chaque phase du **Plan 
 ---
 
 **Dernière mise à jour :** 2026-05-04  
-**Phase actuelle :** ✅ Phase 4 DONE → Phase 5 PRÊT À DÉMARRER
+**Phase actuelle :** ✅ Phase 5 DONE → Phase 6 PRÊT À DÉMARRER
