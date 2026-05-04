@@ -7,28 +7,33 @@ import { DomoticzDeviceType, DomoticzThermostatLevelValue } from "../enums/Domot
  * Modèle immuable pour représenter un thermostat avec validation
  * et getters pour propriétés calculées (besoin d'ajustement, formatage).
  * 
- * Note : 
- * - `temp`: Consigne (Set Point)
- * - `data`: Mesure réelle (Current Temperature)
+ * **Immuabilité :** Les propriétés readonly sont protégées en lecture seule.
+ * Les propriétés mutables (_rang, _temp, _status) utilisent des getters/setters
+ * privés pour contrôler les modifications.
+ * 
+ * **Conventions :**
+ * - `temp` : Consigne (Set Point) - valeur cible de chauffage/refroidissement
+ * - `data` : Mesure réelle (Current Temperature) - température actuelle
+ * - `needsAdjustment` : Heuristique seuil à 2°C de différence
  */
 class DomoticzThermostat {
     // Index de l'équipement (validé > 0)
     readonly idx: number;
     // Rang de l'équipement (affichage) - mutable pour tri
     private _rang: number = 0;
-    // Nom de l'équipement
+    // Nom de l'équipement (ex: "Salon Chauffage")
     readonly name: string;
-    // Date de la dernière mise à jour
+    // Date de la dernière mise à jour (ISO 8601)
     readonly lastUpdate: string;
-    // Equipement actif ?
+    // Équipement actif ? (basé sur timeout)
     readonly isActive: boolean = false;
     // Consigne de l'équipement (Set Point) - mutable pour changements d'état
     private _temp: number;
     // Type de l'équipement
     readonly type: DomoticzDeviceType;
-    // Status de l'équipement - mutable pour changements d'état
+    // Status de l'équipement (ex: "On", "Off", "Heating") - mutable
     private _status: string;
-    // Données de l'équipement (mesure réelle)
+    // Données de l'équipement (mesure réelle en °C, ex: "20.5 °C")
     readonly data: string;
     // Unité de l'équipement (°C, °F, etc.)
     readonly unit: string;

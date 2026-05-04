@@ -4,31 +4,34 @@
  * 
  * Modèle immuable pour représenter une sonde de température avec getters
  * pour propriétés calculées (détection intérieur/extérieur, formatage).
+ * 
+ * **Immuabilité :** Toutes les propriétés sont readonly.
+ * Modifications impossibles après construction. Pas de mutations.
  */
 class DomoticzTemperature {
-    // Index de l'équipement
+    // Index de l'équipement (identifiant unique)
     readonly idx: string;
-    // Rang de l'équipement (affichage)
+    // Rang de l'équipement (affichage/tri)
     readonly rang: number;
-    // Nom de l'équipement
+    // Nom de l'équipement (ex: "Salon", "Extérieur")
     readonly name: string;
-    // Date de la dernière mise à jour
+    // Date de la dernière mise à jour (ISO 8601)
     readonly lastUpdate: string;
-    // Equipement actif ?
+    // Équipement actif ? (basé sur timeout)
     readonly isActive: boolean = false;
-    // température
+    // Température en °C (ou autre unité selon config Domoticz)
     readonly temp: number;
-    // humidité
+    // Humidité en %
     readonly humidity: number;
-    // Statut humidité
+    // Statut humidité (ex: "Confortable", "Sec", "Humide")
     readonly humidityStatus: string;
-    // Type de l'équipement
+    // Type de l'équipement (ex: "Temp+Humidity", "Baro")
     readonly type: string;
     // Sous-type de l'équipement
     readonly subType: string;
-    // Status de l'équipement
+    // Statut de l'équipement (pour compatibilité)
     readonly status: string;
-    // Données de l'équipement
+    // Données brutes de l'équipement
     readonly data: string;
 
 

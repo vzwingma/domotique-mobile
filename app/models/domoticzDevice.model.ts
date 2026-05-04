@@ -6,6 +6,10 @@ import { DomoticzSwitchType, DomoticzDeviceType } from "../enums/DomoticzEnum";
  * 
  * Modèle immuable pour représenter un équipement Domoticz avec validation
  * et getters pour propriétés calculées.
+ * 
+ * **Immuabilité :** Les propriétés readonly sont protégées en lecture seule.
+ * Les propriétés mutables (_rang, _level, _status, _consistantLevel) utilisent
+ * des getters/setters privés pour contrôler les modifications.
  */
 class DomoticzDevice {
     // Index de l'équipement (validé > 0)
@@ -22,7 +26,7 @@ class DomoticzDevice {
     readonly isActive: boolean = false;
     // Niveau de l'équipement - mutable pour changements d'état
     private _level: number;
-    // Unit
+    // Unité de l'équipement
     readonly unit: string = "";
     // Niveau de cohérence du niveau de l'équipement (pour les groupes). True par défaut pour les équipements
     private _consistantLevel: boolean = true;

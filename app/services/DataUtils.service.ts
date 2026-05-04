@@ -1,14 +1,26 @@
 import { DomoticzBlindsSort, DomoticzDeviceStatus, DomoticzLightsSort, DomoticzDeviceType } from "../enums/DomoticzEnum";
 import DomoticzDevice from "../models/domoticzDevice.model";
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import DomoticzFavorites from "../models/domoticzFavorites.model";
 
 /**
+ * Service Utilitaires pour la Gestion des Données Domoticz
  * 
- * @param device1 equipement 1
- * @param device2 equipement 2
- * @param devicesOrder ordre des équipements
- * @returns tri des équipements
+ * Centralise les utilitaires généraux pour tri et filtrage :
+ * - Tri des équipements
+ * - Tri des favoris
+ * - Détection du type d'appareil
+ * - Évaluation de la cohérence des groupes
+ * 
+ * **Note:** La gestion des favoris a été déléguée à FavoritesManager.service.ts
+ */
+
+/**
+ * Trie deux équipements selon leur ordre spécifié
+ * Modifie les rangs des devices pour mise en correspondance avec l'ordre
+ * 
+ * @param device1 Équipement 1
+ * @param device2 Équipement 2
+ * @param devicesOrder Tableau d'idx définissant l'ordre
+ * @returns Nombre pour comparaison (pour Array.sort)
  */
 export function sortEquipements(device1: DomoticzDevice, device2: DomoticzDevice, devicesOrder: number[]) {
     devicesOrder.forEach((idx, index) => {
@@ -22,18 +34,14 @@ export function sortEquipements(device1: DomoticzDevice, device2: DomoticzDevice
     return device1.rang - device2.rang;
 }
 
-
 /**
  * Trie les favoris en fonction de leur type et de critères spécifiques.
  *
- * @param {DomoticzFavorites} device1 - Le premier appareil à comparer.
- * @param {DomoticzFavorites} device2 - Le deuxième appareil à comparer.
- * @returns {number} - Retourne un nombre négatif si device1 doit être trié avant device2, 
- *                     un nombre positif si device1 doit être trié après device2, 
- *                     ou 0 si les deux appareils sont égaux.
+ * @param device1 Le premier appareil à comparer.
+ * @param device2 Le deuxième appareil à comparer.
+ * @returns Nombre pour comparaison (négatif/0/positif pour tri)
  */
 export function sortFavorites(device1: DomoticzDevice, device2: DomoticzDevice) {
-
     if (device1.type === device2.type) {
         return sortEquipements(device1, device2, device1.type === DomoticzDeviceType.LUMIERE ? DomoticzLightsSort : DomoticzBlindsSort);
     }
@@ -42,12 +50,12 @@ export function sortFavorites(device1: DomoticzDevice, device2: DomoticzDevice) 
     }
 }
 
-
 /**
- * Filtrage des équipements par type
- * @param device equipement à filtrer
- * @param typeDevice type d'équipement
- * @returns true si l'équipement est du type recherché
+ * Détecte le type d'équipement basé sur son nom
+ * Utilise des heuristiques (mots-clés dans le nom) pour classifier
+ * 
+ * @param deviceName Nom de l'équipement
+ * @returns Type d'équipement détecté
  */
 export function getDeviceType(deviceName: string): DomoticzDeviceType {
     if (deviceName.toLowerCase().includes("volet")) {
@@ -71,12 +79,13 @@ export function getDeviceType(deviceName: string): DomoticzDeviceType {
     }
 }
 
-
 /**
- * Evaluation de la cohérence du niveau des groupes
- * @param device équipement groupe
- * @param idsSubDevices liste des équipements du groupe
- * @param devices liste des équipements
+ * Évalue la cohérence du niveau pour les groupes d'équipements
+ * Utile pour mettre à jour le statut et le niveau d'un groupe en fonction de ses sub-devices
+ * 
+ * @param device Équipement groupe
+ * @param idsSubDevices Mapping des IDs sub-devices par groupe
+ * @param devices Liste complète des équipements
  */
 export function evaluateGroupLevelConsistency(device: DomoticzDevice, idsSubDevices: { [key: number]: number[] }[], devices: DomoticzDevice[]) {
     // Calcul uniquement pour les groupes
@@ -117,64 +126,4 @@ export function evaluateGroupLevelConsistency(device: DomoticzDevice, idsSubDevi
             device.status = allActiveOn ? DomoticzDeviceStatus.ON : 'Mixed';
         }
     }
-}
-
-
-
-
-
-
-export enum KEY_STORAGE {
-    FAVORITES = "domoticzBoard"
-};
-
-/**
- * Gestion des favoris en mémoire
- * @returns les favoris stockés
- */
-export const getFavoritesFromStorage = (): Promise<DomoticzFavorites[]> => {
-    return getValueFromStorage(KEY_STORAGE.FAVORITES);
-}
-
-/**
- * Sauvegarde des favoris en mémoire
- * @param favorites les favoris à sauvegarder
- */
-export const saveFavoritesToStorage = (favorites: DomoticzFavorites[]) => {
-    putValueInStorage(KEY_STORAGE.FAVORITES, favorites);
-}
-
-/**
- * Remise à zéro de la liste des favoris
- */
-export const clearFavoritesFromStorage = (): Promise<void> => {
-    return AsyncStorage.removeItem(KEY_STORAGE.FAVORITES);
-}
-
-
-
-/**
- * Données stockées dans le storage
- **/
-const getValueFromStorage = (key: KEY_STORAGE) => {
-    return AsyncStorage.getItem(key).then((value) => {
-        return JSON.parse(value || "[]");
-    });
-}
-
-/**
- * Mise à jour des données dans le storage
- * @param key clé de stockage
- * @param value valeur à stocker
- */
-const putValueInStorage = (key: KEY_STORAGE, value: DomoticzFavorites[]) => {
-    AsyncStorage.setItem(key, JSON.stringify(value));
-}
-
-/**
- * Suppression d'une valeur du storage
- * @param key clé de stockage
- */
-export const removeValueFromStorage = (key: KEY_STORAGE) => {
-    AsyncStorage.removeItem(key);
 }
