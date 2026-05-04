@@ -7,7 +7,7 @@ import { showToast, ToastDuration } from '@/hooks/AndroidToast';
 import { handleError, generateTraceId } from '@/app/services/ErrorHandler.service';
 import DomoticzParameter from '../models/domoticzParameter.model';
 import { Alert } from 'react-native';
-import { clearFavoritesFromStorage } from '../services/DataUtils.service';
+import { clearFavoritesFromStorage } from '../services/FavoritesManager.service';
 
 
 /**
