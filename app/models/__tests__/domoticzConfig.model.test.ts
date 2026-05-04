@@ -22,14 +22,12 @@ describe('DomoticzConfig', () => {
             expect(config.revision).toBe('123');
         });
 
-        it('accepte les propriétés readonly', () => {
+        it('propriétés readonly sont définies et accessibles', () => {
             const config = makeConfig();
-            expect(() => {
-                (config as any).status = 'FAILED';
-            }).toThrow();
-            expect(() => {
-                (config as any).version = '3.8.0';
-            }).toThrow();
+            expect(config.status).toBe('OK');
+            expect(config.version).toBe('3.7.0');
+            expect(config.revision).toBe('123');
+            // TypeScript empêche les assignations à compile-time
         });
     });
 

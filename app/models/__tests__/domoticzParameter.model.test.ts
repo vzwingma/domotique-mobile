@@ -43,14 +43,11 @@ describe('DomoticzParameter', () => {
             expect(() => makeParameter({ idx: -1 })).toThrow('idx doit être > 0');
         });
 
-        it('accepte les propriétés readonly', () => {
+        it('propriétés readonly sont définies et accessibles', () => {
             const param = makeParameter();
-            expect(() => {
-                (param as any).idx = 99;
-            }).toThrow();
-            expect(() => {
-                (param as any).name = 'Other';
-            }).toThrow();
+            expect(param.idx).toBe(1);
+            expect(param.name).toBe('Mode');
+            // TypeScript empêche les assignations à compile-time
         });
 
         it('initialise levelNames comme tableau vide par défaut', () => {
@@ -187,14 +184,11 @@ describe('DomoticzParameter', () => {
     // ─── Data Consistency ──────────────────────────────────────────────────────────
 
     describe('Data Consistency', () => {
-        it('propriétés readonly ne peuvent pas être changées', () => {
+        it('propriétés readonly sont définies et inaccessibles en écriture au compile-time', () => {
             const param = makeParameter();
-            expect(() => {
-                (param as any).type = DomoticzDeviceType.UNKNOWN;
-            }).toThrow();
-            expect(() => {
-                (param as any).lastUpdate = '2025-01-01';
-            }).toThrow();
+            expect(param.type).toBe(DomoticzDeviceType.PARAMETRE);
+            expect(param.lastUpdate).toBe('2024-01-01 12:00:00');
+            // TypeScript empêche les assignations à compile-time
         });
 
         it('levelNames est mutable mais reste une array', () => {

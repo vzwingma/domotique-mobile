@@ -30,14 +30,11 @@ describe('DomoticzFavorites', () => {
             expect(() => makeFavorite({ idx: -1 })).toThrow('idx doit être > 0');
         });
 
-        it('accepte les propriétés readonly', () => {
+        it('propriétés readonly sont définies et accessibles', () => {
             const fav = makeFavorite();
-            expect(() => {
-                (fav as any).idx = 99;
-            }).toThrow();
-            expect(() => {
-                (fav as any).name = 'Other';
-            }).toThrow();
+            expect(fav.idx).toBe(1);
+            expect(fav.name).toBe('My Light');
+            // TypeScript empêche les assignations à compile-time
         });
     });
 

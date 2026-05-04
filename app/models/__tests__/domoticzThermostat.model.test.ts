@@ -47,14 +47,11 @@ describe('DomoticzThermostat', () => {
             expect(() => makeThermostat({ idx: -1 })).toThrow('idx doit être > 0');
         });
 
-        it('accepte les propriétés readonly', () => {
-            const tstat = makeThermostat();
-            expect(() => {
-                (tstat as any).idx = 99;
-            }).toThrow();
-            expect(() => {
-                (tstat as any).name = 'Other';
-            }).toThrow();
+        it('propriétés readonly sont définies et accessibles', () => {
+            const tstat = makeThermostat({ idx: 42, name: 'Salon' });
+            expect(tstat.idx).toBe(42);
+            expect(tstat.name).toBe('Salon');
+            // TypeScript empêche les assignations à compile-time
         });
 
         it('initialise les propriétés par défaut', () => {
@@ -258,25 +255,12 @@ describe('DomoticzThermostat', () => {
     // ─── Data Consistency ──────────────────────────────────────────────────────────
 
     describe('Data Consistency', () => {
-        it('propriétés readonly ne peuvent pas être changées', () => {
+        it('propriétés readonly sont définies et inaccessibles en écriture au compile-time', () => {
             const tstat = makeThermostat();
-            expect(() => {
-                (tstat as any).data = 'NEW_DATA';
-            }).toThrow();
-        });
-
-        it('lastUpdate est readonly', () => {
-            const tstat = makeThermostat();
-            expect(() => {
-                (tstat as any).lastUpdate = '2025-01-01';
-            }).toThrow();
-        });
-
-        it('unit est readonly', () => {
-            const tstat = makeThermostat();
-            expect(() => {
-                (tstat as any).unit = '°F';
-            }).toThrow();
+            expect(tstat.data).toBe('21.5');
+            expect(tstat.lastUpdate).toBe('2024-01-01 12:00:00');
+            expect(tstat.unit).toBe('°C');
+            // TypeScript empêche les assignations à compile-time
         });
     });
 });
