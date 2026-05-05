@@ -227,6 +227,26 @@ describe('Validator.service', () => {
       data: 'some data',
     });
 
+    /** Crée un DomoticzDevice en court-circuitant le constructeur pour tester des valeurs invalides */
+    function makeInvalidDevice(overrides: Record<string, unknown>): DomoticzDevice {
+      return Object.assign(Object.create(DomoticzDevice.prototype), {
+        idx: 42,
+        _rang: 0,
+        name: 'Lumière Salon',
+        lastUpdate: '2025-01-01 12:00:00',
+        _level: 75,
+        type: DomoticzDeviceType.LUMIERE,
+        subType: 'Light',
+        switchType: DomoticzSwitchType.OFF,
+        _status: 'On',
+        data: 'some data',
+        isGroup: false,
+        isActive: false,
+        unit: '',
+        _consistantLevel: true,
+      }, overrides) as DomoticzDevice;
+    }
+
     it('should accept valid constructed device', () => {
       expect(() => validateConstructedDevice(validDevice)).not.toThrow();
     });
@@ -236,13 +256,13 @@ describe('Validator.service', () => {
     });
 
     it('should throw for invalid idx (zero)', () => {
-      const invalidDevice = new DomoticzDevice({ ...validDevice, idx: 0 });
+      const invalidDevice = makeInvalidDevice({ idx: 0 });
       expect(() => validateConstructedDevice(invalidDevice)).toThrow(ValidationError);
       expect(() => validateConstructedDevice(invalidDevice)).toThrow('idx invalide');
     });
 
     it('should throw for invalid idx (negative)', () => {
-      const invalidDevice = new DomoticzDevice({ ...validDevice, idx: -1 });
+      const invalidDevice = makeInvalidDevice({ idx: -1 });
       expect(() => validateConstructedDevice(invalidDevice)).toThrow(ValidationError);
     });
 
@@ -283,22 +303,28 @@ describe('Validator.service', () => {
       '°C'
     );
 
+    /** Crée un DomoticzThermostat en court-circuitant le constructeur pour tester des valeurs invalides */
+    function makeInvalidThermostat(overrides: Record<string, unknown>): DomoticzThermostat {
+      return Object.assign(Object.create(DomoticzThermostat.prototype), {
+        idx: 99,
+        _rang: 0,
+        name: 'Thermostat Salon',
+        lastUpdate: '2025-01-01 12:00:00',
+        isActive: true,
+        _temp: 21.5,
+        type: DomoticzDeviceType.THERMOSTAT,
+        _status: 'Heating',
+        data: '20.5 °C',
+        unit: '°C',
+      }, overrides) as DomoticzThermostat;
+    }
+
     it('should accept valid constructed thermostat', () => {
       expect(() => validateConstructedThermostat(validThermostat)).not.toThrow();
     });
 
     it('should throw for invalid idx', () => {
-      const invalidThermostat = new DomoticzThermostat(
-        0,
-        'Name',
-        '2025-01-01',
-        true,
-        20,
-        DomoticzDeviceType.THERMOSTAT,
-        'Off',
-        'data',
-        '°C'
-      );
+      const invalidThermostat = makeInvalidThermostat({ idx: 0 });
       expect(() => validateConstructedThermostat(invalidThermostat)).toThrow(ValidationError);
     });
 

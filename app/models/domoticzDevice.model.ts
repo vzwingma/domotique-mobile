@@ -58,7 +58,7 @@ class DomoticzDevice {
      * @param isGroup - Indique si le périphérique est un groupe (par défaut: false).
      * @throws {Error} si idx <= 0
      */
-    constructor({ idx, rang, name, lastUpdate, level, type, subType, switchType, status, data, isGroup = false }: DomoticzDevice) {
+    constructor({ idx, rang, name, lastUpdate, level, unit = "", type, subType, switchType, status, data, isGroup = false }: DomoticzDevice) {
         if (idx <= 0) {
             throw new Error(`idx doit être > 0, reçu: ${idx}`);
         }
@@ -67,6 +67,7 @@ class DomoticzDevice {
         this.name = name;
         this.lastUpdate = lastUpdate;
         this._level = level;
+        this.unit = unit;
         this.type = type;
         this.subType = subType;
         this.switchType = switchType;

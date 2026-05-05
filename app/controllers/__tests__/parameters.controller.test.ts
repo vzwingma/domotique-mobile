@@ -5,14 +5,13 @@ import {
     handleResetFavorites,
 } from '../parameters.controller';
 import callDomoticz from '@/app/services/ClientHTTP.service';
-import { clearFavoritesFromStorage } from '@/app/services/DataUtils.service';
+import { clearFavoritesFromStorage } from '@/app/services/FavoritesManager.service';
 import { DomoticzDeviceType, DomoticzSwitchType } from '@/app/enums/DomoticzEnum';
 import DomoticzParameter from '@/app/models/domoticzParameter.model';
 import { Alert } from 'react-native';
 
 jest.mock('@/app/services/ClientHTTP.service');
-jest.mock('@/app/services/DataUtils.service', () => ({
-    ...jest.requireActual('@/app/services/DataUtils.service'),
+jest.mock('@/app/services/FavoritesManager.service', () => ({
     clearFavoritesFromStorage: jest.fn(),
 }));
 jest.mock('@/hooks/AndroidToast', () => ({

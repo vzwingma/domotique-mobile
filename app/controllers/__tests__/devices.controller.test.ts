@@ -1,12 +1,11 @@
 import { loadDomoticzDevices, onClickDeviceIcon, updateDeviceLevel, addActionForFavorite, refreshEquipementState, getBlindGroupLabel, getLightsGroupLabel, getBlindLabel, getSingleLightLabel, getStatusLabel, isDeviceOn } from '../devices.controller';
 import callDomoticz from '@/app/services/ClientHTTP.service';
-import { getFavoritesFromStorage, saveFavoritesToStorage } from '@/app/services/DataUtils.service';
+import { getFavoritesFromStorage, saveFavoritesToStorage } from '@/app/services/FavoritesManager.service';
 import { DomoticzDeviceType, DomoticzDeviceStatus, DomoticzSwitchType } from '@/app/enums/DomoticzEnum';
 import DomoticzDevice from '@/app/models/domoticzDevice.model';
 
 jest.mock('@/app/services/ClientHTTP.service');
-jest.mock('@/app/services/DataUtils.service', () => ({
-    ...jest.requireActual('@/app/services/DataUtils.service'),
+jest.mock('@/app/services/FavoritesManager.service', () => ({
     getFavoritesFromStorage: jest.fn(),
     saveFavoritesToStorage: jest.fn(),
 }));

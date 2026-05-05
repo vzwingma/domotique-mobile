@@ -4,12 +4,14 @@ import {
     sortEquipements,
     sortFavorites,
     evaluateGroupLevelConsistency,
+} from '../DataUtils.service';
+import {
     getFavoritesFromStorage,
     saveFavoritesToStorage,
     removeValueFromStorage,
     clearFavoritesFromStorage,
     KEY_STORAGE,
-} from '../DataUtils.service';
+} from '../FavoritesManager.service';
 import { DomoticzDeviceType, DomoticzDeviceStatus } from '../../enums/DomoticzEnum';
 import DomoticzDevice from '../../models/domoticzDevice.model';
 
@@ -426,14 +428,9 @@ describe('Cas limites - evaluateGroupLevelConsistency', () => {
 describe('Cas limites - AsyncStorage', () => {
     it('getFavoritesFromStorage: gère JSON invalide en retournant []', async () => {
         (AsyncStorage.getItem as jest.Mock).mockResolvedValue('invalid json {]');
-        // Cela devrait lever une erreur lors du JSON.parse
-        try {
-            await getFavoritesFromStorage();
-            // Si pas d'erreur, c'est qu'il y a un problème
-            fail('Should have thrown');
-        } catch (e: any) {
-            expect(e).toBeInstanceOf(SyntaxError);
-        }
+        // FavoritesManager gère l'erreur de parsing en interne et retourne []
+        const result = await getFavoritesFromStorage();
+        expect(result).toEqual([]);
     });
 
     it('saveFavoritesToStorage: sérialise correctement les objets', () => {

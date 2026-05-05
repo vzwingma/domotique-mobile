@@ -50,7 +50,7 @@ class DomoticzTemperature {
      * @param status - Le statut de l'objet DomoticzTemperature.
      * @param data - Les données de l'objet DomoticzTemperature.
      */
-    constructor({ idx, rang, name, lastUpdate, temp, humidity, humidityStatus, type, subType, status, data }: DomoticzTemperature) {
+    constructor({ idx, rang, name, lastUpdate, temp, humidity, humidityStatus, type, subType, status, data, isActive = false }: DomoticzTemperature) {
         this.idx = idx;
         this.rang = rang;
         this.name = name;
@@ -62,6 +62,7 @@ class DomoticzTemperature {
         this.subType = subType;
         this.status = status;
         this.data = data;
+        this.isActive = isActive;
     }
 
     /**
