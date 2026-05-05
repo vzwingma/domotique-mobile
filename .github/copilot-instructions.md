@@ -8,17 +8,17 @@ Le projet **domoticz-mobile** utilise une **architecture multi-agents** orchestr
 
 Quatre agents spécialisés travaillent ensemble, orchestrés par un **développeur humain** :
 
-#### **solution-architect** [v1.6]
+#### **ARCos** [v2.0]
 - **Rôle :** Planificateur et orchestrateur technique
 - **Responsabilités :**
   - Concevoir des solutions architecturales complètes
   - Créer et valider les Plans d'Action multi-phases
   - Décomposer les initiatives en tâches logiques
-  - Orchestrer le travail entre developer, test-qa et doc-manager
+  - Orchestrer le travail entre DEVon, QUALvin et DOCly
 - **Quand l'utiliser :** "Conçois une architecture pour...", "Crée un plan pour...", "Découpe ça en tâches"
 - **Livrable :** Plans d'Action détaillés avec phases, tâches et dépendances
 
-#### **developer** [v1.5]
+#### **DEVon** [v2.0]
 - **Rôle :** Implémentateur de code de production
 - **Responsabilités :**
   - Traduire les exigences en code fonctionnel et testé
@@ -28,17 +28,17 @@ Quatre agents spécialisés travaillent ensemble, orchestrés par un **développ
 - **Quand l'utiliser :** "Implémente cette fonctionnalité", "Développe selon l'architecture", "Code cette fonction"
 - **Livrable :** Code propre, compilant et compilant sans erreurs
 
-#### **test-qa** [v1.5]
+#### **QUALvin** [v2.0]
 - **Rôle :** Expert en assurance qualité et tests
 - **Responsabilités :**
-  - Écrire des tests unitaires complets (composants React, services)
+  - Écrire des tests unitaires complets (composants React Native, services)
   - Assurer une couverture de test ≥80%
   - Tester les cas limites et les scénarios d'erreur
   - Valider que le code fonctionne correctement
 - **Quand l'utiliser :** "Écris des tests pour ce composant", "Génère des tests unitaires", "Valide avec des tests"
 - **Livrable :** Tests passants avec rapports de couverture
 
-#### **doc-manager** [v1.5]
+#### **DOCly** [v2.0]
 - **Rôle :** Gardien de la documentation
 - **Responsabilités :**
   - Mettre à jour README, Wiki et guides
@@ -55,10 +55,10 @@ Quatre agents spécialisés travaillent ensemble, orchestrés par un **développ
 ```mermaid
 graph TD
     Human["👤 Développeur Humain"]
-    Arch["🏗️ solution-architect [v1.6]"]
-    Dev["💻 developer [v1.5]"]
-    QA["✅ test-qa [v1.5]"]
-    Doc["📚 doc-manager [v1.5]"]
+    Arch["🏗️ ARCos [v2.0]"]
+    Dev["💻 DEVon [v2.0]"]
+    QA["✅ QUALvin [v2.0]"]
+    Doc["📚 DOCly [v2.0]"]
 
     Human -->|cadre le besoin| Arch
     Arch -->|crée un Plan d'Action| AP["📋 Plan d'Action<br/>(AP)"]
@@ -99,13 +99,13 @@ graph TD
 ### 🔄 Workflow Typique
 
 1. **Cadrage (Développeur Humain)** → Définir le besoin et les critères d'acceptation
-2. **Planification (solution-architect)** → Créer un Plan d'Action avec phases et tâches
+2. **Planification (ARCos)** → Créer un Plan d'Action avec phases et tâches
 3. **Validation Humaine** → Approuver le plan avant de lancer
-4. **Implémentation (developer)** → Coder les tâches assignées
+4. **Implémentation (DEVon)** → Coder les tâches assignées
 5. **Validation Humaine** → Approuver le code avant tests
-6. **Tests (test-qa)** → Écrire et valider les tests
+6. **Tests (QUALvin)** → Écrire et valider les tests
 7. **Validation Humaine** → Approuver les tests avant doc
-8. **Documentation (doc-manager)** → Mettre à jour la documentation
+8. **Documentation (DOCly)** → Mettre à jour la documentation
 9. **Validation Humaine** → Approuver la documentation
 10. **Phase Suivante** → Lancer la phase suivante du plan (étape 2)
 
@@ -161,8 +161,8 @@ app/
     parametrages.tab.tsx  # Maison (pilotage global + section À propos)
   components/             # Composants de niveau écran (device, temperature, thermostat, paramètres, favoris, groupes)
   controllers/            # Fonctions de chargement des données ; pont entre l'UI et les services
-  services/               # ClientHTTP.service.ts (client HTTP), DataUtils.service.ts (tri, groupes, AsyncStorage favoris), fournisseur de contexte
-  models/                 # Modèles TypeScript sous forme de classes (DomoticzDevice, DomoticzConfig, …)
+  services/               # ClientHTTP.service.ts (client HTTP + cache 30s), DataUtils.service.ts (tri, groupes), DomoticzContextProvider.tsx (état global), ErrorHandler.service.ts (erreurs structurées), FavoritesManager.service.ts (AsyncStorage), Validator.service.ts
+  models/                 # Modèles TypeScript sous forme de classes (DomoticzDevice, DomoticzConfig, DomoticzFavorites, DomoticzParameter, DomoticzTemperature, DomoticzThermostat)
   enums/                  # Constantes et enums (Colors, DomoticzEnum, APIconstants, TabsEnums)
 
 components/               # Composants UI génériques partagés (ThemedText, ParallaxScrollView, icônes)
@@ -184,8 +184,9 @@ Onglet UI → fonction controller → callDomoticz() (HTTP GET) → serveur Domo
 ## API / Backend
 
 Toutes les requêtes passent par `app/services/ClientHTTP.service.ts` :
-- `callDomoticz(SERVICES_URL, params?)` — fonction fetch unique avec Basic Auth
-- URL de base depuis `EXPO_PUBLIC_DOMOTICZ_URL` ; authentification depuis `EXPO_PUBLIC_DOMOTICZ_AUTH` (Base64)
+- `callDomoticz(path: SERVICES_URL, params?: KeyValueParams[], bypassCache?: boolean)` — fonction fetch unique avec Basic Auth et cache HTTP 30s TTL
+- `clearHttpCache()` — vide le cache HTTP (reset/logout)
+- URL de base depuis `EXPO_PUBLIC_DOMOTICZ_URL` (ou `DOMOTICZ_URL` pour les tests) ; authentification depuis `EXPO_PUBLIC_DOMOTICZ_AUTH` (Base64)
 - Modèle d'URL : `{BASE_URL}/json.htm?type=command&param=...`
 - Remplacement de paramètres dans les URLs : `<IDX>`, `<CMD>`, `<LEVEL>`, `<TEMP>`
 - Réponses validées sur le champ `status: "OK"` / `"ERR"` du JSON Domoticz
@@ -236,9 +237,25 @@ Les variables d'environnement doivent être préfixées `EXPO_PUBLIC_` pour êtr
 
 ## Tests
 
-- Framework : Jest avec le preset `jest-expo`.
-- Les tests existants utilisent le snapshot testing via `react-test-renderer`.
+- Framework : Jest 29 avec le preset `react-native` (voir `jest.config.js`).
+- Librairies : `@testing-library/react-native ^13.3.3`, `@testing-library/jest-native ^5.4.3`, `react-test-renderer 19.2.0`.
+- Setup global : `jest.setup.ts` (mocks AsyncStorage, expo-router, @expo/vector-icons).
+- Rapport de couverture : `coverage/` (SonarQube gate ≥ 80%).
+- Objectifs : controllers 100%, services ≥ 90%, composants ≥ 70%, modèles ≥ 85%.
 - Pas de tests d'intégration ou E2E pour l'instant.
+
+## Optimisations de performance
+
+- **HTTP cache** : `callDomoticz()` cache les réponses GET 30s (bypass via `bypassCache: true`).
+- **Memoization** : `React.memo` sur `DeviceCard` et `FavoriteCard`.
+- **Lazy-loading** : routes chargées via `React.lazy + Suspense`.
+
+## CI/CD
+
+- **GitHub Actions** : `.github/workflows/ci.yml` (lint + tests + coverage).
+- **SonarQube** : `sonar-project.properties` — gate couverture ≥ 80%.
+- **Renovate** : `renovate.json` — patches auto-merge, majors en draft PR.
+- **EAS builds** : `eas.json` (profils development / preview / production).
 
 ---
 
@@ -249,7 +266,7 @@ Les variables d'environnement doivent être préfixées `EXPO_PUBLIC_` pour êtr
 Les **plans d'action** (AP pour "Action Plan") orchestrent le travail multi-phases coordonné entre plusieurs agents. Chaque plan :
 - Décrit un **objectif global** (ex: modernisation complète, nouvelle fonctionnalité, refactoring)
 - Se décompose en **phases** logiques et **tâches** détaillées
-- Assigne les tâches à des **agents spécifiques** (developer, test-qa, solution-architect, doc-manager)
+- Assigne les tâches à des **agents spécifiques** (DEVon, QUALvin, ARCos, DOCly)
 - Définit les **critères de réussite** et les dépendances entre phases
 
 ### Structure des répertoires

@@ -3,10 +3,10 @@ description: Spécificités projet [NOM_DU_PROJET] pour l'agent 🔵 DEVon (dev)
 applyTo: "**"
 ---
 
-# Spécificités projet — [NOM_DU_PROJET] (Dev)
+# Spécificités projet — domoticz-mobile (Dev)
 
 > Ce fichier est lu automatiquement par l'agent 🔵 DEVon au démarrage.
-> Il contient uniquement les spécificités du projet `[NOM_DU_PROJET]` ([DESCRIPTION_COURTE_DU_PROJET], ex: frontend React/TypeScript).
+> Il contient uniquement les spécificités du projet `domoticz-mobile` (Application mobile React Native / Expo pour piloter Domoticz).
 
 ## Workflow
 
@@ -29,11 +29,12 @@ AND NOT EXISTS (
 
 ## Stack technique
 
-- **[FRAMEWORK_PRINCIPAL] [VERSION]** – [PARADIGME, ex: TypeScript strict, composants fonctionnels uniquement]
-- **[LIBRAIRIE_UI] [VERSION]** (`[PACKAGE_UI]`) – seule bibliothèque UI autorisée
-- **[LIBRAIRIE_ROUTING] [VERSION]** – `[STRATEGIE_ROUTING]`, routes dans `[FICHIER_ROUTES]`
-- **[LIBRAIRIE_AUTH] [VERSION]** – [CONSIGNE_AUTH, ex: ne pas manipuler les tokens OAuth directement]
-- **[LIBRAIRIE_CHARTS] [VERSION]** – pour les visualisations ([TYPES_GRAPHIQUES])
+- **React Native 0.83.6 / Expo ~55** – TypeScript strict, composants fonctionnels uniquement
+- **UI** : Composants React Native natifs (`View`, `Text`, `TouchableOpacity`, etc.) — aucune lib UI externe
+- **expo-router ~55.0.12** – Routage basé sur les fichiers, routes dans `app/(tabs)/_layout.tsx`
+- **Authentification** : Basic Auth via `EXPO_PUBLIC_DOMOTICZ_AUTH` (Base64) — ne pas manipuler dans les composants
+- **@react-native-community/slider** – Sliders (volets, niveaux lumineux)
+- **uuid ^14.0.0** – Génération de `traceId` pour les appels HTTP
 
 ## Conventions de code
 
@@ -46,30 +47,43 @@ export const MonComposant: React.FC<MonComposantProps> = ({ prop1, prop2 }): JSX
 };
 ```
 
-- Props interfaces dans `[FICHIER_PROPS]`.
-- Sous-composants d'une page dans `[DOSSIER_SUBCOMPONENTS]/`, boutons d'action dans `[DOSSIER_ACTIONS]/`.
+- Props typées sous la forme `export type XxxProps = { ... }` en tête du fichier `*.component.tsx`.
+- Sous-composants dans `app/components/`, styles via `StyleSheet.create()` en bas du fichier.
 - Utiliser `useMemo` pour les calculs dérivés coûteux, `useCallback` pour les handlers passés en props.
-- Responsive via `[METHODE_RESPONSIVE]`.
+- `React.memo` pour les composants fréquemment re-rendus (ex : `DeviceCard`, `FavoriteCard`).
+- Responsive via `StyleSheet.create()` avec dimensions relatives (pas de valeurs fixes codées en dur).
 
 ### Appels HTTP
 
 ```typescript
-// Toujours passer par [SERVICE_HTTP]
-import { call } from '../Services/[SERVICE_HTTP]';
-// URL avec {{}} comme marqueur positionnel
-call('GET', [CONFIG_URL_VARIABLE], '/[CHEMIN_API]/{{}}/[RESSOURCE]', [paramId]);
+// Toujours passer par callDomoticz()
+import callDomoticz from '@/app/services/ClientHTTP.service';
+import { SERVICES_URL, SERVICES_PARAMS, KeyValueParams } from '@/app/enums/APIconstants';
+
+// Appel simple
+callDomoticz(SERVICES_URL.GET_DEVICES)
+  .then(data => { /* ... */ })
+  .catch(err => showToast(err.message, ToastDuration.SHORT));
+
+// Appel avec paramètres de remplacement (<IDX>, <CMD>, etc.)
+const params: KeyValueParams[] = [
+  { key: SERVICES_PARAMS.IDX, value: String(device.idx) },
+  { key: SERVICES_PARAMS.CMD, value: 'On' },
+];
+callDomoticz(SERVICES_URL.CMD_BLINDS_LIGHTS_ON_OFF, params);
 ```
 
 ### Modèles et état
 
-- Les classes de données vont dans `[DOSSIER_MODELS]`.
-- L'état global via `useContext([NOM_CONTEXT])`.
+- Les classes de données vont dans `app/models/` (ex : `domoticzDevice.model.ts`).
+- L'état global via `useContext(DomoticzContext)` (importé depuis `app/services/DomoticzContextProvider`).
 - L'état local UI via `useState`.
 
 ### Enums et constantes
 
-- Constantes techniques dans `[FICHIER_CONSTANTES_TECHNIQUES]`.
-- Enums métier dans `[FICHIER_ENUMS_METIER]`.
+- Constantes techniques (URLs API, paramètres) dans `app/enums/APIconstants.ts`.
+- Enums métier (types d'appareils, statuts, labels) dans `app/enums/DomoticzEnum.ts`.
+- Couleurs dans `app/enums/Colors.ts`.
 - Ne pas hardcoder les URLs ou les clés API dans les composants.
 
 ## Ce que tu ne fais PAS

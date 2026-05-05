@@ -3,10 +3,10 @@ description: Spécificités projet [NOM_DU_PROJET] pour l'agent 🟢 QUALvin (qa
 applyTo: "**"
 ---
 
-# Spécificités projet — [NOM_DU_PROJET] (QA)
+# Spécificités projet — domoticz-mobile (QA)
 
 > Ce fichier est lu automatiquement par l'agent 🟢 QUALvin au démarrage.
-> Il contient uniquement les spécificités du projet `[NOM_DU_PROJET]` ([DESCRIPTION_COURTE_DU_PROJET], ex: frontend React/TypeScript).
+> Il contient uniquement les spécificités du projet `domoticz-mobile` (Application mobile React Native / Expo pour piloter Domoticz).
 
 ## Workflow
 
@@ -17,27 +17,29 @@ applyTo: "**"
 
 ## Stack de test
 
-- **[FRAMEWORK_TEST]** + **[LIBRAIRIE_TEST_COMPOSANTS]** (`[PACKAGE_TEST_COMPOSANTS]@[VERSION]`, `[PACKAGE_USER_EVENTS]@[VERSION]`)
-- **[LIBRAIRIE_ASSERTIONS_DOM]** pour les assertions DOM (`[PACKAGE_ASSERTIONS_DOM]@[VERSION]`)
-- Fichiers de test : `*.test.[tsx|ts]` co-localisés avec le fichier testé
+- **Jest 29** (preset `react-native`, voir `jest.config.js`) + **`@testing-library/react-native ^13.3.3`** pour les composants
+- **`@testing-library/jest-native ^5.4.3`** pour les assertions React Native (`toBeVisible`, `toHaveTextContent`, etc.)
+- **`react-test-renderer 19.2.0`** pour les snapshots
+- Setup global : `jest.setup.ts` (mocks AsyncStorage, expo-router, @expo/vector-icons)
+- Fichiers de test : `*.test.[tsx|ts]` dans `__tests__/` co-localisés avec le module testé
 
 ## Commandes
 
 ```bash
 # Tous les tests (mode watch)
-[COMMANDE_TEST_WATCH]
+npm test
 
 # Tous les tests en CI (sans watch, avec coverage)
-[COMMANDE_TEST_CI]
+npm test -- --watchAll=false --coverage
 
 # Un seul fichier de test
-[COMMANDE_TEST_FICHIER] [CHEMIN_EXEMPLE_TEST]
+npm test -- app/services/__tests__/ClientHTTP.service.test.ts
 
 # Un seul test par nom
-[COMMANDE_TEST_NOM_PATTERN] "[NOM_EXEMPLE_TEST]"
+npm test -- --testNamePattern="doit appeler callDomoticz avec succès"
 ```
 
-Le rapport de couverture est généré dans `[CHEMIN_RAPPORT_COUVERTURE]` (lu par [OUTIL_QUALITE, ex: SonarCloud]).
+Le rapport de couverture est généré dans `coverage/` (lu par SonarQube via `sonar-project.properties`).
 
 ## Ce qu'il faut tester
 

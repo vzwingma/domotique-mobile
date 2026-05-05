@@ -3,10 +3,10 @@ description: Spécificités projet [NOM_DU_PROJET] pour l'agent 🟣 DOCly (doc)
 applyTo: "**"
 ---
 
-# Spécificités projet — [NOM_DU_PROJET] (Doc)
+# Spécificités projet — domoticz-mobile (Doc)
 
 > Ce fichier est lu automatiquement par l'agent 🟣 DOCly au démarrage.
-> Il contient uniquement les spécificités du projet `[NOM_DU_PROJET]` ([DESCRIPTION_COURTE_DU_PROJET], ex: frontend React/TypeScript).
+> Il contient uniquement les spécificités du projet `domoticz-mobile` (Application mobile React Native / Expo pour piloter Domoticz).
 
 ## Workflow
 
@@ -18,27 +18,29 @@ applyTo: "**"
 
 ## Fichiers sous ta responsabilité
 
-### Dans `[NOM_DU_PROJET]/`
+### Dans `domoticz-mobile/`
 - `README.md` – description générale, prérequis, démarrage rapide
+- `CHANGELOG.md` – historique des versions (format Keep a Changelog)
 - `.github/copilot-instructions.md` – contexte pour les futures sessions Copilot
+- `docs/ARCHITECTURE.md` – architecture React Native / Expo (stack, structure, conventions, flux données)
+- `docs/API.md` – référence API Domoticz (endpoints, paramètres, exemples cURL)
+- `docs/TESTING.md` – guide Jest (setup, conventions de test, coverage)
+- `CONTRIBUTING.md` – guide de contribution (git workflow, conventions de code, PR template)
 
-### Dans `[NOM_DU_PROJET].wiki/` (`[CHEMIN_LOCAL_WIKI]`)
+### Wiki GitHub (`domoticz-mobile.wiki/`)
 - `Home.md` – page d'accueil du wiki
-- `[FICHIER_CONCEPTION].md` – architecture [STACK_PRINCIPALE] (stack, structure src/, conventions, flux auth)
-- `[FICHIER_HISTORIQUE].md` – nouvelles versions à documenter ici
-- `[FICHIER_DEPLOIEMENT].md` – procédures de déploiement [PLATEFORME_DEPLOIEMENT]
-- `schemas/*.puml` – diagrammes PlantUML C2/C3 (versions des frameworks à maintenir à jour)
+- `schemas/*.puml` – diagrammes PlantUML (versions des frameworks à maintenir à jour)
 
 ## Conventions de documentation
 
 - **Langue** : français pour le contenu, anglais pour les blocs de code.
-- **Versions à maintenir à jour** dans les `.puml` : [FRAMEWORK_FRONTEND] (actuellement **[VERSION_FRONTEND]**), [FRAMEWORK_BACKEND] (actuellement **[VERSION_BACKEND]**).
-- **Ne jamais** mentionner l'ancien nom de repo `[ANCIEN_NOM_REPO]` – c'est désormais `[NOM_REPO_ACTUEL]`.
-- Quand une nouvelle version de l'application est livrée, ajouter une entrée dans `[FICHIER_HISTORIQUE].md` **en tête** de fichier.
+- **Versions à maintenir à jour** dans les `.puml` : React Native / Expo (actuellement **~55**), Domoticz (serveur externe, version libre).
+- Quand une nouvelle version de l'application est livrée, ajouter une entrée dans `CHANGELOG.md` **en tête** de fichier (format Keep a Changelog).
+- Le `CHANGELOG.md` est à la racine du projet.
 
-## Coordination avec le wiki [NOM_PROJET_PARTENAIRE]
+## Coordination avec la documentation technique
 
-Ce repo héberge les **images et schémas C4 partagés** (`schemas/`) référencés également par le wiki [NOM_PROJET_PARTENAIRE]. Toute modification de diagramme doit être cohérente avec `[NOM_PROJET_PARTENAIRE].wiki/[FICHIER_CONCEPTION_GLOBALE].md`.
+Ce repo est **standalone** (pas de projet partenaire). Les schémas et diagrammes dans `docs/` et dans le wiki GitHub sont la référence unique. Toute modification d'architecture doit être reflétée dans `docs/ARCHITECTURE.md`.
 
 ## Ce que tu ne fais PAS
 
