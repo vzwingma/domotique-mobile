@@ -11,15 +11,16 @@ Cet index liste uniquement les plans et leur **statut global**.
 
 | AP | Fichier | Objectif | Statut global |
 |---|---|---|---|
-| AP-001 | [`001_modernisation_complète.plan.md`](./001_modernisation_complète.plan.md) | Modernisation globale (tests, dépendances, architecture, performance, CI/CD, doc) | 🔄 EN_COURS |
-| AP-002 | [`002_typescript_ci_remediation.plan.md`](./002_typescript_ci_remediation.plan.md) | Remédiation CI TypeScript (`tsc --noEmit`) | ⏳ PLANIFIÉ |
-| AP-003 | [`003_sonarcloud_remediation.plan.md`](./003_sonarcloud_remediation.plan.md) | Remédiation SonarCloud (Reliability + Maintainability) | ✅ COMPLÉTÉ |
 
 ---
 
 ## Plans archivés / complétés
 
-_(Aucun plan archivé pour l'instant)_
+| AP | Fichier | Objectif | Statut global |
+|---|---|---|---|
+| AP-001 | [`001_modernisation_complète.plan.md`](./001_modernisation_complète.plan.md) | Modernisation globale (tests, dépendances, architecture, performance, CI/CD, doc) | ✅ COMPLÉTÉ |
+| AP-002 | [`002_typescript_ci_remediation.plan.md`](./002_typescript_ci_remediation.plan.md) | Remédiation CI TypeScript (`tsc --noEmit`) | ✅ COMPLÉTÉ |
+| AP-003 | [`003_sonarcloud_remediation.plan.md`](./003_sonarcloud_remediation.plan.md) | Remédiation SonarCloud (Reliability + Maintainability) | ✅ COMPLÉTÉ |
 
 ---
 

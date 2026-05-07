@@ -32,7 +32,9 @@ jobs:
         continue-on-error: true
       
       - name: Run TypeScript check
-        run: npx tsc --noEmit
+        run: |
+          set -euo pipefail
+          npx tsc --noEmit
       
       - name: Upload lint report (artifacts)
         if: always()

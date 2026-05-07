@@ -2,7 +2,7 @@
 
 **Document :** `.github/plans/002_typescript_ci_remediation.plan.md`  
 **Date de création :** 2026-05-07  
-**Statut :** ⏳ Planifié  
+**Statut :** ✅ Complété  
 **Objectif Prioritaire :** HIGH
 
 ---
@@ -17,6 +17,8 @@ Ce plan est aligné avec l'architecture documentée (`docs/ARCHITECTURE.md`) : R
 ---
 
 ## 📋 Phase 1 : Diagnostic TypeScript & Cadrage de Remédiation
+
+**Statut d'exécution :** ✅ Complétée (2026-05-07)
 
 ### Contexte
 - La CI échoue sur l'étape `npx tsc --noEmit`.
@@ -58,6 +60,8 @@ Ce plan est aligné avec l'architecture documentée (`docs/ARCHITECTURE.md`) : R
 
 ## 📋 Phase 2 : Remédiation du Code TypeScript
 
+**Statut d'exécution :** ✅ Complétée (2026-05-07)
+
 ### Contexte
 - Les erreurs identifiées en phase 1 doivent être corrigées sans introduire de dette.
 - Les conventions d'architecture imposent de préserver la séparation des couches et l'unicité des points d'accès API.
@@ -97,6 +101,8 @@ Ce plan est aligné avec l'architecture documentée (`docs/ARCHITECTURE.md`) : R
 
 ## 📋 Phase 3 : Validation Qualité & Robustesse CI
 
+**Statut d'exécution :** ✅ Complétée (2026-05-07)
+
 ### Contexte
 - Une remédiation TS n'est valide que si les contrôles qualité passent en environnement local et CI.
 - Les tests unitaires doivent confirmer qu'aucune régression fonctionnelle n'a été introduite.
@@ -128,6 +134,8 @@ Ce plan est aligné avec l'architecture documentée (`docs/ARCHITECTURE.md`) : R
 ---
 
 ## 📋 Phase 4 : Documentation, ADR et Handover
+
+**Statut d'exécution :** ✅ Complétée (T4.1 ✅, T4.2 ✅, T4.3 ✅ — décision GO)
 
 ### Contexte
 - La stratégie de remédiation TypeScript doit rester traçable pour les prochaines itérations.
@@ -163,6 +171,8 @@ Ce plan est aligné avec l'architecture documentée (`docs/ARCHITECTURE.md`) : R
   - Vérifier que toutes les tâches ont un statut et des preuves associées.
   - Soumettre synthèse finale au 👤 Développeur humain pour validation.
 - **Acceptation :** décision explicite GO/NOGO documentée pour clôture AP-002.
+
+**Résultat d'exécution (2026-05-07) :** ✅ GO — AP-002 prêt à clôture, plan/rapports/index synchronisés.
 
 ---
 
