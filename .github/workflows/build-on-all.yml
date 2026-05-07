@@ -29,9 +29,8 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
       - name: 📦 Install dependencies
         run: npm install --ignore-scripts
-      - run: npx expo-env-info
-      - name: Run expo-doctor
-        run: npx expo-doctor@latest
+      - name: Validate Expo environment
+        run: npm run validate:expo
       - name: 🔧 Prebuild Android (vérifie les plugins natifs)
         run: npx expo prebuild --platform android --no-install --clean
       - name: ✅ Vérifier la configuration SSL (network_security_config.xml)

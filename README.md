@@ -174,6 +174,7 @@ npm test                                            # Tests Jest en mode watch
 npm test -- path/to/file.test.tsx                   # Un fichier de test précis
 npm test -- --testNamePattern="nom du test"         # Tests filtrés par nom
 npm run lint                                        # ESLint via Expo
+npm run validate:expo                               # Expo Doctor (environnement + cohérence Expo)
 ```
 
 Builds EAS (distribution APK Android) :
@@ -199,6 +200,7 @@ Pour une documentation complète de l'architecture, des patterns utilisés, de l
 ## ✅ Tests
 
 L'application utilise **Jest** avec le preset `jest-expo` pour les tests unitaires et snapshot testing.
+Pour une validation locale/pré-PR, les tests unitaires seuls ne suffisent plus : **`expo-doctor` est désormais un gate obligatoire** via `npm run validate:expo`.
 
 ```bash
 # Lancer les tests en mode watch
@@ -212,6 +214,9 @@ npm test -- --testNamePattern="mon pattern"
 
 # Linter le code
 npm run lint
+
+# Vérifier la santé Expo (obligatoire avant PR)
+npm run validate:expo
 ```
 
 **Objectifs de couverture :**
@@ -257,7 +262,7 @@ Pour contribuer à ce projet :
    - Fork le dépôt
    - Créez une branche `feature/` ou `fix/` explicite
    - Respectez les conventions TypeScript et Expo du projet
-   - Lancez `npm test` et `npm run lint` avant de soumettre
+   - Lancez `npm test`, `npm run lint` et `npm run validate:expo` avant de soumettre
    - Soumettez une Pull Request avec une description claire
 
 **En savoir plus :**

@@ -97,9 +97,7 @@ jobs:
         run: npm install --ignore-scripts
       
       - name: Verify Expo environment
-        run: |
-          npx expo-env-info
-          npx expo-doctor@latest || true
+        run: npm run validate:expo
       
       - name: Prebuild Android (verify native plugins)
         run: npx expo prebuild --platform android --no-install --clean
