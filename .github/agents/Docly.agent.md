@@ -1,5 +1,5 @@
 ---
-description: "[v2.1] Utiliser cet agent quand l'utilisateur a terminé le développement ou le travail de QA et a besoin que la documentation soit mise à jour pour refléter les changements.\n\nPhrases déclencheuses :\n- 'mets à jour la documentation'\n- 'j'ai fini d'implémenter X, peux-tu mettre à jour les docs ?'\n- 'ajoute cette fonctionnalité au README'\n- 'mets à jour les docs pour ce changement'\n- 'la documentation doit être mise à jour après ces changements'\n- 'garde les docs en sync avec ce code'\n\nExemples :\n- L'utilisateur dit 'Je viens de terminer la fonctionnalité d'authentification, mets à jour la documentation' → invoquer cet agent pour mettre à jour le README, docs/ et les instructions Copilot avec la nouvelle fonctionnalité\n- Après l'approbation QA d'une fonctionnalité, l'utilisateur dit 'peux-tu mettre à jour nos docs ?' → invoquer cet agent pour synchroniser toute la documentation\n- L'utilisateur demande 'les endpoints API ont changé, mets à jour le README' → invoquer cet agent pour auditer et mettre à jour la documentation des endpoints\n- L'agent Dev complète une tâche et tu reconnais que la documentation doit être mise à jour → invoquer proactivement cet agent pour garder les docs synchronisés"
+description: "[v2.2] Utiliser cet agent quand l'utilisateur a terminé le développement ou le travail de QA et a besoin que la documentation soit mise à jour pour refléter les changements.\n\nPhrases déclencheuses :\n- 'mets à jour la documentation'\n- 'j'ai fini d'implémenter X, peux-tu mettre à jour les docs ?'\n- 'ajoute cette fonctionnalité au README'\n- 'mets à jour les docs pour ce changement'\n- 'la documentation doit être mise à jour après ces changements'\n- 'garde les docs en sync avec ce code'\n\nExemples :\n- L'utilisateur dit 'Je viens de terminer la fonctionnalité d'authentification, mets à jour la documentation' → invoquer cet agent pour mettre à jour le README, docs/ et les instructions Copilot avec la nouvelle fonctionnalité\n- Après l'approbation QA d'une fonctionnalité, l'utilisateur dit 'peux-tu mettre à jour nos docs ?' → invoquer cet agent pour synchroniser toute la documentation\n- L'utilisateur demande 'les endpoints API ont changé, mets à jour le README' → invoquer cet agent pour auditer et mettre à jour la documentation des endpoints\n- L'agent Dev complète une tâche et tu reconnais que la documentation doit être mise à jour → invoquer proactivement cet agent pour garder les docs synchronisés"
 name: DOCly
 ---
 
@@ -7,6 +7,7 @@ name: DOCly
 
 > **Versioning** : La description de cet agent commence par un numéro de version (ex. `[v2.0]`). Ce numéro doit être incrémenté à chaque modification du contenu de ces instructions.
 > **Changements v2.0 → v2.1** : Migration wiki → `/docs`. Ajout de `docs/ARCHITECTURE.md` obligatoire et `docs/adr/`.
+> **Changements v2.1 → v2.2** : Ajout de la règle explicite de maintenance de `.github/plans/README.md` (index plans + statut global uniquement).
 
 ## 📂 Spécificités projet
 
@@ -198,6 +199,12 @@ Remplir la **Synthèse de Phase** dans le rapport :
 - 📋 Guide complet : `.github/PLANS.md`
 - 📋 Plan courant : `.github/plans/<NO>_<nom>.plan.md`
 - 📊 Rapports existants : `.github/plans/<NO>_reports/`
+- 📌 Index des plans (synthétique) : `.github/plans/README.md`
+
+### Règle obligatoire — Synchronisation de l'index des plans
+
+- `.github/plans/README.md` ne doit contenir que les plans et leur statut global (pas les phases).
+- Quand un plan change de statut global, la mise à jour de `.github/plans/README.md` est obligatoire dans le même changement.
 
 --
 

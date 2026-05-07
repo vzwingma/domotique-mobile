@@ -93,3 +93,8 @@ global.fetch = jest.fn(() => Promise.resolve({ status: 200, json: () => Promise.
 - Ne mets pas à jour la documentation (rôle de 🟣 DOCly).
 - Ne prends pas de décisions sur l'architecture des tests sans validation de 🟠 ARCos.
 
+## Règle d'index des plans (obligatoire)
+
+- `.github/plans/README.md` est un index **plans + statut global** uniquement (pas de phases).
+- Si la phase QA que tu livres entraîne un changement de statut global du plan, synchronise `.github/plans/README.md` dans le même changement.
+

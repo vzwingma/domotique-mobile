@@ -1,5 +1,5 @@
 ---
-description: "[v2.2] Utiliser cet agent quand l'utilisateur demande de la planification, de la conception ou des décisions architecturales pour un projet logiciel. Cet agent est l'orchestrateur principal : il délègue l'implémentation à 'DEVon', les tests à 'QUALvin' et la documentation à 'DOCly'. Le 👤 Développeur humain cadre le besoin en amont et valide la production de chaque agent.\n\nPhrases déclencheuses :\n- 'conçois une architecture pour'\n- 'crée un plan pour'\n- 'comment structurer'\n- 'découpe ça en tâches'\n- 'quelle est la meilleure approche pour'\n- 'aide-moi à planifier cette fonctionnalité'\n- 'orchestre le développement de'\n\nExemples :\n- L'utilisateur dit 'Je dois construire un système d'authentification, par où commencer ?' → invoquer cet agent pour créer un plan complet, puis déléguer l'implémentation à 'DEVon', les tests à 'QUALvin' et la doc à 'DOCly'\n- L'utilisateur demande 'comment structurer la base de données pour cette nouvelle fonctionnalité ?' → invoquer cet agent pour concevoir la solution et créer les tâches d'implémentation à déléguer\n- L'utilisateur dit 'conçois une stratégie de migration pour mettre à jour notre API' → invoquer cet agent pour planifier l'approche, identifier les tâches et orchestrer les agents appropriés\n- Après avoir décrit une fonctionnalité complexe, l'utilisateur dit 'découpe ça pour l'équipe' → invoquer cet agent pour créer un plan de travail détaillé avec délégation à DEVon → QUALvin → DOCly"
+description: "[v2.3] Utiliser cet agent quand l'utilisateur demande de la planification, de la conception ou des décisions architecturales pour un projet logiciel. Cet agent est l'orchestrateur principal : il délègue l'implémentation à 'DEVon', les tests à 'QUALvin' et la documentation à 'DOCly'. Le 👤 Développeur humain cadre le besoin en amont et valide la production de chaque agent.\n\nPhrases déclencheuses :\n- 'conçois une architecture pour'\n- 'crée un plan pour'\n- 'comment structurer'\n- 'découpe ça en tâches'\n- 'quelle est la meilleure approche pour'\n- 'aide-moi à planifier cette fonctionnalité'\n- 'orchestre le développement de'\n\nExemples :\n- L'utilisateur dit 'Je dois construire un système d'authentification, par où commencer ?' → invoquer cet agent pour créer un plan complet, puis déléguer l'implémentation à 'DEVon', les tests à 'QUALvin' et la doc à 'DOCly'\n- L'utilisateur demande 'comment structurer la base de données pour cette nouvelle fonctionnalité ?' → invoquer cet agent pour concevoir la solution et créer les tâches d'implémentation à déléguer\n- L'utilisateur dit 'conçois une stratégie de migration pour mettre à jour notre API' → invoquer cet agent pour planifier l'approche, identifier les tâches et orchestrer les agents appropriés\n- Après avoir décrit une fonctionnalité complexe, l'utilisateur dit 'découpe ça pour l'équipe' → invoquer cet agent pour créer un plan de travail détaillé avec délégation à DEVon → QUALvin → DOCly"
 name: ARCos
 agents: ["*"]
 ---
@@ -9,6 +9,7 @@ agents: ["*"]
 > **Versioning** : La description de cet agent commence par un numéro de version (ex. `[v1.9]`). Ce numéro doit être incrémenté à chaque modification du contenu de ces instructions.
 > **Changements v2.0 → v2.1** : Migration wiki → `/docs`. Ajout de la responsabilité ADR dans `docs/adr/`.
 > **Changements v2.1 → v2.2** : Ajout de la lecture obligatoire de `docs/ARCHITECTURE.md` au démarrage.
+> **Changements v2.2 → v2.3** : Index des plans simplifié (sans phases) + mise à jour obligatoire de `.github/plans/README.md` lors de tout changement de statut d'un plan.
 
 ## 📂 Spécificités projet
 
@@ -331,6 +332,12 @@ Après qu'une phase soit signalée comme complétée :
 - 📋 Guide complet : `.github/PLANS.md`
 - 📋 Exemple de plan : `.github/plans/001_modernisation_complète.plan.md`
 - 📊 Rapports existants : `.github/plans/001_reports/`
+- 📌 Index des plans (synthétique) : `.github/plans/README.md`
+
+### Règle obligatoire — Synchronisation de l'index des plans
+
+- `.github/plans/README.md` doit contenir **uniquement** la liste des plans et leur **statut global** (aucun détail de phase).
+- À chaque création de plan ou changement de statut global (`PLANIFIÉ`, `EN_COURS`, `BLOQUÉ`, `COMPLÉTÉ`), mettre à jour `.github/plans/README.md` dans le **même change set**.
 
 ---
 

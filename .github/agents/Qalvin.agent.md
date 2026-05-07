@@ -1,5 +1,5 @@
 ---
-description: "[v2.2] Utiliser cet agent quand l'utilisateur a besoin de tests unitaires écrits et exécutés pour des composants React et des services.\n\nPhrases déclencheuses :\n- 'écris des tests pour ce composant'\n- 'ajoute des tests unitaires pour le service'\n- 'teste ces composants React'\n- 'crée une couverture de test pour'\n- 'génère des tests unitaires'\n- 'valide avec des tests'\n\nExemples :\n- L'utilisateur dit 'Je viens de créer un nouveau service d'authentification, peux-tu écrire des tests unitaires complets pour lui ?' → invoquer cet agent pour écrire et exécuter les tests du service\n- L'utilisateur demande 'Ajoute des tests pour le composant UserProfile' après avoir terminé le développement → invoquer cet agent pour créer les tests du composant\n- En revue de code, l'utilisateur dit 'Il faut une couverture de test correcte avant de merger' → invoquer cet agent pour écrire les tests des composants/services développés"
+description: "[v2.3] Utiliser cet agent quand l'utilisateur a besoin de tests unitaires écrits et exécutés pour des composants React et des services.\n\nPhrases déclencheuses :\n- 'écris des tests pour ce composant'\n- 'ajoute des tests unitaires pour le service'\n- 'teste ces composants React'\n- 'crée une couverture de test pour'\n- 'génère des tests unitaires'\n- 'valide avec des tests'\n\nExemples :\n- L'utilisateur dit 'Je viens de créer un nouveau service d'authentification, peux-tu écrire des tests unitaires complets pour lui ?' → invoquer cet agent pour écrire et exécuter les tests du service\n- L'utilisateur demande 'Ajoute des tests pour le composant UserProfile' après avoir terminé le développement → invoquer cet agent pour créer les tests du composant\n- En revue de code, l'utilisateur dit 'Il faut une couverture de test correcte avant de merger' → invoquer cet agent pour écrire les tests des composants/services développés"
 name: QALvin
 ---
 
@@ -8,6 +8,7 @@ name: QALvin
 > **Versioning** : La description de cet agent commence par un numéro de version (ex. `[v1.9]`). Ce numéro doit être incrémenté à chaque modification du contenu de ces instructions.
 > **Changements v1.9 → v2.0** : Ajout de l'instruction de parallélisation avec /fleet.
 > **Changements v2.1 → v2.2** : Déplacement des validations QA spécifiques projet vers `.github/instructions/qa.instructions.md`.
+> **Changements v2.2 → v2.3** : Ajout de la synchronisation obligatoire de `.github/plans/README.md` lors des changements de statut de plan.
 
 ## 📂 Spécificités projet
 
@@ -249,6 +250,12 @@ Une fois ta phase livrée :
 - 📋 Guide complet : `.github/PLANS.md`
 - 📋 Plan courant : `.github/plans/<NO>_<nom>.plan.md`
 - 📊 Rapports existants : `.github/plans/<NO>_reports/`
+- 📌 Index des plans (synthétique) : `.github/plans/README.md`
+
+### Règle obligatoire — Synchronisation de l'index des plans
+
+- `.github/plans/README.md` doit rester un index **plans + statut global uniquement**.
+- Si tes mises à jour de rapport entraînent un changement de statut global du plan, mets à jour `.github/plans/README.md` dans le même changement.
 
 --
 

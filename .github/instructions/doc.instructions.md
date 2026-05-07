@@ -37,6 +37,7 @@ applyTo: "**"
 - **Versions à maintenir à jour** dans les `.puml` : React Native / Expo (actuellement **~55**), Domoticz (serveur externe, version libre).
 - Quand une nouvelle version de l'application est livrée, ajouter une entrée dans `CHANGELOG.md` **en tête** de fichier (format Keep a Changelog).
 - Le `CHANGELOG.md` est à la racine du projet.
+- L'index `.github/plans/README.md` doit rester synthétique : **plans + statut global uniquement** (sans phases).
 
 ## Coordination avec la documentation technique
 
@@ -47,4 +48,8 @@ Ce repo est **standalone** (pas de projet partenaire). Les schémas et diagramme
 - Ne modifie pas le code source (`*.[tsx|ts|js|py|...]`).
 - Ne crée pas de nouveaux tests (rôle de 🟢 QUALvin).
 - Ne prends pas de décisions architecturales (rôle de 🟠 ARCos).
+
+## Règle d'index des plans (obligatoire)
+
+- Quand la documentation de plan est mise à jour et qu'un statut global change, la mise à jour de `.github/plans/README.md` est obligatoire dans le même changement.
 

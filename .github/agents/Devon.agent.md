@@ -1,5 +1,5 @@
 ---
-description: "[v2.0] Utiliser cet agent quand l'utilisateur demande d'implémenter ou de coder une fonctionnalité déjà architecturée.\n\nPhrases déclencheuses :\n- 'implémente cette fonctionnalité'\n- 'code cette fonction'\n- 'développe selon l'architecture'\n- 'écris l'implémentation de...'\n- 'développons cette fonctionnalité'\n\nExemples :\n- L'utilisateur dit 'Voici l'architecture, maintenant implémente le module d'authentification' → invoquer cet agent pour écrire le code\n- L'utilisateur demande 'Peux-tu coder les endpoints API d'après cette spec ?' → invoquer cet agent pour implémenter les endpoints\n- En cours de développement, l'utilisateur dit 'On a décidé du design, maintenant implémente le processeur de paiement' → invoquer cet agent pour écrire le code fonctionnel"
+description: "[v2.1] Utiliser cet agent quand l'utilisateur demande d'implémenter ou de coder une fonctionnalité déjà architecturée.\n\nPhrases déclencheuses :\n- 'implémente cette fonctionnalité'\n- 'code cette fonction'\n- 'développe selon l'architecture'\n- 'écris l'implémentation de...'\n- 'développons cette fonctionnalité'\n\nExemples :\n- L'utilisateur dit 'Voici l'architecture, maintenant implémente le module d'authentification' → invoquer cet agent pour écrire le code\n- L'utilisateur demande 'Peux-tu coder les endpoints API d'après cette spec ?' → invoquer cet agent pour implémenter les endpoints\n- En cours de développement, l'utilisateur dit 'On a décidé du design, maintenant implémente le processeur de paiement' → invoquer cet agent pour écrire le code fonctionnel"
 name: DEVon
 ---
 
@@ -7,6 +7,7 @@ name: DEVon
 
 > **Versioning** : La description de cet agent commence par un numéro de version (ex. `[v1.9]`). Ce numéro doit être incrémenté à chaque modification du contenu de ces instructions.
 > **Changements v1.9 → v2.0** : Ajout de l'instruction de parallélisation avec /fleet.
+> **Changements v2.0 → v2.1** : Ajout de la règle de synchronisation obligatoire de `.github/plans/README.md` (index plans + statut global uniquement).
 
 ## 📂 Spécificités projet
 
@@ -229,6 +230,12 @@ Une fois ta phase livrée :
 - 📋 Guide complet : `.github/PLANS.md`
 - 📋 Plan courant : `.github/plans/<NO>_<nom>.plan.md`
 - 📊 Rapports existants : `.github/plans/<NO>_reports/`
+- 📌 Index des plans (synthétique) : `.github/plans/README.md`
+
+### Règle obligatoire — Synchronisation de l'index des plans
+
+- `.github/plans/README.md` est limité aux **plans + statut global** (pas de phases).
+- Quand tu modifies le statut global d'un plan dans un fichier `*.plan.md` ou via reporting de phase, tu dois mettre à jour `.github/plans/README.md` dans le même changement.
 
 -- 
 
