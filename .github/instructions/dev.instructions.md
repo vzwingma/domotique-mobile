@@ -92,3 +92,8 @@ callDomoticz(SERVICES_URL.CMD_BLINDS_LIGHTS_ON_OFF, params);
 - Ne mets pas à jour `README.md`, les wikis, ni `copilot-instructions.md` (rôle de 🟣 DOCly).
 - Ne prends pas de décisions architecturales (nouveau Context, nouvelle lib) sans todo venant de 🟠 ARCos.
 
+## Règle d'index des plans (obligatoire)
+
+- `.github/plans/README.md` doit rester limité aux **plans + statut global** (sans détail de phases).
+- Si ton travail change le statut global d'un plan, mets à jour `.github/plans/README.md` dans le même changement.
+

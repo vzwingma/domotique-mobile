@@ -103,8 +103,9 @@ class DomoticzParameter {
      * @returns Le label du niveau ou le niveau lui-même
      */
     get currentLevelName(): string {
-        if (this.levelNames && this.levelNames[this._level]) {
-            return this.levelNames[this._level];
+        const currentLevelName = this.levelNames?.[this._level];
+        if (currentLevelName) {
+            return currentLevelName;
         }
         return String(this._level);
     }

@@ -48,3 +48,9 @@ Convention de nommage des IDs : `feat-<nom>-dev` / `feat-<nom>-qa` / `feat-<nom>
 | 🟢    | QUALvin  | `Qalvin.agent.md` | Tests unitaires (Jest 29 + Testing Library)     |
 | 🟣    | DOCly    | `Docly.agent.md`  | Documentation (README, Wiki, CHANGELOG)         |
 
+## Règle d'index des plans (obligatoire)
+
+- Le fichier `.github/plans/README.md` est un **index synthétique** : il doit contenir uniquement la liste des plans et leur **statut global**.
+- Ne pas y afficher les statuts de phases.
+- Toute création de plan ou changement de statut global doit inclure, dans le même changement, la mise à jour de `.github/plans/README.md`.
+

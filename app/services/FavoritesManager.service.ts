@@ -62,20 +62,23 @@ export const toggleFavorite = async (favoriteId: string, isFavorite: boolean): P
   const favorites = await getFavoritesFromStorage();
   
   const normalizedIdx = Number(favoriteId);
-  const newFavorites = isFavorite
-    ? favorites.filter((fav) => String(fav.idx) !== favoriteId)  // Supprimer
-    : Number.isNaN(normalizedIdx)
-      ? favorites
-      : [
-          ...favorites,
-          new DomoticzFavorites({
-            idx: normalizedIdx,
-            nbOfUse: 1,
-            name: favoriteId,
-            type: favorites[0]?.type ?? DomoticzDeviceType.UNKNOWN,
-            subType: '',
-          }),
-        ];  // Ajouter
+  let newFavorites: DomoticzFavorites[];
+  if (isFavorite) {
+    newFavorites = favorites.filter((fav) => String(fav.idx) !== favoriteId);
+  } else if (Number.isNaN(normalizedIdx)) {
+    newFavorites = favorites;
+  } else {
+    newFavorites = [
+      ...favorites,
+      new DomoticzFavorites({
+        idx: normalizedIdx,
+        nbOfUse: 1,
+        name: favoriteId,
+        type: favorites[0]?.type ?? DomoticzDeviceType.UNKNOWN,
+        subType: '',
+      }),
+    ];
+  }
 
   await saveFavoritesToStorage(newFavorites);
   return newFavorites;

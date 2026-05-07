@@ -1,5 +1,4 @@
 import 'react-native-get-random-values';
-import { v7 as uuidGen } from 'uuid';
 import { API_AUTH, API_URL, SERVICES_URL, KeyValueParams } from '../enums/APIconstants';
 import { DomoticzError, handleError, generateTraceId } from './ErrorHandler.service';
 
@@ -12,7 +11,7 @@ let storageWatch = 0;
  * Interface pour les entrées du cache HTTP (T4.1)
  */
 interface CacheEntry {
-  data: any;
+  data: unknown;
   timestamp: number;
   ttl: number; // durée de vie du cache en ms
 }
@@ -41,7 +40,7 @@ function isCacheValid(entry: CacheEntry): boolean {
  * @param url URL complète
  * @returns Données en cache ou null si absent/expiré
  */
-function getCachedData(url: string): any | null {
+function getCachedData(url: string): unknown | null {
   const entry = httpCache.get(url);
   if (!entry) return null;
   
@@ -61,7 +60,7 @@ function getCachedData(url: string): any | null {
  * @param data Données à cacher
  * @param ttl Durée de vie en ms (défaut 30s)
  */
-function setCachedData(url: string, data: any, ttl: number = 30000): void {
+function setCachedData(url: string, data: unknown, ttl: number = 30000): void {
   httpCache.set(url, {
     data,
     timestamp: Date.now(),

@@ -94,7 +94,8 @@ function classifyError(error: unknown): ErrorType {
 
   // Détection des erreurs API (codes HTTP) - priorité 2
   // Ce check doit venir AVANT le check JSON car les URLs contiennent "json"
-  if (message.match(/\d{3}/) || message.includes('- err:') || message.includes('err:') || message.includes('api error')) {
+  const statusCodeMatch = /\d{3}/.exec(message);
+  if (statusCodeMatch || message.includes('- err:') || message.includes('err:') || message.includes('api error')) {
     return ErrorType.API_ERROR;
   }
 

@@ -2,7 +2,7 @@
 
 **Document:** `.github/plans/001_modernisation_complète.plan.md`  
 **Date de création:** 2026-04-24  
-**Statut:** À valider / En cours  
+**Statut:** ✅ Complété  
 
 ---
 

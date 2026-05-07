@@ -13,7 +13,6 @@
 import DomoticzDevice from '../models/domoticzDevice.model';
 import DomoticzTemperature from '../models/domoticzTemperature.model';
 import DomoticzThermostat from '../models/domoticzThermostat.model';
-import { DomoticzDeviceType } from '../enums/DomoticzEnum';
 
 /**
  * Erreur de validation structurée
@@ -212,7 +211,7 @@ export function validateRawThermostat(rawThermostat: unknown): asserts rawThermo
   // Réutilise la validation device (thermostat est un device spécifique)
   validateRawDevice(rawThermostat);
 
-  const thermostat = rawThermostat as Record<string, unknown>;
+  const thermostat = rawThermostat;
 
   // Champs spécifiques au thermostat
   if (!('SetPoint' in thermostat)) {
@@ -233,10 +232,10 @@ export function validateRawThermostat(rawThermostat: unknown): asserts rawThermo
 
   // Validation de plausibilité pour SetPoint
   const setPointValue = typeof thermostat.SetPoint === 'string'
-    ? parseFloat(thermostat.SetPoint)
+    ? Number.parseFloat(thermostat.SetPoint)
     : thermostat.SetPoint;
 
-  if (isNaN(setPointValue) || setPointValue < 5 || setPointValue > 35) {
+  if (Number.isNaN(setPointValue) || setPointValue < 5 || setPointValue > 35) {
     throw new ValidationError(
       `Consigne de thermostat invalide (${setPointValue}°C) - doit être entre 5 et 35°C`,
       'SetPoint',

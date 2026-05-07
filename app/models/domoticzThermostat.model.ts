@@ -1,4 +1,4 @@
-import { DomoticzDeviceType, DomoticzThermostatLevelValue } from "../enums/DomoticzEnum";
+import { DomoticzDeviceType } from "../enums/DomoticzEnum";
 
 
 /**
@@ -134,9 +134,10 @@ class DomoticzThermostat {
     private getMeasuredTemperature(): number | null {
         if (!this.data) return null;
         try {
-            const match = this.data.match(/[\d.]+/);
+            const temperatureRegex = /[\d.]+/;
+            const match = temperatureRegex.exec(this.data);
             if (match) {
-                return parseFloat(match[0]);
+                return Number.parseFloat(match[0]);
             }
         } catch {
             // Retourne null si parsing échoue
