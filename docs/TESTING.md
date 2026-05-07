@@ -45,7 +45,21 @@ npm test -- --coverage                        # Avec coverage report
 npm test -- --testNamePattern="mon pattern"   # Filtre par nom
 npm test -- path/to/file.test.tsx             # Fichier spécifique
 npm run lint                                  # ESLint
+npm run validate:expo                         # Expo Doctor (gate obligatoire)
 ```
+
+### Validation locale / pré-PR (gate qualité)
+
+La validation locale attend désormais **3 commandes obligatoires** :
+
+```bash
+npm test               # Tests unitaires (Jest)
+npm run lint           # Qualité statique (Expo ESLint)
+npm run validate:expo  # Santé environnement Expo + compatibilité dépendances
+```
+
+> `npm run validate:expo` exécute `expo-env-info` puis `expo-doctor`.  
+> Une PR n'est pas considérée prête si ce gate échoue, même avec des tests unitaires verts.
 
 ---
 

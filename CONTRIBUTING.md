@@ -296,6 +296,9 @@ npm test -- --testNamePattern="toggleLight"
 # Coverage report
 npm test -- --coverage
 
+# Validation Expo (obligatoire avant PR)
+npm run validate:expo
+
 # Snapshot update (après changement intentionnel)
 npm test -- --updateSnapshot
 ```
@@ -380,6 +383,7 @@ npm run lint -- --fix  # Applique aussi Prettier
 ```bash
 npm run lint -- --fix  # Auto-fix lint + format
 npm test               # Lancer les tests
+npm run validate:expo  # Vérification Expo Doctor (gate obligatoire)
 git add .
 git commit -m "feat: Your message"
 ```
@@ -393,6 +397,7 @@ git commit -m "feat: Your message"
 - [ ] ✅ Branche créée depuis `develop`
 - [ ] ✅ Tests écrits et passant (`npm test`)
 - [ ] ✅ Lint sans erreur (`npm run lint`)
+- [ ] ✅ Expo Doctor OK (`npm run validate:expo`)
 - [ ] ✅ Commits avec messages clairs
 - [ ] ✅ Branch à jour avec `develop` (`git rebase upstream/develop`)
 
@@ -416,6 +421,7 @@ Une description claire de vos changements.
 - [ ] Testé localement (`npm test`)
 - [ ] Coverage ≥ 80%
 - [ ] Lint sans erreur (`npm run lint`)
+- [ ] Expo Doctor OK (`npm run validate:expo`)
 
 ## Linked Issues
 Ferme #123, #124
@@ -429,6 +435,7 @@ Ferme #123, #124
 1. **Automate checks :**
    - Tests doivent passer
    - Lint doit passer
+   - Expo Doctor doit passer
    - Coverage > 80%
 
 2. **Code review :**
