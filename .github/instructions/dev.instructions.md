@@ -1,5 +1,5 @@
 ---
-description: Spécificités projet [NOM_DU_PROJET] pour l'agent 🔵 DEVon (dev)
+description: Spécificités projet domoticz-mobile pour l'agent 🔵 DEVon (dev)
 applyTo: "**"
 ---
 

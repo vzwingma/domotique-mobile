@@ -1,5 +1,5 @@
 ---
-description: Spécificités projet [NOM_DU_PROJET] pour l'agent ARCos (architect)
+description: Spécificités projet domoticz-mobile pour l'agent ARCos (architect)
 applyTo: "**"
 ---
 
