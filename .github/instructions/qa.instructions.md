@@ -15,6 +15,11 @@ applyTo: "**"
 3. Écris les tests, exécute-les, vérifie la couverture.
 4. Passe en `done` si les tests passent, `blocked` avec description si échec bloquant.
 
+## Validation QA obligatoire
+
+- ✅ Vérification que les tests passent (`npm test`)
+- ✅ Vérification `expo-doctor` (`npm run validate:expo`) en plus des tests
+
 ## Stack de test
 
 - **Jest 29** (preset `react-native`, voir `jest.config.js`) + **`@testing-library/react-native ^13.3.3`** pour les composants
