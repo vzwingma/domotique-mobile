@@ -23,7 +23,7 @@ export function loadDomoticzParameters(storeParameters: (parameters: DomoticzPar
             const parametersDevices : DomoticzParameter[] = data.result
                     .filter((rawDevice: any) => (getDeviceType(rawDevice.Name) === DomoticzDeviceType.PARAMETRE || getDeviceType(rawDevice.Name) === DomoticzDeviceType.PARAMETRE_RO))
                     .map((rawDevice: any) => {
-                        let tdevice: DomoticzParameter = {
+                        const tdevice = new DomoticzParameter({
                             idx: Number(rawDevice.idx),
                             name: rawDevice.Name,
                             status: String(rawDevice.Data),
@@ -33,7 +33,7 @@ export function loadDomoticzParameters(storeParameters: (parameters: DomoticzPar
                             level: rawDevice.Level,
                             levelNames: rawDevice.LevelNames ? atob(rawDevice.LevelNames).split('|') : [],
                             switchType: rawDevice.SwitchType
-                        }
+                        });
                         return tdevice;
                     });
             storeParameters(parametersDevices);

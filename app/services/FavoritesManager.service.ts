@@ -11,6 +11,7 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DomoticzFavorites from '../models/domoticzFavorites.model';
+import { DomoticzDeviceType } from '../enums/DomoticzEnum';
 
 /**
  * Clés de stockage AsyncStorage
@@ -60,9 +61,21 @@ export const saveFavoritesToStorage = (favorites: DomoticzFavorites[]): Promise<
 export const toggleFavorite = async (favoriteId: string, isFavorite: boolean): Promise<DomoticzFavorites[]> => {
   const favorites = await getFavoritesFromStorage();
   
+  const normalizedIdx = Number(favoriteId);
   const newFavorites = isFavorite
-    ? favorites.filter((fav) => fav.id !== favoriteId)  // Supprimer
-    : [...favorites, { id: favoriteId }];  // Ajouter
+    ? favorites.filter((fav) => String(fav.idx) !== favoriteId)  // Supprimer
+    : Number.isNaN(normalizedIdx)
+      ? favorites
+      : [
+          ...favorites,
+          new DomoticzFavorites({
+            idx: normalizedIdx,
+            nbOfUse: 1,
+            name: favoriteId,
+            type: favorites[0]?.type ?? DomoticzDeviceType.UNKNOWN,
+            subType: '',
+          }),
+        ];  // Ajouter
 
   await saveFavoritesToStorage(newFavorites);
   return newFavorites;

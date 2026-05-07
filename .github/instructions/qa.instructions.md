@@ -19,6 +19,7 @@ applyTo: "**"
 
 - ✅ Vérification que les tests passent (`npm test`)
 - ✅ Vérification `expo-doctor` (`npm run validate:expo`) en plus des tests
+- ✅ Vérification TypeScript stricte (`npx tsc --noEmit`) en plus des tests et d'Expo
 
 ## Stack de test
 
@@ -36,6 +37,9 @@ npm test
 
 # Tous les tests en CI (sans watch, avec coverage)
 npm test -- --watchAll=false --coverage
+
+# Typecheck TypeScript (obligatoire QUALvin / CI)
+npx tsc --noEmit
 
 # Un seul fichier de test
 npm test -- app/services/__tests__/ClientHTTP.service.test.ts

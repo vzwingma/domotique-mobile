@@ -24,8 +24,7 @@ export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]
         .then(data => {
             const dataDevices : DomoticzDevice[] = data.result
                 .map((rawDevice: any, index: number) => {
-                    let ddevice: DomoticzDevice;
-                    ddevice = {
+                    const ddevice = new DomoticzDevice({
                         idx: Number(rawDevice.idx),
                         rang: index,
                         name: evaluateDeviceName(rawDevice.Name),
@@ -40,7 +39,7 @@ export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]
                         lastUpdate: rawDevice.LastUpdate,
                         isActive: !rawDevice.HaveTimeout,
                         data: rawDevice.Data
-                    }
+                    });
                     return ddevice;
                 });
 
@@ -191,7 +190,13 @@ export function addActionForFavorite(device: DomoticzDevice | DomoticzThermostat
     .then((favoris) => {
             const favoriteIndex = favoris.findIndex((fav: any) => fav.idx === device.idx);
             if (favoriteIndex === -1) {
-                let newFavourites : DomoticzFavorites = {idx: device.idx, nbOfUse: 1, name: device.name, type: device.type, subType: ""};
+                const newFavourites = new DomoticzFavorites({
+                    idx: device.idx,
+                    nbOfUse: 1,
+                    name: device.name,
+                    type: device.type,
+                    subType: "",
+                });
                 favoris.push(newFavourites);
             } else {
                 favoris[favoriteIndex].nbOfUse ??= 0;

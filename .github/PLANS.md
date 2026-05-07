@@ -10,7 +10,7 @@
 Un **Plan d'Action (AP)** est un document structuré qui :
 - Décrit un **objectif global** (ex: modernisation, nouvelle feature, refactoring majeur)
 - Se décompose en **phases logiques** et **tâches détaillées**
-- Assigne les tâches à des **agents spécifiques** (developer, test-qa, solution-architect, doc-manager)
+- Assigne les tâches à des **agents spécifiques** (🔵 DEVon, 🟢 QUALvin, 🟠 ARCos, 🟣 DOCly)
 - Définit les **critères de réussite** et les **dépendances** entre phases
 - Génère des **rapports de phase** documentant l'exécution et les résultats
 
@@ -33,9 +33,10 @@ Un **Plan d'Action (AP)** est un document structuré qui :
 │   │   ├── PHASE_1_COMPLETION_REPORT.md
 │   │   ├── PHASE_2_COMPLETION_REPORT.md
 │   │   └── PHASE_N_FINAL_REVIEW.md
-│   ├── 002_nouvelle_feature.plan.md          # Autre plan
+│   ├── 002_typescript_ci_remediation.plan.md # Plan de remédiation CI TypeScript
 │   ├── 002_reports/
-│   │   └── PHASE_1_...
+│   │   ├── PHASE_1_COMPLETION_REPORT.md
+│   │   └── PHASE_2_COMPLETION_REPORT.md
 │   └── README.md                        # Index des plans actifs/archivés
 └── ...
 ```
@@ -108,7 +109,7 @@ Chaque phase doit contenir :
 
 #### C. Tâches
 ```markdown
-### Tâches (Agent: [developer | test-qa | solution-architect | doc-manager])
+### Tâches (Agent: [🔵 DEVon | 🟢 QUALvin | 🟠 ARCos | 🟣 DOCly])
 
 #### T<N>.<M> - <Titre de la Tâche>
 - **Fichier :** `path/to/file.ts` (ou liste si multiple)
@@ -146,13 +147,13 @@ Chaque phase doit contenir :
 ```markdown
 ## 📊 Résumé des Tâches par Agent
 
-### developer Agent
+### 🔵 DEVon
 - T2.1 à T2.8 : Mise à jour des dépendances
 - T3.1 à T3.5 : Refactorisation architecture
 - **Livrable :** Dépendances à jour, code refactorisé, tests passant
 - **Durée estimée :** 2-3 semaines
 
-### test-qa Agent
+### 🟢 QUALvin
 - T1.1 à T1.7 : Tests unitaires + rapport de couverture
 - **Livrable :** Tests ≥80% couverture
 - **Durée estimée :** 1-2 semaines
@@ -201,16 +202,17 @@ Phase 6 (Docs) ← [Phases 1-5 doivent être ✅]
 ```markdown
 ## 🚀 Plan d'Exécution
 
-1. **Semaine 1-2 :** Lancer Phase 1 (test-qa agent)
-2. **Semaine 2-3 :** Lancer Phase 2 (developer agent, après Phase 1 ✅)
-3. **Semaine 3-4 :** Lancer Phases 3-4 en parallèle (developer agent)
-4. **Semaine 4-5 :** Lancer Phase 5 (solution-architect, après Phase 3 ✅)
-5. **Semaine 5-6 :** Lancer Phase 6 en parallèle (doc-manager)
+1. **Semaine 1-2 :** Lancer Phase 1 (🟢 QUALvin)
+2. **Semaine 2-3 :** Lancer Phase 2 (🔵 DEVon, après Phase 1 ✅ + validation 👤)
+3. **Semaine 3-4 :** Lancer Phases 3-4 en parallèle (🔵 DEVon)
+4. **Semaine 4-5 :** Lancer Phase 5 (🟠 ARCos, après Phase 3 ✅ + validation 👤)
+5. **Semaine 5-6 :** Lancer Phase 6 en parallèle (🟣 DOCly, après validation 👤)
 
 **Triggers pour démarrer une phase :**
 - Tous les rapports de la phase précédente ✅ COMPLÉTÉE
 - Tous les critères de réussite atteints
 - Pas de bloqueurs signalés
+- Validation explicite du 👤 Développeur humain
 ```
 
 ---
@@ -234,7 +236,7 @@ Pour chaque plan, créer un dossier `.github/plans/<NO>_reports/` avec un rappor
 ```markdown
 # Phase N : <Titre de la Phase>
 
-**Responsable Agent :** [developer | test-qa | solution-architect | doc-manager]  
+**Responsable Agent :** [🔵 DEVon | 🟢 QUALvin | 🟠 ARCos | 🟣 DOCly]  
 **Date Début :** YYYY-MM-DD  
 **Date Fin :** YYYY-MM-DD (ou TBD si en cours)  
 **Statut :** ✅ COMPLÉTÉE | 🔄 EN_COURS | ⏳ PLANIFIÉE | ❌ BLOQUÉE
@@ -305,7 +307,7 @@ Fin du rapport Phase N
 
 ## 🔄 Workflow de Suivi
 
-### 1. Créer le Plan (Utilisateur / Solution-Architect)
+### 1. Créer le Plan (👤 Développeur humain / 🟠 ARCos)
 
 ```bash
 # Créer le fichier plan
@@ -325,14 +327,14 @@ touch .github/plans/00X_<nom>.plan.md
 - [ ] Agents assignés sont cohérents avec les tâches
 - [ ] Plan de dépendances est acyclique
 
-### 2. Démarrer une Phase (Agent Responsable)
+### 2. Démarrer une Phase (Agent responsable)
 
 ```bash
 # 1. Lire le plan complet
 cat .github/plans/<NO>_<nom>.plan.md
 
 # 2. Identifier les tâches assignées
-# Exemple : Agent test-qa cherche "T<N>.<M>" où l'agent est "test-qa"
+# Exemple : 🟢 QUALvin cherche "T<N>.<M>" où l'agent est "🟢 QUALvin"
 
 # 3. Créer le rapport de phase
 mkdir -p .github/plans/<NO>_reports/
@@ -379,7 +381,7 @@ Remplir la **synthèse de phase** :
 **Prochaine Phase :** Phase X peut démarrer (toutes les dépendances ✅)
 ```
 
-### 5. Valider et Archiver (Utilisateur / Lead)
+### 5. Valider et Archiver (👤 Développeur humain / Lead)
 
 ```bash
 # Approuver le rapport
@@ -396,7 +398,7 @@ Chaque agent doit recevoir un **prompt structuré** qui :
 2. **Identifie ses tâches** (T<N>.X où agent = [son rôle])
 3. **Spécifie le rapport à remplir** (`.github/plans/<NO>_reports/PHASE_N_...`)
 
-**Exemple de prompt pour test-qa :**
+**Exemple de prompt pour 🟢 QUALvin :**
 ```
 Exécute la Phase 1 du plan : .github/plans/001_modernisation_complète.plan.md
 
@@ -421,13 +423,50 @@ Exécute la Phase 1 du plan : .github/plans/001_modernisation_complète.plan.md
 ```
 
 **Chaîne de délégation entre agents :**
-```
-solution-architect (plan)
+``` 
+🟠 ARCos (plan)
     ↓
-developer (T2.1-T3.5)
-    ├→ test-qa (valider + écrire tests)
-    └→ doc-manager (documenter changements)
+🔵 DEVon (T2.1-T3.5)
+    ├→ 🟢 QUALvin (valider + écrire tests)
+    └→ 🟣 DOCly (documenter changements)
+    ↓
+👤 Développeur humain (validation explicite entre jalons)
 ```
+
+---
+
+## 🧩 Modèle d'initiative : Remédiation TypeScript CI
+
+Ce modèle sert de référence pour les initiatives focalisées sur la stabilisation du contrôle `npx tsc --noEmit` dans CI.
+
+### Structure recommandée (4 phases)
+
+1. **Diagnostic & cadrage** (inventaire complet des erreurs TypeScript)
+2. **Remédiation code** (correction des types et contrats dans les couches impactées)
+3. **Validation qualité & CI** (preuve locale + CI, non-régression)
+4. **Documentation & handover** (rapports, ADR, clôture validée)
+
+### Critères mesurables minimum
+
+- `npx tsc --noEmit` : **0 erreur** en local et CI
+- **100%** des erreurs de baseline classées puis traitées
+- **0** nouveau `any` non justifié
+- Preuves de validation QA documentées (résultats tests/chiffres)
+- Décision de quality gate TypeScript tracée (ADR)
+
+### Dépendances à expliciter
+
+- Phase 2 dépend de la baseline validée en phase 1
+- Phase 3 dépend des corrections phase 2
+- Phase 4 dépend de la validation qualité phase 3
+- Chaque passage de phase requiert une **validation explicite du 👤 Développeur humain**
+
+### Livrables attendus
+
+- Plan AP détaillé (`.github/plans/002_typescript_ci_remediation.plan.md` ou équivalent)
+- Rapports de phase (`.github/plans/002_reports/PHASE_*_COMPLETION_REPORT.md`)
+- Mise à jour de l'index des plans (`.github/plans/README.md`)
+- ADR de décision de gate TypeScript (`docs/adr/NNN-typescript-ci-quality-gate.md`)
 
 ---
 
@@ -476,6 +515,12 @@ developer (T2.1-T3.5)
   - Rapports : `.github/plans/001_reports/PHASE_*_*.md`
   - Phases : 1 (Tests), 2 (Dépendances), 3 (Architecture), 4 (Performance), 5 (CI/CD), 6 (Docs)
   - Statut : 🔄 Phase 1 en cours
+
+- **AP-002 :** Remédiation CI TypeScript (`npx tsc --noEmit`)
+  - Plan : `.github/plans/002_typescript_ci_remediation.plan.md`
+  - Rapports : `.github/plans/002_reports/PHASE_*_COMPLETION_REPORT.md`
+  - Phases : 1 (Diagnostic), 2 (Remédiation), 3 (Validation QA/CI), 4 (Documentation + ADR)
+  - Statut : ⏳ Planifié
 
 ---
 

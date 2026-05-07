@@ -1,5 +1,22 @@
 import { DomoticzSwitchType, DomoticzDeviceType } from "../enums/DomoticzEnum";
 
+export type DomoticzDeviceInput = {
+    idx: number;
+    rang: number;
+    name: string;
+    lastUpdate: string;
+    level: number;
+    unit?: string;
+    type: DomoticzDeviceType;
+    subType: string;
+    switchType: DomoticzSwitchType;
+    status: string;
+    data: string;
+    isGroup?: boolean;
+    isActive?: boolean;
+    consistantLevel?: boolean;
+};
+
 
 /**
  * Equipement Domoticz (Lumières, volets)
@@ -27,7 +44,7 @@ class DomoticzDevice {
     // Niveau de l'équipement - mutable pour changements d'état
     private _level: number;
     // Unité de l'équipement
-    readonly unit: string = "";
+    unit: string = "";
     // Niveau de cohérence du niveau de l'équipement (pour les groupes). True par défaut pour les équipements
     private _consistantLevel: boolean = true;
     // Type de l'équipement
@@ -39,7 +56,7 @@ class DomoticzDevice {
     // Status de l'équipement - mutable pour changements d'état
     private _status: string;
     // Données de l'équipement
-    readonly data: string;
+    data: string;
 
 
     /**
@@ -58,7 +75,7 @@ class DomoticzDevice {
      * @param isGroup - Indique si le périphérique est un groupe (par défaut: false).
      * @throws {Error} si idx <= 0
      */
-    constructor({ idx, rang, name, lastUpdate, level, unit = "", type, subType, switchType, status, data, isGroup = false }: DomoticzDevice) {
+    constructor({ idx, rang, name, lastUpdate, level, unit = "", type, subType, switchType, status, data, isGroup = false, isActive = false, consistantLevel = true }: DomoticzDeviceInput) {
         if (idx <= 0) {
             throw new Error(`idx doit être > 0, reçu: ${idx}`);
         }
@@ -74,6 +91,8 @@ class DomoticzDevice {
         this._status = status;
         this.data = data;
         this.isGroup = isGroup;
+        this.isActive = isActive;
+        this._consistantLevel = consistantLevel;
     }
 
     /**

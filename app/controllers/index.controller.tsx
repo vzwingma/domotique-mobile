@@ -26,12 +26,11 @@ export function connectToDomoticz({setIsLoading, storeConnexionData, setError}: 
     // Appel du service externe de connexion à Domoticz
     callDomoticz(SERVICES_URL.GET_CONFIG)
       .then(data => {
-        let config: DomoticzConfig;
-        config = {
+        const config = new DomoticzConfig({
           status: data.status,
           version: data.version,
           revision: data.Revision
-        };
+        });
         return config;
       })
       .then(config => {

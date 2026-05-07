@@ -1,5 +1,13 @@
 import { DomoticzDeviceType } from "../enums/DomoticzEnum";
 
+export type DomoticzFavoritesInput = {
+    idx: number;
+    nbOfUse: number;
+    name: string;
+    type: DomoticzDeviceType;
+    subType: string;
+};
+
 
 /**
  * Favoris d'Equipement Domoticz (Lumières, volets, paramètres)
@@ -31,7 +39,7 @@ class DomoticzFavorites {
      * @param {string} options.subType - Le sous-type des favoris.
      * @throws {Error} si idx <= 0
      */
-    constructor({ idx, nbOfUse, name, type, subType }: DomoticzFavorites) {
+    constructor({ idx, nbOfUse, name, type, subType }: DomoticzFavoritesInput) {
         if (idx <= 0) {
             throw new Error(`idx doit être > 0, reçu: ${idx}`);
         }

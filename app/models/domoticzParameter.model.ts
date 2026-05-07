@@ -1,5 +1,17 @@
 import { DomoticzDeviceType, DomoticzSwitchType } from "../enums/DomoticzEnum";
 
+export type DomoticzParameterInput = {
+    idx: number;
+    name: string;
+    lastUpdate: string;
+    level: number;
+    type: DomoticzDeviceType;
+    switchType: DomoticzSwitchType;
+    status: string;
+    data: string;
+    levelNames?: string[];
+};
+
 
 /**
  * Paramètre Domoticz
@@ -41,7 +53,7 @@ class DomoticzParameter {
      * @param data - Les données associées au périphérique.
      * @throws {Error} si idx <= 0
      */
-    constructor({ idx, name, lastUpdate, level, type, switchType, status, data}: DomoticzParameter) {
+    constructor({ idx, name, lastUpdate, level, type, switchType, status, data, levelNames = []}: DomoticzParameterInput) {
         if (idx <= 0) {
             throw new Error(`idx doit être > 0, reçu: ${idx}`);
         }
@@ -53,6 +65,7 @@ class DomoticzParameter {
         this.switchType = switchType;
         this._status = status;
         this.data = data;
+        this.levelNames = levelNames;
     }
 
     /**

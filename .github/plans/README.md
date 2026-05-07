@@ -1,13 +1,8 @@
 # 📋 Plans d'Action (Action Plans)
 
-Bienvenue dans le répertoire des Plans d'Action (AP) du projet . 
+Bienvenue dans le répertoire des Plans d'Action (AP) du projet.
 
-Chaque plan orchestre une initiative multi-phases coordonnée entre plusieurs agents (Devon (🔵 DEV), Qalvin (🟢 QUAL), Arkos (🟠 ARC), Docly (🟣 DOC)) et produit des rapports de suivi documentant l'exécution.
-
----
-
-## 📂 Plans Actifs / En Cours
-
+Chaque plan orchestre une initiative multi-phases coordonnée entre plusieurs agents (🔵 DEVon, 🟢 QUALvin, 🟠 ARCos, 🟣 DOCly) et produit des rapports de suivi documentant l'exécution, avec validation explicite du 👤 Développeur humain à chaque jalon.
 
 ---
 
@@ -19,12 +14,12 @@ Chaque plan orchestre une initiative multi-phases coordonnée entre plusieurs ag
 **Objectif :** Moderniser l'application domoticz-mobile en améliorant la couverture de test, les dépendances à jour, l'architecture du code et la performance.
 
 **Phases :**
-1. 🔄 **Phase 1 : Couverture de Test (test-qa)** — En cours
-2. ⏳ **Phase 2 : Mise à Jour des Dépendances (developer)** — À démarrer
-3. ⏳ **Phase 3 : Architecture & Services (developer)** — À démarrer
-4. ⏳ **Phase 4 : Performance & Optimisations (developer)** — À démarrer
-5. ⏳ **Phase 5 : CI/CD & Infrastructure (solution-architect)** — À démarrer
-6. ⏳ **Phase 6 : Documentation & Guides (doc-manager)** — À démarrer
+1. 🔄 **Phase 1 : Couverture de Test (🟢 QUALvin)** — En cours
+2. ⏳ **Phase 2 : Mise à Jour des Dépendances (🔵 DEVon)** — À démarrer
+3. ⏳ **Phase 3 : Architecture & Services (🔵 DEVon)** — À démarrer
+4. ⏳ **Phase 4 : Performance & Optimisations (🔵 DEVon)** — À démarrer
+5. ⏳ **Phase 5 : CI/CD & Infrastructure (🟠 ARCos)** — À démarrer
+6. ⏳ **Phase 6 : Documentation & Guides (🟣 DOCly)** — À démarrer
 
 **Statut Global :** 🔄 EN_COURS
 
@@ -35,6 +30,26 @@ Chaque plan orchestre une initiative multi-phases coordonnée entre plusieurs ag
 - ✅ Bundle size stable ou ↓
 - ✅ CI/CD robuste + auto-merge
 - ✅ Documentation exhaustive & à jour
+
+### AP-002 : Remédiation CI TypeScript (`npx tsc --noEmit`)
+
+**Fichier :** [`002_typescript_ci_remediation.plan.md`](./002_typescript_ci_remediation.plan.md)  
+**Objectif :** Restaurer un pipeline CI TypeScript stable en supprimant les erreurs de compilation (`tsc --noEmit`) et en documentant la décision de quality gate.
+
+**Phases :**
+1. ⏳ **Phase 1 : Diagnostic TypeScript & Cadrage** — Planifiée
+2. ⏳ **Phase 2 : Remédiation du Code TypeScript** — À démarrer
+3. ⏳ **Phase 3 : Validation Qualité & Robustesse CI** — À démarrer
+4. ⏳ **Phase 4 : Documentation, ADR et Handover** — À démarrer
+
+**Statut Global :** ⏳ PLANIFIÉ
+
+**Critères de Succès Globaux :**
+- ✅ `npx tsc --noEmit` passe local + CI (0 erreur)
+- ✅ 100% des erreurs de baseline traitées
+- ✅ Aucun `any` non-justifié introduit
+- ✅ Documentation AP complète (plan + rapports)
+- ✅ ADR déposé dans `docs/adr/`
 
 ---
 
@@ -62,10 +77,10 @@ _(Aucun plan archivé pour l'instant)_
 ## 📚 Documentation Associée
 
 - **Guide complet des Plans d'Action** : [`.github/PLANS.md`](../PLANS.md)
-- **Instructions agent Devon (🔵 DEV)** : [`.github/agents/Devon (🔵 DEV).agent.md`](../agents/Devon (🔵 DEV).agent.md)
-- **Instructions agent Qalvin (🟢 QUAL)** : [`.github/agents/Qalvin (🟢 QUAL).agent.md`](../agents/Qalvin (🟢 QUAL).agent.md)
-- **Instructions agent Docly (🟣 DOC)** : [`.github/agents/Docly (🟣 DOC).agent.md`](../agents/Docly (🟣 DOC).agent.md)
-- **Instructions agent Arkos (🟠 ARC)** : [`.github/agents/Arkos (🟠 ARC).agent.md`](../agents/Arkos (🟠 ARC).agent.md)
+- **Instructions agent DEVon (🔵 DEV)** : [`.github/agents/Devon.agent.md`](../agents/Devon.agent.md)
+- **Instructions agent QUALvin (🟢 QUAL)** : [`.github/agents/Qalvin.agent.md`](../agents/Qalvin.agent.md)
+- **Instructions agent DOCly (🟣 DOC)** : [`.github/agents/Docly.agent.md`](../agents/Docly.agent.md)
+- **Instructions agent ARCos (🟠 ARC)** : [`.github/agents/Arcos.agent.md`](../agents/Arcos.agent.md)
 - **Instructions Copilot globales** : [`.github/copilot-instructions.md`](../copilot-instructions.md)
 
 ---
@@ -100,8 +115,8 @@ Pour contribuer ou modifier un plan existant :
 
 ---
 
-**Dernière mise à jour :** 2026-04-24  
-**Gestionnaire des Plans :** Arkos (🟠 ARC) & 👤 Développeur humain
+**Dernière mise à jour :** 2026-05-07  
+**Gestionnaire des Plans :** ARCos (🟠 ARC) & 👤 Développeur humain
 
 
 

@@ -22,21 +22,20 @@ export function loadDomoticzThermostats(storeThermostatsData: (thermostats: Domo
     callDomoticz(SERVICES_URL.GET_DEVICES)
         .then(data => {
             const thermostatsDevices : DomoticzThermostat[] = data.result
-                    .filter((rawDevice: any) => getDeviceType(rawDevice.Name) === DomoticzDeviceType.THERMOSTAT)
-                    .map((rawDevice: any, index: number) => {
-                        let tdevice: DomoticzThermostat;
-                        tdevice = {
-                            idx: Number(rawDevice.idx),
-                            rang: index,
-                            name: evaluateDeviceName(rawDevice.Name),
-                            status: String(rawDevice.Data),
-                            type: getDeviceType(rawDevice.Name),
-                            temp: evaluateThermostatPoint(rawDevice.SetPoint),
-                            lastUpdate: rawDevice.LastUpdate,
-                            isActive: !rawDevice.HaveTimeout,
-                            data: rawDevice.Data,
-                            unit: rawDevice.vunit
-                        }
+                .filter((rawDevice: any) => getDeviceType(rawDevice.Name) === DomoticzDeviceType.THERMOSTAT)
+                .map((rawDevice: any, index: number) => {
+                        const tdevice = new DomoticzThermostat(
+                            Number(rawDevice.idx),
+                            evaluateDeviceName(rawDevice.Name),
+                            rawDevice.LastUpdate,
+                            !rawDevice.HaveTimeout,
+                            evaluateThermostatPoint(rawDevice.SetPoint),
+                            getDeviceType(rawDevice.Name),
+                            String(rawDevice.Data),
+                            rawDevice.Data,
+                            rawDevice.vunit
+                        );
+                        tdevice.rang = index;
                         return tdevice;
                     });
             // Stockage des données

@@ -15,7 +15,7 @@ class DomoticzConfig {
      * @param version - La version du serveur Domoticz
      * @param revision - La révision du serveur Domoticz
      */
-    constructor({ status, version, revision }: DomoticzConfig) {
+    constructor({ status, version, revision }: { status: string; version: string; revision: string; }) {
         this.status = status;
         this.version = version;
         this.revision = revision;
