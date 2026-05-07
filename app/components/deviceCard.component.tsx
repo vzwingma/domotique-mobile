@@ -54,6 +54,18 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({
   );
 };
 
+// T4.2 - React.memo pour éviter re-renders inutiles
+export default React.memo(DeviceCard, (prevProps, nextProps) => {
+  return (
+    prevProps.title === nextProps.title &&
+    prevProps.statusLabel === nextProps.statusLabel &&
+    prevProps.accentColor === nextProps.accentColor &&
+    prevProps.isActive === nextProps.isActive &&
+    prevProps.unit === nextProps.unit &&
+    prevProps.summary === nextProps.summary
+  );
+});
+
 const styles = StyleSheet.create({
   card: {
     width: '100%',
