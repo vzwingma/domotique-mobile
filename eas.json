@@ -8,16 +8,7 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk",
-        "image": "latest",
-        "gradleCache": true,
-        "cacheDisabled": false
-      },
-      "cache": {
-        "disabled": false,
-        "customPaths": [
-          "node_modules",
-          ".gradle"
-        ]
+        "image": "latest"
       },
       "env": {
         "EXPO_PUBLIC_MY_ENVIRONMENT": "development"
@@ -27,16 +18,7 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk",
-        "image": "latest",
-        "gradleCache": true,
-        "cacheDisabled": false
-      },
-      "cache": {
-        "disabled": false,
-        "customPaths": [
-          "node_modules",
-          ".gradle"
-        ]
+        "image": "latest"
       }
     },
     "previewV": {
@@ -53,16 +35,7 @@
     },    
     "production": {
       "android": {
-        "image": "latest",
-        "gradleCache": true,
-        "cacheDisabled": false
-      },
-      "cache": {
-        "disabled": false,
-        "customPaths": [
-          "node_modules",
-          ".gradle"
-        ]
+        "image": "latest"
       },
       "env": {
         "EXPO_PUBLIC_MY_ENVIRONMENT": "production"
