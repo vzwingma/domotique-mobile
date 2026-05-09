@@ -82,7 +82,7 @@ const response = await fetch(url, {
 ⚠️ **Important :**
 - Les credentials sont stockés dans `.env.local` (non versionné)
 - Pour la production, utiliser un secret manager ou CI/CD variables
-- Ne jamais commiter `.env.local` ou les credentials en clair
+- Ne jamais commiter `.env.local` ou les credentials en clair dans le code source
 
 ---
 
