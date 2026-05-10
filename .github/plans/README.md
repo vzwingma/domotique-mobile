@@ -1,0 +1,35 @@
+# 📋 Index des Plans d'Action (AP)
+
+Cet index liste uniquement les plans et leur **statut global**.
+
+> **Règle d'indexation :** ne pas détailler les phases dans ce fichier.  
+> Les détails de phases restent dans les fichiers `*.plan.md` et les rapports `*_reports/`.
+
+---
+
+## Plans actifs / en cours
+
+| AP | Fichier | Objectif | Statut global |
+|---|---|---|---|
+
+---
+
+## Plans archivés / complétés
+
+| AP | Fichier | Objectif | Statut global |
+|---|---|---|---|
+| AP-001 | [`001_modernisation_complète.plan.md`](./001_modernisation_complète.plan.md) | Modernisation globale (tests, dépendances, architecture, performance, CI/CD, doc) | ✅ COMPLÉTÉ |
+| AP-002 | [`002_typescript_ci_remediation.plan.md`](./002_typescript_ci_remediation.plan.md) | Remédiation CI TypeScript (`tsc --noEmit`) | ✅ COMPLÉTÉ |
+| AP-003 | [`003_sonarcloud_remediation.plan.md`](./003_sonarcloud_remediation.plan.md) | Remédiation SonarCloud (Reliability + Maintainability) | ✅ COMPLÉTÉ |
+
+---
+
+## Règles de maintenance (obligatoires)
+
+1. Ce fichier est un **index synthétique** : plans + statuts globaux uniquement.
+2. **Aucun statut de phase** ne doit apparaître ici.
+3. À chaque changement de statut d'un plan (`PLANIFIÉ`, `EN_COURS`, `BLOQUÉ`, `COMPLÉTÉ`), ce fichier doit être mis à jour dans le même changement.
+
+---
+
+**Dernière mise à jour :** 2026-05-07
