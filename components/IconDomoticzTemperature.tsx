@@ -7,7 +7,7 @@ import DomoticzTemperature from "@/app/models/domoticzTemperature.model";
  * Icone d'une mesure de température Domoticz, suivant le type et le statut de l'équipement.
  *  >Icone du volet : https://oblador.github.io/react-native-vector-icons/ 
  */
-class IconDomoticzTemperature extends MaterialCommunityIcons { }
+const IconDomoticzTemperature = MaterialCommunityIcons;
 
 /**
  * Get the icon name of a temperature device

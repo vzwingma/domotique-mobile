@@ -1,14 +1,38 @@
 import { DomoticzSwitchType, DomoticzDeviceType } from "../enums/DomoticzEnum";
 
+export type DomoticzDeviceInput = {
+    idx: number;
+    rang: number;
+    name: string;
+    lastUpdate: string;
+    level: number;
+    unit?: string;
+    type: DomoticzDeviceType;
+    subType: string;
+    switchType: DomoticzSwitchType;
+    status: string;
+    data: string;
+    isGroup?: boolean;
+    isActive?: boolean;
+    consistantLevel?: boolean;
+};
+
 
 /**
  * Equipement Domoticz (Lumières, volets)
+ * 
+ * Modèle immuable pour représenter un équipement Domoticz avec validation
+ * et getters pour propriétés calculées.
+ * 
+ * **Immuabilité :** Les propriétés readonly sont protégées en lecture seule.
+ * Les propriétés mutables (_rang, _level, _status, _consistantLevel) utilisent
+ * des getters/setters privés pour contrôler les modifications.
  */
 class DomoticzDevice {
-    // Index de l'équipement
+    // Index de l'équipement (validé > 0)
     readonly idx: number;
-    // Rang de l'équipement (affichage)
-    rang: number = 0;
+    // Rang de l'équipement (affichage) - mutable pour tri
+    private _rang: number = 0;
     // Nom de l'équipement
     readonly name: string;
     // Groupe d'équipements ?
@@ -17,28 +41,28 @@ class DomoticzDevice {
     readonly lastUpdate: string;
     // Equipement actif ?
     readonly isActive: boolean = false;
-    // Niveau de l'équipement
-    level: number;
-    // Unit
+    // Niveau de l'équipement - mutable pour changements d'état
+    private _level: number;
+    // Unité de l'équipement
     unit: string = "";
     // Niveau de cohérence du niveau de l'équipement (pour les groupes). True par défaut pour les équipements
-    consistantLevel: boolean = true;
+    private _consistantLevel: boolean = true;
     // Type de l'équipement
     readonly type: DomoticzDeviceType;
     // Sous-type de l'équipement (Lumière, volet, ...)
     readonly subType: string;
     // Type de switch de l'équipement
     readonly switchType: DomoticzSwitchType;
-    // Status de l'équipement
-    status: string;
+    // Status de l'équipement - mutable pour changements d'état
+    private _status: string;
     // Données de l'équipement
-    public data: string;
+    data: string;
 
 
     /**
      * Constructeur de la classe DomoticzDevice.
      * 
-     * @param idx - L'identifiant unique du périphérique.
+     * @param idx - L'identifiant unique du périphérique (doit être > 0).
      * @param rang - Le rang du périphérique.
      * @param name - Le nom du périphérique.
      * @param lastUpdate - La date de la dernière mise à jour du périphérique.
@@ -49,19 +73,101 @@ class DomoticzDevice {
      * @param status - L'état du périphérique.
      * @param data - Les données associées au périphérique.
      * @param isGroup - Indique si le périphérique est un groupe (par défaut: false).
+     * @throws {Error} si idx <= 0
      */
-    constructor({ idx, rang, name, lastUpdate, level, type, subType, switchType, status, data, isGroup = false }: DomoticzDevice) {
+    constructor({ idx, rang, name, lastUpdate, level, unit = "", type, subType, switchType, status, data, isGroup = false, isActive = false, consistantLevel = true }: DomoticzDeviceInput) {
+        if (idx <= 0) {
+            throw new Error(`idx doit être > 0, reçu: ${idx}`);
+        }
         this.idx = idx;
-        this.rang = rang;
+        this._rang = rang;
         this.name = name;
         this.lastUpdate = lastUpdate;
-        this.level = level;
+        this._level = level;
+        this.unit = unit;
         this.type = type;
         this.subType = subType;
         this.switchType = switchType;
-        this.status = status;
+        this._status = status;
         this.data = data;
         this.isGroup = isGroup;
+        this.isActive = isActive;
+        this._consistantLevel = consistantLevel;
+    }
+
+    /**
+     * Getter pour le rang de l'équipement (affichage)
+     */
+    get rang(): number {
+        return this._rang;
+    }
+
+    /**
+     * Setter pour le rang de l'équipement
+     */
+    set rang(value: number) {
+        this._rang = value;
+    }
+
+    /**
+     * Getter pour le niveau de l'équipement
+     */
+    get level(): number {
+        return this._level;
+    }
+
+    /**
+     * Setter pour le niveau de l'équipement
+     */
+    set level(value: number) {
+        this._level = value;
+    }
+
+    /**
+     * Getter pour le statut de l'équipement
+     */
+    get status(): string {
+        return this._status;
+    }
+
+    /**
+     * Setter pour le statut de l'équipement
+     */
+    set status(value: string) {
+        this._status = value;
+    }
+
+    /**
+     * Getter pour la cohérence du niveau
+     */
+    get consistantLevel(): boolean {
+        return this._consistantLevel;
+    }
+
+    /**
+     * Setter pour la cohérence du niveau
+     */
+    set consistantLevel(value: boolean) {
+        this._consistantLevel = value;
+    }
+
+    /**
+     * Getter: L'équipement est-il en ligne ?
+     * Basé sur le statut isActive
+     */
+    get isOnline(): boolean {
+        return this.isActive;
+    }
+
+    /**
+     * Getter: Formatage du niveau pour affichage
+     * @returns "100%" pour lumières/volets, "100°C" pour thermostats, etc.
+     */
+    get displayLevel(): string {
+        if (this.type === DomoticzDeviceType.THERMOSTAT) {
+            return `${this._level}${this.unit || '°C'}`;
+        }
+        return `${Math.round(this._level)}%`;
     }
 }
 export default DomoticzDevice;

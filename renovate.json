@@ -4,11 +4,36 @@
     "config:recommended"
   ],
   "dependencyDashboard": true,
+  "semanticCommits": true,
+  "prConcurrentLimit": 3,
+  "prCreationLimit": 2,
   "packageRules": [
     {
+      "description": "Auto-merge minor and patch updates for safe packages",
       "matchUpdateTypes": ["minor", "patch"],
       "matchCurrentVersion": "!/^0/",
-      "automerge": true
+      "automerge": true,
+      "automergeType": "pr",
+      "automergeStrategy": "squash",
+      "requiredStatusChecks": ["CI Pipeline"],
+      "matchPackagePatterns": [
+        "^typescript$",
+        "^jest",
+        "^@types/",
+        "^uuid$",
+        "^eslint"
+      ]
+    },
+    {
+      "description": "Draft PRs for major updates (React Native, Expo)",
+      "matchUpdateTypes": ["major"],
+      "matchPackagePatterns": [
+        "^react-native$",
+        "^expo",
+        "^react$"
+      ],
+      "prCreation": "draft",
+      "automerge": false
     },
     {
       "description": "Disable auto-updates for packages whose versions are managed by the Expo SDK. These must stay in sync with the installed Expo SDK version.",
@@ -19,7 +44,16 @@
         "react-test-renderer"
       ],
       "enabled": false
+    },
+    {
+      "description": "Minor updates for dev dependencies (require merge)",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor"],
+      "automerge": false,
+      "requiredStatusChecks": ["CI Pipeline"]
     }
   ],
-  "platformAutomerge": true
+  "platformAutomerge": true,
+  "commitMessagePrefix": "chore(deps): ",
+  "extends:enableFileMatch": ["package.json"]
 }
