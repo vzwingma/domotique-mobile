@@ -16,11 +16,11 @@ import DomoticzThermostat from '../models/domoticzThermostat.model';
  * @param storeDevicesData - Fonction pour stocker les données des equipements volets/lumières dans l'état.
  * @param typeDevice - Type d'équipement à charger
  */
-export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]) => void) {
+export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]) => void, bypassCache: boolean = false) {
     const traceId = generateTraceId();
     
     // Appel du service externe de connexion à Domoticz pour les types d'équipements
-    callDomoticz(SERVICES_URL.GET_DEVICES)
+    callDomoticz(SERVICES_URL.GET_DEVICES, undefined, bypassCache)
         .then(data => {
             const dataDevices : DomoticzDevice[] = data.result
                 .map((rawDevice: any, index: number) => {
@@ -135,7 +135,7 @@ export function updateDeviceLevel(idx: number, device : DomoticzDevice, level: n
             })
             .finally(() => {
                 addActionForFavorite(device);
-                refreshEquipementState(storeDevicesData)
+                refreshEquipementState(storeDevicesData, true)
             });
     }
 }
@@ -162,7 +162,7 @@ function updateDeviceState(idx: number, device: DomoticzDevice, status: boolean,
         })
         .finally(() => {
             addActionForFavorite(device);
-            refreshEquipementState(setDevicesData)
+            refreshEquipementState(setDevicesData, true)
         });
 }
 
@@ -171,10 +171,10 @@ function updateDeviceState(idx: number, device: DomoticzDevice, status: boolean,
  * @param setDeviceData fonction de mise à jour des données
  * @param typeEquipement type d'équipement
  */
-export function refreshEquipementState(storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
+export function refreshEquipementState(storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>, forceFresh: boolean = false) {
     // Mise à jour des données
-    loadDomoticzDevices(storeDevicesData);
-    setTimeout(() => loadDomoticzDevices(storeDevicesData), 1000);
+    loadDomoticzDevices(storeDevicesData, forceFresh);
+    setTimeout(() => loadDomoticzDevices(storeDevicesData, forceFresh), 1000);
 }
 
 
