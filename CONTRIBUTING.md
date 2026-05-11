@@ -24,7 +24,7 @@ Avant de commencer, assurez-vous d'avoir :
 - **Git** ([guide](https://git-scm.com/))
 - **Node.js** 21 ou supérieur ([télécharger](https://nodejs.org/))
 - **npm** 6 ou supérieur (inclus avec Node.js)
-- **Expo CLI** : `npm install -g expo-cli`
+- **Expo CLI** via `npx expo`
 
 Vérifier les versions :
 
@@ -32,7 +32,7 @@ Vérifier les versions :
 git --version      # git version 2.x+
 node --version     # v21.0.0+
 npm --version      # v6.0.0+
-expo --version     # 52.x+
+npx expo --version # 55.x+
 ```
 
 ---
@@ -42,14 +42,14 @@ expo --version     # 52.x+
 ### Étape 1 : Forker et cloner le dépôt
 
 ```bash
-# Fork sur GitHub (cliquer "Fork" sur https://github.com/vzwingma/domoticz-mobile)
+# Fork sur GitHub (cliquer "Fork" sur https://github.com/vzwingma/domotique-mobile)
 
 # Cloner votre fork
-git clone https://github.com/YOUR_USERNAME/domoticz-mobile.git
-cd domoticz-mobile
+git clone https://github.com/YOUR_USERNAME/domotique-mobile.git
+cd domotique-mobile
 
 # Ajouter le remote upstream (pour rester à jour)
-git remote add upstream https://github.com/vzwingma/domoticz-mobile.git
+git remote add upstream https://github.com/vzwingma/domotique-mobile.git
 git remote -v  # Vérifier: origin (fork) et upstream (original)
 ```
 
@@ -161,13 +161,13 @@ git push origin feature/ma-fonctionnalite --force  # Si nécessaire après rebas
 
 | Type | Suffixe | Dossier | Exemple |
 |------|---------|---------|---------|
-| Modèle données | `*.model.ts` | `app/models/` | `Light.model.ts` |
+| Modèle données | `*.model.ts` | `app/models/` | `domoticzDevice.model.ts` |
 | Service | `*.service.ts` | `app/services/` | `ClientHTTP.service.ts` |
-| Controller | `*.controller.tsx` | `app/controllers/` | `lights.controller.tsx` |
+| Controller | `*.controller.tsx` | `app/controllers/` | `devices.controller.tsx` |
 | Composant écran | `*.component.tsx` | `app/components/` | `device.component.tsx` |
-| Énumération | `*.enum.ts` | `app/enums/` | `DeviceType.enum.ts` |
+| Énumération / constantes | `*.ts` | `app/enums/` | `DomoticzEnum.ts` |
 | Test | `*.test.tsx` ou `*-test.tsx` | `__tests__/` | `lights.controller.test.tsx` |
-| Page/Route | `*.tsx` | `app/(tabs)/` | `lights.tsx` |
+| Page/Route | `*.tsx` | `app/(tabs)/` | `devices.tabs.tsx` |
 
 ### Variables & Fonctions
 
@@ -177,7 +177,7 @@ git push origin feature/ma-fonctionnalite --force  # Si nécessaire après rebas
 
 ```typescript
 // ✅ Correct
-const MAX_FAVORITES = 8;
+const MAX_FAVORITES = 7;
 const deviceList = [...];
 function getDeviceType(device: Device): DeviceType { }
 
@@ -372,7 +372,7 @@ npm run lint -- --fix # Auto-fix erreurs (quand possible)
 
 ### Prettier (via Expo)
 
-Le projet utilise Prettier via Expo CLI pour l'auto-formatting :
+Le projet applique le formatage via la commande lint Expo :
 
 ```bash
 npm run lint -- --fix  # Applique aussi Prettier
@@ -600,7 +600,7 @@ Pour comprendre l'architecture complète de l'application :
 
 ## ❓ Questions ?
 
-Ouvrir une [issue](https://github.com/vzwingma/domoticz-mobile/issues) ou contacter les mainteneurs.
+Ouvrir une [issue](https://github.com/vzwingma/domotique-mobile/issues) ou contacter les mainteneurs.
 
 **Merci de contribuer ! 🚀**
 

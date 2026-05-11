@@ -8,7 +8,7 @@ Le projet **domoticz-mobile** utilise une **architecture multi-agents** orchestr
 
 Quatre agents spécialisés travaillent ensemble, orchestrés par un **développeur humain** :
 
-#### **ARCos** [v2.0]
+#### **ARCos** [v2.4]
 - **Rôle :** Planificateur et orchestrateur technique
 - **Responsabilités :**
   - Concevoir des solutions architecturales complètes
@@ -18,7 +18,7 @@ Quatre agents spécialisés travaillent ensemble, orchestrés par un **développ
 - **Quand l'utiliser :** "Conçois une architecture pour...", "Crée un plan pour...", "Découpe ça en tâches"
 - **Livrable :** Plans d'Action détaillés avec phases, tâches et dépendances
 
-#### **DEVon** [v2.0]
+#### **DEVon** [v2.1]
 - **Rôle :** Implémentateur de code de production
 - **Responsabilités :**
   - Traduire les exigences en code fonctionnel et testé
@@ -28,7 +28,7 @@ Quatre agents spécialisés travaillent ensemble, orchestrés par un **développ
 - **Quand l'utiliser :** "Implémente cette fonctionnalité", "Développe selon l'architecture", "Code cette fonction"
 - **Livrable :** Code propre, compilant et compilant sans erreurs
 
-#### **QUALvin** [v2.0]
+#### **QUALvin** [v2.3]
 - **Rôle :** Expert en assurance qualité et tests
 - **Responsabilités :**
   - Écrire des tests unitaires complets (composants React Native, services)
@@ -38,10 +38,10 @@ Quatre agents spécialisés travaillent ensemble, orchestrés par un **développ
 - **Quand l'utiliser :** "Écris des tests pour ce composant", "Génère des tests unitaires", "Valide avec des tests"
 - **Livrable :** Tests passants avec rapports de couverture
 
-#### **DOCly** [v2.0]
+#### **DOCly** [v2.2]
 - **Rôle :** Gardien de la documentation
 - **Responsabilités :**
-  - Mettre à jour README, Wiki et guides
+  - Mettre à jour README, `docs/` et guides
   - Documenter les changements architecturaux
   - Mettre à jour les instructions Copilot quand les agents changent
   - Garder la documentation en sync avec le code
@@ -55,10 +55,10 @@ Quatre agents spécialisés travaillent ensemble, orchestrés par un **développ
 ```mermaid
 graph TD
     Human["👤 Développeur Humain"]
-    Arch["🏗️ ARCos [v2.0]"]
-    Dev["💻 DEVon [v2.0]"]
-    QA["✅ QUALvin [v2.0]"]
-    Doc["📚 DOCly [v2.0]"]
+    Arch["🏗️ ARCos [v2.4]"]
+    Dev["💻 DEVon [v2.1]"]
+    QA["✅ QUALvin [v2.3]"]
+    Doc["📚 DOCly [v2.2]"]
 
     Human -->|cadre le besoin| Arch
     Arch -->|crée un Plan d'Action| AP["📋 Plan d'Action<br/>(AP)"]
@@ -144,7 +144,8 @@ npm run lint            # ESLint via Expo
 Builds EAS (distribution APK Android) :
 ```bash
 eas build --profile development
-eas build --profile preview      # APK à distribution interne
+eas build --profile previewV     # APK à distribution interne (variante V)
+eas build --profile previewC     # APK à distribution interne (variante C)
 eas build --profile production
 ```
 
@@ -154,16 +155,16 @@ eas build --profile production
 app/
   _layout.tsx             # Layout racine : ThemeProvider (dark) + DomoticzContextProvider + Stack
   (tabs)/
-    _layout.tsx           # Barre d'onglets personnalisée (5 onglets : Favoris, Lumières, Volets, Températures, Maison) + header unifié
-    index.tsx             # Favoris (mode actions rapides)
+    _layout.tsx           # Orchestration onglets (5 onglets : Favoris, Lumières, Volets, Températures, Maison)
+    index.tsx             # Favoris (actions rapides)
     devices.tabs.tsx      # Lumières / Volets
-    temperatures.tab.tsx  # Capteurs de température + thermostats
-    parametrages.tab.tsx  # Maison (pilotage global + section À propos)
-  components/             # Composants de niveau écran (device, temperature, thermostat, paramètres, favoris, groupes)
-  controllers/            # Fonctions de chargement des données ; pont entre l'UI et les services
-  services/               # ClientHTTP.service.ts (client HTTP + cache 30s), DataUtils.service.ts (tri, groupes), DomoticzContextProvider.tsx (état global), ErrorHandler.service.ts (erreurs structurées), FavoritesManager.service.ts (AsyncStorage), Validator.service.ts
-  models/                 # Modèles TypeScript sous forme de classes (DomoticzDevice, DomoticzConfig, DomoticzFavorites, DomoticzParameter, DomoticzTemperature, DomoticzThermostat)
-  enums/                  # Constantes et enums (Colors, DomoticzEnum, APIconstants, TabsEnums)
+    temperatures.tab.tsx  # Températures + thermostats
+    parametrages.tab.tsx  # Maison (paramètres + section À propos)
+  components/             # Composants écran (*.component.tsx)
+  controllers/            # index/devices/temperatures/thermostats/parameters
+  services/               # callDomoticz + cache, utilitaires, contexte global, erreurs, favoris
+  models/                 # domoticzConfig/device/favorites/parameter/temperature/thermostat
+  enums/                  # APIconstants, Colors, DomoticzEnum, TabsEnums
 
 components/               # Composants UI génériques partagés (ThemedText, ParallaxScrollView, icônes)
 hooks/                    # Hooks React personnalisés (useColorScheme, useThemeColor, AndroidToast)
@@ -222,7 +223,7 @@ Les variables d'environnement doivent être préfixées `EXPO_PUBLIC_` pour êtr
 - **Onglets** : conserver les 5 libellés FR existants (`Favoris`, `Lumières`, `Volets`, `Températures`, `Maison`) et leurs icônes associées.
 - **Header unifié** : tous les onglets passent par `AppHeader` via `ParallaxScrollView` avec triplet fixe **icône + titre + badge de connexion**.
 - **Statut de connexion** : utiliser exclusivement les états canoniques du badge (`Connecté`, `Synchronisation`, `Déconnecté`, `Erreur`) via `ConnectionBadge`.
-- **Favoris** : l'écran `index.tsx` est en mode **actions rapides** (`FavoriteCard`) ; slider conditionnel disponible en mode `previewC` ; maximum **8** favoris actifs affichés.
+- **Favoris** : l'écran `index.tsx` est en mode **actions rapides** (`FavoriteCard`) ; slider conditionnel disponible en mode `previewC` ; maximum **7** favoris actifs affichés.
 - **Thermostats** : garder la distinction explicite **Mesure / Consigne** dans l'UI.
 - **Terminologie FR** : conserver les termes "Maison", "Mesure", "Consigne", "Favoris", "Déconnecté" (pas de variantes anglaises).
 
@@ -255,7 +256,7 @@ Les variables d'environnement doivent être préfixées `EXPO_PUBLIC_` pour êtr
 - **GitHub Actions** : `.github/workflows/ci.yml` (lint + tests + coverage).
 - **SonarQube** : `sonar-project.properties` — gate couverture ≥ 80%.
 - **Renovate** : `renovate.json` — patches auto-merge, majors en draft PR.
-- **EAS builds** : `eas.json` (profils development / preview / production).
+- **EAS builds** : `eas.json` (profils development / preview / previewV / previewC / production).
 
 ---
 

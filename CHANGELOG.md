@@ -7,6 +7,19 @@ et ce projet adhère à la [versioning sémantique](https://semver.org/spec/v2.0
 
 ---
 
+## [Unreleased]
+
+### Documentation
+
+- Synchronisation complète de la documentation avec l'état réel du projet :
+  - mise à jour de `docs/ARCHITECTURE.md` (routes, controllers, services, modèles, enums)
+  - correction de `docs/TESTING.md` (preset Jest réel : `react-native`)
+  - mise à jour de `docs/API.md` selon l'implémentation réelle de `callDomoticz` et des controllers (`.then/.catch`)
+  - alignement des versions d'agents dans `.github/copilot-instructions.md` avec `.github/agents/*.agent.md`
+  - corrections mineures README/CONTRIBUTING (liens dépôt, limite favoris)
+
+---
+
 ## [4.0.0] — 2026-05-04 🚀
 
 ### Production Release - Full Modernization Complete
@@ -359,8 +372,8 @@ Première version publique de domoticz-mobile.
 
 ## Support & Maintenance
 
-- **Bugs :** Ouvrir une [issue](https://github.com/vzwingma/domoticz-mobile/issues)
-- **Features :** Créer une [discussion](https://github.com/vzwingma/domoticz-mobile/discussions)
+- **Bugs :** Ouvrir une [issue](https://github.com/vzwingma/domotique-mobile/issues)
+- **Features :** Créer une [discussion](https://github.com/vzwingma/domotique-mobile/discussions)
 - **Contributing :** Lire [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 ---

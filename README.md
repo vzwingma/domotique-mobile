@@ -27,15 +27,15 @@ Avant de commencer, assurez-vous d'avoir :
 
 - **Node.js** 21 ou supérieur ([télécharger](https://nodejs.org/))
 - **npm** 6 ou supérieur (inclus avec Node.js)
-- **Expo CLI** ([guide officiel](https://docs.expo.dev/))
+- **Expo CLI** via `npx expo` ([guide officiel](https://docs.expo.dev/))
 
 ```bash
 # Vérifier les versions
 node --version   # v21.0.0 ou supérieur
 npm --version    # v6.0.0 ou supérieur
 
-# Installer Expo CLI globalement
-npm install -g expo-cli
+# Vérifier Expo CLI (via npx)
+npx expo --version
 ```
 
 **Plateforme cible :** Android et Web (React Native via Expo)
@@ -45,8 +45,8 @@ npm install -g expo-cli
 ### Étape 1 : Cloner le dépôt
 
 ```bash
-git clone https://github.com/vzwingma/domoticz-mobile.git
-cd domoticz-mobile
+git clone https://github.com/vzwingma/domotique-mobile.git
+cd domotique-mobile
 ```
 
 ### Étape 2 : Installer les dépendances
@@ -199,7 +199,7 @@ Pour une documentation complète de l'architecture, des patterns utilisés, de l
 
 ## ✅ Tests
 
-L'application utilise **Jest** avec le preset `jest-expo` pour les tests unitaires et snapshot testing.
+L'application utilise **Jest** avec le preset `react-native` pour les tests unitaires et snapshot testing.
 Pour une validation locale/pré-PR, les tests unitaires seuls ne suffisent plus : **`expo-doctor` est désormais un gate obligatoire** via `npm run validate:expo`.
 
 ```bash
@@ -230,7 +230,7 @@ Pour plus de détails sur le setup Jest, les conventions de test, et les meilleu
 
 - Navigation par 5 onglets (`Favoris`, `Lumières`, `Volets`, `Températures`, `Maison`) avec header unifié (icône d'onglet + titre + badge de connexion)
 - Badge de connexion unifié sur tous les onglets avec 4 états UI canoniques : `Connecté`, `Synchronisation`, `Déconnecté`, `Erreur`
-- Écran **Favoris** orienté actions rapides : cartes 1 tap (action principale + bouton), slider conditionnel disponible en mode `previewC`, limité aux **8 favoris actifs** les plus utilisés
+- Écran **Favoris** orienté actions rapides : cartes 1 tap (action principale + bouton), slider conditionnel disponible en mode `previewC`, limité aux **7 favoris actifs** les plus utilisés
 - Affichage et contrôle des lumières (on/off, variateur) avec labels métier "Allumé"/"Éteint" et état synthétique pour les groupes ("Éteintes" / "Allumées" / "Mixte" / niveau%)
 - Gestion des volets/stores (ouverture/fermeture via slider et clic icône) avec labels "Ouvert"/"Fermé" ; confirmation modale pour les actions sur groupe de volets (nom contenant "Tous")
 - Consultation des capteurs de température avec indicateurs "Déconnecté"/"Inconnu" pour les capteurs inactifs
