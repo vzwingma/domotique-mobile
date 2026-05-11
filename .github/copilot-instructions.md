@@ -133,17 +133,24 @@ Application mobile React Native / Expo pour piloter des équipements domotiques 
 
 ```bash
 npm start               # Démarrer le serveur de développement Expo
+npm run start:dev-client # Démarrer Expo en mode dev-client
 npm run android         # Lancer sur émulateur/appareil Android
+npm run android:device  # Lancer sur appareil Android connecté
+npm run ios             # Lancer sur simulateur iOS
 npm run web             # Lancer sur le web
 npm test                # Lancer Jest en mode watch
+npm test -- --watchAll=false --coverage         # Lancer les tests en mode CI + couverture
 npm test -- path/to/file.test.tsx          # Lancer un fichier de test précis
 npm test -- --testNamePattern="test name"  # Lancer les tests correspondant à un nom
 npm run lint            # ESLint via Expo
+npm run typecheck       # Vérification TypeScript stricte
+npm run validate:expo   # Vérification expo-env-info + expo-doctor
 ```
 
 Builds EAS (distribution APK Android) :
 ```bash
 eas build --profile development
+eas build --profile preview      # APK à distribution interne (base)
 eas build --profile previewV     # APK à distribution interne (variante V)
 eas build --profile previewC     # APK à distribution interne (variante C)
 eas build --profile production
@@ -244,6 +251,7 @@ Les variables d'environnement doivent être préfixées `EXPO_PUBLIC_` pour êtr
 - Rapport de couverture : `coverage/` (SonarQube gate ≥ 80%).
 - Objectifs : controllers 100%, services ≥ 90%, composants ≥ 70%, modèles ≥ 85%.
 - Pas de tests d'intégration ou E2E pour l'instant.
+- Validation complémentaire recommandée en QA/CI : `npm run typecheck` et `npm run validate:expo`.
 
 ## Optimisations de performance
 

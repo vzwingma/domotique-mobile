@@ -19,7 +19,7 @@ applyTo: "**"
 
 - ✅ Vérification que les tests passent (`npm test`)
 - ✅ Vérification `expo-doctor` (`npm run validate:expo`) en plus des tests
-- ✅ Vérification TypeScript stricte (`npx tsc --noEmit`) en plus des tests et d'Expo
+- ✅ Vérification TypeScript stricte (`npm run typecheck`) en plus des tests et d'Expo
 
 ## Stack de test
 
@@ -39,7 +39,7 @@ npm test
 npm test -- --watchAll=false --coverage
 
 # Typecheck TypeScript (obligatoire QUALvin / CI)
-npx tsc --noEmit
+npm run typecheck
 
 # Un seul fichier de test
 npm test -- app/services/__tests__/ClientHTTP.service.test.ts
@@ -52,30 +52,32 @@ Le rapport de couverture est généré dans `coverage/` (lu par SonarQube via `s
 
 ## Ce qu'il faut tester
 
-### Composants [FRAMEWORK_PRINCIPAL]
+### Composants React Native
 
 ```typescript
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { [NOM_CONTEXT] } from '[CHEMIN_CONTEXT_PROVIDER]';
+import { render, fireEvent } from '@testing-library/react-native';
+import { DomoticzContext } from '@/app/services/DomoticzContextProvider';
 
 // Toujours mocker le Context si le composant l'utilise
-const mockContext = { [CLE_CONTEXTE]: ..., [SETTER_CONTEXTE]: jest.fn(), ... };
+const mockContext = {
+  isConnected: true,
+  setIsConnected: jest.fn(),
+};
 
 test('doit afficher le libellé de l\'opération', () => {
-  render(
-    <[NOM_CONTEXT].Provider value={mockContext}>
+  const { getByText } = render(
+    <DomoticzContext.Provider value={mockContext as any}>
       <MonComposant ... />
-    </[NOM_CONTEXT].Provider>
+    </DomoticzContext.Provider>
   );
-  expect(screen.getByText('Libellé attendu')).toBeInTheDocument();
+  fireEvent.press(getByText('Action'));
 });
 ```
 
 ### Services
 
 ```typescript
-// Mocker fetch pour [SERVICE_HTTP]
+// Mocker fetch pour ClientHTTP.service
 global.fetch = jest.fn(() => Promise.resolve({ status: 200, json: () => Promise.resolve(data) }));
 ```
 
@@ -83,9 +85,9 @@ global.fetch = jest.fn(() => Promise.resolve({ status: 200, json: () => Promise.
 
 - **Cas nominal** : rendu correct avec données valides.
 - **Cas vide / null** : comportement quand les données sont absentes.
-- **Cas d'erreur HTTP** : 403 ([ACTION_403, ex: logout]), 404, 500.
-- **Interactions utilisateur** : clics, saisies (via `userEvent`).
-- **Responsive** : si `[HOOK_RESPONSIVE]` est utilisé, mocker `[THEME_PROVIDER]`.
+- **Cas d'erreur HTTP** : 403 (déconnexion/réinitialisation du contexte), 404, 500.
+- **Interactions utilisateur** : clics, gestes (`fireEvent`).
+- **Responsive** : si `useWindowDimensions`/`Dimensions` est utilisé, mocker les dimensions.
 
 ## Ce que tu ne fais PAS
 
