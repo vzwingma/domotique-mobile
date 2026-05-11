@@ -117,6 +117,16 @@ describe('loadDomoticzThermostats', () => {
         expect(thermostats).toHaveLength(2);
     });
 
+    it('charge sans bypass cache par défaut', async () => {
+        mockCallDomoticz.mockResolvedValue({ result: [makeRawThermostat()] });
+        const storeThermostatsData = jest.fn();
+
+        loadDomoticzThermostats(storeThermostatsData);
+        await new Promise(resolve => setTimeout(resolve, 0));
+
+        expect(mockCallDomoticz).toHaveBeenCalledWith(expect.any(String), undefined, false);
+    });
+
     it('filtre les équipements non-thermostat (lumières, volets…)', async () => {
         mockCallDomoticz.mockResolvedValue({
             result: [
@@ -282,6 +292,16 @@ describe('updateThermostatPoint', () => {
         // 1er appel = setsetpoint, 2e appel = refreshEquipementState (loadDomoticzThermostats)
         expect(mockCallDomoticz).toHaveBeenCalledTimes(2);
     });
+
+    it('déclenche un refresh post-action avec bypass cache = true', async () => {
+        const device = makeThermostat({ idx: 10, unit: '°C' });
+        const setter = jest.fn();
+
+        updateThermostatPoint(10, device, 20, setter);
+        await new Promise(resolve => setTimeout(resolve, 20));
+
+        expect(mockCallDomoticz).toHaveBeenCalledWith(expect.any(String), undefined, true);
+    });
 });
 
 // ─── refreshEquipementState (thermostats) ─────────────────────────────────────
@@ -324,5 +344,15 @@ describe('refreshEquipementState', () => {
         jest.advanceTimersByTime(999);
 
         expect(mockCallDomoticz).toHaveBeenCalledTimes(1);
+    });
+
+    it('conserve le double refresh en mode forceFresh=true (immédiat + 1s)', () => {
+        const setter = jest.fn();
+
+        refreshEquipementState(setter, true);
+        expect(mockCallDomoticz).toHaveBeenNthCalledWith(1, expect.any(String), undefined, true);
+
+        jest.advanceTimersByTime(1000);
+        expect(mockCallDomoticz).toHaveBeenNthCalledWith(2, expect.any(String), undefined, true);
     });
 });

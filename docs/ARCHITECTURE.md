@@ -1,7 +1,7 @@
 # Architecture domoticz-mobile
 
 **Document Version:** 3.0.0  
-**Last Updated:** 2026-05-04  
+**Last Updated:** 2026-05-11  
 **Audience:** Développeurs contribuant à l'application
 
 ---
@@ -93,9 +93,10 @@
    - Construit la commande Domoticz
    - Appelle `ClientHTTP.callDomoticz()`
 4. **Service HTTP** :
-   - Ajoute Basic Auth
-   - Ajoute traçage UUID
-   - Envoie POST/GET au serveur Domoticz
+    - Ajoute Basic Auth
+    - Ajoute traçage UUID
+    - Envoie POST/GET au serveur Domoticz
+    - Sur une action utilisateur (devices/thermostats/paramètres), déclenche un **double refresh** (immédiat + 1s) avec **bypass cache**
 5. **Réponse** :
    - Serveur répond `{ status: "OK" }`
    - Service met à jour Context
@@ -463,6 +464,14 @@ export class Device {
 - Gérer Basic Auth (header `Authorization`)
 - Traçage UUID pour debugging
 - Gestion des erreurs réseau/SSL
+
+**Stratégie de cache (état réel) :**
+- Cache HTTP en mémoire (TTL 30s) conservé pour les chargements standards (`bypassCache=false`).
+- Bypass explicite du cache pour les refresh post-action via `bypassCache=true` dans les controllers :
+  - `devices.controller.tsx`
+  - `thermostats.controller.tsx`
+  - `parameters.controller.tsx`
+- Politique de rafraîchissement post-action conservée : **2 appels** (immédiat puis après 1 seconde) afin de refléter rapidement l'état Domoticz puis capter l'état stabilisé.
 
 **Méthodes principales :**
 ```typescript

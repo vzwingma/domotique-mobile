@@ -82,6 +82,16 @@ describe('loadDomoticzParameters', () => {
         expect(params.length).toBeGreaterThanOrEqual(2);
     });
 
+    it('charge sans bypass cache par défaut', async () => {
+        mockCallDomoticz.mockResolvedValue({ result: [makeRawParameter()] });
+        const storeParameters = jest.fn();
+
+        loadDomoticzParameters(storeParameters);
+        await new Promise(resolve => setTimeout(resolve, 0));
+
+        expect(mockCallDomoticz).toHaveBeenCalledWith(expect.any(String), undefined, false);
+    });
+
     it('filtre les équipements non-paramètre (lumières, volets…)', async () => {
         mockCallDomoticz.mockResolvedValue({
             result: [
@@ -219,6 +229,17 @@ describe('updateParameterValue', () => {
         expect(mockCallDomoticz).toHaveBeenCalledTimes(2);
     });
 
+    it('déclenche un refresh post-action avec bypass cache = true', async () => {
+        const device = makeParameter({ idx: 200 });
+        const setter = jest.fn();
+        const levelObject = { id: 1, libelle: 'Occupé' };
+
+        updateParameterValue(200, device, levelObject, setter);
+        await new Promise(resolve => setTimeout(resolve, 20));
+
+        expect(mockCallDomoticz).toHaveBeenCalledWith(expect.any(String), undefined, true);
+    });
+
     it('affiche un toast en cas d\'erreur de mise à jour', async () => {
         mockCallDomoticz.mockRejectedValue(new Error('Command failed'));
         const device = makeParameter({ idx: 200 });
@@ -271,6 +292,16 @@ describe('refreshEquipementState (parameters)', () => {
         jest.advanceTimersByTime(999);
 
         expect(mockCallDomoticz).toHaveBeenCalledTimes(1);
+    });
+
+    it('conserve le double refresh en mode forceFresh=true (immédiat + 1s)', () => {
+        const setter = jest.fn();
+
+        refreshEquipementState(setter, true);
+        expect(mockCallDomoticz).toHaveBeenNthCalledWith(1, expect.any(String), undefined, true);
+
+        jest.advanceTimersByTime(1000);
+        expect(mockCallDomoticz).toHaveBeenNthCalledWith(2, expect.any(String), undefined, true);
     });
 });
 

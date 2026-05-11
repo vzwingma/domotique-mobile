@@ -15,11 +15,11 @@ import { handleError, generateTraceId } from '@/app/services/ErrorHandler.servic
  * @param typeDevice - Type d'équipement à charger
  */
 
-export function loadDomoticzThermostats(storeThermostatsData: (thermostats: DomoticzThermostat[]) => void) {
+export function loadDomoticzThermostats(storeThermostatsData: (thermostats: DomoticzThermostat[]) => void, bypassCache: boolean = false) {
     const traceId = generateTraceId();
     
     // Appel du service externe de connexion à Domoticz pour les types d'équipements
-    callDomoticz(SERVICES_URL.GET_DEVICES)
+    callDomoticz(SERVICES_URL.GET_DEVICES, undefined, bypassCache)
         .then(data => {
             const thermostatsDevices : DomoticzThermostat[] = data.result
                 .filter((rawDevice: any) => getDeviceType(rawDevice.Name) === DomoticzDeviceType.THERMOSTAT)
@@ -93,7 +93,7 @@ export function updateThermostatPoint(idx: number, device: DomoticzThermostat, t
         })
         .finally(() => {
             console.log("Mise à jour de l'équipement " + device.name + " [" + idx + "]", temp + device.unit);
-            refreshEquipementState(setDomoticzThermostatData)
+            refreshEquipementState(setDomoticzThermostatData, true)
         });
 }
 
@@ -102,8 +102,8 @@ export function updateThermostatPoint(idx: number, device: DomoticzThermostat, t
  * @param setDeviceData fonction de mise à jour des données
  * @param typeEquipement type d'équipement
  */
-export function refreshEquipementState(setDomoticzThermostatData: React.Dispatch<React.SetStateAction<DomoticzThermostat[]>>) {
+export function refreshEquipementState(setDomoticzThermostatData: React.Dispatch<React.SetStateAction<DomoticzThermostat[]>>, forceFresh: boolean = false) {
     // Mise à jour des données
-    loadDomoticzThermostats(setDomoticzThermostatData);
-    setTimeout(() => loadDomoticzThermostats(setDomoticzThermostatData), 1000);
+    loadDomoticzThermostats(setDomoticzThermostatData, forceFresh);
+    setTimeout(() => loadDomoticzThermostats(setDomoticzThermostatData, forceFresh), 1000);
 }
