@@ -64,6 +64,13 @@
     "react-test-renderer": "19.2.0",
     "typescript": "~5.9.2"
   },
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "enabled": false
+      }
+    }
+  },
   "private": true,
   "overrides": {
     "@expo/log-box": "55.0.11"
