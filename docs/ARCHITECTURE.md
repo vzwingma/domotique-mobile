@@ -29,7 +29,7 @@
 **Caractéristiques principales :**
 - **Stack technologique :** React Native (Expo), TypeScript strict, Context API
 - **Plateforme cible :** Android native, Web (navigateur)
-- **Authentification :** Basic Auth via variable d'environnement (Base64)
+- **Authentification :** Basic Auth via `Constants.expoConfig.extra.domoticzAuth` (Base64, injecté depuis `app.config.ts`)
 - **Intégration Domoticz :** API REST HTTP
 - **État global :** React Context (DomoticzContextProvider)
 - **Routing :** Expo Router (file-based)
@@ -461,7 +461,7 @@ export class Device {
 
 **Responsabilités :**
 - Centraliser tous les appels HTTP vers Domoticz
-- Gérer Basic Auth (header `Authorization`)
+- Gérer Basic Auth (header `Authorization`) via `Constants.expoConfig.extra.domoticzAuth`
 - Traçage UUID pour debugging
 - Gestion des erreurs réseau/SSL
 

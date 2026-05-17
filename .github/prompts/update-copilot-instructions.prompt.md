@@ -110,7 +110,21 @@ En complément :
 - Identifier les placeholders `[...]` non remplis et les signaler comme action nécessaire
 - Identifier les valeurs devenues obsolètes (ex : version de librairie outdatée)
 
-> 💡 **Parallélisation possible** : Les étapes 2 (exploration structure), 3 (extraction conventions) et 5 (audit fichiers instructions/) sont **indépendantes** et peuvent être lancées en `/fleet` pour accélérer l'audit global.
+### 6. Auditer les skills partagés
+
+Lire les 4 skills suivants dans `.github/skills/` (s'ils existent) :
+- `plan-phase-execution/SKILL.md`
+- `plan-creation/SKILL.md`
+- `fleet-guide/SKILL.md`
+- `adr-writing/SKILL.md`
+
+Pour chaque skill, vérifier :
+- Que le frontmatter `applyTo: "**"` est présent (inclusion automatique dans le contexte agent)
+- Que le contenu est cohérent avec `.github/PLANS.md` (pas de divergence de format)
+- Que les agents `.github/agents/*.agent.md` référencent bien les skills dans leurs sections AP et /fleet (et ne répètent pas le contenu)
+- Identifier tout contenu encore dupliqué entre un skill et un agent (candidat à l'extraction)
+
+> 💡 **Parallélisation possible** : Les étapes 2 (exploration structure), 3 (extraction conventions), 5 (audit instructions/) et 6 (audit skills/) sont **indépendantes** et peuvent être lancées en `/fleet` pour accélérer l'audit global.
 
 ## Règles de rédaction des amendements
 
@@ -132,6 +146,7 @@ Avant d'appliquer les modifications :
    - Sections à **supprimer** (si obsolètes — demander confirmation)
    - Sections **validées** (conformes au code, aucun changement)
    - Vérification que les agents `.github/agents/*.agent.md` sont à leur version courante (v2.0+)
+   - Vérification que les skills `.github/skills/*/SKILL.md` sont présents et cohérents avec `PLANS.md`
    - Modifications proposées pour chaque fichier `.github/instructions/*.instructions.md`
    - Signalement séparé des placeholders non remplis vs des valeurs obsolètes
 
