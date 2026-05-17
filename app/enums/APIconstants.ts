@@ -1,10 +1,12 @@
 
 
+import Constants from 'expo-constants';
+
 /**
  * L'URL de l'API.
  */
 export const API_URL = process.env.DOMOTICZ_URL ?? process.env.EXPO_PUBLIC_DOMOTICZ_URL;
-export const API_AUTH = process.env.DOMOTICZ_AUTH ?? process.env.EXPO_PUBLIC_DOMOTICZ_AUTH;
+export const API_AUTH = process.env.DOMOTICZ_AUTH ?? (Constants.expoConfig?.extra?.domoticzAuth as string | undefined);
 
 
 /**
