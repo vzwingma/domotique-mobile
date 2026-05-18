@@ -1,9 +1,9 @@
-import React, { JSX, Suspense, useContext, useEffect, useState } from 'react';
+import React, { JSX, Suspense, useContext, useEffect, useRef, useState } from 'react';
 
 import { Colors } from '@/app/enums/Colors';
 import connectToDomoticz from '../controllers/index.controller';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, AppState, AppStateStatus, StyleSheet, View } from 'react-native';
 import { Tabs } from '../enums/TabsEnums';
 import { TabBarItems } from '@/components/navigation/TabBarItem';
 import DomoticzConfig from '../models/domoticzConfig.model';
@@ -38,6 +38,7 @@ export default function TabLayout() {
 
   const [error, setError] = useState<Error | null>(null);
   const [tab, setTab] = useState(Tabs.INDEX);
+  const appState = useRef(AppState.currentState);
 
 
   /**
@@ -52,7 +53,7 @@ export default function TabLayout() {
    * @param newTab Le nouvel onglet sélectionné
    */
   function selectNewTab(newTab: Tabs) {
-    setRefreshing(!refreshing);
+    setRefreshing(prev => !prev);
     setTab(newTab);
   }
 
@@ -64,6 +65,20 @@ export default function TabLayout() {
     console.log("(Re)Chargement de l'application...");
     connectToDomoticz({ setIsLoading, storeConnexionData, setError });
   }, [refreshing])
+
+  /**
+   * Rafraîchissement automatique au retour en foreground (AppState)
+   */
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
+      if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
+        console.log('[AppState] Application revenue au premier plan — rafraîchissement des données');
+        setRefreshing(prev => !prev);
+      }
+      appState.current = nextAppState;
+    });
+    return () => subscription.remove();
+  }, [])
 
   /**
    * Fonction de callback pour stocker les données de connexion et charger les appareils
