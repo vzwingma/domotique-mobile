@@ -1,9 +1,11 @@
 import callDomoticz from '@/app/services/ClientHTTP.service';
 import { SERVICES_PARAMS, SERVICES_URL } from '@/app/enums/APIconstants';
-import { evaluateGroupLevelConsistency, getDeviceType, sortEquipements, saveFavoritesToStorage, getFavoritesFromStorage } from '@/app/services/DataUtils.service';
+import { evaluateGroupLevelConsistency, getDeviceType, sortEquipements } from '@/app/services/DataUtils.service';
+import { saveFavoritesToStorage, getFavoritesFromStorage } from '@/app/services/FavoritesManager.service';
 import { DomoticzBlindsGroups, DomoticzBlindsSort, DomoticzDeviceStatus, DomoticzDeviceLabel, DomoticzLightsGroups, DomoticzLightsSort, DomoticzSwitchType, DomoticzDeviceType, DomoticzDeviceLevelValue } from '@/app/enums/DomoticzEnum';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
+import { handleError, generateTraceId } from '@/app/services/ErrorHandler.service';
 import DomoticzFavorites from '../models/domoticzFavorites.model';
 import DomoticzThermostat from '../models/domoticzThermostat.model';
 
@@ -14,14 +16,15 @@ import DomoticzThermostat from '../models/domoticzThermostat.model';
  * @param storeDevicesData - Fonction pour stocker les données des equipements volets/lumières dans l'état.
  * @param typeDevice - Type d'équipement à charger
  */
-export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]) => void) {
+export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]) => void, bypassCache: boolean = false) {
+    const traceId = generateTraceId();
+    
     // Appel du service externe de connexion à Domoticz pour les types d'équipements
-    callDomoticz(SERVICES_URL.GET_DEVICES)
+    callDomoticz(SERVICES_URL.GET_DEVICES, undefined, bypassCache)
         .then(data => {
             const dataDevices : DomoticzDevice[] = data.result
                 .map((rawDevice: any, index: number) => {
-                    let ddevice: DomoticzDevice;
-                    ddevice = {
+                    const ddevice = new DomoticzDevice({
                         idx: Number(rawDevice.idx),
                         rang: index,
                         name: evaluateDeviceName(rawDevice.Name),
@@ -36,7 +39,7 @@ export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]
                         lastUpdate: rawDevice.LastUpdate,
                         isActive: !rawDevice.HaveTimeout,
                         data: rawDevice.Data
-                    }
+                    });
                     return ddevice;
                 });
 
@@ -57,9 +60,9 @@ export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]
             storeDevicesData(allDevicesData);
         })
         .catch((e) => {
-            console.error('Une erreur s\'est produite lors du chargement des devices', e);
+            // Utiliser le pattern unifié de gestion d'erreur
+            handleError(e, 'loadDomoticzDevices', traceId, (msg) => showToast(msg, ToastDuration.SHORT));
             storeDevicesData([]);
-            showToast("Erreur lors du chargement des devices", ToastDuration.SHORT);
         })
 }
 
@@ -114,6 +117,8 @@ export function onClickDeviceIcon(device: DomoticzDevice, storeDeviceData: React
  * 
  */
 export function updateDeviceLevel(idx: number, device : DomoticzDevice, level: number, storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
+    const traceId = generateTraceId();
+    
     level = evaluateDeviceLevel(level);
     if (level === 0) {
         updateDeviceState(idx, device, false, storeDevicesData);
@@ -126,12 +131,11 @@ export function updateDeviceLevel(idx: number, device : DomoticzDevice, level: n
 
         callDomoticz(SERVICES_URL.CMD_BLINDS_LIGHTS_SET_LEVEL, params)
             .catch((e) => {
-                console.error('Une erreur s\'est produite lors de la mise à jour de l\'équipement', e);
-                showToast("Erreur lors de la commande de l'équipement", ToastDuration.LONG);
+                handleError(e, 'updateDeviceLevel', traceId, (msg) => showToast(msg, ToastDuration.LONG));
             })
             .finally(() => {
                 addActionForFavorite(device);
-                refreshEquipementState(storeDevicesData)
+                refreshEquipementState(storeDevicesData, true)
             });
     }
 }
@@ -144,6 +148,8 @@ export function updateDeviceLevel(idx: number, device : DomoticzDevice, level: n
  * 
  */
 function updateDeviceState(idx: number, device: DomoticzDevice, status: boolean, setDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
+    const traceId = generateTraceId();
+    
     console.log("Mise à jour de l'équipement  " + device.name + " [" + idx + "]", status ? DomoticzDeviceStatus.ON : DomoticzDeviceStatus.OFF);
 
     let params = [
@@ -152,12 +158,11 @@ function updateDeviceState(idx: number, device: DomoticzDevice, status: boolean,
 
     callDomoticz(SERVICES_URL.CMD_BLINDS_LIGHTS_ON_OFF, params)
         .catch((e) => {
-            console.error('Une erreur s\'est produite lors de la mise à jour d \' équipement', e);
-            showToast("Erreur lors de la commande de mise à jour d'équipement", ToastDuration.LONG);
+            handleError(e, 'updateDeviceState', traceId, (msg) => showToast(msg, ToastDuration.LONG));
         })
         .finally(() => {
             addActionForFavorite(device);
-            refreshEquipementState(setDevicesData)
+            refreshEquipementState(setDevicesData, true)
         });
 }
 
@@ -166,10 +171,10 @@ function updateDeviceState(idx: number, device: DomoticzDevice, status: boolean,
  * @param setDeviceData fonction de mise à jour des données
  * @param typeEquipement type d'équipement
  */
-export function refreshEquipementState(storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
+export function refreshEquipementState(storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>, forceFresh: boolean = false) {
     // Mise à jour des données
-    loadDomoticzDevices(storeDevicesData);
-    setTimeout(() => loadDomoticzDevices(storeDevicesData), 1000);
+    loadDomoticzDevices(storeDevicesData, forceFresh);
+    setTimeout(() => loadDomoticzDevices(storeDevicesData, forceFresh), 1000);
 }
 
 
@@ -179,11 +184,19 @@ export function refreshEquipementState(storeDevicesData: React.Dispatch<React.Se
  * @param idx idx de l'équipement
  */
 export function addActionForFavorite(device: DomoticzDevice | DomoticzThermostat) {
+    const traceId = generateTraceId();
+    
     getFavoritesFromStorage()
     .then((favoris) => {
             const favoriteIndex = favoris.findIndex((fav: any) => fav.idx === device.idx);
             if (favoriteIndex === -1) {
-                let newFavourites : DomoticzFavorites = {idx: device.idx, nbOfUse: 1, name: device.name, type: device.type, subType: ""};
+                const newFavourites = new DomoticzFavorites({
+                    idx: device.idx,
+                    nbOfUse: 1,
+                    name: device.name,
+                    type: device.type,
+                    subType: "",
+                });
                 favoris.push(newFavourites);
             } else {
                 favoris[favoriteIndex].nbOfUse ??= 0;
@@ -193,8 +206,7 @@ export function addActionForFavorite(device: DomoticzDevice | DomoticzThermostat
         }
     )
     .catch((e) => {
-        console.error('Une erreur s\'est produite lors de la mise à jour des favoris', e);
-        showToast("Erreur lors de la mise à jour des favoris", ToastDuration.SHORT);
+        handleError(e, 'addActionForFavorite', traceId, (msg) => showToast(msg, ToastDuration.SHORT));
     })
 }
 

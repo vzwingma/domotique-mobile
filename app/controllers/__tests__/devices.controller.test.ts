@@ -1,12 +1,11 @@
 import { loadDomoticzDevices, onClickDeviceIcon, updateDeviceLevel, addActionForFavorite, refreshEquipementState, getBlindGroupLabel, getLightsGroupLabel, getBlindLabel, getSingleLightLabel, getStatusLabel, isDeviceOn } from '../devices.controller';
 import callDomoticz from '@/app/services/ClientHTTP.service';
-import { getFavoritesFromStorage, saveFavoritesToStorage } from '@/app/services/DataUtils.service';
+import { getFavoritesFromStorage, saveFavoritesToStorage } from '@/app/services/FavoritesManager.service';
 import { DomoticzDeviceType, DomoticzDeviceStatus, DomoticzSwitchType } from '@/app/enums/DomoticzEnum';
 import DomoticzDevice from '@/app/models/domoticzDevice.model';
 
 jest.mock('@/app/services/ClientHTTP.service');
-jest.mock('@/app/services/DataUtils.service', () => ({
-    ...jest.requireActual('@/app/services/DataUtils.service'),
+jest.mock('@/app/services/FavoritesManager.service', () => ({
     getFavoritesFromStorage: jest.fn(),
     saveFavoritesToStorage: jest.fn(),
 }));
@@ -80,6 +79,16 @@ describe('loadDomoticzDevices', () => {
         expect(mockCallDomoticz).toHaveBeenCalledTimes(1);
         await new Promise(resolve => setTimeout(resolve, 0));
         expect(storeDevicesData).toHaveBeenCalledWith(expect.any(Array));
+    });
+
+    it('charge sans bypass cache par défaut', async () => {
+        mockCallDomoticz.mockResolvedValue({ result: [makeRawDevice()] });
+        const storeDevicesData = jest.fn();
+
+        loadDomoticzDevices(storeDevicesData);
+        await new Promise(resolve => setTimeout(resolve, 0));
+
+        expect(mockCallDomoticz).toHaveBeenCalledWith(expect.any(String), undefined, false);
     });
 
     it('détecte le groupe via le préfixe [Grp] dans le nom', async () => {
@@ -220,6 +229,16 @@ describe('updateDeviceLevel', () => {
             expect.arrayContaining([expect.objectContaining({ value: '100' })])
         );
     });
+
+    it('déclenche un refresh post-action avec bypass cache = true', async () => {
+        const device = makeDevice({ idx: 113 });
+        const setter = jest.fn();
+
+        updateDeviceLevel(113, device, 50, setter);
+        await new Promise(resolve => setTimeout(resolve, 20));
+
+        expect(mockCallDomoticz).toHaveBeenCalledWith(expect.any(String), undefined, true);
+    });
 });
 
 // ─── addActionForFavorite ──────────────────────────────────────────────────────
@@ -296,6 +315,16 @@ describe('refreshEquipementState', () => {
         jest.advanceTimersByTime(999);
 
         expect(mockCallDomoticz).toHaveBeenCalledTimes(1);
+    });
+
+    it('conserve le double refresh en mode forceFresh=true (immédiat + 1s)', () => {
+        const setter = jest.fn();
+
+        refreshEquipementState(setter, true);
+        expect(mockCallDomoticz).toHaveBeenNthCalledWith(1, expect.any(String), undefined, true);
+
+        jest.advanceTimersByTime(1000);
+        expect(mockCallDomoticz).toHaveBeenNthCalledWith(2, expect.any(String), undefined, true);
     });
 });
 

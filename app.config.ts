@@ -19,6 +19,10 @@ const appConfig = ({ config }: { config: ExpoConfig }): ExpoConfig => {
   return {
     ...config,
     version: mobileVersion,
+    extra: {
+      ...config.extra,
+      domoticzAuth: process.env.DOMOTICZ_AUTH,
+    },
     icon: appIcon,
     splash: {
       ...config.splash,

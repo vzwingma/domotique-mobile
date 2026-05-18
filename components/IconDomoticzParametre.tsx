@@ -6,7 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
  *  >Icone : https://oblador.github.io/react-native-vector-icons/ 
  */
 
-class IconDomoticzParametre extends Ionicons { }
+const IconDomoticzParametre = Ionicons;
 
 export function getIconDomoticzParametre( parametre : DomoticzParameter) : any {
 

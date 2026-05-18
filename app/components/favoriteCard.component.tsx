@@ -21,6 +21,8 @@ type FavoriteCardProps = {
  * Gère lumières (Allumer/Éteindre) et volets (Ouvrir/Fermer).
  * En mode previewC (EXPO_PUBLIC_MY_ENVIRONMENT=previewC), affiche un slider
  * pour les volets et les lumières dimmables.
+ * 
+ * T4.2 - Memoized pour éviter re-renders inutiles
  */
 export const FavoriteCard: React.FC<FavoriteCardProps> = ({ device }) => {
   const { setDomoticzDevicesData } = useContext(DomoticzContext)!;
@@ -167,4 +169,14 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 13,
   },
+});
+
+// T4.2 - React.memo pour éviter re-renders inutiles
+export default React.memo(FavoriteCard, (prevProps, nextProps) => {
+  return (
+    prevProps.device?.idx === nextProps.device?.idx &&
+    prevProps.device?.isActive === nextProps.device?.isActive &&
+    prevProps.device?.status === nextProps.device?.status &&
+    prevProps.device?.level === nextProps.device?.level
+  );
 });

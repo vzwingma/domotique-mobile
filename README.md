@@ -1,46 +1,111 @@
+# Domoticz Mobile - Application de contrôle pour Domoticz
+## 📌 Table des Matières
+
+1. [Domoticz Mobile](#domoticz-mobile)
+2. [Prérequis](#-prérequis)
+3. [Installation](#-installation)
+4. [Variables d'Environnement](#-variables-denvironnement)
+5. [Configuration SSL/TLS](#-configurationssltls)
+6. [Scripts npm](#scripts-npm)
+7. [Architecture & Patterns](#️-architecture--patterns)
+8. [Fonctionnalités](#fonctionnalités)
+9. [Tests](#-tests)
+10. [Contribution](#contribution)
+11. [Licence](#licence)
+
+---
+
 # Domoticz Mobile
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=vzwingma_domotique-mobile&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=vzwingma_domotique-mobile)
 
 Application mobile pour piloter les équipements [Domoticz](https://www.domoticz.com/). Développée avec React Native et Expo, elle cible principalement Android et le web.
 
-## Prérequis
+## 📋 Prérequis
 
-- Node.js 21 ou supérieur
-- npm 6 ou supérieur
-- Expo CLI (`npm install -g expo-cli`)
+Avant de commencer, assurez-vous d'avoir :
 
-## Installation
+- **Node.js** 21 ou supérieur ([télécharger](https://nodejs.org/))
+- **npm** 6 ou supérieur (inclus avec Node.js)
+- **Expo CLI** via `npx expo` ([guide officiel](https://docs.expo.dev/))
 
 ```bash
-git clone https://github.com/vzwingma/domoticz-mobile.git
-cd domoticz-mobile
+# Vérifier les versions
+node --version   # v21.0.0 ou supérieur
+npm --version    # v6.0.0 ou supérieur
+
+# Vérifier Expo CLI (via npx)
+npx expo --version
+```
+
+**Plateforme cible :** Android et Web (React Native via Expo)
+
+## 🚀 Installation
+
+### Étape 1 : Cloner le dépôt
+
+```bash
+git clone https://github.com/vzwingma/domotique-mobile.git
+cd domotique-mobile
+```
+
+### Étape 2 : Installer les dépendances
+
+```bash
 npm install
 ```
 
-## Variables d'environnement
+Cette commande installe toutes les dépendances listées dans `package.json`, y compris React Native, Expo, TypeScript, Jest et ESLint.
 
-La configuration passe exclusivement par des variables d'environnement préfixées `EXPO_PUBLIC_`.  
+## 🔑 Variables d'Environnement
+
+La configuration de l'application passe exclusivement par des variables d'environnement préfixées `EXPO_PUBLIC_`, qui sont disponibles au build time.
+
+### Configuration de Base
+
 Créez un fichier `.env.local` à la racine du projet (non versionné) :
 
 ```env
 # URL du serveur Domoticz (inclure le port si nécessaire)
+# Format: http://HOST:PORT/ ou https://HOST:PORT/
 EXPO_PUBLIC_DOMOTICZ_URL=http://192.168.1.x:8080/
 
-# Authentification Basic Auth encodée en Base64 (format : "login:password" encodé)
+# Authentification Basic Auth encodée en Base64
+# Format: "login:password" encodé en Base64
 EXPO_PUBLIC_DOMOTICZ_AUTH=<Base64 de login:password>
 
-# Environnement courant (optionnel)
+# Environnement courant (optionnel, par défaut: "production")
+# Valeurs: development, staging, production
 EXPO_PUBLIC_MY_ENVIRONMENT=development
 
-# Domaine du serveur Domoticz pour la configuration SSL (sans protocole ni port)
+# Domaine du serveur Domoticz pour la configuration SSL
+# Format: IP ou FQDN SANS protocole ni port (ex: 192.168.1.100 ou domotique.home.local)
 # Requis pour le support HTTPS avec certificat auto-signé
 EXPO_PUBLIC_DOMOTICZ_DOMAIN=192.168.1.x
 ```
 
-> **Générer la valeur Base64 :** `echo -n "monlogin:monmotdepasse" | base64`
+### Générer la valeur Base64
 
-## Certificat SSL auto-signé (HTTPS)
+Pour encoder vos identifiants :
+
+```bash
+# macOS/Linux
+echo -n "monlogin:monmotdepasse" | base64
+
+# Windows (PowerShell)
+[Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("monlogin:monmotdepasse"))
+```
+
+### Variables Disponibles
+
+| Variable | Requis | Description |
+|----------|--------|-------------|
+| `EXPO_PUBLIC_DOMOTICZ_URL` | ✅ Oui | URL serveur Domoticz avec protocole et port |
+| `EXPO_PUBLIC_DOMOTICZ_AUTH` | ✅ Oui | Identifiants Basic Auth encodés en Base64 |
+| `EXPO_PUBLIC_DOMOTICZ_DOMAIN` | ⚠️ Si HTTPS + certificat auto-signé | Domaine pour configuration SSL |
+| `EXPO_PUBLIC_MY_ENVIRONMENT` | ❌ Non | Environnement d'exécution (debug info) |
+
+## 🔐 Configuration SSL/TLS
 
 Si votre serveur Domoticz utilise HTTPS avec un certificat auto-signé, suivez ces étapes :
 
@@ -109,6 +174,7 @@ npm test                                            # Tests Jest en mode watch
 npm test -- path/to/file.test.tsx                   # Un fichier de test précis
 npm test -- --testNamePattern="nom du test"         # Tests filtrés par nom
 npm run lint                                        # ESLint via Expo
+npm run validate:expo                               # Expo Doctor (environnement + cohérence Expo)
 ```
 
 Builds EAS (distribution APK Android) :
@@ -120,44 +186,51 @@ eas build --profile previewC      # APK à distribution interne (variante C)
 eas build --profile production    # Build de production
 ```
 
-## Architecture
+## 🏗️ Architecture & Patterns
 
-### Flux de données
+Pour une documentation complète de l'architecture, des patterns utilisés, de la structure des dossiers, et de la gestion d'état globale, consultez **[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)**.
 
+**Points clés :**
+- **Flux de données :** UI → Controller → Services → Serveur Domoticz
+- **État global :** React Context API via `DomoticzContextProvider`
+- **Routage :** Expo Router avec file-based routing
+- **HTTP :** Centralisé dans `ClientHTTP.service.ts` avec Basic Auth
+- **Patterns :** Controllers, Services, Models (avec TypeScript strict)
+
+## ✅ Tests
+
+L'application utilise **Jest** avec le preset `react-native` pour les tests unitaires et snapshot testing.
+Pour une validation locale/pré-PR, les tests unitaires seuls ne suffisent plus : **`expo-doctor` est désormais un gate obligatoire** via `npm run validate:expo`.
+
+```bash
+# Lancer les tests en mode watch
+npm test
+
+# Tester un fichier spécifique
+npm test -- path/to/file.test.tsx
+
+# Tests filtrés par nom
+npm test -- --testNamePattern="mon pattern"
+
+# Linter le code
+npm run lint
+
+# Vérifier la santé Expo (obligatoire avant PR)
+npm run validate:expo
 ```
-UI (onglet)  →  Controller  →  ClientHTTP.service  →  Serveur Domoticz
-                                       ↓
-                       Mise à jour du Context → re-rendu UI
-```
 
-Toutes les requêtes HTTP sont centralisées dans `app/services/ClientHTTP.service.ts` via `callDomoticz()` avec Basic Auth et traçage UUID.
+**Objectifs de couverture :**
+- Couverture cible : **≥ 80%** (app/ et components/)
+- Controllers, Services et composants critiques testés
+- Snapshot tests pour les composants UI
 
-`app/services/DataUtils.service.ts` regroupe les utilitaires de données : tri des équipements (`sortEquipements`, `sortFavorites`), détection du type d'équipement depuis le nom (`getDeviceType`), évaluation de la cohérence des niveaux de groupe (`evaluateGroupLevelConsistency`), et gestion des favoris en `AsyncStorage` (`getFavoritesFromStorage`, `saveFavoritesToStorage`, `clearFavoritesFromStorage`).
-
-### Structure des dossiers
-
-```
-app/
-  (tabs)/       # Écrans principaux : favoris, lumières/volets, températures, maison
-  components/   # Composants de niveau écran (*.component.tsx)
-  controllers/  # Pont entre l'UI et les services (*.controller.tsx)
-  services/     # Client HTTP, fournisseur de contexte (*.service.ts)
-  models/       # Modèles de données TypeScript sous forme de classes (*.model.ts)
-  enums/        # Constantes, enums, couleurs, endpoints API
-
-components/     # Composants UI génériques partagés (ThemedText, icônes…)
-hooks/          # Hooks React personnalisés
-assets/         # Polices, icônes, images
-```
-
-**Routing :** Expo Router avec routage basé sur les fichiers (routes typées activées).  
-**État global :** React Context API via `DomoticzContextProvider`.
+Pour plus de détails sur le setup Jest, les conventions de test, et les meilleures pratiques, consultez **[docs/TESTING.md](./docs/TESTING.md)**.
 
 ## Fonctionnalités
 
 - Navigation par 5 onglets (`Favoris`, `Lumières`, `Volets`, `Températures`, `Maison`) avec header unifié (icône d'onglet + titre + badge de connexion)
 - Badge de connexion unifié sur tous les onglets avec 4 états UI canoniques : `Connecté`, `Synchronisation`, `Déconnecté`, `Erreur`
-- Écran **Favoris** orienté actions rapides : cartes 1 tap (action principale + bouton), slider conditionnel disponible en mode `previewC`, limité aux **8 favoris actifs** les plus utilisés
+- Écran **Favoris** orienté actions rapides : cartes 1 tap (action principale + bouton), slider conditionnel disponible en mode `previewC`, limité aux **7 favoris actifs** les plus utilisés
 - Affichage et contrôle des lumières (on/off, variateur) avec labels métier "Allumé"/"Éteint" et état synthétique pour les groupes ("Éteintes" / "Allumées" / "Mixte" / niveau%)
 - Gestion des volets/stores (ouverture/fermeture via slider et clic icône) avec labels "Ouvert"/"Fermé" ; confirmation modale pour les actions sur groupe de volets (nom contenant "Tous")
 - Consultation des capteurs de température avec indicateurs "Déconnecté"/"Inconnu" pour les capteurs inactifs
@@ -180,19 +253,26 @@ assets/         # Polices, icônes, images
 | `ThermostatComponent` | `app/components/thermostat.component.tsx` | Contrôle de consigne thermostat avec boutons ±0,5°C |
 | `ParamListComponent` | `app/components/paramList.component.tsx` | Paramètres interactifs (présence, phase) via chips segmentés |
 
-## Tests
+## 🤝 Contribution
 
-Les tests utilisent **Jest** avec le preset `jest-expo` (snapshot testing et tests unitaires).
+Pour contribuer à ce projet :
 
-```bash
-npm test           # Lance Jest en mode watch
-npm run lint       # Vérifie le code avec ESLint
-```
+1. **Consultez le guide complet :** [CONTRIBUTING.md](./CONTRIBUTING.md)
+2. **Points clés :**
+   - Fork le dépôt
+   - Créez une branche `feature/` ou `fix/` explicite
+   - Respectez les conventions TypeScript et Expo du projet
+   - Lancez `npm test`, `npm run lint` et `npm run validate:expo` avant de soumettre
+   - Soumettez une Pull Request avec une description claire
 
-## Contribution
+**En savoir plus :**
+- Git workflow (main/develop/feature)
+- Setup local dev environment
+- Code style & linting conventions
+- Commit message format
 
-Consultez [CONTRIBUTING.md](./CONTRIBUTING.md) pour les conventions et le processus de contribution.
+Consultez [CONTRIBUTING.md](./CONTRIBUTING.md) pour tous les détails.
 
-## Licence
+## 📄 Licence
 
 Ce projet est sous licence MIT. Consultez le fichier `LICENSE` pour plus d'informations.
