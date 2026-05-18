@@ -45,7 +45,7 @@ Toutes les phases (1-6) du plan d'action 001 sont complétées et validées.
 - Jest avec couverture reporting et CI/CD integration
 
 #### Performance Optimizations
-- HTTP caching (30s TTL) avec bypass option
+- HTTP caching (30s TTL) avec bypass option *(supprimé en v4.1, voir ADR 004)*
 - React.memo memoization (DeviceCard, FavoriteCard)
 - Lazy-loaded routes avec React.lazy + Suspense fallbacks
 - React.Profiler pour performance monitoring
@@ -74,7 +74,7 @@ Toutes les phases (1-6) du plan d'action 001 sont complétées et validées.
 
 ### Performance Metrics
 
-- **HTTP Requests:** 30-40% reduction via caching (30s window)
+- **HTTP Requests:** Appels réseau directs sans cache (suppression du cache 30s en v4.1, voir ADR 004)
 - **Component Re-renders:** 20-30% reduction via memoization
 - **App Startup:** ~15-20% faster with lazy-loading
 - **Build Time:** 20-40% faster with cache optimization
@@ -223,7 +223,7 @@ No breaking changes. Simply update package version and deploy.
 - ✅ Initial load time -30% (lazy-load)
 - ✅ Re-render optimization via Props memo
 - ✅ List virtualization pour grandes listes
-- ✅ HTTP caching (TTL 5s par défaut)
+- ✅ HTTP caching (TTL 5s par défaut) *(supprimé en v4.1, voir ADR 004)*
 
 ---
 
