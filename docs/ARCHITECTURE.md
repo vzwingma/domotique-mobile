@@ -96,7 +96,7 @@
     - Ajoute Basic Auth
     - Ajoute traçage UUID
     - Envoie POST/GET au serveur Domoticz
-    - Sur une action utilisateur (devices/thermostats/paramètres), déclenche un **double refresh** (immédiat + 1s) avec **bypass cache**
+    - Sur une action utilisateur (devices/thermostats/paramètres), déclenche un **double refresh** (immédiat + 1s)
 5. **Réponse** :
    - Serveur répond `{ status: "OK" }`
    - Service met à jour Context
@@ -465,12 +465,9 @@ export class Device {
 - Traçage UUID pour debugging
 - Gestion des erreurs réseau/SSL
 
-**Stratégie de cache (état réel) :**
-- Cache HTTP en mémoire (TTL 30s) conservé pour les chargements standards (`bypassCache=false`).
-- Bypass explicite du cache pour les refresh post-action via `bypassCache=true` dans les controllers :
-  - `devices.controller.tsx`
-  - `thermostats.controller.tsx`
-  - `parameters.controller.tsx`
+**Stratégie de rafraîchissement (état réel) :**
+- HTTP : `callDomoticz()` effectue toujours un appel réseau direct — pas de cache côté client (voir [ADR 004](../adr/004-suppression-cache-http-et-rafraichissement-appstate.md)).
+- Rafraîchissement automatique à chaque changement d'onglet et à chaque retour en foreground via un listener `AppState` dans `app/(tabs)/_layout.tsx`.
 - Politique de rafraîchissement post-action conservée : **2 appels** (immédiat puis après 1 seconde) afin de refléter rapidement l'état Domoticz puis capter l'état stabilisé.
 
 **Méthodes principales :**

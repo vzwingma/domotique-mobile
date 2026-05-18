@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1778491450827" clover="3.2.0">
-  <project timestamp="1778491450827" name="All files">
-    <metrics statements="1035" coveredstatements="736" conditionals="758" coveredconditionals="551" methods="300" coveredmethods="214" elements="2093" coveredelements="1501" complexity="0" loc="1035" ncloc="1035" packages="10" files="56" classes="56"/>
+<coverage generated="1779135514930" clover="3.2.0">
+  <project timestamp="1779135514930" name="All files">
+    <metrics statements="1023" coveredstatements="724" conditionals="746" coveredconditionals="540" methods="301" coveredmethods="211" elements="2070" coveredelements="1475" complexity="0" loc="1023" ncloc="1023" packages="10" files="56" classes="56"/>
     <package name="app">
       <metrics statements="12" coveredstatements="0" conditionals="4" coveredconditionals="0" methods="4" coveredmethods="0"/>
       <file name="+html.tsx" path="C:\Users\vzwingma\IdeaProjects\domoticz-mobile\app\+html.tsx">
@@ -27,9 +27,9 @@
       </file>
     </package>
     <package name="app.(tabs)">
-      <metrics statements="96" coveredstatements="47" conditionals="36" coveredconditionals="10" methods="33" coveredmethods="13"/>
+      <metrics statements="104" coveredstatements="47" conditionals="40" coveredconditionals="10" methods="38" coveredmethods="13"/>
       <file name="_layout.tsx" path="C:\Users\vzwingma\IdeaProjects\domoticz-mobile\app\(tabs)\_layout.tsx">
-        <metrics statements="38" coveredstatements="0" conditionals="14" coveredconditionals="0" methods="12" coveredmethods="0"/>
+        <metrics statements="46" coveredstatements="0" conditionals="18" coveredconditionals="0" methods="17" coveredmethods="0"/>
         <line num="14" count="0" type="stmt"/>
         <line num="15" count="0" type="stmt"/>
         <line num="16" count="0" type="stmt"/>
@@ -39,35 +39,43 @@
         <line num="37" count="0" type="stmt"/>
         <line num="39" count="0" type="stmt"/>
         <line num="40" count="0" type="stmt"/>
-        <line num="46" count="0" type="stmt"/>
+        <line num="41" count="0" type="stmt"/>
         <line num="47" count="0" type="stmt"/>
-        <line num="55" count="0" type="stmt"/>
+        <line num="48" count="0" type="stmt"/>
         <line num="56" count="0" type="stmt"/>
-        <line num="63" count="0" type="stmt"/>
+        <line num="57" count="0" type="stmt"/>
         <line num="64" count="0" type="stmt"/>
         <line num="65" count="0" type="stmt"/>
+        <line num="66" count="0" type="stmt"/>
+        <line num="72" count="0" type="stmt"/>
         <line num="73" count="0" type="stmt"/>
-        <line num="74" count="0" type="stmt"/>
+        <line num="74" count="0" type="cond" truecount="0" falsecount="4"/>
         <line num="75" count="0" type="stmt"/>
         <line num="76" count="0" type="stmt"/>
-        <line num="77" count="0" type="stmt"/>
         <line num="78" count="0" type="stmt"/>
+        <line num="80" count="0" type="stmt"/>
         <line num="88" count="0" type="stmt"/>
-        <line num="100" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="101" count="0" type="stmt"/>
-        <line num="102" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="89" count="0" type="stmt"/>
+        <line num="90" count="0" type="stmt"/>
+        <line num="91" count="0" type="stmt"/>
+        <line num="92" count="0" type="stmt"/>
+        <line num="93" count="0" type="stmt"/>
         <line num="103" count="0" type="stmt"/>
-        <line num="105" count="0" type="stmt"/>
-        <line num="110" count="0" type="stmt"/>
-        <line num="148" count="0" type="stmt"/>
-        <line num="150" count="0" type="cond" truecount="0" falsecount="6"/>
-        <line num="152" count="0" type="stmt"/>
-        <line num="158" count="0" type="stmt"/>
-        <line num="164" count="0" type="stmt"/>
-        <line num="170" count="0" type="stmt"/>
-        <line num="176" count="0" type="stmt"/>
-        <line num="182" count="0" type="stmt"/>
-        <line num="186" count="0" type="stmt"/>
+        <line num="115" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="116" count="0" type="stmt"/>
+        <line num="117" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="118" count="0" type="stmt"/>
+        <line num="120" count="0" type="stmt"/>
+        <line num="125" count="0" type="stmt"/>
+        <line num="163" count="0" type="stmt"/>
+        <line num="165" count="0" type="cond" truecount="0" falsecount="6"/>
+        <line num="167" count="0" type="stmt"/>
+        <line num="173" count="0" type="stmt"/>
+        <line num="179" count="0" type="stmt"/>
+        <line num="185" count="0" type="stmt"/>
+        <line num="191" count="0" type="stmt"/>
+        <line num="197" count="0" type="stmt"/>
+        <line num="201" count="0" type="stmt"/>
       </file>
       <file name="devices.tabs.tsx" path="C:\Users\vzwingma\IdeaProjects\domoticz-mobile\app\(tabs)\devices.tabs.tsx">
         <metrics statements="9" coveredstatements="9" conditionals="2" coveredconditionals="2" methods="3" coveredmethods="3"/>
@@ -385,9 +393,9 @@
       </file>
     </package>
     <package name="app.controllers">
-      <metrics statements="187" coveredstatements="151" conditionals="106" coveredconditionals="79" methods="81" coveredmethods="67"/>
+      <metrics statements="187" coveredstatements="151" conditionals="100" coveredconditionals="73" methods="81" coveredmethods="67"/>
       <file name="devices.controller.tsx" path="C:\Users\vzwingma\IdeaProjects\domoticz-mobile\app\controllers\devices.controller.tsx">
-        <metrics statements="121" coveredstatements="86" conditionals="86" coveredconditionals="59" methods="39" coveredmethods="27"/>
+        <metrics statements="121" coveredstatements="86" conditionals="84" coveredconditionals="57" methods="39" coveredmethods="27"/>
         <line num="20" count="18" type="stmt"/>
         <line num="23" count="18" type="stmt"/>
         <line num="25" count="17" type="stmt"/>
@@ -524,7 +532,7 @@
         <line num="44" count="3" type="stmt"/>
       </file>
       <file name="parameters.controller.tsx" path="C:\Users\vzwingma\IdeaProjects\domoticz-mobile\app\controllers\parameters.controller.tsx">
-        <metrics statements="19" coveredstatements="19" conditionals="6" coveredconditionals="6" methods="14" coveredmethods="14"/>
+        <metrics statements="19" coveredstatements="19" conditionals="4" coveredconditionals="4" methods="14" coveredmethods="14"/>
         <line num="18" count="18" type="stmt"/>
         <line num="21" count="18" type="stmt"/>
         <line num="23" count="16" type="stmt"/>
@@ -561,7 +569,7 @@
         <line num="66" count="1" type="stmt"/>
       </file>
       <file name="thermostats.controller.tsx" path="C:\Users\vzwingma\IdeaProjects\domoticz-mobile\app\controllers\thermostats.controller.tsx">
-        <metrics statements="25" coveredstatements="24" conditionals="6" coveredconditionals="6" methods="14" coveredmethods="12"/>
+        <metrics statements="25" coveredstatements="24" conditionals="4" coveredconditionals="4" methods="14" coveredmethods="12"/>
         <line num="19" count="20" type="stmt"/>
         <line num="22" count="20" type="stmt"/>
         <line num="24" count="19" type="stmt"/>
@@ -593,9 +601,9 @@
       <metrics statements="18" coveredstatements="13" conditionals="16" coveredconditionals="10" methods="1" coveredmethods="1"/>
       <file name="APIconstants.ts" path="C:\Users\vzwingma\IdeaProjects\domoticz-mobile\app\enums\APIconstants.ts">
         <metrics statements="3" coveredstatements="3" conditionals="4" coveredconditionals="4" methods="0" coveredmethods="0"/>
-        <line num="6" count="11" type="cond" truecount="2" falsecount="0"/>
-        <line num="7" count="11" type="cond" truecount="2" falsecount="0"/>
-        <line num="13" count="11" type="stmt"/>
+        <line num="8" count="11" type="cond" truecount="2" falsecount="0"/>
+        <line num="9" count="11" type="cond" truecount="2" falsecount="0"/>
+        <line num="15" count="11" type="stmt"/>
       </file>
       <file name="Colors.ts" path="C:\Users\vzwingma\IdeaProjects\domoticz-mobile\app\enums\Colors.ts">
         <metrics statements="11" coveredstatements="6" conditionals="12" coveredconditionals="6" methods="1" coveredmethods="1"/>
@@ -765,70 +773,50 @@
       </file>
     </package>
     <package name="app.services">
-      <metrics statements="250" coveredstatements="220" conditionals="252" coveredconditionals="232" methods="50" coveredmethods="44"/>
+      <metrics statements="230" coveredstatements="208" conditionals="242" coveredconditionals="227" methods="46" coveredmethods="41"/>
       <file name="ClientHTTP.service.ts" path="C:\Users\vzwingma\IdeaProjects\domoticz-mobile\app\services\ClientHTTP.service.ts">
-        <metrics statements="61" coveredstatements="45" conditionals="35" coveredconditionals="28" methods="17" coveredmethods="13"/>
+        <metrics statements="41" coveredstatements="33" conditionals="25" coveredconditionals="23" methods="13" coveredmethods="10"/>
         <line num="8" count="6" type="stmt"/>
-        <line num="27" count="6" type="stmt"/>
-        <line num="35" count="0" type="stmt"/>
-        <line num="44" count="30" type="stmt"/>
-        <line num="45" count="30" type="cond" truecount="1" falsecount="1"/>
-        <line num="47" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="48" count="0" type="stmt"/>
-        <line num="49" count="0" type="stmt"/>
-        <line num="53" count="0" type="stmt"/>
-        <line num="54" count="0" type="stmt"/>
-        <line num="64" count="16" type="stmt"/>
-        <line num="69" count="16" type="stmt"/>
-        <line num="77" count="30" type="stmt"/>
-        <line num="78" count="30" type="stmt"/>
-        <line num="89" count="30" type="stmt"/>
-        <line num="90" count="30" type="cond" truecount="5" falsecount="0"/>
-        <line num="91" count="4" type="stmt"/>
-        <line num="92" count="8" type="stmt"/>
-        <line num="95" count="30" type="stmt"/>
-        <line num="103" count="30" type="stmt"/>
-        <line num="113" count="22" type="stmt"/>
-        <line num="114" count="22" type="cond" truecount="4" falsecount="0"/>
-        <line num="115" count="22" type="stmt"/>
-        <line num="125" count="4" type="stmt"/>
-        <line num="127" count="0" type="stmt"/>
-        <line num="128" count="0" type="stmt"/>
-        <line num="129" count="0" type="stmt"/>
-        <line num="130" count="0" type="stmt"/>
-        <line num="133" count="4" type="stmt"/>
-        <line num="134" count="4" type="cond" truecount="1" falsecount="1"/>
-        <line num="135" count="0" type="stmt"/>
-        <line num="136" count="0" type="stmt"/>
-        <line num="137" count="0" type="stmt"/>
-        <line num="138" count="0" type="stmt"/>
-        <line num="153" count="30" type="stmt"/>
-        <line num="156" count="30" type="cond" truecount="1" falsecount="1"/>
-        <line num="157" count="30" type="stmt"/>
-        <line num="158" count="30" type="cond" truecount="1" falsecount="1"/>
-        <line num="159" count="0" type="stmt"/>
-        <line num="160" count="0" type="stmt"/>
-        <line num="164" count="30" type="stmt"/>
-        <line num="165" count="30" type="stmt"/>
-        <line num="166" count="30" type="stmt"/>
-        <line num="168" count="30" type="stmt"/>
-        <line num="170" count="30" type="stmt"/>
-        <line num="180" count="22" type="stmt"/>
-        <line num="181" count="22" type="cond" truecount="4" falsecount="0"/>
-        <line num="182" count="18" type="stmt"/>
-        <line num="185" count="4" type="stmt"/>
-        <line num="190" count="18" type="cond" truecount="2" falsecount="0"/>
-        <line num="191" count="2" type="stmt"/>
-        <line num="194" count="16" type="stmt"/>
-        <line num="195" count="16" type="stmt"/>
-        <line num="198" count="14" type="stmt"/>
-        <line num="199" count="14" type="cond" truecount="5" falsecount="1"/>
-        <line num="204" count="14" type="cond" truecount="2" falsecount="0"/>
-        <line num="205" count="4" type="stmt"/>
-        <line num="206" count="4" type="stmt"/>
-        <line num="208" count="10" type="stmt"/>
-        <line num="212" count="14" type="stmt"/>
-        <line num="220" count="14" type="stmt"/>
+        <line num="18" count="30" type="stmt"/>
+        <line num="19" count="30" type="cond" truecount="5" falsecount="0"/>
+        <line num="20" count="4" type="stmt"/>
+        <line num="21" count="8" type="stmt"/>
+        <line num="24" count="30" type="stmt"/>
+        <line num="32" count="30" type="stmt"/>
+        <line num="42" count="22" type="stmt"/>
+        <line num="43" count="22" type="cond" truecount="4" falsecount="0"/>
+        <line num="44" count="22" type="stmt"/>
+        <line num="54" count="4" type="stmt"/>
+        <line num="56" count="0" type="stmt"/>
+        <line num="57" count="0" type="stmt"/>
+        <line num="58" count="0" type="stmt"/>
+        <line num="59" count="0" type="stmt"/>
+        <line num="62" count="4" type="stmt"/>
+        <line num="63" count="4" type="cond" truecount="1" falsecount="1"/>
+        <line num="64" count="0" type="stmt"/>
+        <line num="65" count="0" type="stmt"/>
+        <line num="66" count="0" type="stmt"/>
+        <line num="67" count="0" type="stmt"/>
+        <line num="80" count="30" type="stmt"/>
+        <line num="82" count="30" type="stmt"/>
+        <line num="83" count="30" type="stmt"/>
+        <line num="84" count="30" type="stmt"/>
+        <line num="86" count="30" type="stmt"/>
+        <line num="95" count="22" type="stmt"/>
+        <line num="96" count="22" type="cond" truecount="4" falsecount="0"/>
+        <line num="97" count="18" type="stmt"/>
+        <line num="99" count="4" type="stmt"/>
+        <line num="103" count="18" type="cond" truecount="2" falsecount="0"/>
+        <line num="104" count="2" type="stmt"/>
+        <line num="106" count="16" type="stmt"/>
+        <line num="109" count="14" type="stmt"/>
+        <line num="110" count="14" type="cond" truecount="5" falsecount="1"/>
+        <line num="115" count="14" type="cond" truecount="2" falsecount="0"/>
+        <line num="116" count="4" type="stmt"/>
+        <line num="117" count="4" type="stmt"/>
+        <line num="119" count="10" type="stmt"/>
+        <line num="122" count="14" type="stmt"/>
+        <line num="128" count="14" type="stmt"/>
       </file>
       <file name="DataUtils.service.ts" path="C:\Users\vzwingma\IdeaProjects\domoticz-mobile\app\services\DataUtils.service.ts">
         <metrics statements="37" coveredstatements="37" conditionals="42" coveredconditionals="41" methods="11" coveredmethods="11"/>

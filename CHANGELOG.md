@@ -9,6 +9,14 @@ et ce projet adhère à la [versioning sémantique](https://semver.org/spec/v2.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Suppression du cache HTTP 30s** : `callDomoticz()` effectue désormais toujours un appel réseau direct — pas de cache côté client ([ADR 004](docs/adr/004-suppression-cache-http-et-rafraichissement-appstate.md))
+  - Suppression de `CacheEntry`, `httpCache`, `isCacheValid`, `getCachedData`, `setCachedData`, `clearHttpCache` dans `ClientHTTP.service.ts`
+  - Signature simplifiée : `callDomoticz(path, params?)` sans 3e argument `bypassCache`/`forceFresh`
+  - Suppression des paramètres `bypassCache`/`forceFresh` dans `devices.controller.tsx`, `thermostats.controller.tsx`, `parameters.controller.tsx`
+- **Rafraîchissement automatique au retour foreground** : ajout d'un listener `AppState` dans `app/(tabs)/_layout.tsx` — les données sont rechargées à chaque retour en premier plan et à chaque changement d'onglet
+
 ### Documentation
 
 - Synchronisation complète de la documentation avec l'état réel du projet :
@@ -37,7 +45,7 @@ Toutes les phases (1-6) du plan d'action 001 sont complétées et validées.
 - Jest avec couverture reporting et CI/CD integration
 
 #### Performance Optimizations
-- HTTP caching (30s TTL) avec bypass option
+- HTTP caching (30s TTL) avec bypass option *(supprimé en v4.1, voir ADR 004)*
 - React.memo memoization (DeviceCard, FavoriteCard)
 - Lazy-loaded routes avec React.lazy + Suspense fallbacks
 - React.Profiler pour performance monitoring
@@ -66,7 +74,7 @@ Toutes les phases (1-6) du plan d'action 001 sont complétées et validées.
 
 ### Performance Metrics
 
-- **HTTP Requests:** 30-40% reduction via caching (30s window)
+- **HTTP Requests:** Appels réseau directs sans cache (suppression du cache 30s en v4.1, voir ADR 004)
 - **Component Re-renders:** 20-30% reduction via memoization
 - **App Startup:** ~15-20% faster with lazy-loading
 - **Build Time:** 20-40% faster with cache optimization
@@ -215,7 +223,7 @@ No breaking changes. Simply update package version and deploy.
 - ✅ Initial load time -30% (lazy-load)
 - ✅ Re-render optimization via Props memo
 - ✅ List virtualization pour grandes listes
-- ✅ HTTP caching (TTL 5s par défaut)
+- ✅ HTTP caching (TTL 5s par défaut) *(supprimé en v4.1, voir ADR 004)*
 
 ---
 

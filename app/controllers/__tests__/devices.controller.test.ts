@@ -81,14 +81,14 @@ describe('loadDomoticzDevices', () => {
         expect(storeDevicesData).toHaveBeenCalledWith(expect.any(Array));
     });
 
-    it('charge sans bypass cache par défaut', async () => {
+    it('appelle callDomoticz avec la bonne URL sans paramètres supplémentaires', async () => {
         mockCallDomoticz.mockResolvedValue({ result: [makeRawDevice()] });
         const storeDevicesData = jest.fn();
 
         loadDomoticzDevices(storeDevicesData);
         await new Promise(resolve => setTimeout(resolve, 0));
 
-        expect(mockCallDomoticz).toHaveBeenCalledWith(expect.any(String), undefined, false);
+        expect(mockCallDomoticz).toHaveBeenCalledWith(expect.any(String));
     });
 
     it('détecte le groupe via le préfixe [Grp] dans le nom', async () => {
@@ -230,14 +230,14 @@ describe('updateDeviceLevel', () => {
         );
     });
 
-    it('déclenche un refresh post-action avec bypass cache = true', async () => {
+    it('déclenche un refresh post-action (callDomoticz appelé)', async () => {
         const device = makeDevice({ idx: 113 });
         const setter = jest.fn();
 
         updateDeviceLevel(113, device, 50, setter);
         await new Promise(resolve => setTimeout(resolve, 20));
 
-        expect(mockCallDomoticz).toHaveBeenCalledWith(expect.any(String), undefined, true);
+        expect(mockCallDomoticz).toHaveBeenCalledWith(expect.any(String));
     });
 });
 
@@ -317,14 +317,14 @@ describe('refreshEquipementState', () => {
         expect(mockCallDomoticz).toHaveBeenCalledTimes(1);
     });
 
-    it('conserve le double refresh en mode forceFresh=true (immédiat + 1s)', () => {
+    it('double refresh : 1er appel immédiat, 2e après 1000ms', () => {
         const setter = jest.fn();
 
-        refreshEquipementState(setter, true);
-        expect(mockCallDomoticz).toHaveBeenNthCalledWith(1, expect.any(String), undefined, true);
+        refreshEquipementState(setter);
+        expect(mockCallDomoticz).toHaveBeenNthCalledWith(1, expect.any(String));
 
         jest.advanceTimersByTime(1000);
-        expect(mockCallDomoticz).toHaveBeenNthCalledWith(2, expect.any(String), undefined, true);
+        expect(mockCallDomoticz).toHaveBeenNthCalledWith(2, expect.any(String));
     });
 });
 

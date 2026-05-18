@@ -14,11 +14,11 @@ import { clearFavoritesFromStorage } from '../services/FavoritesManager.service'
  * Loads Domoticz parameters from the API and processes thermostat devices
  * @param storeParameters Function to store the processed parameters
  */
-export function loadDomoticzParameters(storeParameters: (parameters: DomoticzParameter[]) => void, bypassCache: boolean = false) {
+export function loadDomoticzParameters(storeParameters: (parameters: DomoticzParameter[]) => void) {
     const traceId = generateTraceId();
     
     // Call external service to get devices from Domoticz
-    callDomoticz(SERVICES_URL.GET_DEVICES, undefined, bypassCache)
+    callDomoticz(SERVICES_URL.GET_DEVICES)
         .then(data => {
             const parametersDevices : DomoticzParameter[] = data.result
                     .filter((rawDevice: any) => (getDeviceType(rawDevice.Name) === DomoticzDeviceType.PARAMETRE || getDeviceType(rawDevice.Name) === DomoticzDeviceType.PARAMETRE_RO))
@@ -64,7 +64,7 @@ export function updateParameterValue(idx: number, device: DomoticzParameter, lev
             handleError(e, 'updateParameterValue', traceId, (msg) => showToast(msg, ToastDuration.LONG));
         })
         .finally(() => {
-            refreshEquipementState(setDomoticzParametersData, true)
+            refreshEquipementState(setDomoticzParametersData)
         });
 }
 
@@ -72,10 +72,10 @@ export function updateParameterValue(idx: number, device: DomoticzParameter, lev
  * Refreshes the state of thermostat devices
  * @param setDomoticzParametersData Function to update thermostat data state
  */
-export function refreshEquipementState(setDomoticzParametersData: React.Dispatch<React.SetStateAction<DomoticzParameter[]>>, forceFresh: boolean = false) {
+export function refreshEquipementState(setDomoticzParametersData: React.Dispatch<React.SetStateAction<DomoticzParameter[]>>) {
     // Update data immediately and again after 1 second delay
-    loadDomoticzParameters(setDomoticzParametersData, forceFresh);
-    setTimeout(() => loadDomoticzParameters(setDomoticzParametersData, forceFresh), 1000);
+    loadDomoticzParameters(setDomoticzParametersData);
+    setTimeout(() => loadDomoticzParameters(setDomoticzParametersData), 1000);
 }
 
 /**

@@ -16,7 +16,7 @@ jest.mock('uuid', () => ({
   v7: jest.fn(() => 'aaaabbbb-cccc-dddd-eeee-ffffaaaabbbb'),
 }));
 
-import callDomoticz, { clearHttpCache } from '../ClientHTTP.service';
+import callDomoticz from '../ClientHTTP.service';
 import { SERVICES_URL, SERVICES_PARAMS } from '../../enums/APIconstants';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────────
@@ -40,7 +40,6 @@ describe('callDomoticz', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    clearHttpCache();
     // Injection des variables d'environnement avant chaque test
     process.env.EXPO_PUBLIC_DOMOTICZ_URL = FAKE_URL;
     process.env.EXPO_PUBLIC_DOMOTICZ_AUTH = FAKE_AUTH;
