@@ -9,6 +9,14 @@ et ce projet adhère à la [versioning sémantique](https://semver.org/spec/v2.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Suppression du cache HTTP 30s** : `callDomoticz()` effectue désormais toujours un appel réseau direct — pas de cache côté client ([ADR 004](docs/adr/004-suppression-cache-http-et-rafraichissement-appstate.md))
+  - Suppression de `CacheEntry`, `httpCache`, `isCacheValid`, `getCachedData`, `setCachedData`, `clearHttpCache` dans `ClientHTTP.service.ts`
+  - Signature simplifiée : `callDomoticz(path, params?)` sans 3e argument `bypassCache`/`forceFresh`
+  - Suppression des paramètres `bypassCache`/`forceFresh` dans `devices.controller.tsx`, `thermostats.controller.tsx`, `parameters.controller.tsx`
+- **Rafraîchissement automatique au retour foreground** : ajout d'un listener `AppState` dans `app/(tabs)/_layout.tsx` — les données sont rechargées à chaque retour en premier plan et à chaque changement d'onglet
+
 ### Documentation
 
 - Synchronisation complète de la documentation avec l'état réel du projet :
