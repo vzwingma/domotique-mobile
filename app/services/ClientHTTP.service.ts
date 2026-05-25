@@ -109,10 +109,8 @@ function executeRequest(path: SERVICES_URL, fullURL: string): Promise<any> {
 
     return fetch(fullURL, {
         method: "GET",
-        mode: "cors",
         signal: controller.signal,
         headers: new Headers({
-            'Content-Type': 'application/json',
             'Authorization': 'Basic ' + API_AUTH
             }),
         })
