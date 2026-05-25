@@ -1,4 +1,4 @@
-import React, { JSX, Suspense, useContext, useEffect, useRef, useState } from 'react';
+import React, { JSX, Suspense, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 import { Colors } from '@/app/enums/Colors';
 import connectToDomoticz from '../controllers/index.controller';
@@ -16,13 +16,12 @@ const TabDomoticzTemperatures = React.lazy(() => import('./temperatures.tab'));
 const TabDomoticzDevices = React.lazy(() => import('./devices.tabs'));
 const TabDomoticzParametres = React.lazy(() => import('./parametrages.tab'));
 
-import { loadDomoticzDevices } from '../controllers/devices.controller';
-import { loadDomoticzTemperatures } from '../controllers/temperatures.controller';
 import { getHeaderIcon } from '@/components/navigation/TabHeaderIcon';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
-import { loadDomoticzThermostats } from '../controllers/thermostats.controller';
-import { loadDomoticzParameters } from '../controllers/parameters.controller';
 import { mapDomoticzStatusToConnectionBadgeState } from '@/components/ConnectionBadge';
+import { refreshDomoticzData } from '@/app/services/RefreshOrchestrator.service';
+
+const REFRESH_COOLDOWN_MS = 5000;
 
 /**
  * Composant racine de l'application avec Profiler (T4.5).
@@ -32,13 +31,14 @@ export default function TabLayout() {
 
   // État pour vérifier si l'utilisateur est connecté à Domoticz
   const [isLoading, setIsLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  const [refreshTick, setRefreshTick] = useState(0);
 
   const { domoticzConnexionData, setDomoticzConnexionData, setDomoticzDevicesData, setDomoticzTemperaturesData, setDomoticzThermostatData, setDomoticzParametersData  } = useContext(DomoticzContext)!;
 
   const [error, setError] = useState<Error | null>(null);
   const [tab, setTab] = useState(Tabs.INDEX);
   const appState = useRef(AppState.currentState);
+  const lastRefreshAtMsRef = useRef<number>(0);
 
 
   /**
@@ -53,9 +53,21 @@ export default function TabLayout() {
    * @param newTab Le nouvel onglet sélectionné
    */
   function selectNewTab(newTab: Tabs) {
-    setRefreshing(prev => !prev);
     setTab(newTab);
+    triggerRefresh('tab-switch');
   }
+
+  const triggerRefresh = useCallback((source: 'tab-switch' | 'foreground', force: boolean = false): void => {
+    const now = Date.now();
+    const elapsed = now - lastRefreshAtMsRef.current;
+    if (!force && elapsed < REFRESH_COOLDOWN_MS) {
+      console.log(`[RefreshGuard] Skip refresh (${source}) — cooldown ${elapsed}ms/${REFRESH_COOLDOWN_MS}ms`);
+      return;
+    }
+
+    lastRefreshAtMsRef.current = now;
+    setRefreshTick(prev => prev + 1);
+  }, []);
 
   /**
    *  A l'initialisation, lance la connexion à Domoticz
@@ -63,8 +75,9 @@ export default function TabLayout() {
    * */
   useEffect(() => {
     console.log("(Re)Chargement de l'application...");
+    lastRefreshAtMsRef.current = Date.now();
     connectToDomoticz({ setIsLoading, storeConnexionData, setError });
-  }, [refreshing])
+  }, [refreshTick])
 
   /**
    * Rafraîchissement automatique au retour en foreground (AppState)
@@ -73,24 +86,33 @@ export default function TabLayout() {
     const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
       if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
         console.log('[AppState] Application revenue au premier plan — rafraîchissement des données');
-        setRefreshing(prev => !prev);
+        triggerRefresh('foreground');
       }
       appState.current = nextAppState;
     });
     return () => subscription.remove();
-  }, [])
+  }, [triggerRefresh])
 
   /**
    * Fonction de callback pour stocker les données de connexion et charger les appareils
    * @param data Les données de connexion à Domoticz
    */
-  function storeConnexionData(data: DomoticzConfig) {
+  async function storeConnexionData(data: DomoticzConfig): Promise<void> {
     setDomoticzConnexionData(data);
-    loadDomoticzDevices(setDomoticzDevicesData);
-    loadDomoticzThermostats(setDomoticzThermostatData);
-    loadDomoticzTemperatures(setDomoticzTemperaturesData);
-    loadDomoticzParameters(setDomoticzParametersData);
-    setIsLoading(false);
+
+    try {
+      await refreshDomoticzData({
+        setDomoticzDevicesData,
+        setDomoticzThermostatData,
+        setDomoticzParametersData,
+        setDomoticzTemperaturesData,
+      });
+      setError(null);
+    } catch (e) {
+      setError(e as Error);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
 
@@ -129,7 +151,7 @@ export default function TabLayout() {
           headerImage={getHeaderIcon(tab)}
           headerTitle={tab.toString()}
           connectionState={getConnectionBadgeState()}
-          setRefreshing={setRefreshing}>
+          setRefreshing={() => triggerRefresh('tab-switch')}>
 
           <View style={tabStyles.titleContainer}>
             {getPanelContent()}

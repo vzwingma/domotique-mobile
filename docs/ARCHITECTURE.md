@@ -1,7 +1,7 @@
 # Architecture domoticz-mobile
 
-**Document Version:** 3.0.0  
-**Last Updated:** 2026-05-11  
+**Document Version:** 3.1.0  
+**Last Updated:** 2026-05-25  
 **Audience:** Développeurs contribuant à l'application
 
 ---
@@ -96,7 +96,7 @@
     - Ajoute Basic Auth
     - Ajoute traçage UUID
     - Envoie POST/GET au serveur Domoticz
-    - Sur une action utilisateur (devices/thermostats/paramètres), déclenche un **double refresh** (immédiat + 1s)
+    - Applique un timeout (15s) et le mode **single-flight** pour éviter les requêtes identiques en parallèle
 5. **Réponse** :
    - Serveur répond `{ status: "OK" }`
    - Service met à jour Context
@@ -466,19 +466,14 @@ export class Device {
 - Gestion des erreurs réseau/SSL
 
 **Stratégie de rafraîchissement (état réel) :**
-- HTTP : `callDomoticz()` effectue toujours un appel réseau direct — pas de cache côté client (voir [ADR 004](../adr/004-suppression-cache-http-et-rafraichissement-appstate.md)).
-- Rafraîchissement automatique à chaque changement d'onglet et à chaque retour en foreground via un listener `AppState` dans `app/(tabs)/_layout.tsx`.
-- Politique de rafraîchissement post-action conservée : **2 appels** (immédiat puis après 1 seconde) afin de refléter rapidement l'état Domoticz puis capter l'état stabilisé.
+- HTTP : `callDomoticz()` effectue toujours un appel réseau direct — pas de cache TTL global côté client (voir [ADR 004](./adr/004-suppression-cache-http-et-rafraichissement-appstate.md) et [ADR 005](./adr/005-orchestration-refresh-unifiee-sans-cache-ttl-persistant.md)).
+- Orchestration centralisée via `refreshDomoticzData()` : un seul `GET_DEVICES` partagé (devices/thermostats/parameters) + `GET_TEMPS` en parallèle.
+- Anti-burst UI : rafraîchissement au changement d'onglet et au retour foreground, protégé par un cooldown de 5 secondes (`REFRESH_COOLDOWN_MS`) dans `app/(tabs)/_layout.tsx`.
+- Robustesse réseau distante : timeout explicite 15s + coalescence single-flight des requêtes identiques en vol.
 
 **Méthodes principales :**
 ```typescript
-callDomoticz(params: {
-  type: string;        // 'devices', 'command', 'status', etc.
-  param?: string;      // 'switchlight', 'setused', etc.
-  idx?: number;        // Device idx
-  nvalue?: number;     // Command value
-  svalue?: string;     // Command svalue
-}): Promise<DomoticzResponse>
+callDomoticz(path: SERVICES_URL, params?: KeyValueParams[]): Promise<any>
 ```
 
 ### DataUtils.service.ts

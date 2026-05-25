@@ -15,30 +15,35 @@ export function loadDomoticzTemperatures(storeTempsData: Function) {
     // Appel du service externe de connexion à Domoticz
     callDomoticz(SERVICES_URL.GET_TEMPS)
         .then(data => {
-            storeTempsData(data.result
-                .map((device: any) => {
-                    return {
-                        idx: device.idx,
-                        name: String(device.Name).replaceAll("TempératureHumidité - ", "")
-                            .replaceAll("TempHumBaro", "Extérieur")
-                            .replaceAll("Tydom Temperature", "Salon").trim(),
-                        type: device.Type,
-                        subType: device.SubType,
-                        temp: device.Temp,
-                        humidity: device.Humidity,
-                        humidityStatus: device.HumidityStatus,
-                        lastUpdate: device.LastUpdate,
-                        isActive: !device.HaveTimeout,
-                        data: device.Data
-                    }
-                })
-                .filter((device: DomoticzTemperature) => filterTemperatureDeviceByType(device))
-                .sort((d1: DomoticzTemperature, d2: DomoticzTemperature) => sortTemperatureDevices(d1, d2))
-            );
+            storeTempsData(mapRawTemperaturesToDomoticzTemperatures(data?.result));
         })
         .catch((e) => {
             handleError(e, 'loadDomoticzTemperatures', traceId, (msg) => showToast(msg, ToastDuration.SHORT));
         })
+}
+
+export function mapRawTemperaturesToDomoticzTemperatures(rawDevices: any[] = []): DomoticzTemperature[] {
+    return rawDevices
+        .map((device: any, index: number) => {
+            return new DomoticzTemperature({
+                idx: device.idx,
+                rang: index,
+                name: String(device.Name).replaceAll("TempératureHumidité - ", "")
+                    .replaceAll("TempHumBaro", "Extérieur")
+                    .replaceAll("Tydom Temperature", "Salon").trim(),
+                type: device.Type,
+                subType: device.SubType,
+                temp: device.Temp,
+                humidity: device.Humidity,
+                humidityStatus: device.HumidityStatus,
+                lastUpdate: device.LastUpdate,
+                isActive: !device.HaveTimeout,
+                status: String(device.Data),
+                data: device.Data
+            } as DomoticzTemperature);
+        })
+        .filter((device: DomoticzTemperature) => filterTemperatureDeviceByType(device))
+        .sort((d1: DomoticzTemperature, d2: DomoticzTemperature) => sortTemperatureDevices(d1, d2));
 }
 
 

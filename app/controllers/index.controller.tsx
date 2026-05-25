@@ -8,7 +8,7 @@ import { handleError, generateTraceId } from '@/app/services/ErrorHandler.servic
 // Propriétés de l'écran des équipements
 type FunctionConnectToDomoticzProps = {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
-  storeConnexionData: Function
+  storeConnexionData: (config: DomoticzConfig) => Promise<void> | void
   setError: React.Dispatch<React.SetStateAction<Error | null>>
 }
 
@@ -34,9 +34,9 @@ export function connectToDomoticz({setIsLoading, storeConnexionData, setError}: 
         return config;
       })
       .then(config => {
-        setIsLoading(false);
-        storeConnexionData(config);
+        return Promise.resolve(storeConnexionData(config));
       })
+      .then(() => setIsLoading(false))
       .catch((e) => {
           setIsLoading(false);
           setError(e);

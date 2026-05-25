@@ -9,6 +9,11 @@ import { handleError, generateTraceId } from '@/app/services/ErrorHandler.servic
 import DomoticzFavorites from '../models/domoticzFavorites.model';
 import DomoticzThermostat from '../models/domoticzThermostat.model';
 
+type RefreshOptions = {
+    scheduleSecondRefresh?: boolean;
+    secondRefreshDelayMs?: number;
+}
+
 /**
  * Charge les équipements Domoticz.
  * 
@@ -22,48 +27,50 @@ export function loadDomoticzDevices(storeDevicesData: (devices: DomoticzDevice[]
     // Appel du service externe de connexion à Domoticz pour les types d'équipements
     callDomoticz(SERVICES_URL.GET_DEVICES)
         .then(data => {
-            const dataDevices : DomoticzDevice[] = data.result
-                .map((rawDevice: any, index: number) => {
-                    const ddevice = new DomoticzDevice({
-                        idx: Number(rawDevice.idx),
-                        rang: index,
-                        name: evaluateDeviceName(rawDevice.Name),
-                        status: String(rawDevice.Status).replaceAll("Set Level: ", ""),
-                        type: getDeviceType(rawDevice.Name),
-                        subType: rawDevice.Type,
-                        switchType: rawDevice.SwitchType,
-                        level: evaluateDeviceLevel(rawDevice.Level),
-                        unit: "%",
-                        consistantLevel: true,
-                        isGroup: String(rawDevice.Name).includes("[Grp]"),
-                        lastUpdate: rawDevice.LastUpdate,
-                        isActive: !rawDevice.HaveTimeout,
-                        data: rawDevice.Data
-                    });
-                    return ddevice;
-                });
-
-            const lumieresDevices : DomoticzDevice[] = dataDevices    
-                .filter((device: DomoticzDevice) => device.type === DomoticzDeviceType.LUMIERE)
-                // Evaluation de la cohérence des niveaux des groupes
-                .map((device: DomoticzDevice) => {evaluateGroupLevelConsistency(device, DomoticzLightsGroups, dataDevices); return device;})
-                .sort((d1: DomoticzDevice, d2: DomoticzDevice) => sortEquipements(d1, d2, DomoticzLightsSort));
-
-            const voletsDevices : DomoticzDevice[] = dataDevices
-                .filter((device: DomoticzDevice) => device.type === DomoticzDeviceType.VOLET)
-                // Evaluation de la cohérence des niveaux des groupes
-                .map((device: DomoticzDevice) => {evaluateGroupLevelConsistency(device, DomoticzBlindsGroups, dataDevices); return device;})
-                .sort((d1: DomoticzDevice, d2: DomoticzDevice) => sortEquipements(d1, d2, DomoticzBlindsSort));
-
-            let allDevicesData: DomoticzDevice[] = [...lumieresDevices, ...voletsDevices];
-            // Stockage des données
-            storeDevicesData(allDevicesData);
+            storeDevicesData(mapRawDevicesToDomoticzDevices(data?.result));
         })
         .catch((e) => {
             // Utiliser le pattern unifié de gestion d'erreur
             handleError(e, 'loadDomoticzDevices', traceId, (msg) => showToast(msg, ToastDuration.SHORT));
             storeDevicesData([]);
         })
+}
+
+export function mapRawDevicesToDomoticzDevices(rawDevices: any[] = []): DomoticzDevice[] {
+    const dataDevices : DomoticzDevice[] = rawDevices
+        .map((rawDevice: any, index: number) => {
+            const ddevice = new DomoticzDevice({
+                idx: Number(rawDevice.idx),
+                rang: index,
+                name: evaluateDeviceName(rawDevice.Name),
+                status: String(rawDevice.Status).replaceAll("Set Level: ", ""),
+                type: getDeviceType(rawDevice.Name),
+                subType: rawDevice.Type,
+                switchType: rawDevice.SwitchType,
+                level: evaluateDeviceLevel(rawDevice.Level),
+                unit: "%",
+                consistantLevel: true,
+                isGroup: String(rawDevice.Name).includes("[Grp]"),
+                lastUpdate: rawDevice.LastUpdate,
+                isActive: !rawDevice.HaveTimeout,
+                data: rawDevice.Data
+            });
+            return ddevice;
+        });
+
+    const lumieresDevices : DomoticzDevice[] = dataDevices
+        .filter((device: DomoticzDevice) => device.type === DomoticzDeviceType.LUMIERE)
+        // Evaluation de la cohérence des niveaux des groupes
+        .map((device: DomoticzDevice) => {evaluateGroupLevelConsistency(device, DomoticzLightsGroups, dataDevices); return device;})
+        .sort((d1: DomoticzDevice, d2: DomoticzDevice) => sortEquipements(d1, d2, DomoticzLightsSort));
+
+    const voletsDevices : DomoticzDevice[] = dataDevices
+        .filter((device: DomoticzDevice) => device.type === DomoticzDeviceType.VOLET)
+        // Evaluation de la cohérence des niveaux des groupes
+        .map((device: DomoticzDevice) => {evaluateGroupLevelConsistency(device, DomoticzBlindsGroups, dataDevices); return device;})
+        .sort((d1: DomoticzDevice, d2: DomoticzDevice) => sortEquipements(d1, d2, DomoticzBlindsSort));
+
+    return [...lumieresDevices, ...voletsDevices];
 }
 
 
@@ -171,10 +178,16 @@ function updateDeviceState(idx: number, device: DomoticzDevice, status: boolean,
  * @param setDeviceData fonction de mise à jour des données
  * @param typeEquipement type d'équipement
  */
-export function refreshEquipementState(storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
+export function refreshEquipementState(
+    storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>,
+    options: RefreshOptions = {}
+) {
     // Mise à jour des données
     loadDomoticzDevices(storeDevicesData);
-    setTimeout(() => loadDomoticzDevices(storeDevicesData), 1000);
+    if (options.scheduleSecondRefresh === true) {
+        const secondRefreshDelayMs = options.secondRefreshDelayMs ?? 1000;
+        setTimeout(() => loadDomoticzDevices(storeDevicesData), secondRefreshDelayMs);
+    }
 }
 
 
@@ -372,4 +385,3 @@ export function getStatusLabel(device: DomoticzDevice, nextValue: number, flagLa
   // Comportement par défaut
   return getDefaultLabel(device);
 }
-
