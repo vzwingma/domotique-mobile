@@ -276,31 +276,35 @@ describe('refreshEquipementState (parameters)', () => {
         expect(mockCallDomoticz).toHaveBeenCalledTimes(1);
     });
 
-    it('appelle callDomoticz une seconde fois après 1000ms', () => {
+    it('n\'appelle pas callDomoticz une seconde fois après 1000ms par défaut', () => {
         const setter = jest.fn();
 
         refreshEquipementState(setter);
         jest.advanceTimersByTime(1000);
-
-        expect(mockCallDomoticz).toHaveBeenCalledTimes(2);
-    });
-
-    it('n\'appelle pas callDomoticz une 2e fois avant 1000ms', () => {
-        const setter = jest.fn();
-
-        refreshEquipementState(setter);
-        jest.advanceTimersByTime(999);
 
         expect(mockCallDomoticz).toHaveBeenCalledTimes(1);
     });
 
-    it('double refresh : 1er appel immédiat, 2e après 1000ms', () => {
+    it('planifie un second refresh uniquement si demandé', () => {
         const setter = jest.fn();
 
-        refreshEquipementState(setter);
-        expect(mockCallDomoticz).toHaveBeenNthCalledWith(1, expect.any(String));
+        refreshEquipementState(setter, { scheduleSecondRefresh: true });
+        expect(mockCallDomoticz).toHaveBeenCalledTimes(1);
 
         jest.advanceTimersByTime(1000);
+        expect(mockCallDomoticz).toHaveBeenCalledTimes(2);
+    });
+
+    it('respecte le délai custom pour le second refresh optionnel', () => {
+        const setter = jest.fn();
+
+        refreshEquipementState(setter, { scheduleSecondRefresh: true, secondRefreshDelayMs: 2000 });
+        expect(mockCallDomoticz).toHaveBeenNthCalledWith(1, expect.any(String));
+
+        jest.advanceTimersByTime(1999);
+        expect(mockCallDomoticz).toHaveBeenCalledTimes(1);
+
+        jest.advanceTimersByTime(1);
         expect(mockCallDomoticz).toHaveBeenNthCalledWith(2, expect.any(String));
     });
 });

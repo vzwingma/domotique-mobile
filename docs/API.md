@@ -1,7 +1,7 @@
 # API Domoticz — Documentation
 
-**Documentation Version:** 3.0.0  
-**Last Updated:** 2026-05-04  
+**Documentation Version:** 3.1.0  
+**Last Updated:** 2026-05-25  
 **Server:** Domoticz (https://www.domoticz.com/)  
 **Scope:** Endpoints utilisés par domoticz-mobile
 
@@ -584,6 +584,15 @@ Domoticz n'a pas de rate limiting officiel, mais:
 - Limiter les syncs à ~5 secondes
 - Éviter les appels parallèles excessifs
 
+### Orchestration refresh côté client (domoticz-mobile)
+
+- Pas de cache TTL global persistant côté client.
+- Refresh centralisé via `refreshDomoticzData` :
+  - un `GET_DEVICES` mutualisé pour dériver devices/thermostats/parameters,
+  - un `GET_TEMPS` exécuté en parallèle.
+- Garde anti-burst sur les triggers UI (changement d'onglet / retour foreground) via cooldown de 5 secondes.
+- Requêtes HTTP identiques en vol coalescées (`single-flight`) pour éviter les doublons réseau.
+
 ### Logging & Debugging
 
 Chaque requête est logguée avec un UUID unique :
@@ -597,7 +606,7 @@ console.log(`[${uuid}] Response:`, data);
 
 ### Timeouts
 
-Configurer un timeout de 15 secondes :
+Le client applique un timeout de 15 secondes :
 
 ```typescript
 const controller = new AbortController();

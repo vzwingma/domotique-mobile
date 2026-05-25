@@ -18,7 +18,7 @@ type Props = PropsWithChildren<{
   headerImage: ReactElement;
   headerTitle: string;
   connectionState: ConnectionBadgeState;
-  setRefreshing: React.Dispatch<React.SetStateAction<boolean>>;
+  setRefreshing: () => void;
 }>;
 
 export default function ParallaxScrollView({
@@ -32,7 +32,7 @@ export default function ParallaxScrollView({
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollOffset(scrollRef);
 
-  let refreshing = false;
+  const refreshing = false;
 
   const headerAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -52,9 +52,8 @@ export default function ParallaxScrollView({
   });
 
   const onRefresh = React.useCallback(() => {
-    setRefreshing(!refreshing);
-    refreshing = !refreshing;
-  }, [refreshing, setRefreshing]);
+    setRefreshing();
+  }, [setRefreshing]);
 
 
   return (

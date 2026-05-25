@@ -5,7 +5,8 @@ import { handleError, generateTraceId } from './ErrorHandler.service';
 
 /** Client HTTP **/
 
-let storageWatch = 0;
+const REQUEST_TIMEOUT_MS = 15000;
+const inFlightRequests = new Map<string, Promise<any>>();
 
 
 /**
@@ -28,8 +29,8 @@ function evaluateURL(path: string, params?: KeyValueParams[]): string {
 /**
  * Début du watch de la réponse
  */
-function startWatch(): void {
-    storageWatch = Date.now();
+function startWatch(): number {
+    return Date.now();
 }
 
 /**
@@ -38,9 +39,15 @@ function startWatch(): void {
  * @param res réponse
  * @returns temps de réponse en ms
  */
-function stopWatch(traceId: string, res: Response): number {
-    let responseTime = Date.now() - storageWatch;
+function stopWatch(traceId: string, res: Response, startedAt: number): number {
+    let responseTime = Date.now() - startedAt;
     console.log("[WS traceId=" + traceId + "] < [" + res.status + (res.statusText !== null && res.statusText !== "" ? " - " + res.statusText : "") + "][t:" + responseTime + "ms]");
+    return responseTime;
+}
+
+function stopWatchTimeout(traceId: string, startedAt: number): number {
+    const responseTime = Date.now() - startedAt;
+    console.log("[WS traceId=" + traceId + "] < [TIMEOUT][t:" + responseTime + "ms]");
     return responseTime;
 }
 
@@ -78,21 +85,37 @@ function runSSLDiagnostic(failedUrl: string): void {
  */
 function callDomoticz(path: SERVICES_URL, params?: KeyValueParams[]): Promise<any> {
     const fullURL = evaluateURL(path, params);
+    const inFlightRequest = inFlightRequests.get(fullURL);
+    if (inFlightRequest !== undefined) {
+        return inFlightRequest;
+    }
 
+    const requestPromise = executeRequest(path, fullURL);
+    inFlightRequests.set(fullURL, requestPromise);
+
+    return requestPromise.finally(() => {
+        inFlightRequests.delete(fullURL);
+    });
+}
+
+function executeRequest(path: SERVICES_URL, fullURL: string): Promise<any> {
     let traceId = generateTraceId();
     console.log("[WS traceId=" + traceId + "] > [" + fullURL + "]");
-    startWatch();
+    const watchStartAt = startWatch();
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
     return fetch(fullURL, {
         method: "GET",
         mode: "cors",
+        signal: controller.signal,
         headers: new Headers({
             'Content-Type': 'application/json',
             'Authorization': 'Basic ' + API_AUTH
             }),
         })
         .then(res => {
-            stopWatch(traceId, res);
+            stopWatch(traceId, res, watchStartAt);
             if (res.status >= 200 && res.status < 300) {
                 return res.json();
             } else {
@@ -106,26 +129,36 @@ function callDomoticz(path: SERVICES_URL, params?: KeyValueParams[]): Promise<an
             return data;
         })
         .catch(e => {
+            let effectiveError = e;
+            if (e instanceof Error && e.name === 'AbortError') {
+                stopWatchTimeout(traceId, watchStartAt);
+                effectiveError = new Error(`Request timeout after ${REQUEST_TIMEOUT_MS}ms for ${fullURL}`);
+            }
+
             const isHttps = fullURL.startsWith('https://');
-            const isSSLError = e.message?.toLowerCase().includes('ssl')
-                            || e.message?.toLowerCase().includes('certificate')
-                            || e.message?.toLowerCase().includes('trust')
-                            || e.message?.toLowerCase().includes('handshake')
-                            || (isHttps && e.message?.toLowerCase().includes('network request failed'));
+            const errorMessage = (effectiveError as Error)?.message?.toLowerCase() ?? '';
+            const isSSLError = errorMessage.includes('ssl')
+                            || errorMessage.includes('certificate')
+                            || errorMessage.includes('trust')
+                            || errorMessage.includes('handshake')
+                            || (isHttps && errorMessage.includes('network request failed'));
             if (isSSLError) {
-                console.error("[WS traceId=" + traceId + "] < Erreur SSL/TLS sur " + fullURL, e);
+                console.error("[WS traceId=" + traceId + "] < Erreur SSL/TLS sur " + fullURL, effectiveError);
                 runSSLDiagnostic(fullURL);
             } else {
-                console.error("[WS traceId=" + traceId + "] < Erreur lors de l'appel HTTP [" + fullURL + "]", e);
+                console.error("[WS traceId=" + traceId + "] < Erreur lors de l'appel HTTP [" + fullURL + "]", effectiveError);
             }
 
             const domoticzError = handleError(
-                e,
+                effectiveError,
                 `callDomoticz[${path}]`,
                 traceId
             );
 
             throw domoticzError;
+        })
+        .finally(() => {
+            clearTimeout(timeoutId);
         })
 
 }

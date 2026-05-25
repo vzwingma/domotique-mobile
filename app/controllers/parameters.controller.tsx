@@ -9,6 +9,10 @@ import DomoticzParameter from '../models/domoticzParameter.model';
 import { Alert } from 'react-native';
 import { clearFavoritesFromStorage } from '../services/FavoritesManager.service';
 
+type RefreshOptions = {
+    scheduleSecondRefresh?: boolean;
+    secondRefreshDelayMs?: number;
+}
 
 /**
  * Loads Domoticz parameters from the API and processes thermostat devices
@@ -20,28 +24,31 @@ export function loadDomoticzParameters(storeParameters: (parameters: DomoticzPar
     // Call external service to get devices from Domoticz
     callDomoticz(SERVICES_URL.GET_DEVICES)
         .then(data => {
-            const parametersDevices : DomoticzParameter[] = data.result
-                    .filter((rawDevice: any) => (getDeviceType(rawDevice.Name) === DomoticzDeviceType.PARAMETRE || getDeviceType(rawDevice.Name) === DomoticzDeviceType.PARAMETRE_RO))
-                    .map((rawDevice: any) => {
-                        const tdevice = new DomoticzParameter({
-                            idx: Number(rawDevice.idx),
-                            name: rawDevice.Name,
-                            status: String(rawDevice.Data),
-                            type: getDeviceType(rawDevice.Name),
-                            lastUpdate: rawDevice.LastUpdate,
-                            data: rawDevice.Data,
-                            level: rawDevice.Level,
-                            levelNames: rawDevice.LevelNames ? atob(rawDevice.LevelNames).split('|') : [],
-                            switchType: rawDevice.SwitchType
-                        });
-                        return tdevice;
-                    });
-            storeParameters(parametersDevices);
+            storeParameters(mapRawDevicesToDomoticzParameters(data?.result));
         })
         .catch((e) => {
             handleError(e, 'loadDomoticzParameters', traceId, (msg) => showToast(msg, ToastDuration.SHORT));
             storeParameters([]);
         })
+}
+
+export function mapRawDevicesToDomoticzParameters(rawDevices: any[] = []): DomoticzParameter[] {
+    return rawDevices
+        .filter((rawDevice: any) => (getDeviceType(rawDevice.Name) === DomoticzDeviceType.PARAMETRE || getDeviceType(rawDevice.Name) === DomoticzDeviceType.PARAMETRE_RO))
+        .map((rawDevice: any) => {
+            const tdevice = new DomoticzParameter({
+                idx: Number(rawDevice.idx),
+                name: rawDevice.Name,
+                status: String(rawDevice.Data),
+                type: getDeviceType(rawDevice.Name),
+                lastUpdate: rawDevice.LastUpdate,
+                data: rawDevice.Data,
+                level: rawDevice.Level,
+                levelNames: rawDevice.LevelNames ? atob(rawDevice.LevelNames).split('|') : [],
+                switchType: rawDevice.SwitchType
+            });
+            return tdevice;
+        });
 }
 
 /**
@@ -72,10 +79,16 @@ export function updateParameterValue(idx: number, device: DomoticzParameter, lev
  * Refreshes the state of thermostat devices
  * @param setDomoticzParametersData Function to update thermostat data state
  */
-export function refreshEquipementState(setDomoticzParametersData: React.Dispatch<React.SetStateAction<DomoticzParameter[]>>) {
-    // Update data immediately and again after 1 second delay
+export function refreshEquipementState(
+    setDomoticzParametersData: React.Dispatch<React.SetStateAction<DomoticzParameter[]>>,
+    options: RefreshOptions = {}
+) {
+    // Update data immediately
     loadDomoticzParameters(setDomoticzParametersData);
-    setTimeout(() => loadDomoticzParameters(setDomoticzParametersData), 1000);
+    if (options.scheduleSecondRefresh === true) {
+        const secondRefreshDelayMs = options.secondRefreshDelayMs ?? 1000;
+        setTimeout(() => loadDomoticzParameters(setDomoticzParametersData), secondRefreshDelayMs);
+    }
 }
 
 /**

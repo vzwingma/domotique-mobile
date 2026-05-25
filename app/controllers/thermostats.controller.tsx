@@ -7,6 +7,11 @@ import callDomoticz from '../services/ClientHTTP.service';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
 import { handleError, generateTraceId } from '@/app/services/ErrorHandler.service';
 
+type RefreshOptions = {
+    scheduleSecondRefresh?: boolean;
+    secondRefreshDelayMs?: number;
+}
+
 /**
  * Charge les équipements Domoticz.
  * 
@@ -21,30 +26,32 @@ export function loadDomoticzThermostats(storeThermostatsData: (thermostats: Domo
     // Appel du service externe de connexion à Domoticz pour les types d'équipements
     callDomoticz(SERVICES_URL.GET_DEVICES)
         .then(data => {
-            const thermostatsDevices : DomoticzThermostat[] = data.result
-                .filter((rawDevice: any) => getDeviceType(rawDevice.Name) === DomoticzDeviceType.THERMOSTAT)
-                .map((rawDevice: any, index: number) => {
-                        const tdevice = new DomoticzThermostat(
-                            Number(rawDevice.idx),
-                            evaluateDeviceName(rawDevice.Name),
-                            rawDevice.LastUpdate,
-                            !rawDevice.HaveTimeout,
-                            evaluateThermostatPoint(rawDevice.SetPoint),
-                            getDeviceType(rawDevice.Name),
-                            String(rawDevice.Data),
-                            rawDevice.Data,
-                            rawDevice.vunit
-                        );
-                        tdevice.rang = index;
-                        return tdevice;
-                    });
-            // Stockage des données
-            storeThermostatsData(thermostatsDevices);
+            storeThermostatsData(mapRawDevicesToDomoticzThermostats(data?.result));
         })
         .catch((e) => {
             handleError(e, 'loadDomoticzThermostats', traceId, (msg) => showToast(msg, ToastDuration.SHORT));
             storeThermostatsData([]);
         })
+}
+
+export function mapRawDevicesToDomoticzThermostats(rawDevices: any[] = []): DomoticzThermostat[] {
+    return rawDevices
+        .filter((rawDevice: any) => getDeviceType(rawDevice.Name) === DomoticzDeviceType.THERMOSTAT)
+        .map((rawDevice: any, index: number) => {
+            const tdevice = new DomoticzThermostat(
+                Number(rawDevice.idx),
+                evaluateDeviceName(rawDevice.Name),
+                rawDevice.LastUpdate,
+                !rawDevice.HaveTimeout,
+                evaluateThermostatPoint(rawDevice.SetPoint),
+                getDeviceType(rawDevice.Name),
+                String(rawDevice.Data),
+                rawDevice.Data,
+                rawDevice.vunit
+            );
+            tdevice.rang = index;
+            return tdevice;
+        });
 }
 
 /**
@@ -102,8 +109,14 @@ export function updateThermostatPoint(idx: number, device: DomoticzThermostat, t
  * @param setDeviceData fonction de mise à jour des données
  * @param typeEquipement type d'équipement
  */
-export function refreshEquipementState(setDomoticzThermostatData: React.Dispatch<React.SetStateAction<DomoticzThermostat[]>>) {
+export function refreshEquipementState(
+    setDomoticzThermostatData: React.Dispatch<React.SetStateAction<DomoticzThermostat[]>>,
+    options: RefreshOptions = {}
+) {
     // Mise à jour des données
     loadDomoticzThermostats(setDomoticzThermostatData);
-    setTimeout(() => loadDomoticzThermostats(setDomoticzThermostatData), 1000);
+    if (options.scheduleSecondRefresh === true) {
+        const secondRefreshDelayMs = options.secondRefreshDelayMs ?? 1000;
+        setTimeout(() => loadDomoticzThermostats(setDomoticzThermostatData), secondRefreshDelayMs);
+    }
 }

@@ -427,4 +427,49 @@ describe('callDomoticz', () => {
       expect(consoleCalls.length).toBeGreaterThan(0);
     });
   });
+
+  describe('Timeout et single-flight', () => {
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('coalesce les requêtes identiques en vol (single-flight)', async () => {
+      let resolveFetch: (value: Response) => void = () => {};
+      const pendingResponse = new Promise<Response>((resolve) => {
+        resolveFetch = resolve;
+      });
+      (globalThis.fetch as jest.Mock).mockReturnValue(pendingResponse);
+
+      const requestA = callDomoticz(SERVICES_URL.GET_DEVICES);
+      const requestB = callDomoticz(SERVICES_URL.GET_DEVICES);
+
+      expect(globalThis.fetch).toHaveBeenCalledTimes(1);
+
+      resolveFetch(makeFetchResponse(200, { status: 'OK', result: [] }));
+
+      const [resultA, resultB] = await Promise.all([requestA, requestB]);
+      expect(resultA).toEqual(resultB);
+    });
+
+    it('abandonne la requête après timeout et propage via handleError', async () => {
+      jest.useFakeTimers();
+      (globalThis.fetch as jest.Mock).mockImplementation((_url: string, init?: RequestInit) => {
+        return new Promise((_resolve, reject) => {
+          const signal = init?.signal as AbortSignal | undefined;
+          signal?.addEventListener('abort', () => {
+            const abortError = new Error('The operation was aborted');
+            (abortError as Error & { name: string }).name = 'AbortError';
+            reject(abortError);
+          });
+        });
+      });
+
+      const request = callDomoticz(SERVICES_URL.GET_DEVICES).catch(e => e);
+      jest.advanceTimersByTime(15000);
+      const error = await request;
+
+      expect(error).toBeDefined();
+      expect(error.errorType).toBe('NETWORK_ERROR');
+    });
+  });
 });
