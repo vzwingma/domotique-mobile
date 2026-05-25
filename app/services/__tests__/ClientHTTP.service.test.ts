@@ -154,7 +154,7 @@ describe('callDomoticz', () => {
       expect(headers.get('Authorization')).toMatch(/^Basic /);
     });
 
-    it('envoie un header Content-Type: application/json', async () => {
+    it('n\'envoie pas de Content-Type sur un GET (pas de body)', async () => {
       (globalThis.fetch as jest.Mock).mockResolvedValue(
         makeFetchResponse(200, { status: 'OK', result: [] })
       );
@@ -163,7 +163,7 @@ describe('callDomoticz', () => {
 
       const requestInit: RequestInit = (globalThis.fetch as jest.Mock).mock.calls[0][1];
       const headers = requestInit.headers as Headers;
-      expect(headers.get('Content-Type')).toBe('application/json');
+      expect(headers.get('Content-Type')).toBeNull();
     });
 
     it('utilise la méthode GET', async () => {

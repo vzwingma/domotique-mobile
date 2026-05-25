@@ -1,12 +1,10 @@
 import React, { JSX, Suspense, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 import { Colors } from '@/app/enums/Colors';
-import connectToDomoticz from '../controllers/index.controller';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ActivityIndicator, AppState, AppStateStatus, StyleSheet, View } from 'react-native';
 import { Tabs } from '../enums/TabsEnums';
 import { TabBarItems } from '@/components/navigation/TabBarItem';
-import DomoticzConfig from '../models/domoticzConfig.model';
 import { ThemedText } from '@/components/ThemedText';
 import { DomoticzDeviceType } from '../enums/DomoticzEnum';
 
@@ -70,13 +68,24 @@ export default function TabLayout() {
   }, []);
 
   /**
-   *  A l'initialisation, lance la connexion à Domoticz
-   * et à changement d'onglet
+   *  A l'initialisation, lance le chargement de toutes les données Domoticz en parallèle.
+   *  GET_CONFIG + GET_DEVICES + GET_TEMPS s'exécutent simultanément pour minimiser la latence
+   *  sur les connexions lentes (5G ~30-40s par requête).
    * */
   useEffect(() => {
     console.log("(Re)Chargement de l'application...");
     lastRefreshAtMsRef.current = Date.now();
-    connectToDomoticz({ setIsLoading, storeConnexionData, setError });
+    setIsLoading(true);
+    refreshDomoticzData({
+      setDomoticzConnexionData,
+      setDomoticzDevicesData,
+      setDomoticzThermostatData,
+      setDomoticzParametersData,
+      setDomoticzTemperaturesData,
+    })
+      .then(() => setError(null))
+      .catch(e => setError(e as Error))
+      .finally(() => setIsLoading(false));
   }, [refreshTick])
 
   /**
@@ -92,29 +101,6 @@ export default function TabLayout() {
     });
     return () => subscription.remove();
   }, [triggerRefresh])
-
-  /**
-   * Fonction de callback pour stocker les données de connexion et charger les appareils
-   * @param data Les données de connexion à Domoticz
-   */
-  async function storeConnexionData(data: DomoticzConfig): Promise<void> {
-    setDomoticzConnexionData(data);
-
-    try {
-      await refreshDomoticzData({
-        setDomoticzDevicesData,
-        setDomoticzThermostatData,
-        setDomoticzParametersData,
-        setDomoticzTemperaturesData,
-      });
-      setError(null);
-    } catch (e) {
-      setError(e as Error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
 
   /**
    * Récupère le statut de connexion à Domoticz

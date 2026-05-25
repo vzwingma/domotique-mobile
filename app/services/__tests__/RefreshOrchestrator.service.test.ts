@@ -46,8 +46,11 @@ describe('refreshDomoticzData', () => {
         jest.clearAllMocks();
     });
 
-    it('fait un seul GET_DEVICES et dérive tous les jeux de données', async () => {
+    it('lance GET_CONFIG, GET_DEVICES et GET_TEMPS en parallèle', async () => {
         mockCallDomoticz.mockImplementation((url: SERVICES_URL) => {
+            if (url === SERVICES_URL.GET_CONFIG) {
+                return Promise.resolve({ status: 'OK', version: '2024.1', Revision: '12345' });
+            }
             if (url === SERVICES_URL.GET_DEVICES) {
                 return Promise.resolve({ result: makeRawDevices() });
             }
@@ -70,21 +73,27 @@ describe('refreshDomoticzData', () => {
             return Promise.resolve({ result: [] });
         });
 
+        const setDomoticzConnexionData = jest.fn();
         const setDomoticzDevicesData = jest.fn();
         const setDomoticzThermostatData = jest.fn();
         const setDomoticzParametersData = jest.fn();
         const setDomoticzTemperaturesData = jest.fn();
 
         await refreshDomoticzData({
+            setDomoticzConnexionData,
             setDomoticzDevicesData,
             setDomoticzThermostatData,
             setDomoticzParametersData,
             setDomoticzTemperaturesData,
         });
 
-        expect(mockCallDomoticz).toHaveBeenCalledTimes(2);
+        expect(mockCallDomoticz).toHaveBeenCalledTimes(3);
+        expect(mockCallDomoticz).toHaveBeenCalledWith(SERVICES_URL.GET_CONFIG);
         expect(mockCallDomoticz).toHaveBeenCalledWith(SERVICES_URL.GET_DEVICES);
         expect(mockCallDomoticz).toHaveBeenCalledWith(SERVICES_URL.GET_TEMPS);
+        expect(setDomoticzConnexionData).toHaveBeenCalledWith(
+            expect.objectContaining({ status: 'OK', version: '2024.1', revision: '12345' })
+        );
         expect(setDomoticzDevicesData).toHaveBeenCalledWith(expect.any(Array));
         expect(setDomoticzThermostatData).toHaveBeenCalledWith(expect.any(Array));
         expect(setDomoticzParametersData).toHaveBeenCalledWith(expect.any(Array));
@@ -95,6 +104,7 @@ describe('refreshDomoticzData', () => {
         mockCallDomoticz.mockRejectedValue(new Error('Network error'));
 
         await expect(refreshDomoticzData({
+            setDomoticzConnexionData: jest.fn(),
             setDomoticzDevicesData: jest.fn(),
             setDomoticzThermostatData: jest.fn(),
             setDomoticzParametersData: jest.fn(),
