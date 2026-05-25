@@ -465,7 +465,7 @@ describe('callDomoticz', () => {
       });
 
       const request = callDomoticz(SERVICES_URL.GET_DEVICES).catch(e => e);
-      jest.advanceTimersByTime(15000);
+      jest.advanceTimersByTime(60000); // aligné avec REQUEST_TIMEOUT_MS
       const error = await request;
 
       expect(error).toBeDefined();

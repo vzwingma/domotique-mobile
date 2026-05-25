@@ -5,7 +5,9 @@ import { handleError, generateTraceId } from './ErrorHandler.service';
 
 /** Client HTTP **/
 
-const REQUEST_TIMEOUT_MS = 15000;
+// Timeout suffisamment long pour couvrir les connexions distantes lentes (5G ~30-40s).
+// Valeur choisie pour détecter les serveurs réellement injoignables sans pénaliser les liens lents.
+const REQUEST_TIMEOUT_MS = 60000;
 const inFlightRequests = new Map<string, Promise<any>>();
 
 
