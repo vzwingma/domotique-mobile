@@ -178,11 +178,16 @@ const withOkHttpSsl = (config) => {
 import android.content.Context;
 import android.util.Log;
 import com.facebook.react.modules.network.OkHttpClientProvider;
+import okhttp3.Dns;
 import okhttp3.OkHttpClient;
 import java.io.InputStream;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.security.KeyStore;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.List;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -300,14 +305,39 @@ public final class DomoticzSSLHelper {
                 }
             };
 
+            // Resolver DNS IPv4-only : évite le délai "Happy Eyeballs" (20-30s) quand
+            // le domaine a un record AAAA mais que le port n'est accessible qu'en IPv4.
+            // OkHttp tenterait IPv6 en premier → timeout OS → bascule IPv4.
+            // Ce resolver retourne uniquement les Inet4Address ; fallback toutes adresses si aucune IPv4.
+            final Dns ipv4OnlyDns = new Dns() {
+               @Override
+               public List<InetAddress> lookup(String hostname) throws java.net.UnknownHostException {
+                   List<InetAddress> all = Dns.SYSTEM.lookup(hostname);
+                   List<InetAddress> ipv4Only = new ArrayList<>();
+                   for (InetAddress addr : all) {
+                       if (addr instanceof Inet4Address) {
+                           ipv4Only.add(addr);
+                       }
+                   }
+                   if (!ipv4Only.isEmpty()) {
+                       Log.i(TAG, "DNS IPv4-only pour " + hostname + " : " + ipv4Only.size() + " adresse(s)");
+                       return ipv4Only;
+                   }
+                   // Aucune IPv4 disponible : on retourne tout pour ne pas bloquer (LAN pure IPv6)
+                   Log.w(TAG, "DNS : aucune adresse IPv4 pour " + hostname + " — fallback toutes adresses");
+                   return all;
+               }
+            };
+
             OkHttpClientProvider.setOkHttpClientFactory(new com.facebook.react.modules.network.OkHttpClientFactory() {
-                @Override
-                public OkHttpClient createNewNetworkModuleClient() {
-                    return OkHttpClientProvider.createClientBuilder(context)
-                        .sslSocketFactory(sslSocketFactory, compositeTm)
-                        .hostnameVerifier(hnv)
-                        .build();
-                }
+               @Override
+               public OkHttpClient createNewNetworkModuleClient() {
+                   return OkHttpClientProvider.createClientBuilder(context)
+                       .sslSocketFactory(sslSocketFactory, compositeTm)
+                       .hostnameVerifier(hnv)
+                       .dns(ipv4OnlyDns)
+                       .build();
+               }
             });
 
             Log.i(TAG, "✅ OkHttp SSL factory Domoticz activée (cert bundlé + CN fallback)");
@@ -366,7 +396,9 @@ public final class DomoticzSSLHelper {
  *   3. Génère network_security_config.xml dans android/app/src/main/res/xml/
  *   4. Injecte android:networkSecurityConfig dans AndroidManifest.xml
  *   5. Génère DomoticzSSLHelper.java et patche MainApplication.kt pour configurer OkHttp
- *      directement avec un TrustManager composite et un HostnameVerifier CN-fallback
+ *      directement avec un TrustManager composite, un HostnameVerifier CN-fallback
+ *      et un resolver DNS IPv4-only (évite le délai Happy Eyeballs si le domaine a AAAA
+ *      mais que le port n'est forwardé qu'en IPv4)
  */
 const withNetworkSecurity = (config, options) => {
   config = withGradleVersion(config);
