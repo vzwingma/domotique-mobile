@@ -91,7 +91,7 @@ function runSSLDiagnostic(failedUrl: string): void {
  */
 export function runLatencyDiagnostic(traceId: string): void {
     if (!API_URL) return;
-    const baseHost = (API_URL as string).replace(/\/$/, '');
+    const baseHost = (API_URL).replace(/\/$/, '');
     const diagnosticUrl = `${baseHost}/json.htm?type=command&param=getconfig`;
 
     const t0 = Date.now();
