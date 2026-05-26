@@ -18,6 +18,8 @@ import { getHeaderIcon } from '@/components/navigation/TabHeaderIcon';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
 import { mapDomoticzStatusToConnectionBadgeState } from '@/components/ConnectionBadge';
 import { refreshDomoticzData } from '@/app/services/RefreshOrchestrator.service';
+import { runLatencyDiagnostic } from '@/app/services/ClientHTTP.service';
+import { generateTraceId } from '@/app/services/ErrorHandler.service';
 
 const REFRESH_COOLDOWN_MS = 5000;
 
@@ -75,6 +77,11 @@ export default function TabLayout() {
   useEffect(() => {
     console.log("(Re)Chargement de l'application...");
     lastRefreshAtMsRef.current = Date.now();
+    // Diagnostic de latence au 1er chargement uniquement — aide à identifier
+    // la phase réseau lente (DNS, TCP, TLS ou serveur) en 5G
+    if (refreshTick === 0) {
+      runLatencyDiagnostic(generateTraceId());
+    }
     setIsLoading(true);
     refreshDomoticzData({
       setDomoticzConnexionData,

@@ -7,7 +7,7 @@ import { handleError, generateTraceId } from './ErrorHandler.service';
 
 // Timeout suffisamment long pour couvrir les connexions distantes lentes (5G ~30-40s).
 // Valeur choisie pour détecter les serveurs réellement injoignables sans pénaliser les liens lents.
-const REQUEST_TIMEOUT_MS = 60000;
+const REQUEST_TIMEOUT_MS = 180000;
 const inFlightRequests = new Map<string, Promise<any>>();
 
 
@@ -76,6 +76,54 @@ function runSSLDiagnostic(failedUrl: string): void {
                     .catch(() => console.warn('[SSL Diagnostic] ❌ Host Domoticz inaccessible — vérifiez réseau/Wi-Fi/pare-feu'));
             }
         });
+}
+
+/**
+ * Diagnostic de latence — décompose les phases réseau pour identifier
+ * quelle couche (DNS, TCP, TLS, HTTP) introduit la latence.
+ *
+ * À appeler au démarrage de l'app pour produire des logs exploitables.
+ * Les timestamps permettent de localiser précisément la phase lente :
+ *   - t0→t1 = DNS + TCP + TLS (tout ce qui précède le premier octet HTTP)
+ *   - t1→t2 = traitement serveur + réception HTTP
+ *   Si t0→t1 >> t1→t2 : le problème est réseau/TLS (probable sur 5G)
+ *   Si t1→t2 >> t0→t1 : le problème est côté serveur
+ */
+export function runLatencyDiagnostic(traceId: string): void {
+    if (!API_URL) return;
+    const baseHost = (API_URL).replace(/\/$/, '');
+    const diagnosticUrl = `${baseHost}/json.htm?type=command&param=getconfig`;
+
+    const t0 = Date.now();
+    console.log(`[LatencyDiag traceId=${traceId}] t0=${t0} — fetch() déclenché vers ${diagnosticUrl}`);
+
+    fetch(diagnosticUrl, {
+        method: 'GET',
+        signal: AbortSignal.timeout ? AbortSignal.timeout(90000) : undefined,
+        headers: new Headers({ 'Authorization': 'Basic ' + API_AUTH }),
+    })
+    .then(res => {
+        const t1 = Date.now();
+        console.log(`[LatencyDiag traceId=${traceId}] t1=${t1} — premier octet HTTP reçu (status ${res.status})`);
+        console.log(`[LatencyDiag traceId=${traceId}] ⏱ DNS+TCP+TLS : ${t1 - t0}ms`);
+        return res.text().then(body => ({ t1, body }));
+    })
+    .then(({ t1, body }) => {
+        const t2 = Date.now();
+        console.log(`[LatencyDiag traceId=${traceId}] t2=${t2} — corps reçu intégralement`);
+        console.log(`[LatencyDiag traceId=${traceId}] ⏱ Traitement serveur + transfert body : ${t2 - t1}ms`);
+        console.log(`[LatencyDiag traceId=${traceId}] ⏱ Total : ${t2 - t0}ms`);
+        try {
+            const json = JSON.parse(body) as { status?: string };
+            console.log(`[LatencyDiag traceId=${traceId}] ✅ Réponse Domoticz status=${json.status}`);
+        } catch {
+            console.warn(`[LatencyDiag traceId=${traceId}] ⚠️ Body non-JSON : ${body.substring(0, 200)}`);
+        }
+    })
+    .catch(err => {
+        const t1 = Date.now();
+        console.error(`[LatencyDiag traceId=${traceId}] ❌ Échec après ${t1 - t0}ms — ${(err as Error).message}`);
+    });
 }
 
 /**
