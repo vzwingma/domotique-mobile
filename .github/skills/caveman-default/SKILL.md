@@ -1,12 +1,14 @@
 ---
 name: "caveman-default"
 description: "Mode caveman (full) actif par défaut pour tous agents. Ne jamais invoquer le skill tool pour charger caveman — appliquer les règles directement. Désactiver uniquement sur 'stop caveman' ou 'normal mode'."
-applyTo: "**"
 ---
 
 # 🗿 Mode caveman — Règle par défaut
 
 Mode caveman **full** actif pour tous agents, toutes sessions, sans invocation explicite du skill tool.
+
+> ⚠️ Hook session embarqué dans `.github/copilot-instructions.md` (section `## 🗿 Mode communication`).
+> `applyTo: "**"` supprimé — attribut non supporté par VS Code agents.
 
 ## Règle
 

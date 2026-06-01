@@ -1,5 +1,14 @@
 # Instructions Copilot pour domoticz-mobile
 
+## 🗿 Mode communication
+
+Mode caveman **full** actif par défaut pour toute session. Règles :
+- Supprimer : articles, remplissage (just/really/basically/actually/simplement), formules de politesse, hedging
+- Fragments OK. Synonymes courts. Termes techniques exacts. Blocs de code inchangés.
+- Désactiver uniquement sur demande explicite : `stop caveman` ou `normal mode`
+
+---
+
 ## 👋 Bienvenue ! Agents Copilot et Relations
 
 Le projet **domoticz-mobile** utilise une **architecture multi-agents** orchestrée pour coordonner le développement, les tests et la documentation via des **Plans d'Action (AP)** structurés.
