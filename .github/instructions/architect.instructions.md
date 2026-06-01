@@ -42,11 +42,12 @@ Convention de nommage des IDs : `feat-<nom>-dev` / `feat-<nom>-qa` / `feat-<nom>
 
 ## Agents du projet
 
-| Icône | Nom      | Fichier agent     | Rôle                                            |
-|-------|----------|-------------------|-------------------------------------------------|
-| 🔵    | DEVon    | `Devon.agent.md`  | Implémentation React Native / Expo / TypeScript |
-| 🟢    | QUALvin  | `Qalvin.agent.md` | Tests unitaires (Jest 29 + Testing Library)     |
-| 🟣    | DOCly    | `Docly.agent.md`  | Documentation (README, Wiki, CHANGELOG)         |
+| Icône | Nom      | Fichier agent        | Rôle                                            |
+|-------|----------|----------------------|-------------------------------------------------|
+| 🔵    | DEVon    | `Devon.agent.md`     | Implémentation React Native / Expo / TypeScript |
+| 🟢    | QUALvin  | `Qalvin.agent.md`    | Tests unitaires (Jest 29 + Testing Library)     |
+| 🟣    | DOCly    | `Docly.agent.md`     | Documentation (README, Wiki, CHANGELOG)         |
+| 💰    | FINNops  | `FinnOps.agent.md`   | Analyse coûts IA + optimisation sessions        |
 
 ## Règle d'index des plans (obligatoire)
 
