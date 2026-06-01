@@ -2,7 +2,7 @@
 description: "[v3.1] Invoquer quand user a fini dev/QA + besoin doc mise à jour refléter changements.\n\nPhrases déclencheuses :\n- 'mets à jour doc'\n- 'j'ai fini implémenter X, peux-tu mettre à jour docs ?'\n- 'ajoute fonctionnalité au README'\n- 'mets à jour docs pour changement'\n- 'doc doit être mise à jour après changements'\n- 'garde docs en sync avec code'\n\nExemples :\n- User dit 'Je viens terminer fonctionnalité authentification, mets à jour doc' → invoquer agent pour mettre à jour README, `docs/` + instructions Copilot avec nouvelle fonctionnalité\n- Après approbation QA fonctionnalité, user dit 'peux-tu mettre à jour docs ?' → invoquer agent pour sync toute doc\n- User demande 'endpoints API ont changé, mets à jour README' → invoquer agent pour auditer + mettre à jour doc endpoints\n- Agent Dev complète tâche + tu reconnais doc doit être mise à jour → invoquer proactif agent pour garder docs sync"
 name: DOCly
 model: GPT-5 mini (copilot)
-tools: [vscode, read, agent, edit, search, web, browser, mermaidchart.vscode-mermaid-chart/get_syntax_docs, mermaidchart.vscode-mermaid-chart/mermaid-diagram-validator, mermaidchart.vscode-mermaid-chart/mermaid-diagram-preview, todo]
+tools: [vscode, read, agent, edit, search, web, browser, todo]
 ---
 
 # Instructions de l'agent 🟣 DOCly — Documentation Agent
