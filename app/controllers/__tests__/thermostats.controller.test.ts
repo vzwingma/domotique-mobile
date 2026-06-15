@@ -304,6 +304,37 @@ describe('updateThermostatPoint', () => {
     });
 });
 
+describe('double refresh post-commande (thermostats)', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        jest.useFakeTimers();
+        mockCallDomoticz.mockResolvedValue({ result: [] });
+    });
+
+    afterEach(() => {
+        jest.clearAllTimers();
+        jest.useRealTimers();
+    });
+
+    it('updateThermostatPoint appelle GET_DEVICES immédiatement puis après 1000ms', async () => {
+        const device = makeThermostat({ idx: 10, unit: '°C' });
+        const setter = jest.fn();
+
+        updateThermostatPoint(10, device, 22, setter);
+        await (mockCallDomoticz.mock.results[0]?.value as Promise<unknown>);
+        await Promise.resolve();
+
+        expect(mockCallDomoticz).toHaveBeenCalledTimes(2);
+        expect(mockCallDomoticz).toHaveBeenNthCalledWith(2, expect.stringContaining('devices'));
+
+        jest.advanceTimersByTime(1000);
+        await Promise.resolve();
+
+        expect(mockCallDomoticz).toHaveBeenCalledTimes(3);
+        expect(mockCallDomoticz).toHaveBeenNthCalledWith(3, expect.stringContaining('devices'));
+    });
+});
+
 // ─── refreshEquipementState (thermostats) ─────────────────────────────────────
 
 describe('refreshEquipementState', () => {
@@ -358,5 +389,25 @@ describe('refreshEquipementState', () => {
 
         jest.advanceTimersByTime(1);
         expect(mockCallDomoticz).toHaveBeenNthCalledWith(2, expect.any(String));
+    });
+
+    it('déclenche un second appel via timer quand scheduleSecondRefresh=true et delay=1000', () => {
+        const setter = jest.fn();
+
+        refreshEquipementState(setter, { scheduleSecondRefresh: true, secondRefreshDelayMs: 1000 });
+        expect(mockCallDomoticz).toHaveBeenCalledTimes(1);
+
+        jest.advanceTimersByTime(1000);
+        expect(mockCallDomoticz).toHaveBeenCalledTimes(2);
+    });
+
+    it('sans options, conserve un seul appel (non-régression)', () => {
+        const setter = jest.fn();
+
+        refreshEquipementState(setter);
+        expect(mockCallDomoticz).toHaveBeenCalledTimes(1);
+
+        jest.advanceTimersByTime(1000);
+        expect(mockCallDomoticz).toHaveBeenCalledTimes(1);
     });
 });

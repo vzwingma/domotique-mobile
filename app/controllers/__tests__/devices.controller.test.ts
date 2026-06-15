@@ -241,6 +241,56 @@ describe('updateDeviceLevel', () => {
     });
 });
 
+describe('double refresh post-commande (devices)', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        jest.useFakeTimers();
+        mockCallDomoticz.mockResolvedValue({ result: [] });
+        mockGetFavorites.mockResolvedValue([]);
+    });
+
+    afterEach(() => {
+        jest.clearAllTimers();
+        jest.useRealTimers();
+    });
+
+    it('updateDeviceState (via onClickDeviceIcon ONOFF) appelle GET_DEVICES immédiatement puis après 1000ms', async () => {
+        const device = makeDevice({ switchType: DomoticzSwitchType.ONOFF as any, status: DomoticzDeviceStatus.ON });
+        const setter = jest.fn();
+
+        onClickDeviceIcon(device, setter);
+        await (mockCallDomoticz.mock.results[0]?.value as Promise<unknown>);
+        await Promise.resolve();
+
+        expect(mockCallDomoticz).toHaveBeenCalledTimes(2);
+        expect(mockCallDomoticz).toHaveBeenNthCalledWith(2, expect.stringContaining('devices'));
+
+        jest.advanceTimersByTime(1000);
+        await Promise.resolve();
+
+        expect(mockCallDomoticz).toHaveBeenCalledTimes(3);
+        expect(mockCallDomoticz).toHaveBeenNthCalledWith(3, expect.stringContaining('devices'));
+    });
+
+    it('updateDeviceLevel (level > 0) appelle GET_DEVICES immédiatement puis après 1000ms', async () => {
+        const device = makeDevice({ idx: 113 });
+        const setter = jest.fn();
+
+        updateDeviceLevel(113, device, 50, setter);
+        await (mockCallDomoticz.mock.results[0]?.value as Promise<unknown>);
+        await Promise.resolve();
+
+        expect(mockCallDomoticz).toHaveBeenCalledTimes(2);
+        expect(mockCallDomoticz).toHaveBeenNthCalledWith(2, expect.stringContaining('devices'));
+
+        jest.advanceTimersByTime(1000);
+        await Promise.resolve();
+
+        expect(mockCallDomoticz).toHaveBeenCalledTimes(3);
+        expect(mockCallDomoticz).toHaveBeenNthCalledWith(3, expect.stringContaining('devices'));
+    });
+});
+
 // ─── addActionForFavorite ──────────────────────────────────────────────────────
 
 describe('addActionForFavorite', () => {
@@ -327,6 +377,29 @@ describe('refreshEquipementState', () => {
 
         jest.advanceTimersByTime(1);
         expect(mockCallDomoticz).toHaveBeenNthCalledWith(2, expect.any(String));
+    });
+
+    it('déclenche un second refresh après 500ms quand secondRefreshDelayMs=500', () => {
+        const setter = jest.fn();
+
+        refreshEquipementState(setter, { scheduleSecondRefresh: true, secondRefreshDelayMs: 500 });
+        expect(mockCallDomoticz).toHaveBeenCalledTimes(1);
+
+        jest.advanceTimersByTime(499);
+        expect(mockCallDomoticz).toHaveBeenCalledTimes(1);
+
+        jest.advanceTimersByTime(1);
+        expect(mockCallDomoticz).toHaveBeenCalledTimes(2);
+    });
+
+    it('sans options, conserve un seul appel même après 1000ms (non-régression)', () => {
+        const setter = jest.fn();
+
+        refreshEquipementState(setter);
+        expect(mockCallDomoticz).toHaveBeenCalledTimes(1);
+
+        jest.advanceTimersByTime(1000);
+        expect(mockCallDomoticz).toHaveBeenCalledTimes(1);
     });
 });
 

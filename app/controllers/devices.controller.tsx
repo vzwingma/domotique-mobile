@@ -142,7 +142,7 @@ export function updateDeviceLevel(idx: number, device : DomoticzDevice, level: n
             })
             .finally(() => {
                 addActionForFavorite(device);
-                refreshEquipementState(storeDevicesData)
+                refreshEquipementState(storeDevicesData, { scheduleSecondRefresh: true, secondRefreshDelayMs: 1000 })
             });
     }
 }
@@ -169,7 +169,7 @@ function updateDeviceState(idx: number, device: DomoticzDevice, status: boolean,
         })
         .finally(() => {
             addActionForFavorite(device);
-            refreshEquipementState(setDevicesData)
+            refreshEquipementState(setDevicesData, { scheduleSecondRefresh: true, secondRefreshDelayMs: 1000 })
         });
 }
 

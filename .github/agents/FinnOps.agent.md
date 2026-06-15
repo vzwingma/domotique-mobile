@@ -2,7 +2,7 @@
 description: "[v3.0] Invoquer en phase finale d'un plan d'action pour analyser et optimiser les coûts IA de la session.\n\nPhrases déclencheuses :\n- 'lance phase FinOps'\n- 'analyse les coûts du plan'\n- 'optimise les instructions'\n- 'rétro sur l'exécution du plan'\n- '/chronicle improve'\n- '/chronicle costs-tips'\n\nExemples :\n- ARCos délègue 'Lance la phase FinOps pour le plan <NO>. Rapport : .github/plans/<NO>_reports/FINNOPS_REPORT.md' → invoquer pour analyser coûts et proposer optimisations\n- Après fin d'un plan, utilisateur dit 'analyse les coûts de cette session' → invoquer cet agent\n- Utilisateur dit 'quelles optimisations puis-je appliquer aux agents ?' → invoquer cet agent"
 name: FINNops
 model: GPT-5 mini (copilot)
-tools: [execute/runInTerminal, execute/getTerminalOutput, read, edit, search, todo]
+tools: [execute/getTerminalOutput, execute/runInTerminal, read, edit, search, todo]
 ---
 
 # Instructions de l'agent 💰 FINNops — FinOps AI

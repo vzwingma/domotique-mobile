@@ -11,6 +11,7 @@ Cet index liste uniquement les plans et leur **statut global**.
 
 | AP | Fichier | Objectif | Statut global |
 |---|---|---|---|
+| AP-005 | [`005_optimisations_finops.plan.md`](./005_optimisations_finops.plan.md) | Optimisations FinOps : modèle DEVon Haiku, sync table modèles, compression copilot-instructions | ⏳ PLANIFIÉ |
 
 ---
 
@@ -21,6 +22,7 @@ Cet index liste uniquement les plans et leur **statut global**.
 | AP-001 | [`001_modernisation_complète.plan.md`](./001_modernisation_complète.plan.md) | Modernisation globale (tests, dépendances, architecture, performance, CI/CD, doc) | ✅ COMPLÉTÉ |
 | AP-002 | [`002_typescript_ci_remediation.plan.md`](./002_typescript_ci_remediation.plan.md) | Remédiation CI TypeScript (`tsc --noEmit`) | ✅ COMPLÉTÉ |
 | AP-003 | [`003_sonarcloud_remediation.plan.md`](./003_sonarcloud_remediation.plan.md) | Remédiation SonarCloud (Reliability + Maintainability) | ✅ COMPLÉTÉ |
+| AP-004 | [`004_fix_race_condition_post_commande.plan.md`](./004_fix_race_condition_post_commande.plan.md) | Fix race condition affichage état post-commande (volet/lumière/thermostat) | ✅ COMPLÉTÉ |
 
 ---
 
@@ -32,4 +34,4 @@ Cet index liste uniquement les plans et leur **statut global**.
 
 ---
 
-**Dernière mise à jour :** 2026-05-07
+**Dernière mise à jour :** 2026-06-01

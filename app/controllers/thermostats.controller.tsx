@@ -100,7 +100,7 @@ export function updateThermostatPoint(idx: number, device: DomoticzThermostat, t
         })
         .finally(() => {
             console.log("Mise à jour de l'équipement " + device.name + " [" + idx + "]", temp + device.unit);
-            refreshEquipementState(setDomoticzThermostatData)
+            refreshEquipementState(setDomoticzThermostatData, { scheduleSecondRefresh: true, secondRefreshDelayMs: 1000 })
         });
 }
 

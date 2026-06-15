@@ -26,6 +26,10 @@ et ce projet adhère à la [versioning sémantique](https://semver.org/spec/v2.0
   - alignement des versions d'agents dans `.github/copilot-instructions.md` avec `.github/agents/*.agent.md`
   - corrections mineures README/CONTRIBUTING (liens dépôt, limite favoris)
 
+### Fixed
+
+- Fix race condition affichage état post-commande : après commande volet/lumière/thermostat, second refresh différé de 1 000 ms permet à Domoticz de propager l'état avant mise à jour UI
+
 ---
 
 ## [4.0.0] — 2026-05-04 🚀
