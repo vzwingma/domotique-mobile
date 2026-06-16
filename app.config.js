@@ -19,10 +19,6 @@ module.exports = ({ config }) => {
       domoticzAuth: process.env.DOMOTICZ_AUTH,
     },
     icon: appIcon,
-    splash: {
-      ...config.splash,
-      image: splashImage,
-    },
     android: {
       ...config.android,
       adaptiveIcon: {
