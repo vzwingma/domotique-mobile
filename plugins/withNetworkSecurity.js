@@ -330,7 +330,7 @@ public final class DomoticzSSLHelper {
                     int lastColon = value.lastIndexOf(':');
                     if (lastColon > -1 && value.indexOf(']') == -1) {
                         String portPart = value.substring(lastColon + 1);
-                        if (portPart.matches("\\d+")) {
+                        if (portPart.matches("\\\\d+")) {
                             return value.substring(0, lastColon);
                         }
                     }
