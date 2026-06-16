@@ -103,10 +103,28 @@ const withCertificateFiles = (config, options) => {
             <!-- Certificats installés manuellement sur l'appareil (fallback développement) -->
             <certificates src="user"/>
         </trust-anchors>
+    </domain-config>
+    
+    <!-- Développement : autoriser l'IP locale 192.168.x.x avec cleartext pour Expo -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">192.168.1.145</domain>
+        <domain includeSubdomains="false">localhost</domain>
+        <trust-anchors>
+            <certificates src="system"/>
+        </trust-anchors>
     </domain-config>`
         : `
     <!-- ⚠️  Aucun domaine configuré : le certificat bundlé ne sera pas utilisé -->
-    <!-- Passez le domaine en option du plugin dans app.json pour activer le support SSL auto-signé -->`;
+    <!-- Passez le domaine en option du plugin dans app.json pour activer le support SSL auto-signé -->
+    
+    <!-- Développement : autoriser l'IP locale avec cleartext pour Expo -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">192.168.1.145</domain>
+        <domain includeSubdomains="false">localhost</domain>
+        <trust-anchors>
+            <certificates src="system"/>
+        </trust-anchors>
+    </domain-config>`;
 
       const networkSecurityConfig = `<?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
