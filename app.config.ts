@@ -1,4 +1,4 @@
-import { ExpoConfig } from 'expo/config';
+import type { ExpoConfig } from 'expo/config';
 import { readFileSync } from 'node:fs';
 
 const packageJson = JSON.parse(readFileSync('./package.json', 'utf8')) as { version?: string };
