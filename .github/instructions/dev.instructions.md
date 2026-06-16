@@ -29,9 +29,9 @@ AND NOT EXISTS (
 
 ## Stack technique
 
-- **React Native 0.83.6 / Expo ~55** – TypeScript strict, composants fonctionnels uniquement
+- **React Native 0.85.3 / Expo ~56** – TypeScript strict, composants fonctionnels uniquement
 - **UI** : Composants React Native natifs (`View`, `Text`, `TouchableOpacity`, etc.) — aucune lib UI externe
-- **expo-router ~55.0.16** – Routage basé sur les fichiers, routes dans `app/(tabs)/_layout.tsx`
+- **expo-router ~56.2.11** – Routage basé sur les fichiers, routes dans `app/(tabs)/_layout.tsx`
 - **Authentification** : Basic Auth via `EXPO_PUBLIC_DOMOTICZ_AUTH` (Base64) — ne pas manipuler dans les composants
 - **@react-native-community/slider** – Sliders (volets, niveaux lumineux)
 - **uuid ^14.0.0** – Génération de `traceId` pour les appels HTTP
@@ -96,4 +96,3 @@ callDomoticz(SERVICES_URL.CMD_BLINDS_LIGHTS_ON_OFF, params);
 
 - `.github/plans/README.md` doit rester limité aux **plans + statut global** (sans détail de phases).
 - Si ton travail change le statut global d'un plan, mets à jour `.github/plans/README.md` dans le même changement.
-

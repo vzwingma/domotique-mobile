@@ -103,10 +103,28 @@ const withCertificateFiles = (config, options) => {
             <!-- Certificats installés manuellement sur l'appareil (fallback développement) -->
             <certificates src="user"/>
         </trust-anchors>
+    </domain-config>
+    
+    <!-- Développement : autoriser l'IP locale 192.168.x.x avec cleartext pour Expo -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">192.168.1.145</domain>
+        <domain includeSubdomains="false">localhost</domain>
+        <trust-anchors>
+            <certificates src="system"/>
+        </trust-anchors>
     </domain-config>`
         : `
     <!-- ⚠️  Aucun domaine configuré : le certificat bundlé ne sera pas utilisé -->
-    <!-- Passez le domaine en option du plugin dans app.json pour activer le support SSL auto-signé -->`;
+    <!-- Passez le domaine en option du plugin dans app.json pour activer le support SSL auto-signé -->
+    
+    <!-- Développement : autoriser l'IP locale avec cleartext pour Expo -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">192.168.1.145</domain>
+        <domain includeSubdomains="false">localhost</domain>
+        <trust-anchors>
+            <certificates src="system"/>
+        </trust-anchors>
+    </domain-config>`;
 
       const networkSecurityConfig = `<?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
@@ -266,7 +284,7 @@ public final class DomoticzSSLHelper {
             sslCtx.init(null, new TrustManager[]{compositeTm}, null);
             final SSLSocketFactory sslSocketFactory = sslCtx.getSocketFactory();
 
-            // HostnameVerifier avec fallback CN (pour les certs sans extension SubjectAltName)
+            // HostnameVerifier avec fallback CN normalisé (pour les certs où le CN embarque un port)
             final HostnameVerifier hnv = new HostnameVerifier() {
                 @Override
                 public boolean verify(String hostname, SSLSession session) {
@@ -277,14 +295,15 @@ public final class DomoticzSSLHelper {
                     // Fallback : vérification manuelle via le CN (Common Name)
                     try {
                         X509Certificate cert = (X509Certificate) session.getPeerCertificates()[0];
-                        String cn = extractCN(cert.getSubjectX500Principal().getName());
+                        String normalizedHostname = normalizeHost(hostname);
+                        String cn = normalizeHost(extractCN(cert.getSubjectX500Principal().getName()));
                         if (cn != null) {
-                            boolean match = cn.equalsIgnoreCase(hostname)
-                                || (cn.startsWith("*.") && hostname.endsWith(cn.substring(1)));
+                            boolean match = cn.equalsIgnoreCase(normalizedHostname)
+                                || (cn.startsWith("*.") && normalizedHostname.endsWith(cn.substring(1)));
                             if (match) {
-                                Log.i(TAG, "✅ Hostname validé via CN : " + cn + " → " + hostname);
+                                Log.i(TAG, "✅ Hostname validé via CN : " + cn + " → " + normalizedHostname);
                             } else {
-                                Log.w(TAG, "❌ Hostname CN mismatch : CN=" + cn + ", hostname=" + hostname);
+                                Log.w(TAG, "❌ Hostname CN mismatch : CN=" + cn + ", hostname=" + normalizedHostname);
                             }
                             return match;
                         }
@@ -302,6 +321,20 @@ public final class DomoticzSSLHelper {
                         }
                     }
                     return null;
+                }
+
+                private String normalizeHost(String value) {
+                    if (value == null) {
+                        return null;
+                    }
+                    int lastColon = value.lastIndexOf(':');
+                    if (lastColon > -1 && value.indexOf(']') == -1) {
+                        String portPart = value.substring(lastColon + 1);
+                        if (portPart.matches("\\d+")) {
+                            return value.substring(0, lastColon);
+                        }
+                    }
+                    return value;
                 }
             };
 
