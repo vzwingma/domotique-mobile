@@ -12,11 +12,6 @@
     "icon": "./assets/images/v/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "dark",
-    "splash": {
-      "image": "./assets/images/v/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/v/adaptive-icon.png",
