@@ -40,6 +40,15 @@ npx expo --version
 
 **Plateforme cible :** Android et Web (React Native via Expo)
 
+**Stack technologique :**
+- **Expo SDK** ~56.0.12
+- **React** 19.2.3
+- **React Native** 0.85.3
+- **TypeScript** strict mode
+- **expo-router** ~56.2.11
+- **Jest** + jest-expo ~56.0.5 (tests)
+- **ESLint** 9.39.1 (flat config)
+
 ## 🚀 Installation
 
 ### Étape 1 : Cloner le dépôt
