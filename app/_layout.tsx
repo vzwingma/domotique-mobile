@@ -1,9 +1,9 @@
-import { DarkTheme } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Colors } from './enums/Colors';
 import { DomoticzContextProvider } from './services/DomoticzContextProvider';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -33,7 +33,7 @@ export default function RootLayout() {
       <DomoticzContextProvider>
         <Stack
           screenOptions={{
-            contentStyle: { backgroundColor: DarkTheme.colors.background },
+            contentStyle: { backgroundColor: Colors.dark.background },
           }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
