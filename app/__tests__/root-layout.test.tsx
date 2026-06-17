@@ -15,9 +15,6 @@ jest.mock('expo-splash-screen', () => ({
 }));
 
 jest.mock('@expo/vector-icons', () => ({
-  Ionicons: {
-    font: { Ionicons: 'ion-font-asset' },
-  },
   MaterialCommunityIcons: {
     font: { MaterialCommunityIcons: 'mci-font-asset' },
   },
@@ -51,7 +48,7 @@ describe('RootLayout', () => {
     mockUseFonts.mockReturnValue([true]);
   });
 
-  it('charge les fontes Ionicons au demarrage', async () => {
+  it('charge les fontes MaterialCommunityIcons au demarrage', async () => {
     const RootLayout = require('../_layout').default;
 
     render(<RootLayout />);
@@ -59,7 +56,6 @@ describe('RootLayout', () => {
     expect(mockUseFonts).toHaveBeenCalledWith(
       expect.objectContaining({
         SpaceMono: expect.anything(),
-        Ionicons: 'ion-font-asset',
         MaterialCommunityIcons: 'mci-font-asset',
       })
     );
