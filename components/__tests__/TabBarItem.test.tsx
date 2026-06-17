@@ -18,28 +18,27 @@ import { TabBarItems } from '../navigation/TabBarItem';
 import { Tabs } from '@/app/enums/TabsEnums';
 import { Colors } from '@/app/enums/Colors';
 
-// Ionicons est importé directement via '@expo/vector-icons/Ionicons' dans TabBarIcon
-jest.mock('@expo/vector-icons/Ionicons', () => 'Ionicons');
+jest.mock('@/components/AppIcon', () => 'AppIcon');
 
-// ─── Helper : trouve tous les noeuds Ionicons dans le rendu ────────────────────
+// ─── Helper : trouve tous les noeuds AppIcon dans le rendu ─────────────────────
 
-function getIoniconsProps(tab: Tabs, activeTab: Tabs, selectNewTab: jest.Mock) {
+function getAppIconProps(tab: Tabs, activeTab: Tabs, selectNewTab: jest.Mock) {
   const rendered = render(
     <TabBarItems activeTab={activeTab} thisTab={tab} selectNewTab={selectNewTab} />
   );
   // RTL v13 expose root pour accéder au premier element
   const root = rendered.root;
-  // Cherche récursivement un enfant de type 'Ionicons' (la string mockée)
-  function findIonicons(instance: any): any | null {
+  // Cherche récursivement un enfant de type 'AppIcon' (la string mockée)
+  function findAppIcon(instance: any): any | null {
     if (!instance) return null;
-    if (instance.type === 'Ionicons') return instance;
+    if (instance.type === 'AppIcon') return instance;
     for (const child of (instance.children ?? [])) {
-      const found = findIonicons(child);
+      const found = findAppIcon(child);
       if (found) return found;
     }
     return null;
   }
-  return findIonicons(root)?.props ?? null;
+  return findAppIcon(root)?.props ?? null;
 }
 
 // ─── Couleurs selon l'etat actif ──────────────────────────────────────────────
@@ -49,25 +48,25 @@ describe("TabBarItems - couleur selon l'etat actif", () => {
   beforeEach(() => selectNewTab.mockClear());
 
   it("onglet actif : couleur domoticz transmise a l'icone", () => {
-    const props = getIoniconsProps(Tabs.INDEX, Tabs.INDEX, selectNewTab);
+    const props = getAppIconProps(Tabs.INDEX, Tabs.INDEX, selectNewTab);
     expect(props).not.toBeNull();
     expect(props.color).toBe(Colors.domoticz.color);
   });
 
   it("onglet inactif : couleur blanche (#ffffff) transmise a l'icone", () => {
-    const props = getIoniconsProps(Tabs.LUMIERES, Tabs.INDEX, selectNewTab);
+    const props = getAppIconProps(Tabs.LUMIERES, Tabs.INDEX, selectNewTab);
     expect(props).not.toBeNull();
     expect(props.color).toBe('#ffffff');
   });
 
   it("onglet actif : l'icone n'a pas le suffixe -outline", () => {
-    const props = getIoniconsProps(Tabs.LUMIERES, Tabs.LUMIERES, selectNewTab);
+    const props = getAppIconProps(Tabs.LUMIERES, Tabs.LUMIERES, selectNewTab);
     expect(props?.name).toBeDefined();
     expect(props?.name).not.toMatch(/-outline$/);
   });
 
   it("onglet inactif : l'icone a le suffixe -outline", () => {
-    const props = getIoniconsProps(Tabs.LUMIERES, Tabs.INDEX, selectNewTab);
+    const props = getAppIconProps(Tabs.LUMIERES, Tabs.INDEX, selectNewTab);
     expect(props?.name).toBeDefined();
     expect(props?.name).toMatch(/-outline$/);
   });

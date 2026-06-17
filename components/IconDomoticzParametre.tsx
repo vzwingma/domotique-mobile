@@ -1,12 +1,12 @@
 import DomoticzParameter from "@/app/models/domoticzParameter.model";
-import { Ionicons } from "@expo/vector-icons";
+import AppIcon from "@/components/AppIcon";
 
 /**
  * Composant qui affiche une icône en fonction du type de paramètre Domoticz.
  *  >Icone : https://oblador.github.io/react-native-vector-icons/ 
  */
 
-const IconDomoticzParametre = Ionicons;
+const IconDomoticzParametre = AppIcon;
 
 export function getIconDomoticzParametre( parametre : DomoticzParameter) : any {
 
