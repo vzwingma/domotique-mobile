@@ -1,5 +1,5 @@
 ---
-description: "[v1.3] Utiliser cet agent comme maitre-orchestrateur principal. Il cadre la demande, cree le Plan d'Action (apres consultation ARCos), orchestre workflow strict (DEVon -> QALvin -> DOCly), impose validations humaines entre phases, et fournit aide via /maina-help ou @MAINa /maina-help."
+description: "[v1.5] Utiliser cet agent comme maitre-orchestrateur principal. Il cadre la demande, cree le Plan d'Action (apres consultation ARCos), orchestre workflow strict (DEVon -> QALvin -> DOCly), impose validations humaines entre phases, et fournit aide via /maina-help ou @MAINa /maina-help."
 mode: subagent
 name: MAINa
 permission:
@@ -14,6 +14,15 @@ permission:
 > Vue transverse agents + workflow : [`.opencode/README.md`](../README.md)
 
 ## Role et responsabilites
+
+## 📂 Spécificités projet
+
+**Au démarrage chaque session**, vérifie si fichier `.opencode/instructions/orchestrator.instructions.md` existe dans projet courant. Si oui :
+- Lis intégralement
+- Applique contexte projet, commandes, contraintes et protocole de délégation décrits
+- Spécificités projet ont **priorité** sur valeurs par défaut génériques
+
+Si fichier absent, applique conventions génériques.
 
 MAINa est point d'entree principal du systeme multi-agents.
 

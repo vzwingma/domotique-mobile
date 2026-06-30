@@ -1,177 +1,104 @@
-# 📚 GitHub OpenCode Agents & Templates — Dépôt Transverse
+# OpenCode — domoticz-mobile
 
-Ce sous-arbre `.opencode/` contient les **artefacts OpenCode réutilisables** du dépôt : agents, skills, prompts, templates d'instructions et plans d'action.
+Ce dossier contient la configuration et les artefacts OpenCode du projet `domoticz-mobile` : agents, instructions spécifiques projet, prompts, skills et guides de Plans d'Action.
 
-Il sert de point d'entree pour comprendre **qui fait quoi**, **comment les agents se coordonnent** et **quels fichiers copier ou maintenir** sans surcharger chaque `*.agent.md`.
+## Structure
 
----
-
-## 📂 Structure
-
-```
+```text
 .opencode/
-├── agents/                              # 5 agents OpenCode generiques
-│   ├── Maina.agent.md                   # Maitre orchestrateur
-│   ├── Arcos.agent.md                   # Architecture (consulté par MAINa)
-│   ├── Devon.agent.md                   # Implementation
-│   ├── Qalvin.agent.md                  # Tests
-│   └── Docly.agent.md                   # Documentation
-├── instructions/                        # Templates d'instructions par role
-├── prompts/                             # Prompts d'initialisation / mise a jour
-├── skills/                              # Procedures partagees auto-chargees
-├── plans/                               # Plans d'Action et rapports
-├── CHANGELOG.md                         # Historique des versions des agents
-├── PLANS.md                             # Guide des Plans d'Action
-├── README.md                            # Ce fichier
-├── copilot-instructions.md              # Instructions de ce depot transverse
-└── copilot-instructions.template.md     # Template a copier dans les projets
+├── agents/                         # Agents OpenCode du projet
+│   ├── Maina.agent.md              # Orchestrateur principal
+│   ├── Arcos.agent.md              # Architecture
+│   ├── Devon.agent.md              # Implémentation
+│   ├── Qalvin.agent.md             # Tests
+│   └── Docly.agent.md              # Documentation
+├── instructions/                   # Instructions projet par agent
+│   ├── orchestrator.instructions.md # Spécificités MAINa
+│   ├── architect.instructions.md   # Spécificités ARCos
+│   ├── dev.instructions.md         # Spécificités DEVon
+│   ├── qa.instructions.md          # Spécificités QALvin
+│   ├── doc.instructions.md         # Spécificités DOCly
+│   ├── architect.instructions.template.md
+│   ├── dev.instructions.template.md
+│   ├── qa.instructions.template.md
+│   └── doc.instructions.template.md
+├── prompts/
+│   ├── init-copilot-instructions.prompt.md
+│   └── update-copilot-instructions.prompt.md
+├── skills/                         # Procédures partagées
+├── CHANGELOG.md                    # Historique versions agents
+├── PLANS.md                        # Guide Plans d'Action
+└── README.md                       # Ce fichier
 ```
 
----
+Le fichier racine `AGENTS.md` décrit le contexte projet partagé par tous les agents.
 
-## 🚀 Quick Start : reutiliser le sous-arbre `.opencode/`
+## Agents
 
-### Etape 1 : Copier les artefacts utiles
-
-Selon le projet cible, copier :
-
-- `.opencode/agents/`
-- `.opencode/skills/`
-- `.opencode/instructions/`
-- `.opencode/prompts/`
-- `.opencode/PLANS.md`
-- `.opencode/copilot-instructions.template.md`
-
-### Etape 2 : Initialiser les instructions projet
-
-Utiliser le prompt `init-copilot-instructions` pour generer les fichiers d'instructions adaptes au projet consommateur.
-
-### Etape 3 : Utiliser les agents
-
-Les agents peuvent ensuite etre invoques selon le besoin :
-
-- `MAINa` pour orchestrer workflow complet
-- `ARCos` pour concevoir et planifier
-- `DEVon` pour implementer
-- `QALvin` pour tester
-- `DOCly` pour documenter
-
----
-
-## 📖 Fichiers cles
-
-### Agents (`.opencode/agents/`)
-
-| Agent | Role | Quand l'utiliser |
+| Agent | Fichier | Rôle |
 |---|---|---|
-| **Maina.agent.md** (⚫ MAINa) | Maitre orchestrateur + créateur Plan d'Action | "`/maina-help`", "`@MAINa /maina-help`", "orchestrer workflow complet" |
-| **Arcos.agent.md** (🟠 ARC) | Expert architecture consulté par MAINa | "Analyse les options pour...", "Conçois architecture pour..." |
-| **Devon.agent.md** (🔵 DEV) | Implementateur | "Implémente cette fonctionnalité" |
-| **Qalvin.agent.md** (🟢 QUAL) | QA / tests | "Écris des tests pour..." |
-| **Docly.agent.md** (🟣 DOC) | Documentation | "Mets à jour la documentation" |
+| MAINa | `agents/Maina.agent.md` | Orchestration, cadrage, Plan d'Action, validations humaines |
+| ARCos | `agents/Arcos.agent.md` | Architecture, comparaison de solutions, recommandations, ADR |
+| DEVon | `agents/Devon.agent.md` | Implémentation TypeScript / React Native dans le scope validé |
+| QALvin | `agents/Qalvin.agent.md` | Tests Jest / Testing Library React Native et couverture |
+| DOCly | `agents/Docly.agent.md` | Documentation README, docs, ADR et instructions OpenCode |
 
-Les agents restent focalises sur leurs instructions runtime. La vue transverse et la coordination sont documentees ici pour eviter la duplication.
+Les agents génériques restent focalisés sur leur rôle. Les spécificités du dépôt sont dans `.opencode/instructions/*.instructions.md`.
 
-### Instructions (`.opencode/instructions/`)
+## Instructions Projet
 
-| Fichier | Role |
+| Fichier | Lu par | Contenu |
+|---|---|---|
+| `instructions/orchestrator.instructions.md` | MAINa | Contexte orchestration, gates humains, commandes projet, délégations |
+| `instructions/architect.instructions.md` | ARCos | Architecture Expo/React Native, couches, Domoticz, ADR |
+| `instructions/dev.instructions.md` | DEVon | Stack, conventions code, HTTP, modèles, état global |
+| `instructions/qa.instructions.md` | QALvin | Stack test, localisation tests, commandes et cas à couvrir |
+| `instructions/doc.instructions.md` | DOCly | Fichiers doc, conventions, versions, responsabilités |
+
+Les templates historiques restent disponibles pour réinitialiser ou adapter un autre projet :
+- `architect.instructions.template.md`
+- `dev.instructions.template.md`
+- `qa.instructions.template.md`
+- `doc.instructions.template.md`
+
+Il n'existe pas de template MAINa dédié dans ce dépôt ; `orchestrator.instructions.md` a été créé à partir du modèle des autres fichiers et du rôle de `Maina.agent.md`.
+
+## Prompts
+
+| Prompt | Usage |
 |---|---|
-| `architect.instructions.md` | Conventions architecture / SQL handoff |
-| `dev.instructions.md` | Stack technique, versions, conventions de code |
-| `qa.instructions.md` | Framework de test, commandes CI, cas a couvrir |
-| `doc.instructions.md` | Cibles documentaires et conventions de doc |
+| `prompts/init-copilot-instructions.prompt.md` | Initialiser `AGENTS.md` et les instructions spécifiques projet depuis les templates |
+| `prompts/update-copilot-instructions.prompt.md` | Auditer et mettre à jour `AGENTS.md` et les instructions existantes |
 
-### Prompts (`.opencode/prompts/`)
+## Workflow Nominal
 
-| Prompt | Utilisation |
-|---|---|
-| `init-copilot-instructions.prompt.md` | Initialiser les instructions OpenCode dans un projet |
-| `update-copilot-instructions.prompt.md` | Auditer et mettre a jour les instructions |
-| `migrate-to-template.prompt.md` | Migrer un projet vers le format template transverse |
+1. MAINa clarifie le besoin, le scope et les critères d'acceptation.
+2. MAINa consulte ARCos si la demande touche l'architecture ou une décision structurante.
+3. ARCos compare au moins deux options et recommande une solution.
+4. Le développeur humain valide le choix.
+5. MAINa crée ou formalise le Plan d'Action.
+6. Le développeur humain valide le plan.
+7. DEVon implémente le scope validé.
+8. Le développeur humain valide le code.
+9. QALvin écrit/exécute les tests.
+10. Le développeur humain valide les tests.
+11. DOCly synchronise la documentation.
+12. Le développeur humain valide la clôture.
 
-### Plans et gouvernance
+## Références Projet
 
-| Fichier | Role |
-|---|---|
-| `PLANS.md` | Guide complet de creation / execution des Plans d'Action |
-| `plans/README.md` | Index des plans et statut global |
-| `CHANGELOG.md` | Historique de version des 5 agents |
+- `AGENTS.md` : contexte global des agents et règles projet.
+- `README.md` : documentation produit et scripts.
+- `docs/ARCHITECTURE.md` : architecture réelle du projet.
+- `docs/API.md` : intégration API REST Domoticz.
+- `docs/TESTING.md` : stratégie de test.
+- `docs/adr/` : décisions architecturales.
+- `.opencode/PLANS.md` : format et exécution des Plans d'Action.
 
----
+## Maintenance
 
-## 🤝 Relations entre agents
-
-Le workflow cible reste simple et strict :
-
-1. 👤 **Developpeur humain** cadre le besoin et valide chaque livrable cle.
-2. ⚫ **MAINa** orchestre sequence, delegations et cree le Plan d'Action.
-3. 🟠 **ARCos** analyse les options, compare les solutions et fournit recommandation à MAINa.
-4. ✅ **Validation humaine** du choix de solution.
-5. ⚫ **MAINa** cree le Plan d'Action et le soumet.
-6. ✅ **Validation humaine** du plan.
-7. 🔵 **DEVon** implemente selon le plan valide.
-8. ✅ **Validation humaine** du code.
-9. 🟢 **QALvin** ecrit et execute les tests.
-10. ✅ **Validation humaine** des tests.
-11. 🟣 **DOCly** synchronise la documentation.
-12. ✅ **Validation humaine** finale.
-
-Relations de passage :
-
-- `MAINa` sollicite `ARCos` (analyse solutions) → `MAINa` crée plan → `DEVon` → `QALvin` → `DOCly`
-- `DEVon` → `QALvin`, puis `DOCly`
-- `QALvin` → `DOCly`
-- chaque etape importante revient vers le 👤 Developpeur humain pour validation
-
-> Les agents n'ont plus besoin de porter chacun ce schema ; ils pointent vers ce README.
-
----
-
-## 🎯 Workflow typique
-
-```
-1. Besoin cadre par le developpeur humain
-   ↓
-2. MAINa orchestre et consulte ARCos (analyse solutions)
-   ↓
-3. Validation humaine (choix solution)
-   ↓
-4. MAINa cree Plan d'Action
-   ↓
-5. Validation humaine plan
-   ↓
-6. DEVon implemente
-   ↓
-7. Validation humaine code
-   ↓
-8. QALvin valide par les tests
-   ↓
-9. Validation humaine tests
-   ↓
-10. DOCly met a jour la documentation
-    ↓
-11. Validation humaine finale
-    ↓
-12. Phase suivante / cloture du plan
-```
-
-Pour les details de phases, de rapports et de dependances, voir `PLANS.md`.
-
----
-
-## ✅ Checklist de maintenance
-
-- Modifier un agent => incrementer sa version dans le frontmatter
-- Reporter la modification dans `CHANGELOG.md`
-- Synchroniser les versions dans `copilot-instructions.md` et `copilot-instructions.template.md`
-- Mettre a jour `plans/README.md` a chaque nouveau Plan d'Action
-- Garder ce README comme source de verite pour la coordination transverse `.opencode/`
-
----
-
-## 📚 Ressources
-
-- `README.md` racine : presentation generale du depot
-- `docs/ARCHITECTURE.md` : architecture transverse globale
-- `.opencode/PLANS.md` : format et execution des Plans d'Action
-- `.opencode/copilot-instructions.md` : instructions detaillees du depot OpenCode
+- Modifier un agent implique d'incrémenter sa version dans la description frontmatter.
+- Reporter les changements d'agents dans `.opencode/CHANGELOG.md`.
+- Garder `AGENTS.md` et `.opencode/instructions/*.instructions.md` synchronisés avec la stack réelle.
+- Mettre à jour ce README quand un agent, prompt, skill ou fichier d'instructions est ajouté, retiré ou renommé.
+- Ne pas documenter de fichiers absents comme s'ils existaient.
