@@ -25,7 +25,7 @@ class DomoticzTemperature {
     readonly humidity: number;
     // Statut humidité (ex: "Confortable", "Sec", "Humide")
     readonly humidityStatus: string;
-    // Type de l'équipement (ex: "Temp+Humidity", "Baro")
+    // Type de l'équipement (ex: "Temp+H", "Baro")
     readonly type: string;
     // Sous-type de l'équipement
     readonly subType: string;
