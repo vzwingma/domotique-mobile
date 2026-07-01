@@ -30,5 +30,15 @@ module.exports = ({ config }) => {
       ...config.web,
       favicon: webFavicon,
     },
+    plugins: [
+      ...(config.plugins || []),
+      [
+        "expo-splash-screen",
+        {
+          resizeMode: "contain",
+          backgroundColor: "#ffffff"
+        }
+      ]
+    ]
   };
 };
