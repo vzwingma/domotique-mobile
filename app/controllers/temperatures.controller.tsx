@@ -29,6 +29,7 @@ export function mapRawTemperaturesToDomoticzTemperatures(rawDevices: any[] = [])
                 idx: device.idx,
                 rang: index,
                 name: String(device.Name).replaceAll("TempératureHumidité - ", "")
+                    .replaceAll("Temp+H - ", "")
                     .replaceAll("TempHumBaro", "Extérieur")
                     .replaceAll("Tydom Temperature", "Salon").trim(),
                 type: device.Type,

@@ -82,7 +82,6 @@ export function mapRawDevicesToDomoticzDevices(rawDevices: any[] = []): Domoticz
 function evaluateDeviceName(deviceName: string) : string {
     return deviceName.replaceAll("[Grp]", "")
                      .replaceAll("Prise ", "")
-                     .replaceAll("Temp+H - ", "")
                      .trim();
 }
 
