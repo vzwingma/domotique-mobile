@@ -12,6 +12,61 @@ Mode caveman **full** actif par défaut. Règles :
 
 ---
 
+## 📱 Présentation du Projet
+
+**domoticz-mobile** — app mobile React Native/Expo pilotant équipements domotiques via serveur [Domoticz](https://www.domoticz.com/). Cible Android + Web. UI français.
+
+**Stack** : Expo SDK ~56.0.13 · React 19.2.3 · React Native 0.85.3 · TypeScript strict · expo-router ~56.2.12 · Jest 29 + jest-expo · ESLint 9.39.1 (flat config)
+
+### Commandes courantes
+
+```bash
+npm start                                   # Metro Expo Go (sans SSL)
+npm run android                             # Build natif Android + lancement (avec SSL)
+npm run web                                 # Lancer navigateur
+npm test                                    # Jest mode watch
+npm test -- path/to/file.test.tsx           # Un fichier précis
+npm test -- --watchAll=false --coverage     # CI + couverture
+npm run lint                                # ESLint via Expo
+npm run typecheck                           # Vérif TypeScript stricte
+npm run validate:expo                       # Gate obligatoire pré-PR (expo-doctor)
+```
+
+### Architecture (résumé)
+
+Flux : `UI (5 onglets) → Controllers → Services (ClientHTTP) → Serveur Domoticz`, état global via `DomoticzContextProvider`.
+
+```
+app/
+  (tabs)/          # 5 écrans : Favoris, Lumières, Volets, Températures, Maison
+  components/      # *.component.tsx — composants écran
+  controllers/     # *.controller.tsx — pont UI/services
+  services/        # ClientHTTP.service.ts, DataUtils, DomoticzContextProvider
+  models/          # Classes TS immuables (Device, Light, Blind, Thermostat...)
+  enums/           # APIconstants, Colors, DomoticzEnum, TabsEnums
+```
+
+Détails complets : `docs/ARCHITECTURE.md`, `docs/API.md`, `docs/TESTING.md`.
+
+### Conventions clés
+
+- Nommage : `*.component.tsx`, `*.controller.tsx`, `*.service.ts`, `*.model.ts`, `*.enum.ts`
+- Modèles = classes TS `readonly`, pas interfaces
+- État global via `useContext(DomoticzContext)` — jamais prop drilling
+- Labels métier UI FR : "Allumé/Éteint", "Ouvert/Fermé", "Déconnecté", "Mixte" — jamais "On/Off"
+- Thème sombre uniquement
+
+Conventions détaillées par rôle → `.claude/instructions/*.instructions.md`.
+
+### État du projet
+
+- CI : GitHub Actions (lint + tests + coverage), SonarQube gate ≥80%
+- Couverture cible : controllers 100%, services ≥90%, composants ≥70%, modèles ≥85%
+- Pas de tests E2E/intégration actuellement
+- Renovate : patches auto-merge, majors en draft PR
+
+---
+
 ## Règle obligatoire MAINa — Plan + ADR
 
 Initiative architecturale/infrastructure doit produire **avant** marquer tâche terminée :
@@ -157,7 +212,7 @@ Chaque agent lit au démarrage son fichier instructions spécifique :
 | `qa.instructions.md` | 🟢 QALvin | Framework test, commandes, cas à couvrir |
 | `doc.instructions.md` | 🟣 DOCly | Fichiers `/docs`, conventions documentation |
 
-Dans dépôt transverse, fichiers sont **templates** (placeholders `[...]`) à copier + personnaliser.
+Fichiers déjà personnalisés pour ce projet (générés depuis templates `*.instructions.template.md` du dépôt transverse).
 
 ---
 
@@ -192,7 +247,7 @@ Procédures réutilisables, incluses auto dans contexte tous agents :
 
 ### `.claude/instructions/`
 
-Templates instructions projet (personnaliser avant usage).
+Instructions personnalisées par agent (générées depuis templates dépôt transverse).
 
 ### `.claude/prompts/`
 
