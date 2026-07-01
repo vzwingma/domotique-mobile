@@ -7,8 +7,7 @@
  * Couvre :
  *  - Rendu de l'onglet actif (couleur domoticz)
  *  - Rendu de l'onglet inactif (couleur blanche)
- *  - Absence du suffixe -outline pour l'onglet actif
- *  - Présence du suffixe -outline pour l'onglet inactif
+ *  - Nom MaterialCommunityIcons direct selon l'etat actif/inactif
  *  - Déclenchement du callback selectNewTab via onTouchEnd / onPointerDown
  *  - Rendu sans crash pour chaque valeur de l'enum Tabs
  */
@@ -18,27 +17,29 @@ import { TabBarItems } from '../navigation/TabBarItem';
 import { Tabs } from '@/app/enums/TabsEnums';
 import { Colors } from '@/app/enums/Colors';
 
-jest.mock('@/components/AppIcon', () => 'AppIcon');
+jest.mock('@expo/vector-icons', () => ({
+  MaterialCommunityIcons: 'MaterialCommunityIcons',
+}));
 
-// ─── Helper : trouve tous les noeuds AppIcon dans le rendu ─────────────────────
+// ─── Helper : trouve le noeud MaterialCommunityIcons dans le rendu ─────────────
 
-function getAppIconProps(tab: Tabs, activeTab: Tabs, selectNewTab: jest.Mock) {
+function getTabIconProps(tab: Tabs, activeTab: Tabs, selectNewTab: jest.Mock) {
   const rendered = render(
     <TabBarItems activeTab={activeTab} thisTab={tab} selectNewTab={selectNewTab} />
   );
   // RTL v13 expose root pour accéder au premier element
   const root = rendered.root;
-  // Cherche récursivement un enfant de type 'AppIcon' (la string mockée)
-  function findAppIcon(instance: any): any | null {
+  // Cherche récursivement un enfant de type 'MaterialCommunityIcons' (la string mockée)
+  function findTabIcon(instance: any): any | null {
     if (!instance) return null;
-    if (instance.type === 'AppIcon') return instance;
+    if (instance.type === 'MaterialCommunityIcons') return instance;
     for (const child of (instance.children ?? [])) {
-      const found = findAppIcon(child);
+      const found = findTabIcon(child);
       if (found) return found;
     }
     return null;
   }
-  return findAppIcon(root)?.props ?? null;
+  return findTabIcon(root)?.props ?? null;
 }
 
 // ─── Couleurs selon l'etat actif ──────────────────────────────────────────────
@@ -48,27 +49,32 @@ describe("TabBarItems - couleur selon l'etat actif", () => {
   beforeEach(() => selectNewTab.mockClear());
 
   it("onglet actif : couleur domoticz transmise a l'icone", () => {
-    const props = getAppIconProps(Tabs.INDEX, Tabs.INDEX, selectNewTab);
+    const props = getTabIconProps(Tabs.INDEX, Tabs.INDEX, selectNewTab);
     expect(props).not.toBeNull();
     expect(props.color).toBe(Colors.domoticz.color);
   });
 
   it("onglet inactif : couleur blanche (#ffffff) transmise a l'icone", () => {
-    const props = getAppIconProps(Tabs.LUMIERES, Tabs.INDEX, selectNewTab);
+    const props = getTabIconProps(Tabs.LUMIERES, Tabs.INDEX, selectNewTab);
     expect(props).not.toBeNull();
     expect(props.color).toBe('#ffffff');
   });
 
   it("onglet actif : l'icone n'a pas le suffixe -outline", () => {
-    const props = getAppIconProps(Tabs.LUMIERES, Tabs.LUMIERES, selectNewTab);
+    const props = getTabIconProps(Tabs.LUMIERES, Tabs.LUMIERES, selectNewTab);
     expect(props?.name).toBeDefined();
-    expect(props?.name).not.toMatch(/-outline$/);
+    expect(props?.name).toBe('lightbulb');
   });
 
-  it("onglet inactif : l'icone a le suffixe -outline", () => {
-    const props = getAppIconProps(Tabs.LUMIERES, Tabs.INDEX, selectNewTab);
+  it("onglet inactif : l'icone utilise le nom MaterialCommunityIcons inactif", () => {
+    const props = getTabIconProps(Tabs.LUMIERES, Tabs.INDEX, selectNewTab);
     expect(props?.name).toBeDefined();
-    expect(props?.name).toMatch(/-outline$/);
+    expect(props?.name).toBe('lightbulb-outline');
+  });
+
+  it("onglet volets : utilise le nom MaterialCommunityIcons direct", () => {
+    const props = getTabIconProps(Tabs.VOLETS, Tabs.INDEX, selectNewTab);
+    expect(props?.name).toBe('window-shutter');
   });
 });
 

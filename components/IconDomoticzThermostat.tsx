@@ -1,4 +1,4 @@
-import AppIcon from "@/components/AppIcon";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 /**
  * Composant qui affiche une icône en fonction du type de mesure température Domoticz.
@@ -7,6 +7,6 @@ import AppIcon from "@/components/AppIcon";
  *  >Icone du volet : https://oblador.github.io/react-native-vector-icons/ 
  */
 export const IconDomoticzThermostat : React.FC = () => {
-    return <AppIcon name="flame" size={60} color={"white"}/>
+    return <MaterialCommunityIcons name="fire" size={60} color={"white"}/>
 }
 export default IconDomoticzThermostat;
