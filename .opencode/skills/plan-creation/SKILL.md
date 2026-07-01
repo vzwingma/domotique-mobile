@@ -42,6 +42,17 @@ Créer fichier `.opencode/plans/<NO>_<nom>.plan.md` contenant :
 
 **Référence complète format** : `.opencode/PLANS.md` (section "Format du Fichier Plan")
 
+## Règle de persistance obligatoire
+
+Le livrable du skill est un ensemble de fichiers persistés dans le dépôt :
+- `.opencode/plans/<NO>_<nom>.plan.md`
+- `.opencode/plans/<NO>_reports/`
+- `.opencode/plans/README.md` mis à jour
+
+Si les outils d'édition sont interdits ou si le prompt demande de ne modifier aucun fichier, ne pas produire un faux plan "créé" dans la réponse finale. Demander au développeur humain s'il souhaite :
+1. autoriser la création des fichiers ;
+2. ou recevoir uniquement un brouillon non formalisé.
+
 ### Structurer les tâches
 
 Chaque tâche doit avoir :

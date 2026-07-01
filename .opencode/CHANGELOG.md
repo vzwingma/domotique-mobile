@@ -13,6 +13,7 @@
 - **v1.2 → v1.3** : Bloc sécurité allégé — opérations destructives + `.gitignore` externalisés vers skills `safety-rules` et `copilotignore` (`applyTo: **`). Règle MAINa-spécifique (pas de clôture sans validations 👤) conservée.
 - **v1.3 → v1.4** : Ajout lecture au démarrage du fichier de spécificités MAINa pour appliquer le contexte projet comme les autres agents.
 - **v1.4 → v1.5** : Renommage du fichier de spécificités MAINa en `.opencode/instructions/orchestrator.instructions.md`.
+- **v1.5 → v1.6** : Formalisation persistante obligatoire des Plans d'Action lors des demandes `@MAINa` menant à modification de code : fichier `.opencode/plans/<NO>_<slug>.plan.md`, dossier reports et index README avant implémentation.
 
 ---
 
