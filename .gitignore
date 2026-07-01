@@ -34,3 +34,4 @@ coverage/*
 
 # Ignore Caveman
 .agents/skills/cave*
+Claude CLI.lnk
