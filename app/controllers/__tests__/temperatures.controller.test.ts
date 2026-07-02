@@ -15,7 +15,7 @@ const mockCallDomoticz = callDomoticz as jest.Mock;
 function makeRawTemp(overrides: Partial<any> = {}): any {
     return {
         idx: '1',
-        Name: 'TempératureHumidité - Chambre',
+        Name: 'Temp+H - Chambre',
         Type: 'Temp+Hum',
         SubType: 'LaCrosse TX3',
         Temp: 21.5,
@@ -36,8 +36,8 @@ describe('loadDomoticzTemperatures', () => {
     it('appelle storeTempsData avec les températures mappées et triées', async () => {
         mockCallDomoticz.mockResolvedValue({
             result: [
-                makeRawTemp({ idx: '1', Name: 'TempératureHumidité - Chambre' }),
-                makeRawTemp({ idx: '2', Name: 'TempératureHumidité - Salon' }),
+                makeRawTemp({ idx: '1', Name: 'Temp+H - Chambre' }),
+                makeRawTemp({ idx: '2', Name: 'Temp+H - Salon' }),
             ],
         });
         const storeTempsData = jest.fn();
@@ -50,9 +50,9 @@ describe('loadDomoticzTemperatures', () => {
         expect(temps.length).toBe(2);
     });
 
-    it('nettoie le préfixe "TempératureHumidité - " du nom', async () => {
+    it('nettoie le préfixe "Temp+H - " du nom', async () => {
         mockCallDomoticz.mockResolvedValue({
-            result: [makeRawTemp({ Name: 'TempératureHumidité - Chambre' })],
+            result: [makeRawTemp({ Name: 'Temp+H - Chambre' })],
         });
         const storeTempsData = jest.fn();
 
@@ -92,7 +92,7 @@ describe('loadDomoticzTemperatures', () => {
     it('filtre "Pi Temperature"', async () => {
         mockCallDomoticz.mockResolvedValue({
             result: [
-                makeRawTemp({ idx: '1', Name: 'TempératureHumidité - Chambre' }),
+                makeRawTemp({ idx: '1', Name: 'Temp+H - Chambre' }),
                 makeRawTemp({ idx: '2', Name: 'Pi Temperature' }),
             ],
         });
