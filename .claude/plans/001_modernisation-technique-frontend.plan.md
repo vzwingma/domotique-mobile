@@ -2,7 +2,7 @@
 
 **Document :** `.claude/plans/001_modernisation-technique-frontend.plan.md`
 **Date de création :** 2026-07-07
-**Statut :** ⏳ Planifié
+**Statut :** 🔄 En cours (Phase 1 complétée — Gate#0 en attente de validation développeur humain)
 **Objectif Prioritaire :** MEDIUM
 
 ---
