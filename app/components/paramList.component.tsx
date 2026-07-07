@@ -7,7 +7,8 @@ import DomoticzParameter from "../models/domoticzParameter.model";
 import IconDomoticzParametre, { getIconDomoticzParametre } from "@/components/IconDomoticzParametre";
 import { Colors } from "../enums/Colors";
 import { updateParameterValue } from "../controllers/parameters.controller";
-import { DomoticzDeviceType } from "../enums/DomoticzEnum";
+import { DomoticzDeviceType, DomoticzPhasePrefix, DomoticzDeviceLabel } from "../enums/DomoticzEnum";
+import { normalizeDomoticzText } from "../services/DataUtils.service";
 
 // Définition des propriétés d'un équipement Domoticz
 export type DomoticzParamListProps = {
@@ -25,26 +26,18 @@ function getParametreDisplayName(name: string): string {
 /**
  * T17 — Labels spéciaux pour le paramètre Présence
  */
-/**
- * Normalise une chaîne en retirant les accents et en mettant en majuscules,
- * pour une comparaison robuste indépendante de l'encodage Domoticz.
- */
-function normalizeLevelName(s: string): string {
-  return s.normalize('NFD').replaceAll(/[\u0300-\u036f]/g, '').toUpperCase();
-}
-
 function getParametreDisplayLabel(parametreName: string, levelName: string): string {
-  const normalized = normalizeLevelName(levelName);
+  const normalized = normalizeDomoticzText(levelName);
   if (parametreName.includes("Présence")) {
     if (normalized === "PRESENT") return "Maison occupée";
     else if (normalized === "ABSENT") return "Maison vide";
   }
   else if (parametreName.includes("Phase")) {
-    if (normalized === "JOURNEE") return "Journée";
-    else if (normalized === "SOIREE") return "Soirée";
+    if (normalized.startsWith(DomoticzPhasePrefix.JOURNEE)) return DomoticzDeviceLabel.PHASE_JOURNEE;
+    else if (normalized.startsWith(DomoticzPhasePrefix.SOIREE)) return DomoticzDeviceLabel.PHASE_SOIREE;
   }
   else if (parametreName.includes("Mode")) {
-    if (normalized === "SUMMER") return "Été";
+    if (normalized === "SUMMER") return DomoticzDeviceLabel.MODE_ETE;
   }
   return levelName;
 }

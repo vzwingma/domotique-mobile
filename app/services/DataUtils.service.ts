@@ -22,6 +22,13 @@ import DomoticzDevice from "../models/domoticzDevice.model";
  * @param devicesOrder Tableau d'idx définissant l'ordre
  * @returns Nombre pour comparaison (pour Array.sort)
  */
+/**
+ * Normalise une chaîne Domoticz (accents retirés, majuscules) pour comparaison robuste.
+ */
+export function normalizeDomoticzText(s: string): string {
+    return s.normalize('NFD').replaceAll(/[\u0300-\u036f]/g, '').toUpperCase();
+}
+
 export function sortEquipements(device1: DomoticzDevice, device2: DomoticzDevice, devicesOrder: number[]) {
     devicesOrder.forEach((idx, index) => {
         if (device1.idx === idx) {

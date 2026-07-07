@@ -73,6 +73,24 @@ export enum DomoticzDeviceLabel {
   LIGHT_OFF_ACTION = "Éteindre",
   // Commun
   MIXTE = "Mixte",
+  // Moment (Phase)
+  PHASE_JOURNEE = "Journée",
+  PHASE_SOIREE  = "Soirée",
+  // Mode
+  MODE_ETE = "Été",
+}
+
+/**
+ * Préfixes normalisés (majuscules, sans accents) des statuts de Phase Domoticz.
+ * Permet de matcher un statut composé (ex: "JOURNEE ETE", "JOURNEE VACANCES")
+ * indépendamment du mode accolé par Domoticz.
+ */
+export enum DomoticzPhasePrefix {
+    PREPARATION_CHAUFFAGE = "PREPARATION CHAUFFAGE",
+    REVEIL = "REVEIL",
+    JOURNEE = "JOURNEE",
+    SOIREE = "SOIREE",
+    NUIT = "NUIT",
 }
 
 /**
