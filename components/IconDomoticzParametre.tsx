@@ -1,6 +1,8 @@
 import DomoticzParameter from "@/app/models/domoticzParameter.model";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import type { ComponentProps } from "react";
+import { DomoticzPhasePrefix } from "@/app/enums/DomoticzEnum";
+import { normalizeDomoticzText } from "@/app/services/DataUtils.service";
 
 type ParametreIconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
 
@@ -19,7 +21,7 @@ export function getIconDomoticzParametre(parametre: DomoticzParameter): Parametr
         case "présence":
             return getIconPresence(parametre.level);
         case "phase":
-            return getIconPhase(parametre.status.toLowerCase());
+            return getIconPhase(parametre.status);
         default:
             return "lightbulb-outline";
     }
@@ -48,21 +50,12 @@ function getIconPresence(level:number): ParametreIconName {
 }
 // Fonction qui retourne une icône en fonction du mode
 function getIconPhase(status:string): ParametreIconName {
-    
-    switch (status) {
-        case "preparation chauffage":
-            return "calendar-today";;
-        case "réveil":
-        case "reveil":
-            return "alarm";;
-        case "journee":
-            return "weather-sunny";;
-        case "soiree":
-            return "weather-partly-cloudy";;
-        case "nuit":
-            return "moon-waning-crescent";;
-        default:
-            return "alert-circle-outline";;
-    }    
+    const normalized = normalizeDomoticzText(status);
+    if (normalized.startsWith(DomoticzPhasePrefix.PREPARATION_CHAUFFAGE)) return "calendar-today";
+    if (normalized.startsWith(DomoticzPhasePrefix.REVEIL)) return "alarm";
+    if (normalized.startsWith(DomoticzPhasePrefix.JOURNEE)) return "weather-sunny";
+    if (normalized.startsWith(DomoticzPhasePrefix.SOIREE)) return "weather-partly-cloudy";
+    if (normalized.startsWith(DomoticzPhasePrefix.NUIT)) return "moon-waning-crescent";
+    return "alert-circle-outline";
 }
 export default IconDomoticzParametre;
