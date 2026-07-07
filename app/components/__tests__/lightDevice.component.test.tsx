@@ -39,7 +39,9 @@ jest.mock('@/components/IconDomoticzDevice', () => {
 
 jest.mock('@react-native-community/slider', () => {
   const { View } = require('react-native');
-  return (props: any) => <View testID="slider" {...props} />;
+  return function MockSlider(props: any) {
+    return <View testID="slider" {...props} />;
+  };
 });
 
 jest.mock('@/app/controllers/devices.controller', () => ({

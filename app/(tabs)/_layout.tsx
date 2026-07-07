@@ -57,6 +57,11 @@ export default function TabLayout() {
     triggerRefresh('tab-switch');
   }
 
+  // Faux positif isolé (seule occurrence du projet, cf. `npm run lint`) : aucun plugin babel-plugin-react-compiler
+  // n'est actif dans ce projet (voir babel.config.js), donc ce diagnostic est purement consultatif (forward-compat)
+  // et n'a aucun effet à l'exécution. `useCallback([])` ne ferme que sur des refs et des setters d'état stables ;
+  // la mémoïsation manuelle reste correcte. À réévaluer si adoption effective du compilateur React (ADR dédié).
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const triggerRefresh = useCallback((source: 'tab-switch' | 'foreground', force: boolean = false): void => {
     const now = Date.now();
     const elapsed = now - lastRefreshAtMsRef.current;
@@ -66,6 +71,7 @@ export default function TabLayout() {
     }
 
     lastRefreshAtMsRef.current = now;
+    setIsLoading(true);
     setRefreshTick(prev => prev + 1);
   }, []);
 
@@ -82,7 +88,11 @@ export default function TabLayout() {
     if (refreshTick === 0) {
       runLatencyDiagnostic(generateTraceId());
     }
-    setIsLoading(true);
+    // setIsLoading(true) n'est plus déclenché ici : il l'est en amont, de façon synchrone dans le
+    // gestionnaire d'événement `triggerRefresh` (changement d'onglet, retour foreground, pull-to-refresh),
+    // avant l'incrément de `refreshTick` qui déclenche cet effet. Pour le chargement initial (refreshTick === 0),
+    // `isLoading` vaut déjà `true` via son état initial (`useState(true)`). Évite un setState synchrone en
+    // tête d'effet (cascading renders) tout en préservant le comportement visuel (spinner affiché dès l'action).
     refreshDomoticzData({
       setDomoticzConnexionData,
       setDomoticzDevicesData,

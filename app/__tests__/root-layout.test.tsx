@@ -25,7 +25,9 @@ jest.mock('../../assets/fonts/SpaceMono-Regular.ttf', () => 'SpaceMono-Regular.t
 jest.mock('expo-router', () => {
   const React = require('react');
   const Stack = ({ children }: { children?: React.ReactNode }) => <>{children}</>;
-  Stack.Screen = () => null;
+  Stack.Screen = function MockStackScreen() {
+    return null;
+  };
   return { Stack };
 });
 
