@@ -6,12 +6,12 @@ Guide complet du format : `.claude/PLANS.md`
 
 ## Plans actifs
 
-| N° | Nom | Statut | Objectif |
-|---|---|---|---|
-| 001 | [Modernisation technique front-end](./001_modernisation-technique-frontend.plan.md) | ✅ Complété (Gate#4 en attente) | Socle technique, versions & obsolescence, compilation & déploiement CI/CD |
+_Aucun pour le moment._
 
 ---
 
 ## Plans archivés
 
-_Aucun pour le moment._
+| N° | Nom | Statut | Objectif |
+|---|---|---|---|
+| 001 | [Modernisation technique front-end](./001_modernisation-technique-frontend.plan.md) | ✅ Complété (2026-07-08) | Socle technique, versions & obsolescence, compilation & déploiement CI/CD |
