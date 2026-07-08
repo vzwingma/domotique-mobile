@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, waitFor } from '@testing-library/react-native';
 import TabDomoticzParametres from '../parametrages.tab';
 import { DomoticzContext } from '../../services/DomoticzContextProvider';
 import DomoticzParameter from '../../models/domoticzParameter.model';
@@ -446,7 +446,6 @@ describe('TabDomoticzParametres (Maison)', () => {
     });
 
     it('should call handleResetFavorites when reset button is pressed', async () => {
-      const { handleResetFavorites } = require('../../controllers/parameters.controller');
       const contextValue = createMockContextValue([], undefined);
 
       const result = render(

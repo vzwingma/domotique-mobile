@@ -6,6 +6,7 @@ import { SERVICES_PARAMS, SERVICES_URL } from '../enums/APIconstants';
 import callDomoticz from '../services/ClientHTTP.service';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
 import { handleError, generateTraceId } from '@/app/services/ErrorHandler.service';
+import { Logger } from '@/app/services/Logger.service';
 
 type RefreshOptions = {
     scheduleSecondRefresh?: boolean;
@@ -89,7 +90,7 @@ export function updateThermostatPoint(idx: number, device: DomoticzThermostat, t
     const traceId = generateTraceId();
     
     temp = evaluateThermostatPoint(temp);
-    console.log("Mise à jour de l'équipement " + device.name + " [" + idx + "]", temp + device.unit);
+    Logger.debug("Mise à jour de l'équipement " + device.name + " [" + idx + "]", temp + device.unit);
 
     let params = [{ key: SERVICES_PARAMS.IDX, value: String(idx) },
     { key: SERVICES_PARAMS.TEMP, value: String(temp) }];
@@ -99,7 +100,7 @@ export function updateThermostatPoint(idx: number, device: DomoticzThermostat, t
             handleError(e, 'updateThermostatPoint', traceId, (msg) => showToast(msg, ToastDuration.LONG));
         })
         .finally(() => {
-            console.log("Mise à jour de l'équipement " + device.name + " [" + idx + "]", temp + device.unit);
+            Logger.debug("Mise à jour de l'équipement " + device.name + " [" + idx + "]", temp + device.unit);
             refreshEquipementState(setDomoticzThermostatData, { scheduleSecondRefresh: true, secondRefreshDelayMs: 1000 })
         });
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- factories jest.mock() ne peuvent référencer les imports du module (babel-plugin-jest-hoist) */
 /**
  * Tests unitaires pour paramList.component.tsx
  *
@@ -26,7 +27,7 @@ jest.mock('@/app/controllers/parameters.controller', () => ({
 // Icône paramètre
 jest.mock('@/components/IconDomoticzParametre', () => {
   const { View } = require('react-native');
-  const IconDomoticzParametre = (props: any) => <View testID="icon-parametre" />;
+  const IconDomoticzParametre = (_props: any) => <View testID="icon-parametre" />;
   IconDomoticzParametre.getIconDomoticzParametre = () => 'home-outline';
   return {
     __esModule: true,

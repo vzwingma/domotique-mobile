@@ -8,18 +8,19 @@ import { TabBarItems } from '@/components/navigation/TabBarItem';
 import { ThemedText } from '@/components/ThemedText';
 import { DomoticzDeviceType } from '../enums/DomoticzEnum';
 
-// T4.3 - Lazy-load screens for better performance
-const HomeScreen = React.lazy(() => import('.'));
-const TabDomoticzTemperatures = React.lazy(() => import('./temperatures.tab'));
-const TabDomoticzDevices = React.lazy(() => import('./devices.tabs'));
-const TabDomoticzParametres = React.lazy(() => import('./parametrages.tab'));
-
 import { getHeaderIcon } from '@/components/navigation/TabHeaderIcon';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
 import { mapDomoticzStatusToConnectionBadgeState } from '@/components/ConnectionBadge';
 import { refreshDomoticzData } from '@/app/services/RefreshOrchestrator.service';
 import { runLatencyDiagnostic } from '@/app/services/ClientHTTP.service';
 import { generateTraceId } from '@/app/services/ErrorHandler.service';
+import { Logger } from '@/app/services/Logger.service';
+
+// T4.3 - Lazy-load screens for better performance
+const HomeScreen = React.lazy(() => import('.'));
+const TabDomoticzTemperatures = React.lazy(() => import('./temperatures.tab'));
+const TabDomoticzDevices = React.lazy(() => import('./devices.tabs'));
+const TabDomoticzParametres = React.lazy(() => import('./parametrages.tab'));
 
 const REFRESH_COOLDOWN_MS = 5000;
 
@@ -45,7 +46,7 @@ export default function TabLayout() {
    * T4.5 - Callback pour profiling de performance
    */
   const onRenderCallback = (id: string, phase: string, actualDuration: number) => {
-    console.log(`[PROFILER] ${id} (${phase}) - ${actualDuration.toFixed(2)}ms`);
+    Logger.debug(`[PROFILER] ${id} (${phase}) - ${actualDuration.toFixed(2)}ms`);
   };
 
   /**
@@ -66,7 +67,7 @@ export default function TabLayout() {
     const now = Date.now();
     const elapsed = now - lastRefreshAtMsRef.current;
     if (!force && elapsed < REFRESH_COOLDOWN_MS) {
-      console.log(`[RefreshGuard] Skip refresh (${source}) — cooldown ${elapsed}ms/${REFRESH_COOLDOWN_MS}ms`);
+      Logger.debug(`[RefreshGuard] Skip refresh (${source}) — cooldown ${elapsed}ms/${REFRESH_COOLDOWN_MS}ms`);
       return;
     }
 
@@ -81,7 +82,7 @@ export default function TabLayout() {
    *  sur les connexions lentes (5G ~30-40s par requête).
    * */
   useEffect(() => {
-    console.log("(Re)Chargement de l'application...");
+    Logger.debug("(Re)Chargement de l'application...");
     lastRefreshAtMsRef.current = Date.now();
     // Diagnostic de latence au 1er chargement uniquement — aide à identifier
     // la phase réseau lente (DNS, TCP, TLS ou serveur) en 5G
@@ -103,7 +104,9 @@ export default function TabLayout() {
       .then(() => setError(null))
       .catch(e => setError(e as Error))
       .finally(() => setIsLoading(false));
-  }, [refreshTick])
+    // Setters issus de useState (DomoticzContextProvider) : identité stable garantie par React,
+    // les ajouter aux deps n'entraîne aucun re-déclenchement supplémentaire de l'effet.
+  }, [refreshTick, setDomoticzConnexionData, setDomoticzDevicesData, setDomoticzParametersData, setDomoticzTemperaturesData, setDomoticzThermostatData])
 
   /**
    * Rafraîchissement automatique au retour en foreground (AppState)
@@ -111,7 +114,7 @@ export default function TabLayout() {
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
       if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
-        console.log('[AppState] Application revenue au premier plan — rafraîchissement des données');
+        Logger.debug('[AppState] Application revenue au premier plan — rafraîchissement des données');
         triggerRefresh('foreground');
       }
       appState.current = nextAppState;

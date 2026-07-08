@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- factories jest.mock() ne peuvent référencer les imports du module (babel-plugin-jest-hoist) */
 /**
  * Tests pour IconDomoticzDevice.tsx :
  *
@@ -14,6 +15,13 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { Alert } from 'react-native';
+
+import { IconDomoticzDevice, getLightIcon } from '../IconDomoticzDevice';
+
+import { IconVoletSVG } from '../IconVoletSVG';
+import DomoticzDevice from '@/app/models/domoticzDevice.model';
+import { DomoticzDeviceType, DomoticzSwitchType } from '@/app/enums/DomoticzEnum';
+import { DomoticzContext } from '@/app/services/DomoticzContextProvider';
 
 // ─── Mock @expo/vector-icons ── remplace MaterialCommunityIcons par un composant pressable
 jest.mock('@expo/vector-icons', () => {
@@ -48,13 +56,6 @@ jest.mock('@/app/controllers/devices.controller', () => ({
 jest.mock('@/app/enums/Colors', () => ({
   getGroupColor: jest.fn(() => 'white'),
 }));
-
-import { getLightIcon } from '../IconDomoticzDevice';
-import IconDomoticzDevice from '../IconDomoticzDevice';
-import { IconVoletSVG } from '../IconVoletSVG';
-import DomoticzDevice from '@/app/models/domoticzDevice.model';
-import { DomoticzDeviceType, DomoticzSwitchType } from '@/app/enums/DomoticzEnum';
-import { DomoticzContext } from '@/app/services/DomoticzContextProvider';
 
 // ─── Fabrique de devices ───────────────────────────────────────────────────────
 

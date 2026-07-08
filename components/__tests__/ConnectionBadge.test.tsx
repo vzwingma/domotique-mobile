@@ -9,7 +9,7 @@ import {
 } from '../ConnectionBadge';
 
 describe('ConnectionBadge - affichage des 4 états', () => {
-  const states: Array<{ state: ConnectionBadgeState; label: string }> = [
+  const states: { state: ConnectionBadgeState; label: string }[] = [
     { state: 'connecte', label: 'Connecté' },
     { state: 'synchronisation', label: 'Synchronisation' },
     { state: 'deconnecte', label: 'Déconnecté' },
@@ -56,7 +56,7 @@ describe('ConnectionBadge - label utilitaire', () => {
     ['synchronisation', 'Synchronisation'],
     ['deconnecte', 'Déconnecté'],
     ['erreur', 'Erreur'],
-  ] as Array<[ConnectionBadgeState, string]>)('retourne %s -> %s', (state, expectedLabel) => {
+  ] as [ConnectionBadgeState, string][])('retourne %s -> %s', (state, expectedLabel) => {
     expect(getConnectionBadgeLabel(state)).toBe(expectedLabel);
   });
 });
@@ -67,7 +67,7 @@ describe('ConnectionBadge - couleur utilitaire', () => {
     ['synchronisation', '#f5c727'],
     ['deconnecte', '#f44336'],
     ['erreur', '#ff8a65'],
-  ] as Array<[ConnectionBadgeState, string]>)('retourne %s -> %s', (state, expectedColor) => {
+  ] as [ConnectionBadgeState, string][])('retourne %s -> %s', (state, expectedColor) => {
     expect(getConnectionBadgeColor(state)).toBe(expectedColor);
   });
 });

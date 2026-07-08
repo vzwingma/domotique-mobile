@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- factories jest.mock() ne peuvent référencer les imports du module (babel-plugin-jest-hoist) */
 /**
  * Tests unitaires pour temperature.component.tsx
  *
@@ -19,7 +20,7 @@ import DomoticzTemperature from '@/app/models/domoticzTemperature.model';
 jest.mock('@/components/IconDomoticzTemperature', () => {
   const React = require('react');
   const { View } = require('react-native');
-  const MockIcon = (props: any) => <View testID="temperature-icon" />;
+  const MockIcon = (_props: any) => <View testID="temperature-icon" />;
   return {
     __esModule: true,
     default: MockIcon,

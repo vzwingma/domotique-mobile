@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- factories jest.mock() ne peuvent référencer les imports du module (babel-plugin-jest-hoist) */
 /**
  * Tests unitaires pour device.component.tsx
  *
@@ -76,8 +77,11 @@ jest.mock('@react-native-community/slider', () => {
 // Icône personnalisée
 jest.mock('@/components/IconDomoticzDevice', () => {
   const { View } = require('react-native');
-  return function MockIconDomoticzDevice() {
-    return <View testID="icon-device" />;
+  const MockIconDomoticzDevice = () => <View testID="icon-device" />;
+  return {
+    __esModule: true,
+    default: MockIconDomoticzDevice,
+    IconDomoticzDevice: MockIconDomoticzDevice,
   };
 });
 
@@ -106,10 +110,6 @@ function makeDevice(overrides: Partial<DomoticzDevice>): DomoticzDevice {
     ...overrides,
   } as DomoticzDevice;
 }
-
-// ─── Provider minimal pour DomoticzContext ────────────────────────────────────
-// Utilisation directe de React.createContext pour envelopper le composant
-const MockContext = React.createContext<any>({ setDomoticzDevicesData: jest.fn() });
 
 // On re-mock DomoticzContextProvider pour utiliser notre MockContext
 jest.mock('@/app/services/DomoticzContextProvider', () => {

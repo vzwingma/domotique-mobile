@@ -1,8 +1,3 @@
-export enum DomoticzStatus {
-    INCONNU = 'INCONNU',
-    CONNECTE = 'CONNECTE',
-    DECONNECTE = 'DECONNECTE',
-}
 /**
  * Enum pour les types d'équipements Domoticz
  */
@@ -19,8 +14,7 @@ export enum DomoticzDeviceType {
  */
 export enum DomoticzSwitchType {
     SLIDER = "Dimmer",
-    ONOFF = "On/Off",
-    UNKNOWN = "Inconnu"
+    ONOFF = "On/Off"
 }
 
 

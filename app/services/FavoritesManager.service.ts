@@ -12,6 +12,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DomoticzFavorites from '../models/domoticzFavorites.model';
 import { DomoticzDeviceType } from '../enums/DomoticzEnum';
+import { Logger } from './Logger.service';
 
 /**
  * Clés de stockage AsyncStorage
@@ -31,7 +32,7 @@ export const getFavoritesFromStorage = (): Promise<DomoticzFavorites[]> => {
     try {
       return value ? JSON.parse(value) : [];
     } catch (error) {
-      console.error('[FavoritesManager] Erreur parsing favoris depuis storage', error);
+      Logger.error('[FavoritesManager] Erreur parsing favoris depuis storage', error);
       return [];
     }
   });

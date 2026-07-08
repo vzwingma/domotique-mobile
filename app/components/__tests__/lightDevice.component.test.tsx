@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- factories jest.mock() ne peuvent référencer les imports du module (babel-plugin-jest-hoist) */
 /**
  * Tests unitaires pour lightDevice.component.tsx
  *
@@ -13,7 +14,7 @@
  */
 
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react-native';
 import { ViewLightDevice } from '../lightDevice.component';
 import DomoticzDevice from '@/app/models/domoticzDevice.model';
 import { DomoticzDeviceType, DomoticzSwitchType, DomoticzDeviceStatus } from '@/app/enums/DomoticzEnum';
@@ -30,9 +31,11 @@ const mockIsDeviceOn = jest.fn();
 
 jest.mock('@/components/IconDomoticzDevice', () => {
   const { View } = require('react-native');
+  const MockIcon = () => <View testID="device-icon" />;
   return {
     __esModule: true,
-    default: () => <View testID="device-icon" />,
+    default: MockIcon,
+    IconDomoticzDevice: MockIcon,
     performDevicePrimaryAction: (...args: any[]) => mockPerformDevicePrimaryAction(...args),
   };
 });

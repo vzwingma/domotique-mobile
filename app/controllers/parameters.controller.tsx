@@ -5,6 +5,7 @@ import { SERVICES_PARAMS, SERVICES_URL } from '../enums/APIconstants';
 import callDomoticz from '../services/ClientHTTP.service';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
 import { handleError, generateTraceId } from '@/app/services/ErrorHandler.service';
+import { Logger } from '@/app/services/Logger.service';
 import DomoticzParameter from '../models/domoticzParameter.model';
 import { Alert } from 'react-native';
 import { clearFavoritesFromStorage } from '../services/FavoritesManager.service';
@@ -61,7 +62,7 @@ export function mapRawDevicesToDomoticzParameters(rawDevices: any[] = []): Domot
 export function updateParameterValue(idx: number, device: DomoticzParameter, level: any, setDomoticzParametersData: React.Dispatch<React.SetStateAction<DomoticzParameter[]>>) {
     const traceId = generateTraceId();
 
-    console.log("Mise à jour du paramètre "  + device.name + " [" + idx + "]", level.libelle );
+    Logger.debug("Mise à jour du paramètre "  + device.name + " [" + idx + "]", level.libelle );
 
     let params = [{ key: SERVICES_PARAMS.IDX, value: String(idx) },
     { key: SERVICES_PARAMS.LEVEL, value: String(level.id) }];

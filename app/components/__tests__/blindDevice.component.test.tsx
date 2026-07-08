@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- factories jest.mock() ne peuvent référencer les imports du module (babel-plugin-jest-hoist) */
 /**
  * Tests unitaires pour blindDevice.component.tsx
  *
@@ -30,9 +31,11 @@ const mockIsDeviceOn = jest.fn();
 
 jest.mock('@/components/IconDomoticzDevice', () => {
   const { View } = require('react-native');
+  const MockIcon = () => <View testID="device-icon" />;
   return {
     __esModule: true,
-    default: () => <View testID="device-icon" />,
+    default: MockIcon,
+    IconDomoticzDevice: MockIcon,
     performDevicePrimaryAction: (...args: any[]) => mockPerformDevicePrimaryAction(...args),
   };
 });
@@ -303,7 +306,7 @@ describe('blindDevice.component', () => {
         consistantLevel: true,
       });
 
-      const { queryByText } = renderBlindDevice(device);
+      renderBlindDevice(device);
       // Le résumé devrait être présent mais mocké via getStatusLabel
       // Le composant appelle getBlindGroupSummary qui génère du texte
       expect(device.isGroup).toBe(true);
