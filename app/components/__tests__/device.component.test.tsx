@@ -68,13 +68,17 @@ jest.mock('@/app/services/ClientHTTP.service', () => ({
 // Slider
 jest.mock('@react-native-community/slider', () => {
   const { View } = require('react-native');
-  return (props: any) => <View testID="slider" {...props} />;
+  return function MockSlider(props: any) {
+    return <View testID="slider" {...props} />;
+  };
 });
 
 // Icône personnalisée
 jest.mock('@/components/IconDomoticzDevice', () => {
   const { View } = require('react-native');
-  return (props: any) => <View testID="icon-device" />;
+  return function MockIconDomoticzDevice() {
+    return <View testID="icon-device" />;
+  };
 });
 
 // Vecteur d'icônes (déjà dans jest.setup.ts mais on renforce)

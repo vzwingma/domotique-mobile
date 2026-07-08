@@ -41,7 +41,7 @@ export default function TabDomoticzParametres(): JSX.Element {
         <View style={favoritesStyles.row}>
           <View style={favoritesStyles.textBlock}>
             <ThemedText style={favoritesStyles.title}>Favoris</ThemedText>
-            <ThemedText style={favoritesStyles.label}>Historique d'utilisation</ThemedText>
+            <ThemedText style={favoritesStyles.label}>Historique d&apos;utilisation</ThemedText>
           </View>
           <Pressable
             accessibilityRole="button"
@@ -60,7 +60,7 @@ export default function TabDomoticzParametres(): JSX.Element {
       <View style={aboutStyles.section}>
         <ThemedText style={aboutStyles.title}>À propos</ThemedText>
         <View style={aboutStyles.row}>
-          <ThemedText style={aboutStyles.label}>Version de l'application</ThemedText>
+          <ThemedText style={aboutStyles.label}>Version de l&apos;application</ThemedText>
           <ThemedText style={aboutStyles.value}>v{appVersion}</ThemedText>
         </View>
         <View style={aboutStyles.row}>

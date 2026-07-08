@@ -2,6 +2,9 @@
   "name": "domoticz-mobile",
   "main": "expo-router/entry",
   "version": "4.3.0",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "start": "expo start",
     "start:dev-client": "expo start --dev-client",
@@ -18,7 +21,10 @@
     "test": "jest --watchAll",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
-    "validate:expo": "npx --yes expo-env-info && npx --yes expo-doctor@latest"
+    "validate:expo": "npx --yes expo-env-info && npx --yes expo-doctor@latest",
+    "eas:build:development": "eas build --profile development --platform android",
+    "eas:build:production": "eas build --profile production --platform android",
+    "eas:submit": "eas submit --profile production --platform android"
   },
   "dependencies": {
     "@babel/generator": "^7.29.1",

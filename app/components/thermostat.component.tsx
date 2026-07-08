@@ -93,20 +93,30 @@ export const ViewDomoticzThermostat: React.FC<DomoticzThermostatProps> = ({ ther
   };
 
   /** Gesture pan sur l'arc : mise à jour visuelle en temps réel, appel API au relâchement */
+  // Faux positif reconnu de la règle `react-hooks/refs` (seule occurrence du projet, cf. `npm run lint`) :
+  // les callbacks `.onBegin/.onUpdate/.onEnd` de `Gesture.Pan()` (react-native-gesture-handler) sont définis
+  // pendant le render mais ne s'exécutent jamais pendant celui-ci — ils sont invoqués plus tard, en réponse aux
+  // événements tactiles (avec `runOnJS(true)`), au même titre qu'un gestionnaire d'événement classique. C'est le
+  // pattern documenté par react-native-gesture-handler pour lire/écrire une valeur de drag sans dépendre du cycle
+  // de render React (cf. https://docs.swmansion.com/react-native-gesture-handler/). La règle générique ne sait
+  // pas distinguer "callback différé" de "accès synchrone pendant le render".
   const panGesture = Gesture.Pan()
     .runOnJS(true)
+    // eslint-disable-next-line react-hooks/refs -- cf. justification ci-dessus (callback différé, hors render)
     .onBegin((e) => {
       if (!thermostat.isActive) return;
       const temp = touchToTemp(e.x, e.y);
       draggingValue.current = temp;
       setNextValue(temp);
     })
+    // eslint-disable-next-line react-hooks/refs -- cf. justification ci-dessus (callback différé, hors render)
     .onUpdate((e) => {
       if (!thermostat.isActive) return;
       const temp = touchToTemp(e.x, e.y);
       draggingValue.current = temp;
       setNextValue(temp);
     })
+    // eslint-disable-next-line react-hooks/refs -- cf. justification ci-dessus (callback différé, hors render)
     .onEnd(() => {
       if (!thermostat.isActive) return;
       updateThermostatPoint(thermostat.idx, thermostat, draggingValue.current, setDomoticzThermostatData);

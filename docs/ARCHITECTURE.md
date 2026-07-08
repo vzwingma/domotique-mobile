@@ -1,7 +1,7 @@
 # Architecture domoticz-mobile
 
-**Document Version:** 3.1.0  
-**Last Updated:** 2026-05-25  
+**Document Version:** 4.0.0
+**Last Updated:** 2026-07-08
 **Audience:** Développeurs contribuant à l'application
 
 ---
@@ -12,13 +12,14 @@
 2. [Flux de données](#-flux-de-données)
 3. [Structure des dossiers](#-structure-des-dossiers)
 4. [Patterns & Conventions](#-patterns--conventions)
-5. [Composants principaux](#-composants-principaux)
+5. [Écrans principaux](#-écrans-principaux)
 6. [Services](#-services)
 7. [Gestion d'État Global](#-gestion-détat-global)
 8. [Modèles de Données](#-modèles-de-données)
 9. [Énumérations & Constantes](#-énumérations--constantes)
 10. [Routing](#-routing)
-11. [Meilleures Pratiques](#-meilleures-pratiques)
+11. [CI/CD](#-cicd)
+12. [Meilleures Pratiques](#-meilleures-pratiques)
 
 ---
 
@@ -27,15 +28,15 @@
 **domoticz-mobile** est une application React Native/Expo qui permet de contrôler et consulter les équipements d'une maison intelligente via un serveur **Domoticz** (https://www.domoticz.com/).
 
 **Caractéristiques principales :**
-- **Stack technologique :** Expo SDK ~56.0.12, React 19.2.3, React Native 0.85.3, TypeScript strict, Context API
-- **Routing :** expo-router ~56.2.11 (file-based routing)
+- **Stack technologique :** Expo SDK ~56.0.13, React 19.2.3, React Native 0.85.3, TypeScript strict, Context API
+- **Routing :** expo-router ~56.2.12 (file-based routing)
 - **Plateforme cible :** Android native, Web (navigateur)
 - **Authentification :** Basic Auth via `Constants.expoConfig.extra.domoticzAuth` (Base64, injecté depuis `app.config.ts`)
 - **Intégration Domoticz :** API REST HTTP
-- **État global :** React Context (DomoticzContextProvider)
-- **Tests :** Jest + jest-expo ~56.0.5 + Testing Library
-- **Linting :** ESLint 9.39.1 (flat config)
-- **CI/CD :** GitHub Actions, SonarQube
+- **État global :** React Context (`DomoticzContextProvider`)
+- **Tests :** Jest + jest-expo + Testing Library
+- **Linting :** ESLint 9.39.1 (flat config, `eslint.config.js` — seule source de vérité)
+- **CI/CD :** GitHub Actions (`ci.yml`/`quick-check.yml`), SonarQube (Quality Gate), EAS Workflows pour les builds Android
 
 **Note :** SDK 56 supprime la compatibilité avec les packages `@react-navigation/*`. L'application utilise désormais `expo-router` pour tout le routage.
 
@@ -47,64 +48,68 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                         UI LAYERS                               │
-│  (Tabs: Favoris, Lumières, Volets, Températures, Maison)        │
-└────────────────────┬────────────────────────────────────────────┘
+│                         UI LAYERS                                │
+│  Onglets (app/(tabs)/) : index (Favoris), devices.tabs           │
+│  (Lumières/Volets), temperatures.tab, parametrages.tab (Maison)  │
+└────────────────────┬───────────────────────────────────────────┘
                      │
                      ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                     CONTROLLERS                                 │
-│  (Bridge entre UI et Services, logique métier simple)           │
-│  - FavoritesController                                          │
-│  - LightsController                                             │
-│  - BlindsController                                             │
-│  - TemperaturesController                                       │
-│  - HouseController                                              │
-└────────────────────┬────────────────────────────────────────────┘
+│                     CONTROLLERS (app/controllers/)                │
+│  (Bridge entre UI et Services, logique métier simple)             │
+│  - index.controller.tsx        (connexion initiale)               │
+│  - devices.controller.tsx      (lumières/volets)                  │
+│  - temperatures.controller.tsx (capteurs température)             │
+│  - thermostats.controller.tsx  (thermostats)                      │
+│  - parameters.controller.tsx   (paramètres + favoris)             │
+└────────────────────┬───────────────────────────────────────────┘
                      │
                      ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                      SERVICES                                   │
-│  (Logique métier, accès données, API calls)                     │
-│  - ClientHTTP.service (requêtes HTTP, Basic Auth)               │
-│  - DataUtils.service (tri, filtrage, transformation)            │
-│  - DomoticzContextProvider (gestion état global)                │
-└────────────────────┬────────────────────────────────────────────┘
+│                      SERVICES (app/services/)                     │
+│  (Logique métier, accès données, API calls)                       │
+│  - ClientHTTP.service.ts        (requêtes HTTP, Basic Auth)       │
+│  - RefreshOrchestrator.service.ts (orchestration refresh unifiée) │
+│  - DataUtils.service.ts         (tri, filtrage, transformation)   │
+│  - FavoritesManager.service.ts  (gestion favoris, AsyncStorage)   │
+│  - Validator.service.ts         (validation des réponses API)     │
+│  - ErrorHandler.service.ts      (typage/normalisation erreurs)    │
+│  - DomoticzContextProvider.tsx  (gestion état global + Context)   │
+└────────────────────┬───────────────────────────────────────────┘
                      │
                      ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                    DOMOTICZ SERVER                              │
-│  (API REST HTTP avec endpoints spécifiques)                     │
-│  - /json.htm?type=devices                                       │
-│  - /json.htm?type=command&param=switchlight                     │
-│  - /json.htm?type=command&param=setused                         │
+│                    DOMOTICZ SERVER                                │
+│  (API REST HTTP avec endpoints spécifiques — voir SERVICES_URL    │
+│   dans app/enums/APIconstants.ts)                                 │
 └─────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────┐
-│                    LOCAL STATE (Context)                        │
-│  DomoticzContextProvider → re-render UI on data change          │
+│                    LOCAL STATE (Context)                          │
+│  DomoticzContext (exporté par DomoticzContextProvider.tsx)        │
+│  → re-render UI on data change                                    │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Flux d'une action utilisateur (Exemple: allumer une lumière)
+### Flux d'une action utilisateur (Exemple : allumer une lumière)
 
-1. **Utilisateur clique** sur le bouton de la lumière dans `ViewLightDevice`
-2. **Composant appelle** `lightController.toggleLight(device)`
+1. **Utilisateur clique** sur le bouton de la lumière dans `ViewDomoticzDevice` (`app/components/device.component.tsx`)
+2. **Composant appelle** une fonction du controller `app/controllers/devices.controller.tsx` (ex. `updateDeviceLevel`)
 3. **Controller** :
    - Valide l'état actuel
    - Construit la commande Domoticz
-   - Appelle `ClientHTTP.callDomoticz()`
+   - Appelle `callDomoticz()` (`app/services/ClientHTTP.service.ts`)
 4. **Service HTTP** :
-    - Ajoute Basic Auth
-    - Ajoute traçage UUID
-    - Envoie POST/GET au serveur Domoticz
-    - Applique un timeout (15s) et le mode **single-flight** pour éviter les requêtes identiques en parallèle
+   - Ajoute Basic Auth
+   - Ajoute un traceId (`generateTraceId()` — `ErrorHandler.service.ts`)
+   - Envoie la requête au serveur Domoticz
+   - Applique un timeout (15s) et le mode **single-flight** pour éviter les requêtes identiques en parallèle
 5. **Réponse** :
-   - Serveur répond `{ status: "OK" }`
-   - Service met à jour Context
+   - Réponse validée par `Validator.service.ts` (`validateDomoticzResponse`, `validateRawDevice`, etc.)
+   - Controller met à jour le Context (`setDomoticzDevicesData`, etc.)
    - UI re-render automatiquement
 6. **Feedback utilisateur** :
-   - Badge connexion : "Connecté"
+   - Badge connexion (`ConnectionBadge.tsx`) : "Connecté"
    - Lumière affichée comme "Allumée"
 
 ### Gestion des erreurs
@@ -112,11 +117,11 @@
 Si la requête échoue (réseau, SSL, API) :
 
 ```
-ClientHTTP.service
+ClientHTTP.service.ts
   ├─ Catch network error
-  ├─ Set context { connectionStatus: "Erreur" }
-  ├─ Log UUID for debugging
-  └─ UI affiche badge "Erreur" + logs dans console
+  ├─ handleError() (ErrorHandler.service.ts) → normalise en DomoticzError typée
+  ├─ Set context { domoticzConnexionData: 'Erreur' }
+  └─ UI affiche badge "Erreur" + logs console avec traceId
 ```
 
 ---
@@ -127,101 +132,136 @@ ClientHTTP.service
 
 ```
 domoticz-mobile/
-├── app/                          # Code métier (Expo Router, TypeScript)
-│   ├── (tabs)/                   # 5 écrans principaux (file-based routing)
-│   │   ├── favoris.tsx
-│   │   ├── lights.tsx
-│   │   ├── blinds.tsx
-│   │   ├── temperatures.tsx
-│   │   └── house.tsx
-│   ├── components/               # Composants écran (*.component.tsx)
+├── app/                              # Code métier (Expo Router, TypeScript)
+│   ├── (tabs)/                       # Écrans principaux (file-based routing)
+│   │   ├── index.tsx                 # Écran Favoris (route racine des tabs)
+│   │   ├── devices.tabs.tsx          # Écran équipements (Lumières / Volets)
+│   │   ├── temperatures.tab.tsx      # Écran Températures / Thermostats
+│   │   ├── parametrages.tab.tsx      # Écran Maison (paramètres + À propos)
+│   │   ├── _layout.tsx               # Layout des tabs, refresh orchestration, TabBar
+│   │   └── __tests__/
+│   ├── components/                   # Composants écran (*.component.tsx)
 │   │   ├── device.component.tsx
 │   │   ├── lightDevice.component.tsx
 │   │   ├── blindDevice.component.tsx
 │   │   ├── deviceCard.component.tsx
+│   │   ├── deviceRow.styles.ts       # Styles partagés des lignes d'équipement
 │   │   ├── favoriteCard.component.tsx
 │   │   ├── temperature.component.tsx
 │   │   ├── thermostat.component.tsx
 │   │   ├── paramList.component.tsx
 │   │   ├── primaryIconAction.component.tsx
-│   │   └── disconnectedState.component.tsx
-│   ├── controllers/              # Controllers métier (*.controller.tsx)
-│   │   ├── favorites.controller.tsx
-│   │   ├── lights.controller.tsx
-│   │   ├── blinds.controller.tsx
+│   │   ├── disconnectedState.component.tsx
+│   │   └── __tests__/
+│   ├── controllers/                  # Controllers métier (*.controller.tsx)
+│   │   ├── index.controller.tsx      # Connexion initiale à Domoticz
+│   │   ├── devices.controller.tsx    # Lumières / Volets (mapping, actions, labels)
 │   │   ├── temperatures.controller.tsx
-│   │   └── house.controller.tsx
-│   ├── services/                 # Services (logique métier, HTTP, state)
-│   │   ├── ClientHTTP.service.ts
-│   │   ├── DataUtils.service.ts
-│   │   ├── DomoticzContext.ts
-│   │   └── DomoticzContextProvider.tsx
-│   ├── models/                   # Modèles données (classes TypeScript)
-│   │   ├── Device.model.ts
-│   │   ├── Light.model.ts
-│   │   ├── Blind.model.ts
-│   │   ├── Temperature.model.ts
-│   │   ├── Thermostat.model.ts
-│   │   ├── Status.model.ts
-│   │   └── Favorite.model.ts
-│   ├── enums/                    # Énums, constantes, endpoints
-│   │   ├── DeviceType.enum.ts
-│   │   ├── ConnectionStatus.enum.ts
-│   │   ├── Colors.enum.ts
-│   │   └── DomoticzEndpoints.enum.ts
-│   └── _layout.tsx               # Root layout avec Context Provider
-├── components/                   # Composants génériques réutilisables
+│   │   ├── thermostats.controller.tsx
+│   │   ├── parameters.controller.tsx # Paramètres + reset favoris
+│   │   └── __tests__/
+│   ├── services/                     # Services (logique métier, HTTP, state)
+│   │   ├── ClientHTTP.service.ts         # Appels HTTP Domoticz (callDomoticz, diagnostic latence)
+│   │   ├── RefreshOrchestrator.service.ts# Orchestration refresh unifiée (voir ADR-004/005)
+│   │   ├── DataUtils.service.ts          # Tri, filtrage, détection type équipement
+│   │   ├── FavoritesManager.service.ts   # Gestion favoris (AsyncStorage)
+│   │   ├── Validator.service.ts          # Validation des réponses/objets Domoticz
+│   │   ├── ErrorHandler.service.ts       # Typage erreurs (DomoticzError), traceId
+│   │   ├── DomoticzContextProvider.tsx   # Provider + export du DomoticzContext
+│   │   └── __tests__/
+│   ├── models/                       # Modèles données (classes TypeScript, préfixe `domoticz`)
+│   │   ├── domoticzDevice.model.ts
+│   │   ├── domoticzFavorites.model.ts
+│   │   ├── domoticzParameter.model.ts
+│   │   ├── domoticzTemperature.model.ts
+│   │   ├── domoticzThermostat.model.ts
+│   │   ├── domoticzConfig.model.ts
+│   │   └── __tests__/
+│   ├── enums/                        # Constantes, endpoints, énums (pas de suffixe `.enum.ts`)
+│   │   ├── APIconstants.ts           # URLs/auth, SERVICES_URL, KeyValueParams
+│   │   ├── Colors.ts                 # Palette thème sombre + couleurs de groupe
+│   │   ├── DomoticzEnum.ts           # DomoticzStatus, DomoticzDeviceType, labels, tris
+│   │   └── TabsEnums.ts              # Enum des onglets (Tabs)
+│   └── _layout.tsx                   # Root layout avec DomoticzContextProvider
+├── components/                       # Composants génériques réutilisables (hors app/)
 │   ├── ThemedText.tsx
-│   ├── ThemedView.tsx
-│   ├── IconSymbol.tsx
-│   └── TabBarIcon.tsx
-├── hooks/                        # Hooks React personnalisés
+│   ├── AppHeader.tsx
+│   ├── ConnectionBadge.tsx
+│   ├── ParallaxScrollView.tsx
+│   ├── IconDomoticzDevice.tsx
+│   ├── IconDomoticzParametre.tsx
+│   ├── IconDomoticzTemperature.tsx
+│   ├── IconDomoticzThermostat.tsx
+│   ├── IconVoletSVG.tsx
+│   ├── navigation/
+│   │   ├── TabBarIcon.tsx
+│   │   ├── TabBarItem.tsx
+│   │   └── TabHeaderIcon.tsx
+│   └── __tests__/
+├── hooks/                            # Hooks React personnalisés
 │   ├── useThemeColor.ts
 │   ├── useColorScheme.ts
-│   └── (autres hooks)
-├── assets/                       # Ressources statiques
-│   ├── images/                   # Images PNG, JPG
-│   ├── icons/                    # SVG icons
-│   ├── fonts/                    # Polices custom
-│   └── certificates/             # Certificats SSL auto-signés
-├── docs/                         # Documentation (Markdown)
-│   ├── ARCHITECTURE.md           # Ce fichier
-│   ├── API.md                    # Documentation API Domoticz
-│   └── TESTING.md                # Guide testing
-├── __tests__/                    # Tests unitaires
-│   ├── controllers/
-│   ├── services/
-│   └── components/
-├── .github/                      # Configuration GitHub
+│   ├── useColorScheme.web.ts
+│   ├── AndroidToast.ts
+│   └── __tests__/
+├── assets/                           # Ressources statiques
+│   ├── images/                       # Images PNG, JPG
+│   ├── icons/                        # SVG icons
+│   ├── fonts/                        # Polices custom
+│   └── certificates/                 # Certificats SSL auto-signés
+├── docs/                             # Documentation (Markdown)
+│   ├── ARCHITECTURE.md               # Ce fichier
+│   ├── API.md                        # Documentation API Domoticz
+│   ├── TESTING.md                    # Guide testing
+│   ├── PROCESS-VEILLE-VERSIONS.md    # Processus de veille des majors Expo/React/RN (ADR-007)
+│   ├── DEPLOIEMENT.md                # Procédure build/déploiement EAS + keystore (ADR-010/011)
+│   └── adr/                          # Architecture Decision Records
+├── __tests__/                        # Tests unitaires transverses (racine)
+├── .eas/
+│   └── workflows/
+│       └── android-build-main-workflow.yml  # EAS Workflow natif (builds previewV/previewC sur push main)
+├── .github/                          # Configuration GitHub
 │   ├── workflows/
-│   │   └── ci.yml
+│   │   ├── ci.yml                    # CI complet (lint, test, build, Sonar) — main/develop
+│   │   ├── quick-check.yml           # CI allégé (lint, test) — autres branches
+│   │   └── build-on-all.yml          # Neutralisé (workflow_dispatch uniquement, cf. ADR-008)
+│   ├── agents/
+│   ├── instructions/
+│   ├── modernize/
 │   ├── plans/
+│   ├── prompts/
+│   ├── skills/
+│   ├── PLANS.md
 │   └── copilot-instructions.md
-├── app.json                      # Configuration Expo
-├── eas.json                      # Configuration EAS Builds
-├── tsconfig.json                 # Configuration TypeScript (strict mode)
-├── jest.config.js                # Configuration Jest
-├── package.json                  # Dépendances, scripts npm
-├── README.md                     # Documentation utilisateur
-├── CONTRIBUTING.md               # Guide contribution
-├── CHANGELOG.md                  # Historique des versions
-└── LICENSE                       # Licence MIT
+├── app.json / app.config.ts          # Configuration Expo
+├── eas.json                          # Configuration profils EAS Build
+├── tsconfig.json                     # Configuration TypeScript (strict mode)
+├── jest.config.js                    # Configuration Jest
+├── eslint.config.js                  # Configuration ESLint (flat, seule source de vérité)
+├── .nvmrc                            # Version Node figée (24)
+├── package.json                      # Dépendances, scripts npm (engines >=24)
+├── README.md                         # Documentation utilisateur
+├── CONTRIBUTING.md                   # Guide contribution
+├── CHANGELOG.md                      # Historique des versions
+└── LICENSE                           # Licence MIT
 ```
 
 ### Dossier `app/components/` — Détail des composants écran
 
 | Composant | Fichier | Responsabilité |
 |-----------|---------|-----------------|
-| `DeviceComponent` | `device.component.tsx` | Orchestrateur : dispatcher vers ViewLightDevice ou ViewBlindDevice |
+| `ViewDomoticzDevice` | `device.component.tsx` | Orchestrateur : dispatcher vers lumière ou volet selon le type |
 | `ViewLightDevice` | `lightDevice.component.tsx` | Rendu + contrôle lumière (on/off, slider, état groupe) |
 | `ViewBlindDevice` | `blindDevice.component.tsx` | Rendu + contrôle volet (slider, état groupe, confirmation modale) |
 | `DeviceCard` | `deviceCard.component.tsx` | Carte générique (header + body + action buttons) |
 | `FavoriteCard` | `favoriteCard.component.tsx` | Carte "action rapide" (1 tap, slider conditionnel) |
 | `PrimaryIconAction` | `primaryIconAction.component.tsx` | Bouton icône avec label |
 | `DisconnectedState` | `disconnectedState.component.tsx` | Badge "Déconnecté" pour équipements inactifs |
-| `TemperatureComponent` | `temperature.component.tsx` | Card compacte pour capteur température |
-| `ThermostatComponent` | `thermostat.component.tsx` | Contrôle consigne (±0,5°C) |
-| `ParamListComponent` | `paramList.component.tsx` | Chips segmentés pour paramètres (présence, phase) |
+| `ViewDomoticzTemperature` | `temperature.component.tsx` | Card compacte pour capteur température |
+| `ViewDomoticzThermostat` | `thermostat.component.tsx` | Contrôle consigne (±0,5°C) |
+| `ViewDomoticzParamList` | `paramList.component.tsx` | Chips segmentés pour paramètres (présence, phase) |
+
+`deviceRow.styles.ts` : styles partagés (pas un composant), utilisé par les composants ci-dessus.
 
 ---
 
@@ -231,16 +271,15 @@ domoticz-mobile/
 
 ```
 TypeScript/TSX files:
-├── *.model.ts          → Classes modèles de données
-├── *.controller.tsx    → Controllers (pont UI/Services)
-├── *.service.ts        → Services (logique métier, HTTP)
-├── *.component.tsx     → Composants écran (app/components/)
-├── *.tsx               → Pages, layouts, composants génériques
-└── *.enum.ts           → Énums et constantes
+├── domoticzXxx.model.ts   → Classes modèles de données (préfixe domoticz)
+├── xxx.controller.tsx     → Controllers (pont UI/Services)
+├── Xxx.service.ts         → Services (logique métier, HTTP)
+├── xxx.component.tsx      → Composants écran (app/components/)
+├── *.tsx                  → Pages, layouts, composants génériques (components/, app/(tabs)/)
+└── (pas de suffixe dédié) → Enums et constantes (app/enums/)
 
 Test files:
-├── *-test.tsx          → Tests
-└── *.test.tsx          → Tests (Jest standard)
+└── *.test.tsx / *.test.ts → Tests (Jest), regroupés dans __tests__/ à côté du code testé
 ```
 
 ### 2. TypeScript Strict Mode
@@ -254,22 +293,17 @@ Tous les fichiers utilisent TypeScript avec:
 
 **Exemple :**
 ```typescript
-export class Light {
-  readonly id: string;
+export class DomoticzDevice {
+  readonly idx: number;
   readonly name: string;
   readonly level: number;
-  
-  constructor(id: string, name: string, level: number) {
-    this.id = id;
-    this.name = name;
-    this.level = level;
+
+  constructor(data: DomoticzDeviceInput) {
+    this.idx = data.idx;
+    this.name = data.name;
+    this.level = data.level ?? 0;
   }
 }
-
-export type ViewLightDeviceProps = {
-  device: Light;
-  onToggle: (device: Light) => void;
-};
 ```
 
 ### 3. Controllers Pattern
@@ -277,44 +311,20 @@ export type ViewLightDeviceProps = {
 Les **controllers** sont des ponts entre l'UI et les services :
 
 ```typescript
-// app/controllers/lights.controller.tsx
-import { useContext } from 'react';
-import { DomoticzContext } from '../services/DomoticzContext';
-import { ClientHTTP } from '../services/ClientHTTP.service';
+// app/controllers/devices.controller.tsx
+import { DomoticzContext } from '../services/DomoticzContextProvider';
+import callDomoticz from '../services/ClientHTTP.service';
 
-export function useLightsController() {
-  const { devices, setDevices } = useContext(DomoticzContext);
-  const http = useContext(ClientHTTPContext);
-  
-  return {
-    toggleLight: async (device: Light) => {
-      // 1. Valider
-      if (!device) return;
-      
-      // 2. Construire commande
-      const newLevel = device.level === 0 ? 100 : 0;
-      
-      // 3. Appeler service
-      const result = await http.callDomoticz({...});
-      
-      // 4. Mettre à jour Context (re-render)
-      setDevices([...]);
-    }
-  };
+export function updateDeviceLevel(
+  idx: number,
+  device: DomoticzDevice,
+  level: number,
+  storeDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>
+) {
+  // 1. Construire la commande
+  // 2. Appeler callDomoticz()
+  // 3. Mettre à jour l'état via storeDevicesData(...)
 }
-```
-
-**Usage dans composant :**
-```typescript
-export const ViewLightDevice: React.FC<ViewLightDeviceProps> = ({ device }) => {
-  const { toggleLight } = useLightsController();
-  
-  return (
-    <Pressable onPress={() => toggleLight(device)}>
-      {/* ... */}
-    </Pressable>
-  );
-};
 ```
 
 ### 4. Services Pattern
@@ -323,137 +333,77 @@ Les **services** contiennent la logique métier réutilisable :
 
 ```typescript
 // app/services/ClientHTTP.service.ts
-export class ClientHTTP {
-  private baseURL: string;
-  private auth: string;
-  
-  async callDomoticz(params: object): Promise<DomoticzResponse> {
-    const uuid = generateUUID();
-    console.log(`[${uuid}] Calling Domoticz...`);
-    
-    try {
-      const response = await fetch(`${this.baseURL}/json.htm?...`, {
-        headers: {
-          'Authorization': `Basic ${this.auth}`
-        }
-      });
-      
-      const data = await response.json();
-      console.log(`[${uuid}] Response:`, data);
-      return data;
-    } catch (error) {
-      console.error(`[${uuid}] Error:`, error);
-      throw error;
-    }
-  }
+export default async function callDomoticz(path: SERVICES_URL, params?: KeyValueParams[]): Promise<any> {
+  const traceId = generateTraceId();
+  // Basic Auth, timeout 15s, single-flight, gestion erreurs via ErrorHandler.service.ts
 }
 
-export class DataUtils {
-  static sortEquipements(devices: Device[]): Device[] {
-    return [...devices].sort((a, b) => a.name.localeCompare(b.name));
-  }
-  
-  static getDeviceType(device: Device): DeviceType {
-    // Détection type depuis nom
-    if (device.name.includes('Lumière')) return DeviceType.LIGHT;
-    if (device.name.includes('Volet')) return DeviceType.BLIND;
-    // ...
-  }
-}
+// app/services/DataUtils.service.ts
+export function sortEquipements(device1: DomoticzDevice, device2: DomoticzDevice, devicesOrder: number[]) { /* ... */ }
+export function getDeviceType(deviceName: string): DomoticzDeviceType { /* ... */ }
 ```
 
 ### 5. Models Pattern (Classes TypeScript)
 
-Les données Domoticz sont modélisées comme des **classes immuables** :
+Les données Domoticz sont modélisées comme des **classes immuables**, préfixées `domoticz` :
 
 ```typescript
-// app/models/Device.model.ts
-export class Device {
-  readonly id: string;
+// app/models/domoticzDevice.model.ts
+export type DomoticzDeviceInput = { idx: number; name: string; level?: number; /* ... */ };
+
+export default class DomoticzDevice {
   readonly idx: number;
   readonly name: string;
-  readonly type: string;
-  readonly subtype: string;
   readonly level: number;
-  readonly status: string;
-  readonly lastupdate: string;
-  
-  constructor(data: {
-    id: string;
-    idx: number;
-    name: string;
-    type: string;
-    subtype: string;
-    level?: number;
-    status?: string;
-    lastupdate?: string;
-  }) {
-    this.id = data.id;
-    this.idx = data.idx;
-    this.name = data.name;
-    this.type = data.type;
-    this.subtype = data.subtype;
-    this.level = data.level ?? 0;
-    this.status = data.status ?? 'Unknown';
-    this.lastupdate = data.lastupdate ?? new Date().toISOString();
-  }
+  // ...
 }
 ```
 
 ---
 
-## 🧩 Composants Principaux
+## 🧩 Écrans principaux
 
-### Favoris (favorites.tsx)
+### Favoris (`app/(tabs)/index.tsx`)
 
 **Flux :**
-1. Charger tous les favoris depuis AsyncStorage
-2. Afficher cartes "action rapide" (max 8 actifs)
+1. Charger tous les favoris depuis AsyncStorage (`FavoritesManager.service.ts`)
+2. Afficher cartes "action rapide" (max **7** favoris actifs)
 3. Chaque carte : 1 tap = action principale, bouton = action alternative
-4. Mode previewC : slider conditionnel disponible
+4. Slider conditionnel disponible en mode `previewC`
 
-**Composants :** `FavoriteCard`, `primaryIconAction`
+**Composants :** `FavoriteCard`, `PrimaryIconAction`
 
-### Lumières (lights.tsx)
-
-**Flux :**
-1. Charger equipements type "Light"
-2. Trier alphabétiquement
-3. Afficher groupe/lumière individuelle
-4. Contrôles : on/off, variateur (0-100%)
-5. État groupe : "Éteintes", "Allumées", "Mixte", "%niveau"
-
-**Composants :** `DeviceComponent`, `ViewLightDevice`, `DeviceCard`
-
-### Volets (blinds.tsx)
+### Lumières / Volets (`app/(tabs)/devices.tabs.tsx`)
 
 **Flux :**
-1. Charger équipements type "Blind"
-2. Trier alphabétiquement
-3. Afficher groupe/volet individuel
-4. Contrôles : slider (0-100%), icônes open/close
-5. Confirmation modale si nom contient "Tous"
+1. Charger équipements type `Light` ou `Blind` (`devices.controller.tsx`)
+2. Trier selon l'ordre métier (`DataUtils.service.ts`, `DomoticzLightsSort`/`DomoticzBlindsSort`)
+3. Afficher groupe/équipement individuel
+4. Contrôles : on/off, variateur (0-100%) pour les lumières ; slider + icônes open/close pour les volets
+5. État groupe : "Éteintes"/"Allumées"/"Mixte"/niveau% (lumières), "Ouvert"/"Fermé"/"Mixte" (volets)
+6. Confirmation modale pour les actions sur groupe de volets (nom contenant "Tous")
 
-**Composants :** `DeviceComponent`, `ViewBlindDevice`, `DeviceCard`
+**Composants :** `ViewDomoticzDevice`, `ViewLightDevice`, `ViewBlindDevice`, `DeviceCard`
 
-### Températures (temperatures.tsx)
+### Températures (`app/(tabs)/temperatures.tab.tsx`)
 
 **Flux :**
-1. Charger capteurs température
+1. Charger capteurs température (`temperatures.controller.tsx`)
 2. Afficher température + état (Connecté/Déconnecté/Inconnu)
-3. Afficher thermostats avec point de consigne
+3. Charger et afficher thermostats (`thermostats.controller.tsx`) avec point de consigne
 4. Contrôles thermostat : ±0,5°C
 
-**Composants :** `TemperatureComponent`, `ThermostatComponent`
+**Composants :** `ViewDomoticzTemperature`, `ViewDomoticzThermostat`
 
-### Maison (house.tsx)
+### Maison (`app/(tabs)/parametrages.tab.tsx`)
 
 **Flux :**
-1. Paramètres interactifs (présence, phase) via chips
+1. Paramètres interactifs (présence, phase) via chips (`parameters.controller.tsx`)
 2. Section "À propos" : version app, version Domoticz, connexion
 3. Édition paramètres → mise à jour Context
+4. Réinitialisation des favoris (`handleResetFavorites`)
 
-**Composants :** `ParamListComponent`
+**Composants :** `ViewDomoticzParamList`
 
 ---
 
@@ -462,54 +412,68 @@ export class Device {
 ### ClientHTTP.service.ts
 
 **Responsabilités :**
-- Centraliser tous les appels HTTP vers Domoticz
+- Centraliser tous les appels HTTP vers Domoticz (`callDomoticz`, export par défaut)
 - Gérer Basic Auth (header `Authorization`) via `Constants.expoConfig.extra.domoticzAuth`
-- Traçage UUID pour debugging
-- Gestion des erreurs réseau/SSL
+- Traçage (`generateTraceId()` via `ErrorHandler.service.ts`) pour debugging
+- Diagnostic de latence (`runLatencyDiagnostic`)
+- Gestion des erreurs réseau/SSL, déléguée à `ErrorHandler.service.ts`
 
 **Stratégie de rafraîchissement (état réel) :**
 - HTTP : `callDomoticz()` effectue toujours un appel réseau direct — pas de cache TTL global côté client (voir [ADR 004](./adr/004-suppression-cache-http-et-rafraichissement-appstate.md) et [ADR 005](./adr/005-orchestration-refresh-unifiee-sans-cache-ttl-persistant.md)).
-- Orchestration centralisée via `refreshDomoticzData()` : un seul `GET_DEVICES` partagé (devices/thermostats/parameters) + `GET_TEMPS` en parallèle.
+- Orchestration centralisée via `refreshDomoticzData()` (`RefreshOrchestrator.service.ts`) : un seul `GET_DEVICES` partagé (devices/thermostats/parameters) + `GET_TEMPS` en parallèle.
 - Anti-burst UI : rafraîchissement au changement d'onglet et au retour foreground, protégé par un cooldown de 5 secondes (`REFRESH_COOLDOWN_MS`) dans `app/(tabs)/_layout.tsx`.
 - Robustesse réseau distante : timeout explicite 15s + coalescence single-flight des requêtes identiques en vol.
 
-**Méthodes principales :**
-```typescript
-callDomoticz(path: SERVICES_URL, params?: KeyValueParams[]): Promise<any>
-```
+### RefreshOrchestrator.service.ts
+
+**Responsabilités :**
+- Point d'entrée unique de rafraîchissement des données (`refreshDomoticzData()`), appelé depuis `app/(tabs)/_layout.tsx`
+- Coordonne les appels `GET_DEVICES` (partagé devices/thermostats/parameters) et `GET_TEMPS` (parallèle)
 
 ### DataUtils.service.ts
 
 **Responsabilités :**
-- Tri/filtrage équipements
-- Détection type équipement (LIGHT, BLIND, etc.)
-- Évaluation cohérence groupe (état "Mixte")
-- Gestion favoris (AsyncStorage)
+- Tri/filtrage équipements (`sortEquipements`, `sortFavorites`)
+- Détection type équipement (`getDeviceType`)
+- Évaluation cohérence groupe (`evaluateGroupLevelConsistency`, état "Mixte")
+- Normalisation de texte (`normalizeDomoticzText`)
 
-**Méthodes principales :**
-```typescript
-sortEquipements(devices: Device[]): Device[]
-getDeviceType(device: Device): DeviceType
-evaluateGroupLevelConsistency(devices: Device[]): GroupConsistency
-getFavoritesFromStorage(): Promise<string[]>
-saveFavoritesToStorage(favorites: string[]): Promise<void>
-```
+### FavoritesManager.service.ts
+
+**Responsabilités :**
+- Gestion des favoris persistés en AsyncStorage (`getFavoritesFromStorage`, `saveFavoritesToStorage`, `toggleFavorite`, `clearFavoritesFromStorage`)
+
+### Validator.service.ts
+
+**Responsabilités :**
+- Valider les réponses brutes de l'API Domoticz avant mapping (`validateDomoticzResponse`, `validateRawDevice`, `validateRawTemperature`, `validateRawThermostat`)
+- Valider les objets construits (`validateConstructedDevice`, `validateConstructedThermostat`, `validateConstructedTemperature`)
+
+### ErrorHandler.service.ts
+
+**Responsabilités :**
+- Typer les erreurs métier (`DomoticzError`, `ErrorType`)
+- Normaliser et gérer les erreurs (`handleError`)
+- Générer les identifiants de traçage (`generateTraceId`)
 
 ### DomoticzContextProvider.tsx
 
 **Responsabilités :**
-- Fournir état global via Context API
-- Méthodes pour mettre à jour état (devices, connectionStatus)
+- Fournir l'état global via Context API (`DomoticzContext`, exporté directement depuis ce fichier — pas de fichier `DomoticzContext.ts` séparé)
+- Méthodes pour mettre à jour l'état (devices, températures, thermostats, paramètres, statut de connexion)
 - Chargement initial des équipements
 
-**État :**
+**État (simplifié) :**
 ```typescript
 type DomoticzContextType = {
-  devices: Device[];
-  connectionStatus: ConnectionStatus;  // 'connected' | 'syncing' | 'disconnected' | 'error'
-  setDevices: (devices: Device[]) => void;
-  setConnectionStatus: (status: ConnectionStatus) => void;
-  fetchDevices: () => Promise<void>;
+  domoticzDevicesData: DomoticzDevice[];
+  domoticzTemperaturesData: DomoticzTemperature[];
+  domoticzThermostatData: DomoticzThermostat[];
+  domoticzParametersData: DomoticzParameter[];
+  domoticzConnexionData: /* statut de connexion */;
+  setDomoticzDevicesData: (devices: DomoticzDevice[]) => void;
+  setDomoticzConnexionData: (status: /* ... */) => void;
+  // ...
 };
 ```
 
@@ -519,80 +483,81 @@ type DomoticzContextType = {
 
 ### React Context API
 
-État global fourni par `DomoticzContextProvider` :
+État global fourni par `DomoticzContextProvider` (`app/services/DomoticzContextProvider.tsx`) :
 
 ```typescript
-// app/services/DomoticzContext.ts
-export const DomoticzContext = createContext<DomoticzContextType | undefined>(undefined);
+// app/services/DomoticzContextProvider.tsx
+export const DomoticzContext = React.createContext<DomoticzContextType | null>(null);
 
-// Usage dans composant
-const context = useContext(DomoticzContext);
-if (!context) throw new Error('DomoticzContext not found');
-
-const { devices, connectionStatus, setDevices } = context;
+// Usage dans un composant/controller
+const context = useContext(DomoticzContext)!;
+const { domoticzDevicesData, domoticzConnexionData, setDomoticzDevicesData } = context;
 ```
+
+> Contrairement à une version antérieure de ce document, il n'existe **pas** de fichier `DomoticzContext.ts` séparé : le contexte est exporté directement par `DomoticzContextProvider.tsx`.
 
 ### Local State vs Global State
 
 | Donnée | Scope | Stockage |
 |--------|-------|----------|
-| Devices (liste équipements) | Global | Context + AsyncStorage |
-| Connection status | Global | Context |
-| UI state (modal ouvert, etc.) | Local | `useState()` |
-| Favoris | Global | AsyncStorage (persisté) |
-| Préférences utilisateur | Global | AsyncStorage (persisté) |
+| Devices, Températures, Thermostats, Paramètres | Global | Context |
+| Statut de connexion | Global | Context |
+| UI state (modal ouvert, valeur en cours d'édition, etc.) | Local | `useState()` |
+| Favoris | Global | AsyncStorage (persisté, via `FavoritesManager.service.ts`) |
 
 ### Flux de mise à jour Context
 
-1. **Component** appelle `controller.toggleLight(device)`
-2. **Controller** appelle `ClientHTTP.callDomoticz()`
-3. **Service HTTP** reçoit réponse Domoticz
-4. **Service HTTP** appelle `setDevices([... new device state])`
+1. **Composant** appelle une fonction du controller (ex. `updateDeviceLevel`)
+2. **Controller** appelle `callDomoticz()` (`ClientHTTP.service.ts`)
+3. **Service HTTP** reçoit et fait valider la réponse Domoticz (`Validator.service.ts`)
+4. **Controller** appelle le setter du Context (ex. `storeDevicesData([...])`)
 5. **Context** notifie tous les subscribers
-6. **Composants** re-render avec nouvel état
+6. **Composants** re-render avec le nouvel état
 
 ---
 
 ## 📊 Modèles de Données
 
-Tous les modèles sont des classes TypeScript immuables :
+Tous les modèles sont des classes TypeScript immuables, préfixées `domoticz`, situées dans `app/models/` :
 
-### Device
+| Fichier | Rôle |
+|---|---|
+| `domoticzDevice.model.ts` | Équipement générique (lumière, volet — pas de sous-classes `Light`/`Blind` dédiées, le type est porté par `DomoticzDeviceType`) |
+| `domoticzTemperature.model.ts` | Capteur de température |
+| `domoticzThermostat.model.ts` | Thermostat (consigne, mesure) |
+| `domoticzParameter.model.ts` | Paramètre Maison (présence, phase) |
+| `domoticzFavorites.model.ts` | Favori (référence à un équipement + métadonnées) |
+| `domoticzConfig.model.ts` | Configuration/état de connexion Domoticz (version serveur, etc.) |
 
-```typescript
-export class Device {
-  readonly id: string;        // Unique device ID
-  readonly idx: number;       // Domoticz device index
-  readonly name: string;      // Device name
-  readonly type: string;      // 'Light', 'Blind', 'Temp', etc.
-  readonly subtype: string;   // Subtype (may indicate Light type)
-  readonly level: number;     // Current level (0-100%)
-  readonly status: string;    // Device status ('On', 'Off', 'Mixed')
-  readonly lastupdate: string; // ISO timestamp
-}
-```
-
-### Light extends Device
+**Exemple :**
 
 ```typescript
-export class Light extends Device {
-  readonly maxLevel: number;  // Usually 100
-  readonly isGroup: boolean;  // Is this a light group?
-  
-  get isOn(): boolean { return this.level > 0; }
-  get percentage(): string { return `${this.level}%`; }
-}
-```
+// app/models/domoticzDevice.model.ts
+export type DomoticzDeviceInput = {
+  idx: number;
+  name: string;
+  type: string;
+  subtype: string;
+  level?: number;
+  status?: string;
+};
 
-### Blind extends Device
+export default class DomoticzDevice {
+  readonly idx: number;
+  readonly name: string;
+  readonly type: string;
+  readonly subtype: string;
+  readonly level: number;
+  readonly status: string;
 
-```typescript
-export class Blind extends Device {
-  readonly maxLevel: number;  // Usually 100
-  readonly isGroup: boolean;  // Is this a blind group?
-  
-  get isOpen(): boolean { return this.level > 0; }
-  get isClosed(): boolean { return this.level === 0; }
+  constructor(data: DomoticzDeviceInput) {
+    this.idx = data.idx;
+    this.name = data.name;
+    this.type = data.type;
+    this.subtype = data.subtype;
+    this.level = data.level ?? 0;
+    this.status = data.status ?? 'Unknown';
+  }
 }
 ```
 
@@ -600,39 +565,29 @@ export class Blind extends Device {
 
 ## 🔢 Énumérations & Constantes
 
-### DeviceType.enum.ts
+Situées dans `app/enums/` — **aucun fichier ne porte le suffixe `.enum.ts`** (convention de nommage historique abandonnée).
 
-```typescript
-export enum DeviceType {
-  LIGHT = 'Light',
-  BLIND = 'Blind',
-  TEMPERATURE = 'Temperature',
-  THERMOSTAT = 'Thermostat',
-  UNKNOWN = 'Unknown'
-}
-```
+### APIconstants.ts
 
-### ConnectionStatus.enum.ts
+- `API_URL`, `API_AUTH` : configuration serveur Domoticz (variables d'environnement)
+- `SERVICES_URL` (enum) : endpoints Domoticz (`GET_DEVICES`, `GET_TEMPS`, commandes switch/setused, etc.)
+- `SERVICES_PARAMS`, `KeyValueParams` : paramètres de requête typés
 
-```typescript
-export enum ConnectionStatus {
-  CONNECTED = 'connected',
-  SYNCING = 'syncing',
-  DISCONNECTED = 'disconnected',
-  ERROR = 'error'
-}
-```
+### Colors.ts
 
-### DomoticzEndpoints.enum.ts
+- Palette du thème sombre (unique thème supporté)
+- `getGroupColor(volet)` : couleur selon état de groupe
+- `PROFILES_ENV` : environnements (`previewV`, `previewC`, `production`, etc.)
 
-```typescript
-export enum DomoticzEndpoint {
-  GET_DEVICES = '/json.htm?type=devices',
-  SWITCH_LIGHT = '/json.htm?type=command&param=switchlight',
-  SET_LEVEL = '/json.htm?type=command&param=setused',
-  GET_STATUS = '/json.htm?type=status'
-}
-```
+### DomoticzEnum.ts
+
+- `DomoticzStatus`, `DomoticzDeviceType`, `DomoticzSwitchType`, `DomoticzDeviceStatus`
+- `DomoticzThermostatLevelValue`, `DomoticzDeviceLevelValue`, `DomoticzDeviceLabel`, `DomoticzPhasePrefix`
+- `DomoticzLightsSort`, `DomoticzBlindsSort` : ordres de tri métier par idx
+
+### TabsEnums.ts
+
+- `Tabs` : identifiants des onglets (`INDEX`, `DEVICES`, `TEMPERATURES`, `PARAMETRAGES`)
 
 ---
 
@@ -640,36 +595,27 @@ export enum DomoticzEndpoint {
 
 ### File-based Routing (Expo Router)
 
-Structure des fichiers = structure des routes :
+Structure des fichiers = structure des routes, sous `app/(tabs)/` :
 
 ```
 app/(tabs)/
-├── favoris.tsx     → Route: /(tabs)/favoris
-├── lights.tsx      → Route: /(tabs)/lights
-├── blinds.tsx      → Route: /(tabs)/blinds
-├── temperatures.tsx → Route: /(tabs)/temperatures
-└── house.tsx       → Route: /(tabs)/house
+├── index.tsx              → Route: /(tabs)/          (Favoris)
+├── devices.tabs.tsx        → Route: /(tabs)/devices.tabs   (Lumières / Volets)
+├── temperatures.tab.tsx    → Route: /(tabs)/temperatures.tab
+└── parametrages.tab.tsx    → Route: /(tabs)/parametrages.tab (Maison)
 ```
 
-### Typed Routes
-
-Expo Router activé avec `expoRouterTypeValidation: true` dans `app.json` :
-
-```typescript
-import { Link } from 'expo-router';
-
-// Type-checked link
-<Link href="/(tabs)/lights">
-  Go to Lights
-</Link>
-```
+Les écrans sont chargés en **lazy loading** (`React.lazy`) depuis `app/(tabs)/_layout.tsx` pour la performance (cf. commentaire "T4.3 - Lazy-load screens" dans le code).
 
 ### Navigation par onglets
 
-Root layout utilise `BottomTabNavigator` :
+`app/(tabs)/_layout.tsx` gère :
+- La `TabBar` personnalisée (`components/navigation/TabBarItem.tsx`, `TabBarIcon.tsx`, `TabHeaderIcon.tsx`)
+- L'orchestration du rafraîchissement (changement d'onglet, retour au premier plan via `AppState`)
+- Le badge de connexion global (`ConnectionBadge.tsx`)
 
 ```typescript
-// app/_layout.tsx
+// app/_layout.tsx (root layout)
 export default function RootLayout() {
   return (
     <DomoticzContextProvider>
@@ -683,19 +629,37 @@ export default function RootLayout() {
 
 ---
 
+## 🚀 CI/CD
+
+Trois workflows GitHub Actions dans `.github/workflows/` (voir [ADR-008](./adr/008-fusion-workflows-ci.md)) :
+
+| Workflow | Déclencheurs | Rôle |
+|---|---|---|
+| `ci.yml` | `push`/`pull_request` sur `main`, `develop` + `workflow_dispatch` | Pipeline complet : `lint` → `test` → `build` → `sonarqube-scan` → `integration-check` |
+| `quick-check.yml` | `push`/`pull_request` sur les autres branches + `workflow_dispatch` | Pipeline allégé : lint + test uniquement, feedback rapide sur branches de travail |
+| `build-on-all.yml` | `workflow_dispatch` uniquement | **Neutralisé** — plus aucun déclenchement automatique ; conservé pour usage manuel ponctuel, en-tête documentant la dépréciation |
+
+Les ensembles de branches de `ci.yml` et `quick-check.yml` sont strictement disjoints : une seule exécution CI complète possible par push/PR (pas de double déclenchement).
+
+**Seuil de couverture (`ci.yml`, job `test`) :** l'étape `nyc --check-coverage` est **informative** (`continue-on-error: true`) — le blocage réel est délégué au **Quality Gate SonarCloud** (`sonar.qualitygate.wait=true` dans `sonar-project.properties`). Voir [ADR-009](./adr/009-seuil-couverture-ci.md).
+
+**Build/déploiement Android :** géré séparément via **EAS Workflows** (`.eas/workflows/android-build-main-workflow.yml`, builds `previewV`/`previewC` automatiques sur push `main`) et des scripts npm locaux pour `development`/`production`/`submit`. Détails complets : [docs/DEPLOIEMENT.md](./DEPLOIEMENT.md).
+
+**Veille des dépendances majeures** (Expo SDK, React, React Native) : processus formalisé dans [docs/PROCESS-VEILLE-VERSIONS.md](./PROCESS-VEILLE-VERSIONS.md) (voir [ADR-007](./adr/007-processus-veille-majors-expo-react.md)).
+
+---
+
 ## ✨ Meilleures Pratiques
 
 ### 1. Tests Unitaires
 
-Chaque **controller** et **service** doit avoir des tests :
+Chaque **controller** et **service** doit avoir des tests, regroupés dans un dossier `__tests__/` à côté du code testé :
 
 ```typescript
-// app/controllers/__tests__/lights.controller-test.tsx
-describe('LightsController', () => {
-  it('should toggle light on', async () => {
-    const device = new Light({ id: '1', level: 0 });
-    const result = await toggleLight(device);
-    expect(result.level).toBe(100);
+// app/controllers/__tests__/devices.controller.test.tsx
+describe('devices.controller', () => {
+  it('should compute the correct level after toggle', () => {
+    // ...
   });
 });
 ```
@@ -703,10 +667,10 @@ describe('LightsController', () => {
 ### 2. Snapshot Testing pour Composants
 
 ```typescript
-// app/components/__tests__/device.component-test.tsx
-it('renders DeviceCard', () => {
+// app/components/__tests__/device.component.test.tsx
+it('renders ViewDomoticzDevice', () => {
   const tree = render(
-    <DeviceComponent device={mockDevice} />
+    <ViewDomoticzDevice device={mockDevice} />
   ).toJSON();
   expect(tree).toMatchSnapshot();
 });
@@ -714,14 +678,14 @@ it('renders DeviceCard', () => {
 
 ### 3. Gestion des Erreurs
 
-Toujours utiliser try-catch dans les async calls :
+Toujours utiliser try-catch et déléguer à `ErrorHandler.service.ts` dans les async calls :
 
 ```typescript
 try {
-  await ClientHTTP.callDomoticz({ ... });
+  await callDomoticz(SERVICES_URL.SWITCH_LIGHT, params);
 } catch (error) {
-  console.error('Failed to toggle light:', error);
-  setConnectionStatus(ConnectionStatus.ERROR);
+  handleError(error, traceId);
+  setDomoticzConnexionData(/* Erreur */);
 }
 ```
 
@@ -731,11 +695,11 @@ Typage explicite des props :
 
 ```typescript
 export type DeviceComponentProps = {
-  device: Device;
-  onAction?: (device: Device) => void;
+  device: DomoticzDevice;
+  onAction?: (device: DomoticzDevice) => void;
 };
 
-export const DeviceComponent: React.FC<DeviceComponentProps> = ({
+export const ViewDomoticzDevice: React.FC<DeviceComponentProps> = ({
   device,
   onAction
 }) => {
@@ -748,9 +712,8 @@ export const DeviceComponent: React.FC<DeviceComponentProps> = ({
 Préférer `readonly` et `const` :
 
 ```typescript
-readonly MAX_FAVORITES = 8;
-readonly SYNC_INTERVAL_MS = 5000;
-const DEVICE_TYPE_MAPPING: Record<string, DeviceType> = { ... };
+const FAVORITES_MAX_QUICK_ACTIONS = 7;
+const REFRESH_COOLDOWN_MS = 5000;
 ```
 
 ### 6. Committing Code
@@ -775,11 +738,14 @@ Co-authored-by: Contributor Name <email@example.com>
 - **Guide Contribution :** [CONTRIBUTING.md](../CONTRIBUTING.md)
 - **API Domoticz :** [docs/API.md](./API.md)
 - **Guide Testing :** [docs/TESTING.md](./TESTING.md)
+- **Processus de veille des versions :** [docs/PROCESS-VEILLE-VERSIONS.md](./PROCESS-VEILLE-VERSIONS.md)
+- **Déploiement & keystore :** [docs/DEPLOIEMENT.md](./DEPLOIEMENT.md)
+- **ADR :** [docs/adr/](./adr/)
 - **Expo Router :** https://docs.expo.dev/routing/introduction/
 - **React Context :** https://react.dev/reference/react/useContext
 - **TypeScript :** https://www.typescriptlang.org/
 
 ---
 
-**Document maintained by:** @vzwingma  
-**Last reviewed:** 2026-05-04
+**Document maintained by:** @vzwingma
+**Last reviewed:** 2026-07-08

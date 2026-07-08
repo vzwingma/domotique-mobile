@@ -8,7 +8,7 @@ Guide complet du format : `.claude/PLANS.md`
 
 | N° | Nom | Statut | Objectif |
 |---|---|---|---|
-| 001 | [Modernisation technique front-end](./001_modernisation-technique-frontend.plan.md) | ⏳ Planifié | Socle technique, versions & obsolescence, compilation & déploiement CI/CD |
+| 001 | [Modernisation technique front-end](./001_modernisation-technique-frontend.plan.md) | ✅ Complété (Gate#4 en attente) | Socle technique, versions & obsolescence, compilation & déploiement CI/CD |
 
 ---
 
