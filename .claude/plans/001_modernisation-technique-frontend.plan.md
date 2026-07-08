@@ -2,7 +2,7 @@
 
 **Document :** `.claude/plans/001_modernisation-technique-frontend.plan.md`
 **Date de création :** 2026-07-07
-**Statut :** ✅ Complété (5/5 phases, Gate#0-#3 validés — en attente Gate#4 clôture finale)
+**Statut :** ✅ Complété (5/5 phases, Gate#0-#4 validés — initiative clôturée le 2026-07-08)
 **Objectif Prioritaire :** MEDIUM
 
 ---
