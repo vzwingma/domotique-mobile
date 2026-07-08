@@ -67,9 +67,14 @@ jobs:
           name: coverage-report
           path: coverage/
       
-      - name: Check coverage threshold (≥80%)
+      # Rapport informatif uniquement — non bloquant par choix assumé (cf. docs/adr/009-seuil-couverture-ci.md).
+      # Le blocage réel est délégué au Quality Gate SonarCloud (sonar.qualitygate.wait=true
+      # dans sonar-project.properties, job sonarqube-scan). Couverture globale actuelle ~70%,
+      # sous le seuil informatif de 80% ci-dessous — ne pas retirer continue-on-error sans
+      # plan de rattrapage de couverture préalable (cf. ADR-009).
+      - name: Coverage report (informational — gate réel délégué à SonarCloud)
         run: |
-          npx nyc report --check-coverage --lines 80 --functions 80 --branches 80 || true
+          npx nyc report --check-coverage --lines 80 --functions 80 --branches 80
         continue-on-error: true
 
   # Build job - build web and APK

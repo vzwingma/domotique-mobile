@@ -1,17 +1,19 @@
-name: CI on all branches
+name: CI on all branches (DEPRECATED)
 
-# Controls when the action will run.
-# Triggers the workflow on push or pull request events on all branches
+# ⚠️ DEPRECATED — remplacé par quick-check.yml (lint+test, branches hors main/develog)
+# et ci.yml (pipeline complet, main/develop). Voir docs/adr/008-fusion-workflows-ci.md
+# (Option B — scoping non-chevauchant).
+#
+# Ce fichier est volontairement neutralisé (déclenchement manuel uniquement) plutôt
+# que supprimé, conformément à la règle de sécurité projet interdisant la suppression
+# de fichiers par un agent (.claude/skills/safety-rules/SKILL.md). Un humain peut
+# supprimer ce fichier via `git rm .github/workflows/build-on-all.yml` s'il le souhaite.
 on:
-  push:
-  pull_request:
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   expo-build:
-    name: Test and Build Expo App
+    name: Test and Build Expo App (deprecated, use ci.yml / quick-check.yml)
     runs-on: ubuntu-latest
     environment: BUILD
     steps:

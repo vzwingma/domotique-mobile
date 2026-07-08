@@ -7,17 +7,20 @@
 4. [Variables d'Environnement](#-variables-denvironnement)
 5. [Configuration SSL/TLS](#-configurationssltls)
 6. [Scripts npm](#scripts-npm)
-7. [Architecture & Patterns](#️-architecture--patterns)
-8. [Fonctionnalités](#fonctionnalités)
-9. [Tests](#-tests)
-10. [Contribution](#contribution)
-11. [Licence](#licence)
+7. [Build & Déploiement](#-build--déploiement)
+8. [Architecture & Patterns](#️-architecture--patterns)
+9. [Fonctionnalités](#fonctionnalités)
+10. [Tests](#-tests)
+11. [Contribution](#contribution)
+12. [Maintenance](#-maintenance)
+13. [Licence](#licence)
 
 ---
 
 # Domoticz Mobile
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=vzwingma_domotique-mobile&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=vzwingma_domotique-mobile)
+[![CI](https://github.com/vzwingma/domotique-mobile/actions/workflows/ci.yml/badge.svg)](https://github.com/vzwingma/domotique-mobile/actions/workflows/ci.yml)
 
 Application mobile pour piloter les équipements [Domoticz](https://www.domoticz.com/). Développée avec React Native et Expo, elle cible principalement Android et le web.
 
@@ -25,13 +28,16 @@ Application mobile pour piloter les équipements [Domoticz](https://www.domoticz
 
 Avant de commencer, assurez-vous d'avoir :
 
-- **Node.js** 21 ou supérieur ([télécharger](https://nodejs.org/))
+- **Node.js 24** — version figée via [`.nvmrc`](./.nvmrc) et `engines.node: ">=24"` dans `package.json`. Utilisez `nvm use` pour aligner automatiquement votre environnement local sur la version attendue par la CI.
 - **npm** 6 ou supérieur (inclus avec Node.js)
 - **Expo CLI** via `npx expo` ([guide officiel](https://docs.expo.dev/))
 
 ```bash
+# Aligner Node.js sur la version du projet (si nvm installé)
+nvm use
+
 # Vérifier les versions
-node --version   # v21.0.0 ou supérieur
+node --version   # v24.x.x ou supérieur
 npm --version    # v6.0.0 ou supérieur
 
 # Vérifier Expo CLI (via npx)
@@ -41,13 +47,13 @@ npx expo --version
 **Plateforme cible :** Android et Web (React Native via Expo)
 
 **Stack technologique :**
-- **Expo SDK** ~56.0.12
+- **Expo SDK** ~56.0.13
 - **React** 19.2.3
 - **React Native** 0.85.3
 - **TypeScript** strict mode
-- **expo-router** ~56.2.11
-- **Jest** + jest-expo ~56.0.5 (tests)
-- **ESLint** 9.39.1 (flat config)
+- **expo-router** ~56.2.12
+- **Jest** + jest-expo (tests)
+- **ESLint** 9.39.1 (flat config, `eslint.config.js` — seule source de vérité)
 
 ## 🚀 Installation
 
@@ -189,11 +195,22 @@ npm run validate:expo                               # Expo Doctor (environnement
 Builds EAS (distribution APK Android) :
 
 ```bash
-eas build --profile development   # Dev-client (à utiliser avec npm run start:dev-client)
-eas build --profile previewV      # APK à distribution interne (variante V)
-eas build --profile previewC      # APK à distribution interne (variante C)
-eas build --profile production    # Build de production
+npm run eas:build:development       # Dev-client (à utiliser avec npm run start:dev-client)
+npm run eas:build:production        # Build de production
+npm run eas:submit                  # Soumission du build de production vers le store
 ```
+
+> Les builds `previewV`/`previewC` sont déclenchés **automatiquement** à chaque push sur `main` via un EAS Workflow natif (`.eas/workflows/android-build-main-workflow.yml`) — aucune commande manuelle requise pour ce cas. Détails complets : [docs/DEPLOIEMENT.md](./docs/DEPLOIEMENT.md).
+
+## 🚢 Build & Déploiement
+
+Le déploiement Android combine build automatique et scripts manuels :
+
+- **Preview automatique** : `previewV` → `previewC` construits à chaque push sur `main` (EAS Workflow natif).
+- **Development/Production/Submit** : scripts npm dédiés (`eas:build:development`, `eas:build:production`, `eas:submit`), déclenchés manuellement.
+- **Keystore de production** : géré exclusivement via `eas credentials` (EAS Credentials), jamais par un fichier committé dans le repo.
+
+Procédure complète (y compris la gestion opérationnelle non-sensible du keystore) : **[docs/DEPLOIEMENT.md](./docs/DEPLOIEMENT.md)**.
 
 ## 🏗️ Architecture & Patterns
 
@@ -228,10 +245,12 @@ npm run lint
 npm run validate:expo
 ```
 
-**Objectifs de couverture :**
-- Couverture cible : **≥ 80%** (app/ et components/)
-- Controllers, Services et composants critiques testés
-- Snapshot tests pour les composants UI
+**Politique de couverture :**
+- Objectifs cibles par couche : controllers **100%**, services **≥90%**, composants **≥70%**, modèles **≥85%**.
+- Dans `.github/workflows/ci.yml`, l'étape `nyc --check-coverage` (job `test`) est **informative uniquement** (`continue-on-error: true`) — elle ne bloque pas la CI en cas de seuil non atteint.
+- Le **blocage réel** est délégué au **Quality Gate SonarCloud** (`sonar.qualitygate.wait=true`), qui échoue la CI si la couverture ou la qualité du code régresse. Détail de cette décision : [ADR-009 — Seuil de couverture CI](./docs/adr/009-seuil-couverture-ci.md).
+- Pas de tests E2E/intégration actuellement.
+- Snapshot tests pour les composants UI.
 
 Pour plus de détails sur le setup Jest, les conventions de test, et les meilleures pratiques, consultez **[docs/TESTING.md](./docs/TESTING.md)**.
 
@@ -281,6 +300,11 @@ Pour contribuer à ce projet :
 - Commit message format
 
 Consultez [CONTRIBUTING.md](./CONTRIBUTING.md) pour tous les détails.
+
+## 🔭 Maintenance
+
+- **Veille des versions majeures** (Expo SDK, React, React Native) : revue trimestrielle + alerte automatisée mensuelle, basées sur le Dependency Dashboard Renovate. Processus détaillé : [docs/PROCESS-VEILLE-VERSIONS.md](./docs/PROCESS-VEILLE-VERSIONS.md) (voir [ADR-007](./docs/adr/007-processus-veille-majors-expo-react.md)).
+- **Renovate** : patches en automerge, montées de version majeures créées en PR draft (jamais automergées) — revue manuelle requise, cf. document de veille ci-dessus.
 
 ## 📄 Licence
 

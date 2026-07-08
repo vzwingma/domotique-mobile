@@ -3,14 +3,14 @@
 **Responsable Agent :** Devon (🔵 DEV)
 **Date Début :** 2026-07-07
 **Date Fin :** 2026-07-07
-**Statut :** ⚠️ PARTIELLEMENT COMPLÉTÉE (T2.1 implémenté avec réserve documentée, T2.2 DONE, T2.3 PENDING — dépendance Phase 3)
+**Statut :** ✅ COMPLÉTÉE (T2.1 clôturé après relais QALvin+ARCos sur les 11 erreurs, T2.2 DONE, T2.3 DONE — dépendance Phase 3 résolue le 2026-07-08)
 
 ---
 
 ## 📝 Tâches
 
 ### T2.1 - Implémenter décision ADR-006 (unification ESLint)
-**Statut :** ⚠️ DONE avec réserve (config unifiée conforme ADR-006 ; `npm run lint` ne passe pas à zéro erreur — 11 erreurs préexistantes révélées, hors périmètre correction aveugle)
+**Statut :** ✅ DONE (config unifiée conforme ADR-006, 11 erreurs révélées puis clôturées via relais QALvin+ARCos — voir note de clôture ci-dessous — `npm run lint` : 0 erreur)
 
 **Fichiers Créés / Modifiés :**
 - `eslint.config.js` — réécrit : import `eslint-config-expo/flat` (array de 13 configs, vérifié via `node -e "require('eslint-config-expo/flat')"` avant écriture), conservation des ignores projet et des règles projet (`no-console`, `no-unused-vars`) en surcharge locale
@@ -57,7 +57,12 @@ Les **11 erreurs restantes** n'ont **pas** été corrigées à l'aveugle, confor
 
 4. **`app/components/thermostat.component.tsx:98,104,110` (3 erreurs `react-hooks/refs`)** — `Cannot access refs during render` sur le `Gesture.Pan()` (gestion tactile du thermostat, `draggingValue.current`). Règle stricte de la nouvelle version `eslint-plugin-react-hooks` v7 sur l'accès à un ref dans un handler de gesture-handler — pattern courant avec `react-native-gesture-handler` mais signalé par la règle. Touche directement à la logique métier du composant thermostat (interaction glisser-déposer) — correction nécessiterait un refactor (ex. `useAnimatedRef`/callback restructuré) à valider avec ARCos avant modification, hors périmètre d'une correction mécanique en T2.1.
 
-**Recommandation :** ces 11 erreurs restantes nécessitent soit un arbitrage ARCos/MAINa (créer une tâche de suivi dédiée, éventuellement un ADR sur la stratégie d'adoption progressive du preset — ex. passer certaines règles en `warn` le temps de la remédiation), soit une intervention ciblée QALvin (pour les 6 dans les fichiers de test). **`npm run lint` ne passe pas encore avec 0 erreur strict** — critère d'acceptation T2.1 non atteint à 100 %, mais l'objectif structurel de l'ADR-006 (une seule config ESLint active, cohérente avec le preset `expo` déclaré en dépendance) est bien atteint.
+**Clôture post-Gate#0 (2026-07-07) :**
+Les 11 erreurs ont été traitées en deux relais parallèles décidés par le développeur humain :
+- **6 erreurs `react/display-name` (fichiers de test)** → QALvin : mocks anonymes nommés (`MockStackScreen`, `MockSlider`, `MockIconDomoticzDevice`), comportement inchangé, 75/75 tests passants sur les fichiers concernés, 0 régression.
+- **5 erreurs logique métier (`app/(tabs)/_layout.tsx`, `app/components/thermostat.component.tsx`)** → ARCos : `setState` synchrone dans l'effet de `_layout.tsx` déplacé vers le handler `triggerRefresh` (fix direct, cascading renders évité) ; 1 faux positif `react-compiler` (aucun `babel-plugin-react-compiler` actif) et 3 faux positifs `react-hooks/refs` sur `Gesture.Pan()` (pattern documenté `react-native-gesture-handler`) traités par dérogation ciblée `eslint-disable-next-line` justifiée en commentaire. Pas d'ADR jugé nécessaire (patterns isolés, non récurrents dans le projet). 46/46 tests existants passent, `npm run typecheck` OK.
+
+**Résultat final `npm run lint` : 0 erreur, 216 warnings** (bruit résiduel `no-console`, `no-unused-vars`, `import/*`, `@typescript-eslint/no-require-imports` — non bloquant, hors périmètre de ce plan, signalé pour nettoyage futur). Critère d'acceptation T2.1 (0 erreur) désormais pleinement atteint.
 
 ---
 
@@ -75,25 +80,32 @@ Les **11 erreurs restantes** n'ont **pas** été corrigées à l'aveugle, confor
 ---
 
 ### T2.3 - Vérifier/ajuster `renovate.json` post-fusion CI
-**Statut :** ⏳ PENDING — dépendance non satisfaite (T3.1, Phase 3, non exécutée). Non traité dans cette session, conformément au périmètre assigné.
+**Statut :** ✅ DONE (dépendance T3.1 satisfaite, Phase 3 — voir `PHASE_3_COMPLETION_REPORT.md`)
+
+**Vérification effectuée :**
+- `.github/workflows/ci.yml` conserve `name: CI Pipeline` (aucun renommage — Option B de l'ADR-008 ne renomme que `build-on-all.yml` → `quick-check.yml`, `ci.yml` reste structurellement inchangé).
+- `renovate.json` référence `"requiredStatusChecks": ["CI Pipeline"]` (2 occurrences : règle auto-merge minor/patch, règle devDependencies minor) — nom toujours cohérent avec `ci.yml`.
+- `quick-check.yml` (nouveau workflow léger issu de T3.1, scope branches hors `main`/`develop`) n'a pas vocation à être un check requis pour l'automerge Renovate (celui-ci s'exécute sur les PR de dépendances Renovate, généralement ciblant `main`/`develop`, donc couvertes par `ci.yml`) — aucun ajout nécessaire dans `renovate.json`.
+
+**Fichiers Créés / Modifiés :** Aucun — `renovate.json` inchangé, vérification confirmant qu'aucune modification n'était requise.
+
+**Critère d'acceptation T2.3 :** ✅ `requiredStatusChecks: ["CI Pipeline"]` toujours valide post-fusion CI (T3.1), aucune désynchronisation.
 
 ---
 
 ## 📊 Synthèse de Phase
 
-**Tâches Complétées :** 1/3 ✅ (T2.2), 1/3 ⚠️ avec réserve (T2.1), 1/3 ⏳ PENDING (T2.3, hors périmètre — dépendance Phase 3)
+**Tâches Complétées :** 3/3 ✅ (T2.1, T2.2, T2.3)
 
 **Critères de Réussite Atteints :**
-- ⚠️ `npm run lint` s'exécute avec une seule source de vérité ESLint (`.eslintrc.js` supprimé) mais **ne passe pas encore sans erreur** (11 erreurs préexistantes révélées par l'intégration du preset `expo`, cf. détail T2.1)
+- ✅ `npm run lint` s'exécute avec une seule source de vérité ESLint (`.eslintrc.js` supprimé), **0 erreur** (216 warnings résiduels non bloquants)
 - ✅ `.nvmrc` et `engines` présents et alignés sur Node 24 (version CI)
-- ⏳ `renovate.json` → non vérifié (T2.3 bloqué, dépendance Phase 3)
-- ✅ Aucune régression introduite par les 3 corrections triviales appliquées (formatting JSX pur)
+- ✅ `renovate.json` vérifié post-fusion CI (T3.1) — `requiredStatusChecks: ["CI Pipeline"]` toujours cohérent, aucune modification nécessaire
+- ✅ Aucune régression (75/75 + 46/46 tests concernés passants, `npm run typecheck` OK)
 
-**Bloqueurs :**
-- T2.1 : 11 erreurs de lint restantes nécessitent un arbitrage (ARCos/MAINa) ou une intervention QALvin (fichiers de test) avant de pouvoir clore formellement le critère d'acceptation "0 erreur". Ne bloque pas la suite du plan (Phase 3 indépendante), mais à traiter avant clôture finale de Phase 2/Gate#2.
-- T2.3 : bloqué par dépendance T3.1 (Phase 3), comme prévu au plan.
+**Bloqueurs :** Aucun. T2.1, T2.2, T2.3 tous clôturés.
 
-**Prochaine Phase :** Phase 3 (CI/CD) peut démarrer dès ADR-008/009/010 acceptés (Gate#0), indépendamment du point ouvert T2.1. Recommandation : soumettre les 11 erreurs restantes à MAINa/ARCos pour décision (créer tâche de suivi ou ADR complémentaire) avant Gate#2.
+**Prochaine Phase :** Phase 3 (CI/CD) complétée — voir `PHASE_3_COMPLETION_REPORT.md`.
 
 ---
 
@@ -103,7 +115,7 @@ Les **11 erreurs restantes** n'ont **pas** été corrigées à l'aveugle, confor
 - ✅ `.eslintrc.js` supprimé
 - ✅ `.nvmrc` créé (`24`)
 - ✅ `package.json` avec `engines.node >=24`
-- ⚠️ Rapport détaillé des 11 erreurs de lint restantes (ci-dessus), en attente d'arbitrage
+- ✅ 11 erreurs de lint clôturées (6 mocks tests nommés par QALvin, 5 logique métier traitées par ARCos — fix + dérogations justifiées)
 
 ---
 
