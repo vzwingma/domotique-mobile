@@ -10,17 +10,17 @@
  */
 
 // Mock react-native-get-random-values et uuid avant l'import du service
-jest.mock('react-native-get-random-values', () => {});
-jest.mock('uuid', () => ({
-  v7: jest.fn(() => 'aaaabbbb-cccc-dddd-eeee-ffffaaaabbbb'),
-}));
-
 import {
   handleError,
   generateTraceId,
   DomoticzError,
   ErrorType
 } from '../ErrorHandler.service';
+
+jest.mock('react-native-get-random-values', () => {});
+jest.mock('uuid', () => ({
+  v7: jest.fn(() => 'aaaabbbb-cccc-dddd-eeee-ffffaaaabbbb'),
+}));
 
 // ─── Setup ───────────────────────────────────────────────────────────────────────
 
@@ -255,7 +255,7 @@ describe('ErrorHandler.service', () => {
 
     it('should display user-friendly message in French', () => {
       const networkError = new Error('Network request failed');
-      const result = handleError(networkError, 'context', 'trace', mockShowToast);
+      handleError(networkError, 'context', 'trace', mockShowToast);
 
       const toastMessage = mockShowToast.mock.calls[0][0];
       expect(toastMessage).toMatch(/[àâäéèêëïîôöùûüœæç]/); // Contains French accents

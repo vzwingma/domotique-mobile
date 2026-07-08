@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- jest.spyOn(console, ...) + mockRestore() référencent console.* pour supprimer le bruit des logs pendant les tests, pas des logs applicatifs */
 /**
  * Tests unitaires pour ClientHTTP.service.ts
  *
@@ -11,13 +12,13 @@
  */
 
 // Mock react-native-get-random-values et uuid avant l'import du service
+import callDomoticz from '../ClientHTTP.service';
+import { SERVICES_URL, SERVICES_PARAMS } from '../../enums/APIconstants';
+
 jest.mock('react-native-get-random-values', () => {});
 jest.mock('uuid', () => ({
   v7: jest.fn(() => 'aaaabbbb-cccc-dddd-eeee-ffffaaaabbbb'),
 }));
-
-import callDomoticz from '../ClientHTTP.service';
-import { SERVICES_URL, SERVICES_PARAMS } from '../../enums/APIconstants';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -369,6 +370,7 @@ describe('callDomoticz', () => {
     });
 
     it('génère un traceId unique par requête', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports -- accès au module mocké après jest.mock top-level, un import statique s'exécuterait trop tôt
       const mockV7 = require('uuid').v7 as jest.Mock;
       mockV7.mockReturnValueOnce('id-1');
       (globalThis.fetch as jest.Mock).mockResolvedValue(

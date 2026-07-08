@@ -1,5 +1,6 @@
 import 'react-native-get-random-values';
 import { v7 as uuidGen } from 'uuid';
+import { Logger } from './Logger.service';
 
 /**
  * Types d'erreurs structurées pour la gestion uniforme
@@ -160,7 +161,7 @@ export function handleError(
   const userMessage = mapErrorToUserMessage(errorType, originalMessage);
 
   // Logger l'erreur structurée avec traceId
-  console.error(
+  Logger.error(
     `[ErrorHandler traceId=${traceId}] [${context}] [${errorType}] ` +
     `Original: ${originalMessage}`
   );

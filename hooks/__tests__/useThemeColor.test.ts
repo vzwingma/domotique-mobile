@@ -9,7 +9,7 @@ import { Colors } from '@/app/enums/Colors';
 describe('useThemeColor', () => {
   describe('retourne la couleur correcte depuis Colors.dark', () => {
     // Parcourt toutes les clés de Colors.dark et vérifie chaque valeur
-    const darkColorKeys = Object.keys(Colors.dark) as Array<keyof typeof Colors.dark>;
+    const darkColorKeys = Object.keys(Colors.dark) as (keyof typeof Colors.dark)[];
 
     darkColorKeys.forEach((key) => {
       it(`retourne Colors.dark.${key} = "${Colors.dark[key]}"`, () => {

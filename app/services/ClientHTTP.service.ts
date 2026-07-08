@@ -1,6 +1,7 @@
 import 'react-native-get-random-values';
 import { API_AUTH, API_URL, SERVICES_URL, KeyValueParams } from '../enums/APIconstants';
 import { handleError, generateTraceId } from './ErrorHandler.service';
+import { Logger } from './Logger.service';
 
 
 /** Client HTTP **/
@@ -43,13 +44,13 @@ function startWatch(): number {
  */
 function stopWatch(traceId: string, res: Response, startedAt: number): number {
     let responseTime = Date.now() - startedAt;
-    console.log("[WS traceId=" + traceId + "] < [" + res.status + (res.statusText !== null && res.statusText !== "" ? " - " + res.statusText : "") + "][t:" + responseTime + "ms]");
+    Logger.debug("[WS traceId=" + traceId + "] < [" + res.status + (res.statusText !== null && res.statusText !== "" ? " - " + res.statusText : "") + "][t:" + responseTime + "ms]");
     return responseTime;
 }
 
 function stopWatchTimeout(traceId: string, startedAt: number): number {
     const responseTime = Date.now() - startedAt;
-    console.log("[WS traceId=" + traceId + "] < [TIMEOUT][t:" + responseTime + "ms]");
+    Logger.debug("[WS traceId=" + traceId + "] < [TIMEOUT][t:" + responseTime + "ms]");
     return responseTime;
 }
 
@@ -62,18 +63,18 @@ function stopWatchTimeout(traceId: string, startedAt: number): number {
 function runSSLDiagnostic(failedUrl: string): void {
     fetch('https://www.google.com', { method: 'HEAD' })
         .then(() => {
-            console.warn('[SSL Diagnostic] ✅ Internet HTTPS (google.com) OK — l\'erreur est spécifique au certificat Domoticz');
-            console.warn('[SSL Diagnostic]    Cause probable : certificat auto-signé non approuvé par le build actuel');
-            console.warn('[SSL Diagnostic]    → Vérifiez le build : npm run android:clean (rebuild natif force-clean)');
-            console.warn('[SSL Diagnostic]    → Logs Android natifs : npm run android:logs');
+            Logger.warn('[SSL Diagnostic] ✅ Internet HTTPS (google.com) OK — l\'erreur est spécifique au certificat Domoticz');
+            Logger.warn('[SSL Diagnostic]    Cause probable : certificat auto-signé non approuvé par le build actuel');
+            Logger.warn('[SSL Diagnostic]    → Vérifiez le build : npm run android:clean (rebuild natif force-clean)');
+            Logger.warn('[SSL Diagnostic]    → Logs Android natifs : npm run android:logs');
         })
         .catch(() => {
-            console.warn('[SSL Diagnostic] ❌ Internet HTTPS (google.com) ÉCHEC — problème réseau général');
+            Logger.warn('[SSL Diagnostic] ❌ Internet HTTPS (google.com) ÉCHEC — problème réseau général');
             if (failedUrl.startsWith('https://')) {
                 const httpUrl = failedUrl.replace('https://', 'http://');
                 fetch(httpUrl, { method: 'HEAD' })
-                    .then(() => console.warn('[SSL Diagnostic] ✅ Host Domoticz en HTTP accessible — le port HTTPS est bloqué ou le serveur n\'écoute pas'))
-                    .catch(() => console.warn('[SSL Diagnostic] ❌ Host Domoticz inaccessible — vérifiez réseau/Wi-Fi/pare-feu'));
+                    .then(() => Logger.warn('[SSL Diagnostic] ✅ Host Domoticz en HTTP accessible — le port HTTPS est bloqué ou le serveur n\'écoute pas'))
+                    .catch(() => Logger.warn('[SSL Diagnostic] ❌ Host Domoticz inaccessible — vérifiez réseau/Wi-Fi/pare-feu'));
             }
         });
 }
@@ -95,7 +96,7 @@ export function runLatencyDiagnostic(traceId: string): void {
     const diagnosticUrl = `${baseHost}/json.htm?type=command&param=getconfig`;
 
     const t0 = Date.now();
-    console.log(`[LatencyDiag traceId=${traceId}] t0=${t0} — fetch() déclenché vers ${diagnosticUrl}`);
+    Logger.debug(`[LatencyDiag traceId=${traceId}] t0=${t0} — fetch() déclenché vers ${diagnosticUrl}`);
 
     fetch(diagnosticUrl, {
         method: 'GET',
@@ -104,25 +105,25 @@ export function runLatencyDiagnostic(traceId: string): void {
     })
     .then(res => {
         const t1 = Date.now();
-        console.log(`[LatencyDiag traceId=${traceId}] t1=${t1} — premier octet HTTP reçu (status ${res.status})`);
-        console.log(`[LatencyDiag traceId=${traceId}] ⏱ DNS+TCP+TLS : ${t1 - t0}ms`);
+        Logger.debug(`[LatencyDiag traceId=${traceId}] t1=${t1} — premier octet HTTP reçu (status ${res.status})`);
+        Logger.debug(`[LatencyDiag traceId=${traceId}] ⏱ DNS+TCP+TLS : ${t1 - t0}ms`);
         return res.text().then(body => ({ t1, body }));
     })
     .then(({ t1, body }) => {
         const t2 = Date.now();
-        console.log(`[LatencyDiag traceId=${traceId}] t2=${t2} — corps reçu intégralement`);
-        console.log(`[LatencyDiag traceId=${traceId}] ⏱ Traitement serveur + transfert body : ${t2 - t1}ms`);
-        console.log(`[LatencyDiag traceId=${traceId}] ⏱ Total : ${t2 - t0}ms`);
+        Logger.debug(`[LatencyDiag traceId=${traceId}] t2=${t2} — corps reçu intégralement`);
+        Logger.debug(`[LatencyDiag traceId=${traceId}] ⏱ Traitement serveur + transfert body : ${t2 - t1}ms`);
+        Logger.debug(`[LatencyDiag traceId=${traceId}] ⏱ Total : ${t2 - t0}ms`);
         try {
             const json = JSON.parse(body) as { status?: string };
-            console.log(`[LatencyDiag traceId=${traceId}] ✅ Réponse Domoticz status=${json.status}`);
+            Logger.debug(`[LatencyDiag traceId=${traceId}] ✅ Réponse Domoticz status=${json.status}`);
         } catch {
-            console.warn(`[LatencyDiag traceId=${traceId}] ⚠️ Body non-JSON : ${body.substring(0, 200)}`);
+            Logger.warn(`[LatencyDiag traceId=${traceId}] ⚠️ Body non-JSON : ${body.substring(0, 200)}`);
         }
     })
     .catch(err => {
         const t1 = Date.now();
-        console.error(`[LatencyDiag traceId=${traceId}] ❌ Échec après ${t1 - t0}ms — ${(err as Error).message}`);
+        Logger.error(`[LatencyDiag traceId=${traceId}] ❌ Échec après ${t1 - t0}ms — ${(err as Error).message}`);
     });
 }
 
@@ -150,7 +151,7 @@ function callDomoticz(path: SERVICES_URL, params?: KeyValueParams[]): Promise<an
 
 function executeRequest(path: SERVICES_URL, fullURL: string): Promise<any> {
     let traceId = generateTraceId();
-    console.log("[WS traceId=" + traceId + "] > [" + fullURL + "]");
+    Logger.debug("[WS traceId=" + traceId + "] > [" + fullURL + "]");
     const watchStartAt = startWatch();
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
@@ -191,10 +192,10 @@ function executeRequest(path: SERVICES_URL, fullURL: string): Promise<any> {
                             || errorMessage.includes('handshake')
                             || (isHttps && errorMessage.includes('network request failed'));
             if (isSSLError) {
-                console.error("[WS traceId=" + traceId + "] < Erreur SSL/TLS sur " + fullURL, effectiveError);
+                Logger.error("[WS traceId=" + traceId + "] < Erreur SSL/TLS sur " + fullURL, effectiveError);
                 runSSLDiagnostic(fullURL);
             } else {
-                console.error("[WS traceId=" + traceId + "] < Erreur lors de l'appel HTTP [" + fullURL + "]", effectiveError);
+                Logger.error("[WS traceId=" + traceId + "] < Erreur lors de l'appel HTTP [" + fullURL + "]", effectiveError);
             }
 
             const domoticzError = handleError(

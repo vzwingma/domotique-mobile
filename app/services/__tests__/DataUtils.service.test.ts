@@ -110,7 +110,6 @@ describe('sortEquipements', () => {
     it('retourne 0 pour deux équipements au même rang', () => {
         const d1 = makeDevice({ idx: 10, rang: 0 });
         const d2 = makeDevice({ idx: 20, rang: 0 });
-        const order = [10, 20];
         // On force rang=0 pour les deux
         d1.rang = 0;
         d2.rang = 0;

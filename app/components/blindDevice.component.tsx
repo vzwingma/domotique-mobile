@@ -4,7 +4,7 @@ import DomoticzDevice from '@/app/models/domoticzDevice.model';
 import { getLevel, getStatusLabel, isDeviceOn, overrideNextValue, updateDeviceLevel } from '../controllers/devices.controller';
 import { Colors, getGroupColor } from '../enums/Colors';
 import { DomoticzBlindsGroups , DomoticzSwitchType } from '../enums/DomoticzEnum';
-import IconDomoticzDevice, { performDevicePrimaryAction } from '@/components/IconDomoticzDevice';
+import { IconDomoticzDevice, performDevicePrimaryAction } from '@/components/IconDomoticzDevice';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
 import { PrimaryIconAction } from './primaryIconAction.component';
 import { DeviceCard } from './deviceCard.component';

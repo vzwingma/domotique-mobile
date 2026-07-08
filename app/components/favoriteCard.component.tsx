@@ -5,7 +5,7 @@ import { ThemedText } from '@/components/ThemedText';
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
 import { DomoticzDeviceStatus, DomoticzDeviceLabel, DomoticzDeviceType, DomoticzSwitchType } from '../enums/DomoticzEnum';
-import IconDomoticzDevice, { performDevicePrimaryAction } from '@/components/IconDomoticzDevice';
+import { IconDomoticzDevice, performDevicePrimaryAction } from '@/components/IconDomoticzDevice';
 import { PrimaryIconAction } from './primaryIconAction.component';
 import { Colors, getGroupColor, PROFILES_ENV } from '../enums/Colors';
 import { getLevel, getStatusLabel, isDeviceOn, overrideNextValue, updateDeviceLevel } from '../controllers/devices.controller';

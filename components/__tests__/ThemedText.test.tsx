@@ -92,7 +92,7 @@ describe('ThemedText - couleur du thème', () => {
 // ─── Rendu sans crash ──────────────────────────────────────────────────────────
 
 describe('ThemedText - rendu sans crash', () => {
-  const types: Array<'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link' | 'italic' | 'tab'> = [
+  const types: ('default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link' | 'italic' | 'tab')[] = [
     'default', 'title', 'defaultSemiBold', 'subtitle', 'link', 'italic', 'tab',
   ];
 

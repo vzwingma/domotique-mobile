@@ -6,6 +6,7 @@ import { DomoticzBlindsGroups, DomoticzBlindsSort, DomoticzDeviceStatus, Domotic
 import DomoticzDevice from '../models/domoticzDevice.model';
 import { showToast, ToastDuration } from '@/hooks/AndroidToast';
 import { handleError, generateTraceId } from '@/app/services/ErrorHandler.service';
+import { Logger } from '@/app/services/Logger.service';
 import DomoticzFavorites from '../models/domoticzFavorites.model';
 import DomoticzThermostat from '../models/domoticzThermostat.model';
 
@@ -132,7 +133,7 @@ export function updateDeviceLevel(idx: number, device : DomoticzDevice, level: n
         updateDeviceState(idx, device, false, storeDevicesData);
     }
     else {
-        console.log("Mise à jour de l'équipement "  + device.name + " [" + idx + "]", level + "%");
+        Logger.debug("Mise à jour de l'équipement "  + device.name + " [" + idx + "]", level + "%");
 
         let params = [{ key: SERVICES_PARAMS.IDX, value: String(idx) },
         { key: SERVICES_PARAMS.LEVEL, value: String(level) }];
@@ -158,7 +159,7 @@ export function updateDeviceLevel(idx: number, device : DomoticzDevice, level: n
 function updateDeviceState(idx: number, device: DomoticzDevice, status: boolean, setDevicesData: React.Dispatch<React.SetStateAction<DomoticzDevice[]>>) {
     const traceId = generateTraceId();
     
-    console.log("Mise à jour de l'équipement  " + device.name + " [" + idx + "]", status ? DomoticzDeviceStatus.ON : DomoticzDeviceStatus.OFF);
+    Logger.debug("Mise à jour de l'équipement  " + device.name + " [" + idx + "]", status ? DomoticzDeviceStatus.ON : DomoticzDeviceStatus.OFF);
 
     let params = [
         { key: SERVICES_PARAMS.IDX, value: String(idx) },

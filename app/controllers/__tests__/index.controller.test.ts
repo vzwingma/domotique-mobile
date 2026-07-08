@@ -1,6 +1,5 @@
 import { connectToDomoticz } from '../index.controller';
 import callDomoticz from '@/app/services/ClientHTTP.service';
-import DomoticzConfig from '@/app/models/domoticzConfig.model';
 
 jest.mock('@/app/services/ClientHTTP.service');
 jest.mock('@/hooks/AndroidToast', () => ({

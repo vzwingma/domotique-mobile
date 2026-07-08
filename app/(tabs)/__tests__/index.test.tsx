@@ -127,7 +127,6 @@ describe('HomeScreen (Favoris)', () => {
 
   describe('Favorites Loading from Storage', () => {
     it('should attempt to fetch favorites from storage on mount', async () => {
-      const { getFavoritesFromStorage } = require('../../services/DataUtils.service');
       const devices = [
         createMockDevice({ idx: 1, name: 'Device 1', isActive: true }),
       ];

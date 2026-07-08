@@ -399,25 +399,19 @@ describe('DomoticzContextProvider', () => {
     
     it('should propagate domoticzConnexionData updates to consumers', async () => {
       let contextValue: any = null;
-      let updateCount = 0;
-      
-      const { getByText, rerender } = render(
+
+      render(
         <DomoticzContextProvider>
-          <SetterTestConsumer 
-            onContextReady={(ctx) => {
-              contextValue = ctx;
-              updateCount++;
-            }} 
+          <SetterTestConsumer
+            onContextReady={(ctx) => { contextValue = ctx; }}
           />
         </DomoticzContextProvider>
       );
-      
+
       await waitFor(() => {
         expect(contextValue).not.toBeNull();
       });
 
-      const initialUpdateCount = updateCount;
-      
       // Update connexion data
       const newConfig = createMockConfig({ status: 'CONNECTED' });
       act(() => {
@@ -1015,7 +1009,6 @@ describe('DomoticzContextProvider', () => {
       });
 
       // These are TypeScript compile-time checks, but we verify at runtime
-      const config: DomoticzConfig | undefined = contextValue.domoticzConnexionData;
       const devices: DomoticzDevice[] = contextValue.domoticzDevicesData;
       const temps: DomoticzTemperature[] = contextValue.domoticzTemperaturesData;
       const thermos: DomoticzThermostat[] = contextValue.domoticzThermostatData;

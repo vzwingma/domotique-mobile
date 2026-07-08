@@ -5,7 +5,6 @@
  * plutôt que le composant React directement (évite les problèmes de mock).
  */
 
-import React from 'react';
 import DomoticzThermostat from '@/app/models/domoticzThermostat.model';
 import DomoticzTemperature from '@/app/models/domoticzTemperature.model';
 import { DomoticzThermostatLevelValue } from '@/app/enums/DomoticzEnum';
@@ -267,7 +266,6 @@ describe('thermostat.component - edge cases', () => {
   });
 
   it('handles thermostat with zero temperatures available', () => {
-    const thermostat = makeThermostat();
     const temperatures: DomoticzTemperature[] = [];
     
     const hasTemperature = temperatures.some(t => t.name.toLowerCase().includes('salon'));

@@ -4,9 +4,9 @@
     "config:recommended"
   ],
   "dependencyDashboard": true,
-  "semanticCommits": true,
+  "semanticCommits": "enabled",
   "prConcurrentLimit": 3,
-  "prCreationLimit": 2,
+  "prHourlyLimit": 2,
   "packageRules": [
     {
       "description": "Auto-merge minor and patch updates for safe packages",
@@ -15,22 +15,21 @@
       "automerge": true,
       "automergeType": "pr",
       "automergeStrategy": "squash",
-      "requiredStatusChecks": ["CI Pipeline"],
-      "matchPackagePatterns": [
-        "^typescript$",
-        "^jest",
-        "^@types/",
-        "^uuid$",
-        "^eslint"
+      "matchPackageNames": [
+        "/^typescript$/",
+        "/^jest/",
+        "/^@types//",
+        "/^uuid$/",
+        "/^eslint/"
       ]
     },
     {
       "description": "Draft PRs for major updates (React Native, Expo)",
       "matchUpdateTypes": ["major"],
-      "matchPackagePatterns": [
-        "^react-native$",
-        "^expo",
-        "^react$"
+      "matchPackageNames": [
+        "/^react-native$/",
+        "/^expo/",
+        "/^react$/"
       ],
       "prCreation": "draft",
       "automerge": false
@@ -49,11 +48,9 @@
       "description": "Minor updates for dev dependencies (require merge)",
       "matchDepTypes": ["devDependencies"],
       "matchUpdateTypes": ["minor"],
-      "automerge": false,
-      "requiredStatusChecks": ["CI Pipeline"]
+      "automerge": false
     }
   ],
   "platformAutomerge": true,
-  "commitMessagePrefix": "chore(deps): ",
-  "extends:enableFileMatch": ["package.json"]
+  "commitMessagePrefix": "chore(deps): "
 }

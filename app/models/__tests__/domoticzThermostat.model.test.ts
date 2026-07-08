@@ -15,7 +15,6 @@ describe('DomoticzThermostat', () => {
             status = 'OK',
             data = '21.5',
             unit = '°C',
-            rang = 0,
         } = overrides;
 
         return new DomoticzThermostat(
