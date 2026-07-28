@@ -1,0 +1,113 @@
+name: Expo SDK Sync
+
+# Aligne package.json / package-lock.json sur les versions exigées par le SDK Expo.
+# Source de vérité identique à celle du gate expo-doctor du job `build` de ci.yml :
+#   GET https://api.expo.dev/v2/versions/latest
+#   GET https://api.expo.dev/v2/sdks/<sdk>/native-modules
+# expo-doctor délègue son check de versions à `npx expo install --check --json` ;
+# `npx expo install --fix` en est donc l'inverse exact, par construction.
+# Voir docs/adr/012-synchronisation-automatique-dependances-expo.md.
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: expo-sdk-sync
+  cancel-in-progress: false
+
+env:
+  EXPO_NO_TELEMETRY: '1'
+
+jobs:
+  sync:
+    name: Align dependencies with Expo SDK
+    runs-on: ubuntu-latest
+    steps:
+      # Token GitHub App requis : une PR ouverte avec le GITHUB_TOKEN par défaut
+      # ne déclenche aucun workflow (protection anti-récursion GitHub), donc
+      # integration-check ne rapporterait jamais et la PR serait immergeable.
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ secrets.EXPO_SYNC_APP_CLIENT_ID }}
+          private-key: ${{ secrets.EXPO_SYNC_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - uses: actions/checkout@v6
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Snapshot de la dérive avant correction
+        run: |
+          set -uo pipefail
+          npx expo install --check --json > "$RUNNER_TEMP/drift.json" || true
+          cat "$RUNNER_TEMP/drift.json"
+
+      # Deux passes obligatoires : si `expo` lui-même est en retard, fixPackagesAsync
+      # l'installe puis relance `expo install --fix` en sous-processus et retourne
+      # immédiatement — les devDependencies ne sont traitées qu'à la passe suivante.
+      - name: expo install --fix (passe 1)
+        run: npx expo install --fix -- --ignore-scripts
+
+      - name: expo install --fix (passe 2)
+        run: npx expo install --fix -- --ignore-scripts
+
+      - name: Vérification de convergence
+        run: npx expo install --check
+
+      - name: Gate réel (identique à ci.yml)
+        run: npm run validate:expo
+
+      - name: Construire le corps de PR
+        run: |
+          set -euo pipefail
+          {
+            echo "Alignement automatique des dépendances sur le SDK Expo."
+            echo
+            echo "Généré par \`npx expo install --fix\` (workflow \`Expo SDK Sync\`)."
+            echo "Source de vérité : \`api.expo.dev\`, exactement ce qu'interroge"
+            echo "\`expo-doctor\` dans le job \`build\` de \`ci.yml\`."
+            echo
+            echo "À merger uniquement si \`integration-check\` est vert."
+            echo
+            echo "<details><summary>Écart détecté avant correction</summary>"
+            echo
+            echo '```json'
+            cat "$RUNNER_TEMP/drift.json"
+            echo '```'
+            echo
+            echo "</details>"
+          } > "$RUNNER_TEMP/pr-body.md"
+
+      - name: Créer ou mettre à jour la pull request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          base: main
+          branch: chore/expo-sdk-sync
+          delete-branch: true
+          add-paths: |
+            package.json
+            package-lock.json
+            app.json
+          commit-message: 'chore(deps): align dependencies with Expo SDK'
+          title: 'chore(deps): align dependencies with Expo SDK'
+          body-path: ${{ runner.temp }}/pr-body.md
+          labels: |
+            dependencies
+            expo

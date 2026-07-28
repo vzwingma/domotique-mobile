@@ -8,6 +8,7 @@ on:
     branches-ignore:
       - main
       - develop
+      - chore/expo-sdk-sync
   pull_request:
     branches-ignore:
       - main
@@ -26,7 +27,7 @@ jobs:
           cache: 'npm'
 
       - name: 📦 Install dependencies
-        run: npm install --ignore-scripts
+        run: npm ci --ignore-scripts
 
       - name: 🧹 Run ESLint
         run: npm run lint
