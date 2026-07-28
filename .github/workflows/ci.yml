@@ -25,8 +25,8 @@ jobs:
           cache: 'npm'
       
       - name: Install dependencies
-        run: npm install --ignore-scripts
-      
+        run: npm ci --ignore-scripts
+
       - name: Run ESLint
         run: npm run lint -- --format json --output-file lint-report.json || true
         continue-on-error: true
@@ -56,8 +56,8 @@ jobs:
           cache: 'npm'
       
       - name: Install dependencies
-        run: npm install --ignore-scripts
-      
+        run: npm ci --ignore-scripts
+
       - name: Run unit tests with coverage
         run: npm test -- --ci --watchAll=false --coverage --passWithNoTests
       
@@ -101,11 +101,29 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
       
       - name: Install dependencies
-        run: npm install --ignore-scripts
-      
+        run: npm ci --ignore-scripts
+
+      # Protège le gate ADR-001 : ces deux variables désactivent silencieusement
+      # tout le check de versions d'expo-doctor (@expo/cli validateDependenciesVersions.js).
+      - name: Guard - dependency validation must not be disabled
+        run: |
+          if [ -n "${EXPO_OFFLINE:-}" ] || [ -n "${EXPO_NO_DEPENDENCY_VALIDATION:-}" ]; then
+            echo "::error::EXPO_OFFLINE / EXPO_NO_DEPENDENCY_VALIDATION positionnée : gate neutralisé"
+            exit 1
+          fi
+
       - name: Verify Expo environment
         run: npm run validate:expo
-      
+
+      # Non bloquant par lui-même : le step ci-dessus reste seul juge (cf. docs/adr/001).
+      - name: Diagnose Expo SDK drift
+        if: failure()
+        run: |
+          echo "::group::npx expo install --check --json"
+          npx expo install --check --json || true
+          echo "::endgroup::"
+          echo "::error title=Dérive SDK Expo::Lancer 'npm run expo:fix' en local, ou Actions -> Expo SDK Sync -> Run workflow."
+
       - name: Prebuild Android (verify native plugins)
         run: npx expo prebuild --platform android --no-install --clean
       
@@ -157,8 +175,8 @@ jobs:
           cache: 'npm'
       
       - name: Install dependencies
-        run: npm install --ignore-scripts
-      
+        run: npm ci --ignore-scripts
+
       - name: Run tests with coverage
         run: npm test -- --ci --watchAll=false --coverage --passWithNoTests
       
