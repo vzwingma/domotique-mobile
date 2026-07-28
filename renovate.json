@@ -39,6 +39,7 @@
       "matchPackageNames": [
         "react",
         "react-dom",
+        "react-native",
         "react-native-svg",
         "react-test-renderer"
       ],
