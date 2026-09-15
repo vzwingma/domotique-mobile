@@ -1,0 +1,20 @@
+{
+  "projectId": "99f61a23-094b-455b-b4f2-f3a7ced233cb",
+  "shape": "package",
+  "pkg": "domoticz-mobile",
+  "globalName": "DomoticzMobileDS",
+  "entry": ".design-sync/entry.ts",
+  "tsconfig": "tsconfig.json",
+  "readmeHeader": ".design-sync/conventions.md",
+  "componentSrcMap": {
+    "ThemedText": "components/ThemedText.tsx",
+    "PrimaryIconAction": "app/components/primaryIconAction.component.tsx",
+    "DisconnectedState": "app/components/disconnectedState.component.tsx",
+    "DeviceCard": "app/components/deviceCard.component.tsx",
+    "ViewDomoticzTemperature": "app/components/temperature.component.tsx"
+  },
+  "libOverrides": {
+    "bundle.mjs": "domoticz-mobile is a React Native/Expo app, not a web package - components import bare 'react-native'; added esbuild alias react-native->react-native-web so the bundle resolves/runs in a browser. Only that alias line differs from upstream.",
+    "story-imports.mjs": "same RN app reason as bundle.mjs - preview .tsx compiles need the same react-native->react-native-web alias plus Metro's .web.ts sibling resolution for expo-modules-core; added rnWebPlugin, registered first in the plugin list."
+  }
+}
