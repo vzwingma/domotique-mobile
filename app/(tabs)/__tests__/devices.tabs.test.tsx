@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react-native';
+import { View } from 'react-native';
 import TabDomoticzDevices from '../devices.tabs';
 import { DomoticzContext } from '../../services/DomoticzContextProvider';
 import DomoticzDevice from '../../models/domoticzDevice.model';
@@ -11,6 +12,29 @@ jest.mock('../../components/device.component', () => ({
     <div testID={`device-${device.idx}`}>{device.name}</div>
   ),
 }));
+
+// Largeur simulée mutable pour piloter useResponsiveColumns (T4.2 - grille responsive).
+// On ne mocke QUE useWindowDimensions : le reste de react-native (View, StyleSheet...) reste
+// réel, car devices.tabs.tsx utilise `StyleSheet.create` (un mock complet casserait le module).
+// Défaut 400 (compact/1 colonne) = comportement implicite historique de ce fichier de test
+// (largeur réelle de l'environnement de test, jamais vérifiée jusqu'ici).
+// Un Proxy (plutôt qu'un spread `{...actual}`) est indispensable : le spread énumère et lit
+// IMMÉDIATEMENT toutes les propriétés du module réel, y compris des exports natifs paresseux
+// (ex. `DevMenu`) qui font planter Jest hors runtime natif. Le Proxy ne lit que la propriété
+// réellement accédée (identique au comportement d'un import ciblé non mocké).
+let mockWindowWidth = 400;
+
+jest.mock('react-native', () => {
+  const actualReactNative = jest.requireActual('react-native');
+  return new Proxy(actualReactNative, {
+    get(target, prop, receiver) {
+      if (prop === 'useWindowDimensions') {
+        return () => ({ width: mockWindowWidth, height: 800, scale: 1, fontScale: 1 });
+      }
+      return Reflect.get(target, prop, receiver);
+    },
+  });
+});
 
 /**
  * Helper to create mock device
@@ -58,7 +82,7 @@ function createMockContextValue(devicesData: DomoticzDevice[] = []) {
  * Test suite for the Lumières/Volets (Lights/Blinds) screen
  */
 describe('TabDomoticzDevices (Lumières/Volets)', () => {
-  
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -66,7 +90,7 @@ describe('TabDomoticzDevices (Lumières/Volets)', () => {
   describe('Rendering and Basic Functionality', () => {
     it('should render without crashing with empty devices list', () => {
       const contextValue = createMockContextValue([]);
-      
+
       const result = render(
         <DomoticzContext.Provider value={contextValue}>
           <TabDomoticzDevices dataType={DomoticzDeviceType.LUMIERE} />
@@ -180,16 +204,16 @@ describe('TabDomoticzDevices (Lumières/Volets)', () => {
 
     it('should handle lights with different switch types', () => {
       const lightDevices = [
-        createMockDevice({ 
-          idx: 1, 
-          name: 'Light On/Off', 
-          type: DomoticzDeviceType.LUMIERE, 
+        createMockDevice({
+          idx: 1,
+          name: 'Light On/Off',
+          type: DomoticzDeviceType.LUMIERE,
           switchType: DomoticzSwitchType.ONOFF,
         }),
-        createMockDevice({ 
-          idx: 2, 
-          name: 'Light Dimmer', 
-          type: DomoticzDeviceType.LUMIERE, 
+        createMockDevice({
+          idx: 2,
+          name: 'Light Dimmer',
+          type: DomoticzDeviceType.LUMIERE,
           switchType: DomoticzSwitchType.SLIDER,
         }),
       ];
@@ -384,10 +408,10 @@ describe('TabDomoticzDevices (Lumières/Volets)', () => {
 
     it('should handle large number of devices', () => {
       const devices = Array.from({ length: 50 }, (_, i) =>
-        createMockDevice({ 
-          idx: i + 1, 
-          name: `Device ${i + 1}`, 
-          type: DomoticzDeviceType.LUMIERE 
+        createMockDevice({
+          idx: i + 1,
+          name: `Device ${i + 1}`,
+          type: DomoticzDeviceType.LUMIERE
         })
       );
       const contextValue = createMockContextValue(devices);
@@ -425,7 +449,7 @@ describe('TabDomoticzDevices (Lumières/Volets)', () => {
  * Test suite for the Lumières/Volets (Lights/Blinds) screen
  */
 describe('TabDomoticzDevices (Lumières/Volets)', () => {
-  
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -433,7 +457,7 @@ describe('TabDomoticzDevices (Lumières/Volets)', () => {
   describe('Rendering', () => {
     it('should render without crashing with empty devices list', () => {
       const contextValue = createMockContextValue([]);
-      
+
       const result = render(
         <DomoticzContext.Provider value={contextValue}>
           <TabDomoticzDevices dataType={DomoticzDeviceType.LUMIERE} />
@@ -548,16 +572,16 @@ describe('TabDomoticzDevices (Lumières/Volets)', () => {
 
     it('should handle lights with different switch types', () => {
       const lightDevices = [
-        createMockDevice({ 
-          idx: 1, 
-          name: 'Light On/Off', 
-          type: DomoticzDeviceType.LUMIERE, 
+        createMockDevice({
+          idx: 1,
+          name: 'Light On/Off',
+          type: DomoticzDeviceType.LUMIERE,
           switchType: DomoticzSwitchType.ONOFF,
         }),
-        createMockDevice({ 
-          idx: 2, 
-          name: 'Light Dimmer', 
-          type: DomoticzDeviceType.LUMIERE, 
+        createMockDevice({
+          idx: 2,
+          name: 'Light Dimmer',
+          type: DomoticzDeviceType.LUMIERE,
           switchType: DomoticzSwitchType.SLIDER,
         }),
       ];
@@ -755,10 +779,10 @@ describe('TabDomoticzDevices (Lumières/Volets)', () => {
 
     it('should handle large number of devices', () => {
       const devices = Array.from({ length: 50 }, (_, i) =>
-        createMockDevice({ 
-          idx: i + 1, 
-          name: `Device ${i + 1}`, 
-          type: DomoticzDeviceType.LUMIERE 
+        createMockDevice({
+          idx: i + 1,
+          name: `Device ${i + 1}`,
+          type: DomoticzDeviceType.LUMIERE
         })
       );
       const contextValue = createMockContextValue(devices);
@@ -791,3 +815,121 @@ describe('TabDomoticzDevices (Lumières/Volets)', () => {
   });
 });
 
+/**
+ * T4.2 - Grille responsive (breakpoints compact/medium/expanded)
+ *
+ * Ici `View` reste le composant react-native réel (seul `useWindowDimensions` est mocké,
+ * cf. en-tête du fichier), donc on peut le retrouver via `UNSAFE_getAllByType(View)` et
+ * inspecter directement `props.style` — pas besoin de parser un arbre JSON.
+ * Les cellules de grille produites par `getGridCellStyle` (hooks/useResponsiveColumns.ts)
+ * sont identifiées par la présence de la clé `boxSizing`, absente de `styles.grid`
+ * (StyleSheet.create) qui encadre toute la grille.
+ */
+describe('TabDomoticzDevices (Lumières/Volets) - Responsive Grid T4.2', () => {
+
+  afterEach(() => {
+    mockWindowWidth = 400;
+  });
+
+  function getGridCellWidths(root: any): string[] {
+    return root
+      .UNSAFE_getAllByType(View)
+      .filter((v: any) => v.props.style && typeof v.props.style === 'object' && 'boxSizing' in v.props.style)
+      .map((v: any) => v.props.style.width);
+  }
+
+  function makeLightDevices(count: number): DomoticzDevice[] {
+    return Array.from({ length: count }, (_, i) =>
+      createMockDevice({ idx: i + 1, name: `Lumière ${i + 1}`, type: DomoticzDeviceType.LUMIERE, isActive: true })
+    );
+  }
+
+  it('affiche 1 colonne (100%) en largeur compact (<600)', () => {
+    mockWindowWidth = 400;
+    const contextValue = createMockContextValue(makeLightDevices(3));
+
+    const result = render(
+      <DomoticzContext.Provider value={contextValue}>
+        <TabDomoticzDevices dataType={DomoticzDeviceType.LUMIERE} />
+      </DomoticzContext.Provider>
+    );
+
+    const widths = getGridCellWidths(result);
+    expect(widths).toHaveLength(3);
+    widths.forEach((w) => expect(w).toBe('100%'));
+  });
+
+  it('affiche 2 colonnes (50%) en largeur medium (600-839)', () => {
+    mockWindowWidth = 700;
+    const contextValue = createMockContextValue(makeLightDevices(3));
+
+    const result = render(
+      <DomoticzContext.Provider value={contextValue}>
+        <TabDomoticzDevices dataType={DomoticzDeviceType.LUMIERE} />
+      </DomoticzContext.Provider>
+    );
+
+    const widths = getGridCellWidths(result);
+    expect(widths).toHaveLength(3);
+    widths.forEach((w) => expect(w).toBe('50%'));
+  });
+
+  it('affiche 3 colonnes (33.33%) en largeur expanded (>=840)', () => {
+    mockWindowWidth = 900;
+    const contextValue = createMockContextValue(makeLightDevices(3));
+
+    const result = render(
+      <DomoticzContext.Provider value={contextValue}>
+        <TabDomoticzDevices dataType={DomoticzDeviceType.LUMIERE} />
+      </DomoticzContext.Provider>
+    );
+
+    const widths = getGridCellWidths(result);
+    expect(widths).toHaveLength(3);
+    widths.forEach((w) => expect(w).toBe(`${100 / 3}%`));
+  });
+
+  it('ne casse pas avec une liste vide (0 device), quel que soit le breakpoint', () => {
+    mockWindowWidth = 900;
+    const contextValue = createMockContextValue([]);
+
+    const result = render(
+      <DomoticzContext.Provider value={contextValue}>
+        <TabDomoticzDevices dataType={DomoticzDeviceType.LUMIERE} />
+      </DomoticzContext.Provider>
+    );
+
+    expect(getGridCellWidths(result)).toHaveLength(0);
+  });
+
+  it('ne casse pas la mise en page avec un seul device', () => {
+    mockWindowWidth = 700;
+    const contextValue = createMockContextValue(makeLightDevices(1));
+
+    const result = render(
+      <DomoticzContext.Provider value={contextValue}>
+        <TabDomoticzDevices dataType={DomoticzDeviceType.LUMIERE} />
+      </DomoticzContext.Provider>
+    );
+
+    expect(getGridCellWidths(result)).toEqual(['50%']);
+  });
+
+  it('recalcule les colonnes indépendamment pour Volets (dataType différent)', () => {
+    mockWindowWidth = 900;
+    const blindDevices = Array.from({ length: 4 }, (_, i) =>
+      createMockDevice({ idx: i + 1, name: `Volet ${i + 1}`, type: DomoticzDeviceType.VOLET, isActive: true })
+    );
+    const contextValue = createMockContextValue(blindDevices);
+
+    const result = render(
+      <DomoticzContext.Provider value={contextValue}>
+        <TabDomoticzDevices dataType={DomoticzDeviceType.VOLET} />
+      </DomoticzContext.Provider>
+    );
+
+    const widths = getGridCellWidths(result);
+    expect(widths).toHaveLength(4);
+    widths.forEach((w) => expect(w).toBe(`${100 / 3}%`));
+  });
+});

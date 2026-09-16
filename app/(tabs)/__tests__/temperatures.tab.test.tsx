@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react-native';
+import { View } from 'react-native';
 import TabDomoticzTemperatures from '../temperatures.tab';
 import { DomoticzContext } from '../../services/DomoticzContextProvider';
 import DomoticzTemperature from '../../models/domoticzTemperature.model';
@@ -14,10 +15,32 @@ jest.mock('../../components/temperature.component', () => ({
 }));
 
 jest.mock('../../components/thermostat.component', () => ({
-  ViewDomoticzThermostat: ({ thermostat }: { thermostat: DomoticzThermostat }) => (
-    <div testID={`thermostat-${thermostat.idx}`}>{thermostat.name}: {thermostat.temp}°C</div>
+  ViewDomoticzThermostat: ({ thermostat, dialSize }: { thermostat: DomoticzThermostat; dialSize?: number }) => (
+    <div testID={`thermostat-${thermostat.idx}`} data-dialsize={dialSize}>{thermostat.name}: {thermostat.temp}°C</div>
   ),
 }));
+
+// Largeur simulée mutable pour piloter useResponsiveColumns (T4.2 - grille responsive).
+// On ne mocke QUE useWindowDimensions : le reste de react-native (View, StyleSheet...) reste
+// réel, car temperatures.tab.tsx utilise `StyleSheet.create` (un mock complet casserait le module).
+// Un Proxy (plutôt qu'un spread `{...actual}`) est indispensable : le spread énumère et lit
+// IMMÉDIATEMENT toutes les propriétés du module réel, y compris des exports natifs paresseux
+// (ex. `DevMenu`) qui font planter Jest hors runtime natif. Le Proxy ne lit que la propriété
+// réellement accédée (identique au comportement d'un import ciblé non mocké).
+// Défaut 400 (compact/1 colonne) = comportement implicite historique de ce fichier de test.
+let mockWindowWidth = 400;
+
+jest.mock('react-native', () => {
+  const actualReactNative = jest.requireActual('react-native');
+  return new Proxy(actualReactNative, {
+    get(target, prop, receiver) {
+      if (prop === 'useWindowDimensions') {
+        return () => ({ width: mockWindowWidth, height: 800, scale: 1, fontScale: 1 });
+      }
+      return Reflect.get(target, prop, receiver);
+    },
+  });
+});
 
 /**
  * Helper to create mock temperature
@@ -586,6 +609,208 @@ describe('TabDomoticzTemperatures (Températures)', () => {
 
       // Original data should not be modified
       expect(contextValue.domoticzThermostatData[0].temp).toBe(21);
+    });
+  });
+});
+
+/**
+ * T4.2 - Grille responsive (breakpoints compact/medium/expanded) + zone Thermostat hors grille
+ *
+ * `View` reste le composant react-native réel (seul `useWindowDimensions` est mocké, cf.
+ * en-tête du fichier) : on le retrouve via `UNSAFE_getAllByType(View)` et on inspecte
+ * `props.style`. Les cellules de grille des capteurs de température sont identifiées par la
+ * clé `boxSizing` (signature de `getGridCellStyle`, absente des styles `StyleSheet.create` du
+ * composant). Le conteneur racine (`temperaturesStyles.container`) est le premier `View`
+ * rencontré dans l'arbre (traversée en profondeur) : son nombre d'enfants directs distingue
+ * la présence (2 enfants : zone Thermostat + grille) de l'absence (1 enfant : grille seule)
+ * de la zone Thermostat.
+ */
+describe('TabDomoticzTemperatures (Températures) - Responsive Grid T4.2', () => {
+
+  afterEach(() => {
+    mockWindowWidth = 400;
+  });
+
+  function getGridCellWidths(root: any): string[] {
+    return root
+      .UNSAFE_getAllByType(View)
+      .filter((v: any) => v.props.style && typeof v.props.style === 'object' && 'boxSizing' in v.props.style)
+      .map((v: any) => v.props.style.width);
+  }
+
+  /**
+   * Compte les "Views enveloppantes" pleine largeur hors grille (container, thermostatZone,
+   * temperaturesGrid — cf. temperatures.tab.tsx), identifiées par `width:'100%'` ET l'ABSENCE
+   * de `boxSizing` (qui distingue au contraire une cellule de grille `getGridCellStyle`).
+   * On compare le delta entre présence/absence de thermostats plutôt que la structure exacte
+   * de l'arbre (react-test-renderer insère des fibers composites intermédiaires autour de
+   * chaque <View>, ce qui rend `.children` peu fiable pour compter les enfants directs).
+   */
+  function countFullWidthWrapperViews(root: any): number {
+    return root
+      .UNSAFE_getAllByType(View)
+      .filter((v: any) =>
+        v.props.style &&
+        typeof v.props.style === 'object' &&
+        !('boxSizing' in v.props.style) &&
+        v.props.style.width === '100%'
+      ).length;
+  }
+
+  function makeTemperatures(count: number): DomoticzTemperature[] {
+    return Array.from({ length: count }, (_, i) =>
+      createMockTemperature({ idx: `${i + 1}`, name: `Sensor ${i + 1}`, temp: 20 })
+    );
+  }
+
+  describe('Grille des capteurs (colonnes par breakpoint)', () => {
+    it('affiche 1 colonne (100%) en largeur compact (<600)', () => {
+      mockWindowWidth = 400;
+      const contextValue = createMockContextValue(makeTemperatures(3), []);
+
+      const result = render(
+        <DomoticzContext.Provider value={contextValue}>
+          <TabDomoticzTemperatures />
+        </DomoticzContext.Provider>
+      );
+
+      const widths = getGridCellWidths(result);
+      expect(widths).toHaveLength(3);
+      widths.forEach((w) => expect(w).toBe('100%'));
+    });
+
+    it('affiche 2 colonnes (50%) en largeur medium (600-839)', () => {
+      mockWindowWidth = 700;
+      const contextValue = createMockContextValue(makeTemperatures(3), []);
+
+      const result = render(
+        <DomoticzContext.Provider value={contextValue}>
+          <TabDomoticzTemperatures />
+        </DomoticzContext.Provider>
+      );
+
+      const widths = getGridCellWidths(result);
+      expect(widths).toHaveLength(3);
+      widths.forEach((w) => expect(w).toBe('50%'));
+    });
+
+    it('affiche 3 colonnes (33.33%) en largeur expanded (>=840)', () => {
+      mockWindowWidth = 900;
+      const contextValue = createMockContextValue(makeTemperatures(3), []);
+
+      const result = render(
+        <DomoticzContext.Provider value={contextValue}>
+          <TabDomoticzTemperatures />
+        </DomoticzContext.Provider>
+      );
+
+      const widths = getGridCellWidths(result);
+      expect(widths).toHaveLength(3);
+      widths.forEach((w) => expect(w).toBe(`${100 / 3}%`));
+    });
+
+    it('ne casse pas avec une liste vide (0 capteur), quel que soit le breakpoint', () => {
+      mockWindowWidth = 900;
+      const contextValue = createMockContextValue([], []);
+
+      const result = render(
+        <DomoticzContext.Provider value={contextValue}>
+          <TabDomoticzTemperatures />
+        </DomoticzContext.Provider>
+      );
+
+      expect(getGridCellWidths(result)).toHaveLength(0);
+    });
+
+    it('ne casse pas la mise en page avec un seul capteur', () => {
+      mockWindowWidth = 700;
+      const contextValue = createMockContextValue(makeTemperatures(1), []);
+
+      const result = render(
+        <DomoticzContext.Provider value={contextValue}>
+          <TabDomoticzTemperatures />
+        </DomoticzContext.Provider>
+      );
+
+      expect(getGridCellWidths(result)).toEqual(['50%']);
+    });
+  });
+
+  describe('Non-régression : zone Thermostat hors grille', () => {
+    it('la zone Thermostat est absente quand domoticzThermostatData est vide', () => {
+      mockWindowWidth = 700;
+      const contextValue = createMockContextValue(makeTemperatures(2), []);
+
+      const result = render(
+        <DomoticzContext.Provider value={contextValue}>
+          <TabDomoticzTemperatures />
+        </DomoticzContext.Provider>
+      );
+
+      // Sans thermostat : seules `container` + `temperaturesGrid` sont des Views pleine largeur
+      // hors grille (2), la zone `thermostatZone` n'est pas rendue.
+      expect(countFullWidthWrapperViews(result)).toBe(2);
+    });
+
+    it('la zone Thermostat est présente (1 View pleine largeur de plus) quand des thermostats existent', () => {
+      mockWindowWidth = 700;
+      const contextValue = createMockContextValue(
+        makeTemperatures(2),
+        [createMockThermostat({ idx: 100, name: 'Salon' })]
+      );
+
+      const result = render(
+        <DomoticzContext.Provider value={contextValue}>
+          <TabDomoticzTemperatures />
+        </DomoticzContext.Provider>
+      );
+
+      // Avec thermostat(s) : `container` + `thermostatZone` + `temperaturesGrid` (3)
+      expect(countFullWidthWrapperViews(result)).toBe(3);
+    });
+
+    it('les thermostats ne sont jamais comptés parmi les cellules de grille (colonnes), quel que soit le breakpoint', () => {
+      mockWindowWidth = 900; // expanded, 3 colonnes attendues pour les capteurs uniquement
+      const contextValue = createMockContextValue(
+        makeTemperatures(2),
+        [
+          createMockThermostat({ idx: 100, name: 'Salon' }),
+          createMockThermostat({ idx: 101, name: 'Chambre' }),
+        ]
+      );
+
+      const result = render(
+        <DomoticzContext.Provider value={contextValue}>
+          <TabDomoticzTemperatures />
+        </DomoticzContext.Provider>
+      );
+
+      // Seuls les 2 capteurs sont dans des cellules de grille (les 2 thermostats n'y figurent pas)
+      const widths = getGridCellWidths(result);
+      expect(widths).toHaveLength(2);
+      widths.forEach((w) => expect(w).toBe(`${100 / 3}%`));
+    });
+
+    it('transmet un dialSize agrandi (240) au Thermostat en medium/expanded, et 180 en compact', () => {
+      const thermostats = [createMockThermostat({ idx: 100, name: 'Salon' })];
+
+      // Compact : dialSize par défaut (180)
+      mockWindowWidth = 400;
+      const compactResult = render(
+        <DomoticzContext.Provider value={createMockContextValue([], thermostats)}>
+          <TabDomoticzTemperatures />
+        </DomoticzContext.Provider>
+      );
+      expect(compactResult.getByTestId('thermostat-100').props['data-dialsize']).toBe(180);
+
+      // Expanded : dialSize agrandi (240)
+      mockWindowWidth = 900;
+      const expandedResult = render(
+        <DomoticzContext.Provider value={createMockContextValue([], thermostats)}>
+          <TabDomoticzTemperatures />
+        </DomoticzContext.Provider>
+      );
+      expect(expandedResult.getByTestId('thermostat-100').props['data-dialsize']).toBe(240);
     });
   });
 });
