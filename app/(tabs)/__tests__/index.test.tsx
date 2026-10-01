@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react-native';
+import { StyleSheet, View } from 'react-native';
 import HomeScreen from '../index';
 import { DomoticzContext } from '../../services/DomoticzContextProvider';
 import DomoticzDevice from '../../models/domoticzDevice.model';
@@ -45,10 +46,23 @@ jest.mock('@/components/ThemedText', () => ({
 // Défaut 400 (compact/1 colonne) = comportement historique de ce fichier de test.
 let mockWindowWidth = 400;
 
-jest.mock('react-native', () => ({
-  View: ({ children, style }: any) => <div style={style}>{children}</div>,
-  useWindowDimensions: () => ({ width: mockWindowWidth, height: 800, scale: 1, fontScale: 1 }),
-}));
+// Mock ciblé : seul `useWindowDimensions` est remplacé, tout le reste du module
+// (View, StyleSheet, ...) reste l'implémentation réelle de react-native — cohérent
+// avec le pattern utilisé dans devices.tabs.test.tsx / temperatures.tab.test.tsx.
+// Un mock complet (`jest.mock('react-native', () => ({ View: ... }))`) qui ne fournit
+// que 2 exports est fragile : tout autre export react-native utilisé par le composant
+// rendu (ou un de ses enfants réels) devient silencieusement `undefined`.
+jest.mock('react-native', () => {
+  const actualReactNative = jest.requireActual('react-native');
+  return new Proxy(actualReactNative, {
+    get(target, prop, receiver) {
+      if (prop === 'useWindowDimensions') {
+        return () => ({ width: mockWindowWidth, height: 800, scale: 1, fontScale: 1 });
+      }
+      return Reflect.get(target, prop, receiver);
+    },
+  });
+});
 
 /**
  * Helper to create mock device
@@ -328,11 +342,12 @@ describe('HomeScreen (Favoris)', () => {
   /**
    * T4.2 - Grille responsive (breakpoints compact/medium/expanded)
    *
-   * `View` étant mocké en `<div style={style}>` (cf. mock react-native ci-dessus), les cellules
-   * de grille produites par `getGridCellStyle` (hooks/useResponsiveColumns.ts) apparaissent comme
-   * des noeuds `div` avec un style objet `{ width, padding, boxSizing }`. On les retrouve en
-   * parcourant l'arbre JSON rendu (toJSON()) plutôt que par un query RTL classique, car le mock
-   * react-native ne fournit pas de type "View" identifiable par UNSAFE_getAllByType.
+   * `View` est désormais le composant react-native réel (seul `useWindowDimensions` est
+   * mocké, cf. mock ci-dessus), donc on le retrouve via `UNSAFE_getAllByType(View)` et on
+   * résout son style avec `StyleSheet.flatten` — pattern identique à
+   * devices.tabs.test.tsx / temperatures.tab.test.tsx. `StyleSheet.flatten` gère aussi bien
+   * un objet simple qu'un tableau de styles (cas de la cellule "message limite", qui mélange
+   * `getGridCellStyle(...)` et `styles.favoritesLimitCell`), donc pas de parsing manuel.
    */
   describe('Responsive Grid (breakpoints) - T4.2', () => {
     afterEach(() => {
@@ -340,52 +355,28 @@ describe('HomeScreen (Favoris)', () => {
     });
 
     /**
-     * Cellules de grille "carte favori" : objets de style plats { width, padding, boxSizing }.
-     * Exclut la cellule du message limite (style porté par un tableau, cf. `favoritesLimitCell`).
+     * Cellules de grille "carte favori" : styles aplatis contenant `boxSizing`
+     * (signature de `getGridCellStyle`, cf. hooks/useResponsiveColumns.ts).
+     * Exclut la cellule du message limite (identifiée par `paddingVertical`, cf. ci-dessous).
      */
-    function collectFavoriteCardCellWidths(node: any, acc: string[] = []): string[] {
-      if (!node) return acc;
-      if (Array.isArray(node)) {
-        node.forEach((n) => collectFavoriteCardCellWidths(n, acc));
-        return acc;
-      }
-      const style = node.props?.style;
-      if (style && typeof style === 'object' && !Array.isArray(style) && 'boxSizing' in style) {
-        acc.push(style.width);
-      }
-      if (node.children) {
-        node.children.forEach((child: any) => collectFavoriteCardCellWidths(child, acc));
-      }
-      return acc;
+    function getFavoriteCardCellWidths(root: any): string[] {
+      return root
+        .UNSAFE_getAllByType(View)
+        .map((v: any) => StyleSheet.flatten(v.props.style))
+        .filter((s: any) => s && typeof s === 'object' && 'boxSizing' in s && !('paddingVertical' in s))
+        .map((s: any) => s.width);
     }
 
     /**
      * Largeur de la cellule du message "Seuls les 7 favoris...", identifiée par la présence
      * de `paddingVertical` (signature unique de `styles.favoritesLimitCell`, cf. index.tsx).
      */
-    function findFavoritesLimitCellWidth(node: any): string | undefined {
-      if (!node) return undefined;
-      if (Array.isArray(node)) {
-        for (const n of node) {
-          const found = findFavoritesLimitCellWidth(n);
-          if (found !== undefined) return found;
-        }
-        return undefined;
-      }
-      const style = node.props?.style;
-      if (Array.isArray(style)) {
-        const merged = Object.assign({}, ...style.filter(Boolean));
-        if ('paddingVertical' in merged) {
-          return merged.width;
-        }
-      }
-      if (node.children) {
-        for (const child of node.children) {
-          const found = findFavoritesLimitCellWidth(child);
-          if (found !== undefined) return found;
-        }
-      }
-      return undefined;
+    function getFavoritesLimitCellWidth(root: any): string | undefined {
+      const match = root
+        .UNSAFE_getAllByType(View)
+        .map((v: any) => StyleSheet.flatten(v.props.style))
+        .find((s: any) => s && typeof s === 'object' && 'paddingVertical' in s);
+      return match?.width;
     }
 
     function makeActiveDevices(count: number): DomoticzDevice[] {
@@ -398,16 +389,16 @@ describe('HomeScreen (Favoris)', () => {
       mockWindowWidth = 400;
       const contextValue = createMockContextValue(makeActiveDevices(3));
 
-      const { toJSON } = render(
+      const result = render(
         <DomoticzContext.Provider value={contextValue}>
           <HomeScreen />
         </DomoticzContext.Provider>
       );
 
       await waitFor(() => {
-        expect(collectFavoriteCardCellWidths(toJSON())).toHaveLength(3);
+        expect(getFavoriteCardCellWidths(result)).toHaveLength(3);
       });
-      const widths = collectFavoriteCardCellWidths(toJSON());
+      const widths = getFavoriteCardCellWidths(result);
       widths.forEach((w) => expect(w).toBe('100%'));
     });
 
@@ -415,16 +406,16 @@ describe('HomeScreen (Favoris)', () => {
       mockWindowWidth = 700;
       const contextValue = createMockContextValue(makeActiveDevices(3));
 
-      const { toJSON } = render(
+      const result = render(
         <DomoticzContext.Provider value={contextValue}>
           <HomeScreen />
         </DomoticzContext.Provider>
       );
 
       await waitFor(() => {
-        expect(collectFavoriteCardCellWidths(toJSON())).toHaveLength(3);
+        expect(getFavoriteCardCellWidths(result)).toHaveLength(3);
       });
-      const widths = collectFavoriteCardCellWidths(toJSON());
+      const widths = getFavoriteCardCellWidths(result);
       widths.forEach((w) => expect(w).toBe('50%'));
     });
 
@@ -432,16 +423,16 @@ describe('HomeScreen (Favoris)', () => {
       mockWindowWidth = 900;
       const contextValue = createMockContextValue(makeActiveDevices(3));
 
-      const { toJSON } = render(
+      const result = render(
         <DomoticzContext.Provider value={contextValue}>
           <HomeScreen />
         </DomoticzContext.Provider>
       );
 
       await waitFor(() => {
-        expect(collectFavoriteCardCellWidths(toJSON())).toHaveLength(3);
+        expect(getFavoriteCardCellWidths(result)).toHaveLength(3);
       });
-      const widths = collectFavoriteCardCellWidths(toJSON());
+      const widths = getFavoriteCardCellWidths(result);
       widths.forEach((w) => expect(w).toBe(`${100 / 3}%`));
     });
 
@@ -456,21 +447,21 @@ describe('HomeScreen (Favoris)', () => {
       );
 
       expect(result).toBeDefined();
-      expect(collectFavoriteCardCellWidths(result.toJSON())).toHaveLength(0);
+      expect(getFavoriteCardCellWidths(result)).toHaveLength(0);
     });
 
     it('ne casse pas la mise en page avec un seul favori', async () => {
       mockWindowWidth = 700;
       const contextValue = createMockContextValue(makeActiveDevices(1));
 
-      const { toJSON } = render(
+      const result = render(
         <DomoticzContext.Provider value={contextValue}>
           <HomeScreen />
         </DomoticzContext.Provider>
       );
 
       await waitFor(() => {
-        expect(collectFavoriteCardCellWidths(toJSON())).toEqual(['50%']);
+        expect(getFavoriteCardCellWidths(result)).toEqual(['50%']);
       });
     });
 
@@ -478,38 +469,36 @@ describe('HomeScreen (Favoris)', () => {
       mockWindowWidth = 700;
       const contextValue = createMockContextValue(makeActiveDevices(10));
 
-      const { toJSON } = render(
+      const result = render(
         <DomoticzContext.Provider value={contextValue}>
           <HomeScreen />
         </DomoticzContext.Provider>
       );
 
       await waitFor(() => {
-        expect(collectFavoriteCardCellWidths(toJSON())).toHaveLength(7);
+        expect(getFavoriteCardCellWidths(result)).toHaveLength(7);
       });
-      const json = toJSON();
       // Les 7 cartes visibles passent bien à 2 colonnes...
-      collectFavoriteCardCellWidths(json).forEach((w) => expect(w).toBe('50%'));
+      getFavoriteCardCellWidths(result).forEach((w) => expect(w).toBe('50%'));
       // ...mais le message limite reste forcé en pleine largeur (1 colonne)
-      expect(findFavoritesLimitCellWidth(json)).toBe('100%');
+      expect(getFavoritesLimitCellWidth(result)).toBe('100%');
     });
 
     it('non-régression : le message limite "Seuls les 7 favoris..." reste hors grille (100%) en expanded', async () => {
       mockWindowWidth = 900;
       const contextValue = createMockContextValue(makeActiveDevices(10));
 
-      const { toJSON } = render(
+      const result = render(
         <DomoticzContext.Provider value={contextValue}>
           <HomeScreen />
         </DomoticzContext.Provider>
       );
 
       await waitFor(() => {
-        expect(collectFavoriteCardCellWidths(toJSON())).toHaveLength(7);
+        expect(getFavoriteCardCellWidths(result)).toHaveLength(7);
       });
-      const json = toJSON();
-      collectFavoriteCardCellWidths(json).forEach((w) => expect(w).toBe(`${100 / 3}%`));
-      expect(findFavoritesLimitCellWidth(json)).toBe('100%');
+      getFavoriteCardCellWidths(result).forEach((w) => expect(w).toBe(`${100 / 3}%`));
+      expect(getFavoritesLimitCellWidth(result)).toBe('100%');
     });
   });
 

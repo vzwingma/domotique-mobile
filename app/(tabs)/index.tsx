@@ -7,7 +7,7 @@ import DomoticzFavorites from '../models/domoticzFavorites.model';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
 import { FavoriteCard } from '../components/favoriteCard.component';
 import { ThemedText } from '@/components/ThemedText';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useResponsiveColumns, getGridCellStyle } from '@/hooks/useResponsiveColumns';
 
 // Règle métier explicite Favoris (F01-01) : l'écran rapide n'affiche jamais plus de 7 éléments.
@@ -118,9 +118,7 @@ function getListFavoritesComponents(favoritesData: DomoticzDevice[], columns: nu
   return items;
 }
 
-// Objet simple (pas StyleSheet.create) : évite dépendance à l'implémentation StyleSheet
-// du module react-native (certains tests le mockent partiellement, cf. index.test.tsx).
-const styles = {
+const styles = StyleSheet.create({
   favoritesGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -134,4 +132,4 @@ const styles = {
     fontSize: 12,
     color: '#9BA1A6',
   },
-} as const;
+});
