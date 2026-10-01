@@ -22,8 +22,9 @@ export default function RootLayout() {
   });
 
   // Tablette : verrouillage paysage au démarrage (téléphone et Web inchangés)
+  // Promesse ignorée volontairement : le service logue ses erreurs et ne les propage jamais
   useEffect(() => {
-    lockOrientationForDevice();
+    void lockOrientationForDevice();
   }, []);
 
   useEffect(() => {

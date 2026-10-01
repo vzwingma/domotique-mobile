@@ -31,7 +31,7 @@ type TabDomoticzTemperaturesProps = {
  * breakpoints medium/expanded (dialSize 240 contre 180 en compact).
  * @param availableWidth Largeur disponible (colonne du layout fusionné tablette), défaut : largeur fenêtre
  */
-export default function TabDomoticzTemperatures({ availableWidth }: TabDomoticzTemperaturesProps = {}): JSX.Element {
+export default function TabDomoticzTemperatures({ availableWidth }: Readonly<TabDomoticzTemperaturesProps> = {}): JSX.Element {
 
   const { domoticzTemperaturesData, domoticzThermostatData } = useContext(DomoticzContext)!;
   const { columns, breakpoint } = useResponsiveColumns(availableWidth);

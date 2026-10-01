@@ -29,7 +29,7 @@ type TabDomoticzDevicessProps = {
  * @param devicesData Les données des équipements
  * @param storeDevicesData La fonction pour mettre à jour les données des volets
  */
-export default function TabDomoticzDevices({ dataType, availableWidth }: TabDomoticzDevicessProps): JSX.Element {
+export default function TabDomoticzDevices({ dataType, availableWidth }: Readonly<TabDomoticzDevicessProps>): JSX.Element {
 
   const { domoticzDevicesData } = useContext(DomoticzContext)!;
   const { columns } = useResponsiveColumns(availableWidth);
