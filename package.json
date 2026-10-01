@@ -1,7 +1,7 @@
 {
   "name": "domoticz-mobile",
   "main": "expo-router/entry",
-  "version": "4.4.0",
+  "version": "5.0.0-alpha",
   "engines": {
     "node": ">=24"
   },
