@@ -16,6 +16,8 @@ const GRID_GAP = 10;
 // Propriétés de l'écran des équipements
 type TabDomoticzDevicessProps = {
   dataType: DomoticzDeviceType,
+  // Largeur disponible (dp) si l'écran n'occupe pas toute la fenêtre (colonne du layout fusionné tablette)
+  availableWidth?: number,
 }
 
 /**
@@ -23,13 +25,14 @@ type TabDomoticzDevicessProps = {
  *
  * Ce composant affiche une grille de volets récupérés depuis Domoticz, avec un nombre
  * de colonnes adapté à la largeur d'écran (`useResponsiveColumns` — 1/2/3 colonnes).
+ * @param availableWidth Largeur disponible (colonne du layout fusionné tablette), défaut : largeur fenêtre
  * @param devicesData Les données des équipements
  * @param storeDevicesData La fonction pour mettre à jour les données des volets
  */
-export default function TabDomoticzDevices({ dataType }: TabDomoticzDevicessProps): JSX.Element {
+export default function TabDomoticzDevices({ dataType, availableWidth }: TabDomoticzDevicessProps): JSX.Element {
 
   const { domoticzDevicesData } = useContext(DomoticzContext)!;
-  const { columns } = useResponsiveColumns();
+  const { columns } = useResponsiveColumns(availableWidth);
 
   if (dataType === undefined) {
     return <View style={styles.grid} />;

@@ -815,3 +815,50 @@ describe('TabDomoticzTemperatures (Températures) - Responsive Grid T4.2', () =>
   });
 });
 
+
+/**
+ * Plan d'Action 004 (T3.4) — largeur disponible (colonne du layout fusionné tablette paysage)
+ */
+describe('TabDomoticzTemperatures - availableWidth (layout fusionné)', () => {
+
+  afterEach(() => {
+    mockWindowWidth = 400;
+  });
+
+  function getGridCellWidths(root: any): string[] {
+    return root
+      .UNSAFE_getAllByType(View)
+      .filter((v: any) => v.props.style && typeof v.props.style === 'object' && 'boxSizing' in v.props.style)
+      .map((v: any) => v.props.style.width);
+  }
+
+  const temperatures = [
+    createMockTemperature({ idx: 1 }),
+    createMockTemperature({ idx: 2 }),
+  ];
+  const thermostats = [createMockThermostat({ idx: 100, name: 'Salon' })];
+
+  it('fenêtre 1280dp + colonne 625dp → grille 2 colonnes (50%) et cadran 240', () => {
+    mockWindowWidth = 1280;
+    const result = render(
+      <DomoticzContext.Provider value={createMockContextValue(temperatures, thermostats)}>
+        <TabDomoticzTemperatures availableWidth={625} />
+      </DomoticzContext.Provider>
+    );
+    const widths = getGridCellWidths(result);
+    expect(widths).toHaveLength(2);
+    widths.forEach((w) => expect(w).toBe('50%'));
+    expect(result.getByTestId('thermostat-100').props['data-dialsize']).toBe(240);
+  });
+
+  it('colonne étroite (<600dp) → 1 colonne (100%) et cadran compact 180', () => {
+    mockWindowWidth = 1100;
+    const result = render(
+      <DomoticzContext.Provider value={createMockContextValue(temperatures, thermostats)}>
+        <TabDomoticzTemperatures availableWidth={545} />
+      </DomoticzContext.Provider>
+    );
+    getGridCellWidths(result).forEach((w) => expect(w).toBe('100%'));
+    expect(result.getByTestId('thermostat-100').props['data-dialsize']).toBe(180);
+  });
+});

@@ -22,8 +22,13 @@ export type ResponsiveColumns = {
 const COMPACT_MAX_WIDTH = 600;
 const MEDIUM_MAX_WIDTH = 840;
 
-export function useResponsiveColumns(): ResponsiveColumns {
-  const { width } = useWindowDimensions();
+/**
+ * @param availableWidth largeur disponible (dp) si l'écran n'occupe pas toute la fenêtre
+ * (ex. une colonne du layout fusionné tablette). Par défaut : largeur de la fenêtre.
+ */
+export function useResponsiveColumns(availableWidth?: number): ResponsiveColumns {
+  const { width: windowWidth } = useWindowDimensions();
+  const width = availableWidth ?? windowWidth;
 
   if (width < COMPACT_MAX_WIDTH) {
     return { columns: 1, breakpoint: 'compact' };

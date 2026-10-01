@@ -25,3 +25,9 @@ jest.mock('expo-constants', () => ({
     },
   },
 }));
+
+// Mock expo-screen-orientation (module natif, non résolu par le preset react-native)
+jest.mock('expo-screen-orientation', () => ({
+  lockAsync: jest.fn(() => Promise.resolve()),
+  OrientationLock: { DEFAULT: 0, PORTRAIT_UP: 3, LANDSCAPE: 5 },
+}));
