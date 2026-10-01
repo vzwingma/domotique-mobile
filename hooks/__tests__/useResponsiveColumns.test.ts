@@ -118,6 +118,32 @@ describe('useResponsiveColumns', () => {
     rerender({});
     expect(result.current).toEqual({ columns: 3, breakpoint: 'expanded' });
   });
+
+  describe('availableWidth (Plan 004 — colonne du layout fusionné tablette)', () => {
+    it('prioritaire sur la largeur fenêtre : fenêtre 1280 + colonne 625 → medium / 2 colonnes', () => {
+      setWidth(1280);
+      const { result } = renderHook(() => useResponsiveColumns(625));
+      expect(result.current).toEqual({ columns: 2, breakpoint: 'medium' });
+    });
+
+    it('colonne < 600 → compact / 1 colonne', () => {
+      setWidth(1100);
+      const { result } = renderHook(() => useResponsiveColumns(545));
+      expect(result.current).toEqual({ columns: 1, breakpoint: 'compact' });
+    });
+
+    it('availableWidth = 0 (valeur définie) → compact, la fenêtre est ignorée', () => {
+      setWidth(1280);
+      const { result } = renderHook(() => useResponsiveColumns(0));
+      expect(result.current).toEqual({ columns: 1, breakpoint: 'compact' });
+    });
+
+    it('availableWidth undefined → largeur fenêtre', () => {
+      setWidth(1280);
+      const { result } = renderHook(() => useResponsiveColumns(undefined));
+      expect(result.current).toEqual({ columns: 3, breakpoint: 'expanded' });
+    });
+  });
 });
 
 describe('getGridCellStyle', () => {

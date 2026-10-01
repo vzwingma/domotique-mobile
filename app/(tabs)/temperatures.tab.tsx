@@ -15,6 +15,12 @@ const GRID_GAP = 10;
 const DIAL_SIZE_COMPACT = 180;
 const DIAL_SIZE_LARGE = 240;
 
+// Propriétés de l'écran des températures
+type TabDomoticzTemperaturesProps = {
+  // Largeur disponible (dp) si l'écran n'occupe pas toute la fenêtre (colonne du layout fusionné tablette)
+  availableWidth?: number,
+}
+
 /**
  * Composant de l'écran des mesures de températures.
  *
@@ -23,11 +29,12 @@ const DIAL_SIZE_LARGE = 240;
  * Nombre de colonnes de la grille piloté par `useResponsiveColumns()` (1 en compact,
  * 2 en medium, 3 en expanded). Le cadran Thermostat s'agrandit également aux
  * breakpoints medium/expanded (dialSize 240 contre 180 en compact).
+ * @param availableWidth Largeur disponible (colonne du layout fusionné tablette), défaut : largeur fenêtre
  */
-export default function TabDomoticzTemperatures(): JSX.Element {
+export default function TabDomoticzTemperatures({ availableWidth }: Readonly<TabDomoticzTemperaturesProps> = {}): JSX.Element {
 
   const { domoticzTemperaturesData, domoticzThermostatData } = useContext(DomoticzContext)!;
-  const { columns, breakpoint } = useResponsiveColumns();
+  const { columns, breakpoint } = useResponsiveColumns(availableWidth);
   const dialSize = breakpoint === 'compact' ? DIAL_SIZE_COMPACT : DIAL_SIZE_LARGE;
 
   const thermostatItems: JSX.Element[] = domoticzThermostatData.map(item => (
