@@ -1,7 +1,7 @@
 {
   "name": "domoticz-mobile",
   "main": "expo-router/entry",
-  "version": "4.4.0",
+  "version": "5.0.0-alpha",
   "engines": {
     "node": ">=24"
   },
@@ -41,6 +41,7 @@
     "expo-font": "~56.0.7",
     "expo-linking": "~56.0.18",
     "expo-router": "~56.2.21",
+    "expo-screen-orientation": "~56.0.5",
     "expo-splash-screen": "~56.0.15",
     "expo-status-bar": "~56.0.4",
     "expo-system-ui": "~56.0.5",
