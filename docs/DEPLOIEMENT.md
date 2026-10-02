@@ -61,7 +61,7 @@ npm run eas:submit              # eas submit --profile production --platform and
 
 ## 🧩 Dépendances natives : rebuild requis
 
-Toute dépendance contenant du code natif impose un **nouveau build natif** (EAS ou `npm run android` / `npm run android:device`) : un APK/dev-client existant ne la contient pas, et Expo Go n'est pas représentatif.
+Toute dépendance contenant du code natif impose un **nouveau build natif** (EAS ou `npm run android` / `npm run android:device`) : un APK/dev-client existant ne la contient pas. Expo Go embarque déjà les modules du SDK Expo (dont `expo-screen-orientation`), mais reste sans SSL (cf. README) : la validation sur appareil passe par un build natif.
 
 | Dépendance | Ajoutée | Usage | Vérification après rebuild |
 |---|---|---|---|

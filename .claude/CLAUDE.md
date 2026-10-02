@@ -16,7 +16,7 @@ Mode caveman **full** actif par défaut. Règles :
 
 **domoticz-mobile** — app mobile React Native/Expo pilotant équipements domotiques via serveur [Domoticz](https://www.domoticz.com/). Cible Android + Web. UI français.
 
-**Stack** : Expo SDK ~56.0.13 · React 19.2.3 · React Native 0.85.3 · TypeScript strict · expo-router ~56.2.12 · Jest 29 + jest-expo · ESLint 9.39.1 (flat config)
+**Stack** : Expo SDK ~56.0.23 · React 19.2.3 · React Native 0.85.3 · TypeScript strict · expo-router ~56.2.21 · expo-screen-orientation ~56.0.5 · Jest 29 (preset `react-native`) · ESLint 9.39.1 (flat config)
 
 ### Commandes courantes
 
@@ -55,6 +55,7 @@ Détails complets : `docs/ARCHITECTURE.md`, `docs/API.md`, `docs/TESTING.md`.
 - État global via `useContext(DomoticzContext)` — jamais prop drilling
 - Labels métier UI FR : "Allumé/Éteint", "Ouvert/Fermé", "Déconnecté", "Mixte" — jamais "On/Off"
 - Thème sombre uniquement
+- Responsive : téléphone (< 600dp) = référence, ne jamais modifier son rendu ; tablette (plus petit côté ≥ 600dp) verrouillée paysage, onglets Lumières+Volets / Températures+Maison fusionnés sur 2 colonnes (`hooks/useTabletLayout.ts`, `app/services/TabGroups.service.ts`) — ADR-013/014, `docs/ARCHITECTURE.md` § Responsive
 
 Conventions détaillées par rôle → `.claude/instructions/*.instructions.md`.
 
