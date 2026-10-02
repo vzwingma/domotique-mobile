@@ -59,7 +59,7 @@ Réduire la barre à 3 boutons en paysage a été écarté : le besoin demande e
 
 ### Négatives / compromis
 
-- **Nouvelle dépendance native** : un rebuild natif est requis (EAS / `npm run android`) ; Expo Go non représentatif. Jest (preset `react-native`) nécessite un mock global (`jest.setup.ts`).
+- **Nouvelle dépendance native** : les APK / dev-clients existants doivent être reconstruits (EAS / `npm run android`) ; Expo Go embarque déjà le module. Jest (preset `react-native`) nécessite un mock global (`jest.setup.ts`).
 - **Rotation visible au lancement sur tablette** : l'activité démarre en portrait (manifeste) puis bascule en paysage au montage JS.
 - Android 16+ (API 36) ignore les restrictions d'orientation sur grands écrans pour les apps ciblant SDK 36 : sur une future tablette Android 16, l'utilisateur pourra pivoter librement ; le layout s'adapte (fusionné en paysage, ADR-013 en portrait). Sans impact sur la Tab S6 (Android 12).
 - Sur tablette, toucher le second bouton d'un groupe déjà affiché déclenche un rafraîchissement (même comportement qu'un appui sur l'onglet courant, cooldown 5 s), sans changement d'écran.
