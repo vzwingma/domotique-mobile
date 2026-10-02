@@ -1,7 +1,7 @@
 # Déploiement & Build Android
 
-**Document Version:** 1.0.0
-**Last Updated:** 2026-07-08
+**Document Version:** 1.1.0
+**Last Updated:** 2026-10-01
 **Audience:** Mainteneur(s) du projet
 **Références :** [ADR-010 — Stratégie de build et déploiement EAS](./adr/010-strategie-build-deploiement-eas.md), [ADR-011 — Gestion du keystore de production via EAS Credentials](./adr/011-gestion-keystore-production-eas-credentials.md)
 
@@ -56,6 +56,18 @@ npm run eas:submit              # eas submit --profile production --platform and
 **Prérequis local :** être authentifié sur EAS (`eas login`) et avoir les droits sur le projet EAS correspondant. Aucun secret n'est stocké dans le repo pour ces commandes — l'authentification EAS est gérée par la session `eas` locale du mainteneur.
 
 **Profils EAS disponibles** (`eas.json`) : `development`, `preview` (base), `previewV`, `previewC` (variantes du build automatique), `production`.
+
+---
+
+## 🧩 Dépendances natives : rebuild requis
+
+Toute dépendance contenant du code natif impose un **nouveau build natif** (EAS ou `npm run android` / `npm run android:device`) : un APK/dev-client existant ne la contient pas. Expo Go embarque déjà les modules du SDK Expo (dont `expo-screen-orientation`), mais reste sans SSL (cf. README) : la validation sur appareil passe par un build natif.
+
+| Dépendance | Ajoutée | Usage | Vérification après rebuild |
+|---|---|---|---|
+| `expo-screen-orientation` | 2026-10-01 ([ADR-014](./adr/014-tablette-paysage-onglets-fusionnes.md)) | Verrou paysage sur tablette (plus petit côté ≥ 600dp) au démarrage | Tablette : bascule en paysage au lancement (brève rotation après le splash, attendue) + onglets fusionnés ; téléphone : reste en portrait, rendu inchangé |
+
+`app.json` conserve `"orientation": "portrait"` : aucune modification de configuration native n'est nécessaire, seul le module natif doit être embarqué.
 
 ---
 

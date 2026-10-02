@@ -7,10 +7,14 @@ import DomoticzFavorites from '../models/domoticzFavorites.model';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
 import { FavoriteCard } from '../components/favoriteCard.component';
 import { ThemedText } from '@/components/ThemedText';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { useResponsiveColumns, getGridCellStyle } from '@/hooks/useResponsiveColumns';
 
 // Règle métier explicite Favoris (F01-01) : l'écran rapide n'affiche jamais plus de 7 éléments.
 const FAVORITES_MAX_QUICK_ACTIONS = 7;
+
+// Gap visuel cohérent avec ParallaxScrollView.styles.content / FavoriteCard.styles.card (gap: 10).
+const FAVORITES_GRID_GAP = 10;
 
 /**
  * Ecran d'accueil avec les équipements favoris
@@ -22,6 +26,7 @@ export default function HomeScreen() {
 
   const [favorites, setFavorites] = useState([] as DomoticzDevice[]);
   const { domoticzDevicesData } = useContext(DomoticzContext)!;
+  const { columns } = useResponsiveColumns();
 
 
   // Au chargement de l'écran, on charge les favoris
@@ -31,7 +36,9 @@ export default function HomeScreen() {
 
 
   return (
-    <>{getListFavoritesComponents(favorites)}</>
+    <View style={styles.favoritesGrid}>
+      {getListFavoritesComponents(favorites, columns)}
+    </View>
   );
 
 }
@@ -70,16 +77,19 @@ function getFavoritesDevicesFromCache(devicesData: DomoticzDevice[], setFavorite
 
 
 /**
- * liste des composants graphiques des devices favoris
+ * liste des composants graphiques des devices favoris, positionnés dans une grille
+ * responsive (1/2/3 colonnes selon breakpoint, cf. useResponsiveColumns)
  * @param favoritesData devices favoris
- * @returns les devices favoris en jsx
+ * @param columns nombre de colonnes de la grille (issu de useResponsiveColumns)
+ * @returns les devices favoris en jsx, chacun enveloppé dans une cellule de grille
  */
-function getListFavoritesComponents(favoritesData: DomoticzDevice[]): JSX.Element[] {
+function getListFavoritesComponents(favoritesData: DomoticzDevice[], columns: number): JSX.Element[] {
   let items: JSX.Element[] = [];
   if (favoritesData === undefined) {
     return items;
   }
   else {
+    const cellStyle = getGridCellStyle(FAVORITES_GRID_GAP, columns);
     const activeFavorites = favoritesData.filter((favDevice: DomoticzDevice) => favDevice.isActive);
     const hasMoreFavoritesThanVisibleLimit = activeFavorites.length > FAVORITES_MAX_QUICK_ACTIONS;
     const visibleFavorites = activeFavorites
@@ -88,13 +98,17 @@ function getListFavoritesComponents(favoritesData: DomoticzDevice[]): JSX.Elemen
       .sort((favDeviceA: DomoticzDevice, favDeviceB: DomoticzDevice) => sortFavoritesDevices(favDeviceA, favDeviceB));
 
     visibleFavorites.forEach((fav: DomoticzDevice) => {
-      items.push(<FavoriteCard key={fav.idx} device={fav} />);
+      items.push(
+        <View key={fav.idx} style={cellStyle}>
+          <FavoriteCard device={fav} />
+        </View>
+      );
     });
 
     if (hasMoreFavoritesThanVisibleLimit) {
       items.push(
-        <View key="favorites-limit-info" style={{ width: '100%', paddingVertical: 4 }}>
-          <ThemedText style={{ textAlign: 'center', fontSize: 12, color: '#9BA1A6' }}>
+        <View key="favorites-limit-info" style={[getGridCellStyle(FAVORITES_GRID_GAP, 1), styles.favoritesLimitCell]}>
+          <ThemedText style={styles.favoritesLimitText}>
             Seuls les {FAVORITES_MAX_QUICK_ACTIONS} favoris les plus utilisés sont affichés.
           </ThemedText>
         </View>
@@ -103,3 +117,19 @@ function getListFavoritesComponents(favoritesData: DomoticzDevice[]): JSX.Elemen
   }
   return items;
 }
+
+const styles = StyleSheet.create({
+  favoritesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    margin: -FAVORITES_GRID_GAP / 2,
+  },
+  favoritesLimitCell: {
+    paddingVertical: FAVORITES_GRID_GAP / 2 + 4,
+  },
+  favoritesLimitText: {
+    textAlign: 'center',
+    fontSize: 12,
+    color: '#9BA1A6',
+  },
+});

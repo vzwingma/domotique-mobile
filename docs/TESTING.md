@@ -107,30 +107,25 @@ module.exports = {
 
 ### Setup Files (jest.setup.ts)
 
+Mocks globaux appliqués à toutes les suites (extrait réel) :
+
 ```typescript
 // jest.setup.ts
-import '@testing-library/jest-native/extend-expect';
+jest.mock('@react-native-async-storage/async-storage', () =>
+  require('@react-native-async-storage/async-storage/jest/async-storage-mock')
+);
+jest.mock('@expo/vector-icons', () => ({ Ionicons: 'Ionicons', MaterialCommunityIcons: 'MaterialCommunityIcons' }));
+jest.mock('expo-router', () => ({ useRouter: () => ({ push: jest.fn(), replace: jest.fn() }), usePathname: () => '/' }));
+jest.mock('expo-constants', () => ({ default: { expoConfig: { extra: {} } } }));
 
-// Mock Expo modules
-jest.mock('expo-router', () => ({
-  useRouter: () => ({
-    push: jest.fn(),
-    replace: jest.fn(),
-    goBack: jest.fn()
-  })
+// Module natif Expo : non résolu par le preset `react-native` (cf. § Troubleshooting)
+jest.mock('expo-screen-orientation', () => ({
+  lockAsync: jest.fn(() => Promise.resolve()),
+  OrientationLock: { DEFAULT: 0, PORTRAIT_UP: 3, LANDSCAPE: 5 },
 }));
-
-// Mock AsyncStorage
-jest.mock('@react-native-async-storage/async-storage', () => ({
-  setItem: jest.fn(),
-  getItem: jest.fn(),
-  removeItem: jest.fn()
-}));
-
-// Suppress console warnings in tests
-jest.spyOn(console, 'warn').mockImplementation(() => {});
-jest.spyOn(console, 'error').mockImplementation(() => {});
 ```
+
+> Tout nouveau module natif Expo importé par le code de production doit être mocké ici, sinon toute suite qui l'importe (même indirectement) échoue au chargement.
 
 ### Installation
 
@@ -673,6 +668,26 @@ moduleNameMapper: {
   '^components/(.*)$': '<rootDir>/components/$1'
 }
 ```
+
+### Module natif Expo non résolu
+
+```
+TypeError: Cannot read properties of undefined (reading 'EventEmitter')
+```
+
+**Cause :** le preset Jest est `react-native` (pas `jest-expo`) : les modules natifs Expo (`expo-modules-core`) ne sont pas disponibles.
+
+**Solution :** ajouter un mock global du module dans `jest.setup.ts` (ex. `expo-screen-orientation`, ci-dessus). Un test peut ensuite piloter le mock (`ScreenOrientation.lockAsync as jest.Mock`).
+
+### `React.lazy` / `import()` dynamique
+
+```
+TypeError: A dynamic import callback was invoked without --experimental-vm-modules
+```
+
+**Cause :** `babel-preset-expo` conserve les `import()` dynamiques (lazy-loading Metro des écrans dans `app/(tabs)/_layout.tsx`), non exécutables par Jest.
+
+**Solution (sans toucher à la config Babel/Jest) :** dans le fichier de test, remplacer `React.lazy` par un chargeur synchrone qui résout le module ciblé (mocké) via `require` — voir `app/(tabs)/__tests__/_layout.test.tsx`.
 
 ### Tests timeout
 
