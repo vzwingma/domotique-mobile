@@ -5,11 +5,11 @@
 `domoticz-mobile` est une application Expo / React Native / TypeScript pour piloter et consulter des équipements Domoticz depuis Android et le Web.
 
 Stack principale :
-- Expo SDK `~56.0.12`
+- Expo SDK `~56.0.23`
 - React `19.2.3`
 - React Native `0.85.3`
 - TypeScript strict
-- `expo-router` `~56.2.11` pour le routage file-based
+- `expo-router` `~56.2.21` pour le routage file-based
 - Jest `29.7.0` avec Testing Library React Native pour les tests
 - ESLint `9.39.1` via `expo lint`
 
@@ -24,7 +24,7 @@ Stack principale :
 - `components/` : composants réutilisables génériques.
 - `hooks/` : hooks React partagés.
 - `docs/` : architecture, API, testing et ADR.
-- `.opencode/` : agents, skills, prompts, templates et instructions projet.
+- `.claude/` : agents, skills (dont conventions par rôle), hooks, settings et Plans d'Action.
 
 ## Architecture
 
@@ -101,11 +101,11 @@ npm run validate:expo
 - `DOCly` : documentation, README, architecture, ADR et synchronisation documentaire.
 
 Instructions spécifiques projet :
-- `.opencode/instructions/orchestrator.instructions.md`
-- `.opencode/instructions/architect.instructions.md`
-- `.opencode/instructions/dev.instructions.md`
-- `.opencode/instructions/qa.instructions.md`
-- `.opencode/instructions/doc.instructions.md`
+- `.claude/skills/conventions-orchestrator/SKILL.md`
+- `.claude/skills/conventions-architect/SKILL.md`
+- `.claude/skills/conventions-dev/SKILL.md`
+- `.claude/skills/conventions-qa/SKILL.md`
+- `.claude/skills/conventions-doc/SKILL.md`
 
 Workflow nominal :
 1. MAINa clarifie le besoin et les critères d'acceptation.

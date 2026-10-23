@@ -29,10 +29,10 @@
 **domoticz-mobile** est une application React Native/Expo qui permet de contrôler et consulter les équipements d'une maison intelligente via un serveur **Domoticz** (https://www.domoticz.com/).
 
 **Caractéristiques principales :**
-- **Stack technologique :** Expo SDK ~56.0.13, React 19.2.3, React Native 0.85.3, TypeScript strict, Context API
-- **Routing :** expo-router ~56.2.12 (file-based routing)
+- **Stack technologique :** Expo SDK ~56.0.23, React 19.2.3, React Native 0.85.3, TypeScript strict, Context API
+- **Routing :** expo-router ~56.2.21 (file-based routing)
 - **Plateforme cible :** Android native, Web (navigateur)
-- **Authentification :** Basic Auth via `Constants.expoConfig.extra.domoticzAuth` (Base64, injecté depuis `app.config.ts`)
+- **Authentification :** Basic Auth via `Constants.expoConfig.extra.domoticzAuth` (Base64, injecté depuis `app.config.js`)
 - **Intégration Domoticz :** API REST HTTP
 - **État global :** React Context (`DomoticzContextProvider`)
 - **Tests :** Jest + jest-expo + Testing Library
@@ -239,7 +239,7 @@ domoticz-mobile/
 │   ├── skills/
 │   ├── PLANS.md
 │   └── copilot-instructions.md
-├── app.json / app.config.ts          # Configuration Expo
+├── app.json / app.config.js          # Configuration Expo
 ├── eas.json                          # Configuration profils EAS Build
 ├── tsconfig.json                     # Configuration TypeScript (strict mode)
 ├── jest.config.js                    # Configuration Jest
