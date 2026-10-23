@@ -1,8 +1,29 @@
 # 📚 Claude Code Agents & Templates — Dépôt Transverse
 
-Ce sous-arbre `.claude/` contient les **artefacts Claude réutilisables** du dépôt : agents, skills, prompts, templates d'instructions et plans d'action.
+Ce sous-arbre `.claude/` contient les **artefacts Claude réutilisables** du dépôt : agents, skills (procédures, conventions projet, commandes), hooks et settings. Les Plans d'Action vivent dans `docs/plans/` (hors du chemin protégé `.claude/`, ADR 004).
 
 Il sert de point d'entree pour comprendre **qui fait quoi**, **comment les agents se coordonnent** et **quels fichiers copier ou maintenir** sans surcharger chaque `*.agent.md`.
+
+## 🎯 Cible Copilot vérifiée
+
+La projection vérifiée de ce dépôt cible **GitHub Copilot CLI uniquement**. Versions observées pendant AP 006 :
+`1.0.99-0`, puis `1.0.99-1`. VS Code et cloud agent sont hors périmètre ; aucune parité ni support n'est
+annoncé pour ces surfaces.
+
+`.claude/` reste la source unique. La projection Copilot est générée par
+`scripts/sync-claude-to-github.ps1` (`-Check` vérifie l'absence de dérive, génération idempotente). Le mapping
+`scripts/copilot-mapping.psd1` dérive les outils du frontmatter Claude : `Read` → `read`, `Grep`/`Glob` →
+`search`, `WebFetch`/`WebSearch` → `web`, `Edit`/`Write` → `edit`, `Bash` → `execute`, `TodoWrite` → `todo`,
+`Agent` → `agent`. `AskUserQuestion`, `SendMessage` et `Skill` sont signalés puis non projetés.
+
+ARCos est projeté en lecture seule (`[read, search, web]`). Les alias source donnent `opus` →
+`claude-opus-5.5` et `sonnet` → `claude-sonnet-5.5`. Un modèle inconnu provoque un avertissement, un repli
+sur le modèle par défaut et un code de sortie nul : risque de faux succès à contrôler.
+
+La CLI peut lire `.github/skills/` et `.claude/skills/` ; `.github/` l'emporte en cas de nom identique. Le
+chargement se fait selon la pertinence, non de façon déterministe ; chaque profil généré demande explicitement
+le chargement de ses skills. Les conventions sont projetées vers
+`.github/instructions/<role>.instructions.template.md`.
 
 ---
 
@@ -16,16 +37,18 @@ Il sert de point d'entree pour comprendre **qui fait quoi**, **comment les agent
 │   ├── Devon.agent.md                   # Implementation
 │   ├── Qalvin.agent.md                  # Tests
 │   └── Docly.agent.md                   # Documentation
-├── instructions/                        # Templates d'instructions par role
-├── prompts/                             # Prompts d'initialisation / mise a jour
-├── skills/                              # Procedures partagees auto-chargees
-├── plans/                               # Plans d'Action et rapports
+├── skills/                              # 18 skills : procédures, conventions, commandes
 ├── CHANGELOG.md                         # Historique des versions des agents
 ├── PLANS.md                             # Guide des Plans d'Action
 ├── README.md                            # Ce fichier
 ├── CLAUDE.md              # Instructions de ce depot transverse
 └── CLAUDE.template.md     # Template a copier dans les projets
 ```
+
+<!-- claude-only -->
+Garde-fous : `hooks/` (`guard.sh` hook `PreToolUse` + `role-boundaries.conf`), `settings.json` (ce dépôt),
+`settings.template.json` (à fusionner dans les projets via `/init-harness`).
+<!-- /claude-only -->
 
 ---
 
@@ -37,21 +60,22 @@ Selon le projet cible, copier :
 
 - `.claude/agents/`
 - `.claude/skills/`
-- `.claude/instructions/`
-- `.claude/prompts/`
+<!-- claude-only -->
+- `.claude/hooks/` + `.claude/settings.template.json` (garde-fous : permissions + hook `PreToolUse`)
+<!-- /claude-only -->
 - `.claude/PLANS.md`
 - `.claude/CLAUDE.template.md`
 
 ### Etape 2 : Initialiser les instructions projet
 
-Utiliser le prompt `init-copilot-instructions` pour generer les fichiers d'instructions adaptes au projet consommateur.
+Lancer `/init-harness` : analyse du code, génération de `CLAUDE.md`, remplissage des conventions par rôle (`conventions-<rôle>`).
 
 ### Etape 3 : Utiliser les agents
 
 Les agents peuvent ensuite etre invoques selon le besoin :
 
-- `MAINa` pour orchestrer workflow complet
-- `ARCos` pour concevoir et planifier
+- `MAINa` pour orchestrer workflow complet<!-- claude-only --> — en agent principal : `claude --agent MAINa` (gates interactifs)<!-- /claude-only -->
+- `ARCos` pour analyser les options et concevoir (lecture seule)
 - `DEVon` pour implementer
 - `QALvin` pour tester
 - `DOCly` pour documenter
@@ -72,30 +96,40 @@ Les agents peuvent ensuite etre invoques selon le besoin :
 
 Les agents restent focalises sur leurs instructions runtime. La vue transverse et la coordination sont documentees ici pour eviter la duplication.
 
-### Instructions (`.claude/instructions/`)
+<!-- claude-only -->
+### Conventions projet (`.claude/skills/conventions-<rôle>/`)
 
-| Fichier | Role |
+| Skill | Agent | Rôle |
+|---|---|---|
+| `conventions-orchestrator` | ⚫ MAINa | Orchestration, gates humains, délégation |
+| `conventions-architect` | 🟠 ARCos | Couches, état, accès données, intégrations |
+| `conventions-dev` | 🔵 DEVon | Stack technique, versions, commandes, conventions de code |
+| `conventions-qa` | 🟢 QALvin | Framework de test, commandes CI, couverture, cas à couvrir |
+| `conventions-doc` | 🟣 DOCly | Cibles documentaires et conventions de doc |
+
+Préchargés par l'agent Claude correspondant (frontmatter `skills:`). Templates à remplir via `/init-harness`.
+<!-- /claude-only -->
+<!-- copilot-only
+### Instructions projet (`.claude/instructions/`)
+
+Un fichier par rôle (`orchestrator`, `architect`, `dev`, `qa`, `doc`) : `<rôle>.instructions.md`, créé depuis `<rôle>.instructions.template.md` via `/init-harness`.
+-->
+
+### Commandes (`.claude/skills/`)
+
+| Commande | Utilisation |
 |---|---|
-| `orchestrator.instructions.md` | Conventions d'orchestration MAINa / gates humains / délégation |
-| `architect.instructions.md` | Conventions architecture / SQL handoff |
-| `dev.instructions.md` | Stack technique, versions, conventions de code |
-| `qa.instructions.md` | Framework de test, commandes CI, cas a couvrir |
-| `doc.instructions.md` | Cibles documentaires et conventions de doc |
-
-### Prompts (`.claude/prompts/`)
-
-| Prompt | Utilisation |
-|---|---|
-| `init-copilot-instructions.prompt.md` | Initialiser les instructions Claude dans un projet |
-| `update-copilot-instructions.prompt.md` | Auditer et mettre a jour les instructions |
-| `migrate-to-template.prompt.md` | Migrer un projet vers le format template transverse |
+| `/init-harness` | Initialiser le harnais dans un projet (nouveau ou existant) |
+| `/update-harness` | Auditer et mettre à jour CLAUDE.md + conventions depuis le code |
+| `/maina-help` | Aide workflow MAINa |
+| `/maina`, `/arcos`, `/devon`, `/qalvin`, `/docly` | Activer un agent sur une demande |
 
 ### Plans et gouvernance
 
 | Fichier | Role |
 |---|---|
 | `PLANS.md` | Guide complet de creation / execution des Plans d'Action |
-| `plans/README.md` | Index des plans et statut global |
+| `docs/plans/README.md` | Index des plans et statut global |
 | `CHANGELOG.md` | Historique de version des 5 agents |
 
 ---
@@ -162,11 +196,21 @@ Pour les details de phases, de rapports et de dependances, voir `PLANS.md`.
 
 ## ✅ Checklist de maintenance
 
-- Modifier un agent => incrementer sa version dans le frontmatter
-- Reporter la modification dans `CHANGELOG.md`
-- Synchroniser les versions dans `CLAUDE.md` et `CLAUDE.template.md`
-- Mettre a jour `plans/README.md` a chaque nouveau Plan d'Action
-- Garder ce README comme source de verite pour la coordination transverse `.claude/`
+- Modifier un agent → incrémenter sa ligne `> **Version**` (corps de l'agent) + entrée `CHANGELOG.md`
+- Version reportée uniquement dans `docs/ARCHITECTURE.md` (table des agents) — vérifiée par `scripts/check-harness.ps1`
+- Mettre à jour `docs/plans/README.md` à chaque nouveau Plan d'Action
+<!-- claude-only -->
+- Régénérer Copilot : `scripts/sync-claude-to-github.ps1`, puis `scripts/check-harness.ps1` (doit sortir en 0)
+<!-- /claude-only -->
+- Garder ce README comme source de vérité pour la coordination transverse
+
+<!-- copilot-only
+### Contrat observé côté GitHub Copilot CLI
+
+La CLI charge les skills selon pertinence, sans sélection déterministe par rôle. Les profils générés portent
+donc une consigne explicite de chargement. Les comportements de garde, d'exclusion et de frontière de rôle
+restent des comportements observés dans les scénarios AP 006, pas des protections natives garanties par la CLI.
+<!-- /copilot-only -->
 
 ---
 
