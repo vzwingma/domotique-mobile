@@ -1,55 +1,46 @@
 ---
-description: Spécificités projet domoticz-mobile pour l'agent 🟣 DOCly (doc)
+description: "Conventions documentaires du projet domoticz-mobile pour 🟣 DOCly : fichiers sous sa responsabilité, langue, ADR, changelog, diagrammes. Prioritaire sur le générique."
 applyTo: "**"
 ---
 
-# Spécificités projet — domoticz-mobile (Doc)
+# Conventions projet — domoticz-mobile (documentation)
 
-> Ce fichier est lu automatiquement par l'agent 🟣 DOCly au démarrage.
-> Il contient uniquement les spécificités du projet `domoticz-mobile` (Application mobile React Native / Expo pour piloter Domoticz).
+> Projet : `domoticz-mobile` — application mobile React Native / Expo (Android + Web) pour piloter un serveur Domoticz.
 
-## Workflow
+## Fichiers sous la responsabilité de DOCly
 
-1. Consulte les todos `*-doc` dont les dépendances sont `done`.
-2. Passe le todo en `in_progress`.
-3. Identifie les fichiers de documentation impactés.
-4. Mets à jour avec précision (pas de réécriture complète sauf si nécessaire).
-5. Passe en `done`.
+### Racine
+- `README.md` — présentation, prérequis, démarrage rapide
+- `CHANGELOG.md` — historique des versions (Keep a Changelog), nouvelle version ajoutée **en tête**
+- `CONTRIBUTING.md` — git workflow, conventions de code, PR
+- `AGENTS.md` — instructions agents génériques (versions de stack à garder alignées)
+- `.github/copilot-instructions.md` — contexte des futures sessions (sections projet uniquement)
 
-## Fichiers sous ta responsabilité
+### `docs/`
+- `docs/ARCHITECTURE.md` (**obligatoire**) — stack, structure, couches, flux de données, § Responsive
+- `docs/adr/` — ADR rédigés sur contenu 🟠 ARCos (skill `adr-writing`)
+- `docs/API.md` — référence API Domoticz (endpoints, paramètres, exemples cURL)
+- `docs/TESTING.md` — guide Jest (setup, conventions, couverture)
+- `docs/DEPLOIEMENT.md`, `docs/PROCESS-VEILLE-VERSIONS.md` — build/déploiement EAS, veille des versions
+- Wiki GitHub (`domoticz-mobile.wiki/`, `Home.md`) — hors dépôt
 
-### Dans `domoticz-mobile/`
-- `README.md` – description générale, prérequis, démarrage rapide
-- `CHANGELOG.md` – historique des versions (format Keep a Changelog)
-- `.github/copilot-instructions.md` – contexte pour les futures sessions Copilot
-- `docs/ARCHITECTURE.md` – architecture React Native / Expo (stack, structure, conventions, flux données)
-- `docs/API.md` – référence API Domoticz (endpoints, paramètres, exemples cURL)
-- `docs/TESTING.md` – guide Jest (setup, conventions de test, coverage)
-- `CONTRIBUTING.md` – guide de contribution (git workflow, conventions de code, PR template)
+### `.github/skills/` (procédures partagées)
+Mettre à jour si les procédures changent (cohérence avec `.github/PLANS.md`) :
+`plan-creation`, `plan-phase-execution`, `parallel-guide`, `adr-writing`.
 
-### Wiki GitHub (`domoticz-mobile.wiki/`)
-- `Home.md` – page d'accueil du wiki
-- `schemas/*.puml` – diagrammes PlantUML (versions des frameworks à maintenir à jour)
+## Conventions
 
-## Conventions de documentation
+- **Langue** : français pour le texte, anglais pour les blocs de code.
+- **`docs/ARCHITECTURE.md` obligatoire** dans tout projet.
+- **ADR** : un fichier `docs/adr/NNN-titre.md` par décision majeure (numérotation continue, dernier : 014).
+- **Index des plans** `.claude/plans/README.md` : plans + statut global uniquement.
+- **Versions à maintenir** dans la doc : Expo SDK ~56, React Native 0.85, React 19.2 (Domoticz : serveur
+  externe, version libre). Ne pas dupliquer de version hors fichiers nécessaires (Renovate / ADR-012).
+- **Terminologie UI** : « Allumé/Éteint », « Ouvert/Fermé », « Déconnecté », « Mixte » — jamais « On/Off ».
+- Dépôt **standalone** (pas de projet partenaire) : `docs/` + wiki = référence unique ; toute modification
+  d'architecture se reflète dans `docs/ARCHITECTURE.md`.
 
-- **Langue** : français pour le contenu, anglais pour les blocs de code.
-- **Versions à maintenir à jour** dans les `.puml` : React Native / Expo (actuellement **~55**), Domoticz (serveur externe, version libre).
-- Quand une nouvelle version de l'application est livrée, ajouter une entrée dans `CHANGELOG.md` **en tête** de fichier (format Keep a Changelog).
-- Le `CHANGELOG.md` est à la racine du projet.
-- L'index `.github/plans/README.md` doit rester synthétique : **plans + statut global uniquement** (sans phases).
+## Ce que DOCly ne fait PAS
 
-## Coordination avec la documentation technique
-
-Ce repo est **standalone** (pas de projet partenaire). Les schémas et diagrammes dans `docs/` et dans le wiki GitHub sont la référence unique. Toute modification d'architecture doit être reflétée dans `docs/ARCHITECTURE.md`.
-
-## Ce que tu ne fais PAS
-
-- Ne modifie pas le code source (`*.[tsx|ts|js|py|...]`).
-- Ne crée pas de nouveaux tests (rôle de 🟢 QUALvin).
-- Ne prends pas de décisions architecturales (rôle de 🟠 ARCos).
-
-## Règle d'index des plans (obligatoire)
-
-- Quand la documentation de plan est mise à jour et qu'un statut global change, la mise à jour de `.github/plans/README.md` est obligatoire dans le même changement.
-
+- Modifier le code source ou les tests.
+- Prendre des décisions d'architecture (rôle 🟠 ARCos).

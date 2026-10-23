@@ -11,7 +11,7 @@ agent: agent
 # Initialisation des Instructions Copilot
 
 > **Prérequis** : Avant lancer prompt, fichiers suivants doivent exister projet cible (copiés depuis dépôt transverse) :
-> - `.github/agents/` — 4 agents génériques (`Arcos.agent.md`, `Devon.agent.md`, `Qalvin.agent.md`, `Docly.agent.md`)
+> - `.github/agents/` — 5 agents génériques (`Maina.agent.md`, `Arcos.agent.md`, `Devon.agent.md`, `Qalvin.agent.md`, `Docly.agent.md`)
 > - `.github/prompts/` — prompts réutilisables
 > - `.github/PLANS.md` — guide Plans d'Action
 >
@@ -48,7 +48,7 @@ Pour chaque placeholder `[...]` du template, fournir valeur adaptée :
 
 | Placeholder | Source d'information | Exemple |
 |---|---|---|
-| `[NOM_DU_PROJET]` | Nom repo ou package.json name | "Domoticz Mobile", "API-Gateway", "Design System" |
+| `[NOM_DU_PROJET]` | Nom repo ou package.json name | "Mon Projet", "API-Gateway", "Design System" |
 | **Présentation du Projet** | README, description, package.json, main.swift, etc. | Stack tech, domaine métier, plateformes |
 | **Commandes** | package.json scripts, Makefile, build scripts, etc. | `npm start`, `npm test`, `go build`, etc. |
 | **Architecture** | Structure dossiers + patterns observés | Diagram ASCII ou description hiérarchique |
@@ -70,7 +70,7 @@ Créer `.github/copilot-instructions.md` en :
 Lire 4 templates dans `.github/instructions/` du dépôt transverse :
 - `architect.instructions.template.md` — template instructions pour agent ARCos
 - `dev.instructions.template.md` — template instructions pour agent DEVon
-- `qa.instructions.template.md` — template instructions pour agent QUALvin
+- `qa.instructions.template.md` — template instructions pour agent QALvin
 - `doc.instructions.template.md` — template instructions pour agent DOCly
 
 Pour chaque fichier, remplir placeholders avec valeurs identifiées lors analyse (étape 2) :
@@ -101,7 +101,7 @@ Si projet dispose autres fichiers référence (CONTRIBUTING.md, ARCHITECTURE.md,
 - [ ] Pas références fichiers inexistants
 - [ ] Langue française conservée pour tout texte narratif
 - [ ] Fichier lisible et bien formaté (Markdown)
-- [ ] `.github/agents/` contient 4 fichiers (`Arcos.agent.md`, `Devon.agent.md`, `Qalvin.agent.md`, `Docly.agent.md`)
+- [ ] `.github/agents/` contient 5 fichiers (`Maina.agent.md`, `Arcos.agent.md`, `Devon.agent.md`, `Qalvin.agent.md`, `Docly.agent.md`)
 - [ ] `.github/skills/` contient 4 skills partagés (`plan-phase-execution/SKILL.md`, `plan-creation/SKILL.md`, `fleet-guide/SKILL.md`, `adr-writing/SKILL.md`)
 - [ ] `.github/PLANS.md` accessible
 - [ ] `docs/ARCHITECTURE.md` existe (créer depuis template : `cp docs/ARCHITECTURE.template.md docs/ARCHITECTURE.md`)

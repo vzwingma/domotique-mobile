@@ -1,98 +1,58 @@
 ---
-description: Spécificités projet domoticz-mobile pour l'agent 🔵 DEVon (dev)
+description: "Conventions de développement du projet domoticz-mobile pour 🔵 DEVon : stack et versions, structure, conventions de code, accès réseau, modèles, commandes de vérification. Prioritaire sur le générique."
 applyTo: "**"
 ---
 
-# Spécificités projet — domoticz-mobile (Dev)
+# Conventions projet — domoticz-mobile (développement)
 
-> Ce fichier est lu automatiquement par l'agent 🔵 DEVon au démarrage.
-> Il contient uniquement les spécificités du projet `domoticz-mobile` (Application mobile React Native / Expo pour piloter Domoticz).
-
-## Workflow
-
-1. Consulte la table SQL `todos` pour trouver les tâches `owner = 'dev'` dont le statut est `pending` et sans dépendances bloquantes.
-2. Passe le todo en `in_progress` avant de commencer.
-3. Implémente la fonctionnalité en respectant les conventions ci-dessous.
-4. Passe le todo en `done` une fois le code prêt.
-
-```sql
--- Trouver les tâches dev disponibles
-SELECT t.* FROM todos t
-WHERE t.status = 'pending'
-AND (t.id LIKE '%-dev' OR t.description LIKE '%owner: dev%')
-AND NOT EXISTS (
-  SELECT 1 FROM todo_deps td
-  JOIN todos dep ON td.depends_on = dep.id
-  WHERE td.todo_id = t.id AND dep.status != 'done'
-);
-```
+> Projet : `domoticz-mobile` — application mobile React Native / Expo (Android + Web) pour piloter un serveur Domoticz.
 
 ## Stack technique
 
-- **React Native 0.85.3 / Expo ~56** – TypeScript strict, composants fonctionnels uniquement
-- **UI** : Composants React Native natifs (`View`, `Text`, `TouchableOpacity`, etc.) — aucune lib UI externe
-- **expo-router ~56.2.11** – Routage basé sur les fichiers, routes dans `app/(tabs)/_layout.tsx`
-- **Authentification** : Basic Auth via `EXPO_PUBLIC_DOMOTICZ_AUTH` (Base64) — ne pas manipuler dans les composants
-- **@react-native-community/slider** – Sliders (volets, niveaux lumineux)
-- **uuid ^14.0.0** – Génération de `traceId` pour les appels HTTP
+- **TypeScript ~6.0 (strict)** — composants fonctionnels uniquement
+- **React Native 0.85.3 / React 19.2.3 / Expo SDK ~56.0.23** — dépendances Expo alignées via `npm run expo:fix`
+- **expo-router ~56.2.21** — routage file-based, onglets dans `app/(tabs)/_layout.tsx`
+- **UI** : composants React Native natifs (`View`, `Text`, `TouchableOpacity`…) — aucune bibliothèque UI externe
+- **Authentification** : Basic Auth via `EXPO_PUBLIC_DOMOTICZ_AUTH` (Base64), gérée par `ClientHTTP.service.ts` —
+  jamais manipulée dans les composants
+- Utilitaires : `@react-native-community/slider` (volets, niveaux), `uuid` (`traceId` des appels HTTP),
+  `expo-screen-orientation` (verrou paysage tablette)
+
+## Commandes de vérification (preuves avant handoff)
+
+```bash
+npm run typecheck                 # tsc --noEmit (TypeScript strict)
+npm run lint                      # expo lint (ESLint 9 flat config)
+npm test -- --watchAll=false      # tests existants (non-régression) ; `npm test` seul = mode watch
+npm run validate:expo             # expo-doctor, obligatoire avant PR (ADR-001)
+```
+
+## Structure et nommage
+
+- Code source : `app/` (`(tabs)/`, `components/`, `controllers/`, `services/`, `models/`, `enums/`) + `components/`
+  et `hooks/` (réutilisables) ; organisation par couche
+- Nommage fichiers : `*.component.tsx`, `*.controller.tsx`, `*.service.ts`, `*.model.ts`, `*.enum.ts` ;
+  identifiants : `PascalCase` composants/types/classes, `camelCase` fonctions/variables ; alias d'import `@/`
 
 ## Conventions de code
 
-### Composants
+- Composant fonctionnel typé, props `export type XxxProps = { ... }` en tête de `*.component.tsx`, styles via
+  `StyleSheet.create()` en bas de fichier ; `useMemo` / `useCallback` / `React.memo` pour les cartes
+  fréquemment re-rendues (`DeviceCard`, `FavoriteCard`)
+- Gestion d'erreurs : `.catch()` sur les promesses `callDomoticz` + toast utilisateur (`hooks/AndroidToast.ts`) ;
+  HTTP 403 → état déconnecté / réinitialisation du contexte
+- Accès réseau / données : toujours via `callDomoticz()` (`callDomoticz(SERVICES_URL.GET_DEVICES)`,
+  paramètres `KeyValueParams[]` avec `SERVICES_PARAMS.IDX`, `SERVICES_PARAMS.CMD`…)
+- Modèles / types de données : `app/models/` — classes TS `readonly`, pas d'interfaces
+- État global : `useContext(DomoticzContext)` — jamais de prop drilling ; état local UI via `useState`
+- Constantes techniques : `app/enums/APIconstants.ts` ; énumérations métier : `app/enums/DomoticzEnum.ts` ;
+  couleurs : `app/enums/Colors.ts` (thème sombre uniquement)
+- Labels UI en français : « Allumé/Éteint », « Ouvert/Fermé », « Déconnecté », « Mixte » — jamais « On/Off »
+- Responsive : rendu téléphone (< 600dp) inchangé ; dimensions relatives, pas de tailles fixes codées en dur
+- Jamais d'URL, clé ou secret en dur dans le code.
 
-```typescript
-// Toujours : composant fonctionnel typé
-export const MonComposant: React.FC<MonComposantProps> = ({ prop1, prop2 }): JSX.Element => {
-  // ...
-};
-```
+## Ce que DEVon ne fait PAS
 
-- Props typées sous la forme `export type XxxProps = { ... }` en tête du fichier `*.component.tsx`.
-- Sous-composants dans `app/components/`, styles via `StyleSheet.create()` en bas du fichier.
-- Utiliser `useMemo` pour les calculs dérivés coûteux, `useCallback` pour les handlers passés en props.
-- `React.memo` pour les composants fréquemment re-rendus (ex : `DeviceCard`, `FavoriteCard`).
-- Responsive via `StyleSheet.create()` avec dimensions relatives (pas de valeurs fixes codées en dur).
-
-### Appels HTTP
-
-```typescript
-// Toujours passer par callDomoticz()
-import callDomoticz from '@/app/services/ClientHTTP.service';
-import { SERVICES_URL, SERVICES_PARAMS, KeyValueParams } from '@/app/enums/APIconstants';
-
-// Appel simple
-callDomoticz(SERVICES_URL.GET_DEVICES)
-  .then(data => { /* ... */ })
-  .catch(err => showToast(err.message, ToastDuration.SHORT));
-
-// Appel avec paramètres de remplacement (<IDX>, <CMD>, etc.)
-const params: KeyValueParams[] = [
-  { key: SERVICES_PARAMS.IDX, value: String(device.idx) },
-  { key: SERVICES_PARAMS.CMD, value: 'On' },
-];
-callDomoticz(SERVICES_URL.CMD_BLINDS_LIGHTS_ON_OFF, params);
-```
-
-### Modèles et état
-
-- Les classes de données vont dans `app/models/` (ex : `domoticzDevice.model.ts`).
-- L'état global via `useContext(DomoticzContext)` (importé depuis `app/services/DomoticzContextProvider`).
-- L'état local UI via `useState`.
-
-### Enums et constantes
-
-- Constantes techniques (URLs API, paramètres) dans `app/enums/APIconstants.ts`.
-- Enums métier (types d'appareils, statuts, labels) dans `app/enums/DomoticzEnum.ts`.
-- Couleurs dans `app/enums/Colors.ts`.
-- Ne pas hardcoder les URLs ou les clés API dans les composants.
-
-## Ce que tu ne fais PAS
-
-- Ne modifie pas les fichiers `*.test.[tsx|ts]` (rôle de 🟢 QUALvin).
-- Ne mets pas à jour `README.md`, les wikis, ni `copilot-instructions.md` (rôle de 🟣 DOCly).
-- Ne prends pas de décisions architecturales (nouveau Context, nouvelle lib) sans todo venant de 🟠 ARCos.
-
-## Règle d'index des plans (obligatoire)
-
-- `.github/plans/README.md` doit rester limité aux **plans + statut global** (sans détail de phases).
-- Si ton travail change le statut global d'un plan, mets à jour `.github/plans/README.md` dans le même changement.
+- Modifier les fichiers de test `*.test.ts(x)` / `__tests__/` (rôle 🟢 QALvin).
+- Mettre à jour `README.md`, `docs/`, `CHANGELOG.md` ou les instructions d'agents (rôle 🟣 DOCly).
+- Introduire une dépendance ou un pattern structurant (nouveau Context, nouvelle lib) sans tâche 🟠 ARCos dans le Plan d'Action.
