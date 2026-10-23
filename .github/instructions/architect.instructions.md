@@ -1,57 +1,52 @@
 ---
-description: Spécificités projet domoticz-mobile pour l'agent ARCos (architect)
+description: "Conventions architecturales du projet domoticz-mobile pour 🟠 ARCos : couches, état, accès réseau, routage, bibliothèques autorisées, intégrations externes. Prioritaire sur le générique."
 applyTo: "**"
 ---
 
-# Spécificités projet — domoticz-mobile
+# Conventions projet — domoticz-mobile (architecture)
 
-> Ce fichier est lu automatiquement par l'agent 🟠 ARCos au démarrage.
-> Il contient uniquement les spécificités du projet `domoticz-mobile` (Application mobile React Native / Expo pour piloter Domoticz).
+> Projet : `domoticz-mobile` — application mobile React Native / Expo (Android + Web) pour piloter un serveur Domoticz.
+
+## Document d'architecture
+
+Lire `docs/ARCHITECTURE.md` : stack, couches, composants clés, § Responsive. Toute proposition doit rester
+cohérente avec l'existant et les ADR (`docs/adr/`, ADR-001 → ADR-014).
 
 ## Conventions architecturales
 
-- **Couches** : `app/(tabs)/` + `app/components/` (UI) → `app/services/DomoticzContextProvider` (état global) → `app/services/ClientHTTP.service.ts` (HTTP) → `app/enums/` (constantes, helpers).
-- **État global** : uniquement via `DomoticzContextProvider` (React Context API). Ne pas créer de nouveau Context sans validation.
-- **HTTP** : toujours via `callDomoticz()` dans `ClientHTTP.service.ts`. Ne pas utiliser `fetch` directement dans un composant ou controller.
-- **Routing** : Expo Router, file-based routing. Les nouvelles routes s'ajoutent dans `app/(tabs)/_layout.tsx`.
-- **Pas de bibliothèque de state management externe** sans décision architecturale explicite.
-- **UI** : Composants React Native natifs uniquement. Ne pas introduire de bibliothèque UI externe sans validation.
+- **Couches** : `app/(tabs)/` + `app/components/` (UI) → `app/controllers/` (pont UI/services) →
+  `app/services/` (`ClientHTTP.service.ts`, `DomoticzContextProvider`, `DataUtils`) → `app/enums/` + `app/models/`
+  (constantes, endpoints, classes de données). Réutilisables génériques : `components/`, `hooks/`.
+- **État partagé** : uniquement via `DomoticzContextProvider` (React Context API, `useContext(DomoticzContext)`) ;
+  pas de nouveau Context ni de bibliothèque de state management externe sans décision explicite (ADR).
+- **Accès réseau / données** : toujours via `callDomoticz()` de `app/services/ClientHTTP.service.ts` ; pas de
+  `fetch` direct depuis un composant ou un controller. Pas de cache HTTP persistant (ADR-004/005).
+- **Routage / points d'entrée** : Expo Router (file-based), onglets déclarés dans `app/(tabs)/_layout.tsx`.
+- **Responsive** : téléphone (< 600dp) = référence immuable ; tablette (plus petit côté ≥ 600dp) verrouillée
+  paysage, onglets fusionnés 2 colonnes (`hooks/useTabletLayout.ts`, `app/services/TabGroups.service.ts`,
+  ADR-013/014).
+- **Bibliothèques autorisées** : composants React Native natifs (`View`, `Text`, `TouchableOpacity`…) +
+  dépendances déjà présentes dans `package.json` (`@react-native-community/slider`,
+  `react-native-element-dropdown`, `react-native-svg`, `@expo/vector-icons`, `uuid`…). Toute nouvelle
+  dépendance structurante = décision d'architecture (ADR). Versions Expo alignées via `expo install` (ADR-012).
 
-## Protocole de handoff SQL
+## Décisions d'architecture (ADR)
 
-Quand une tâche est prête à être réalisée, insère les todos dans la table SQL avec ce format :
+- Fichier `docs/adr/NNN-titre-court.md` pour chaque décision majeure : nouveau framework ou dépendance
+  structurante, changement de pattern, décision de sécurité, choix de structure.
+- Contenu minimal : contexte, décision, alternatives considérées, conséquences.
+- ARCos prépare le contenu ; 🟣 DOCly rédige le fichier (skill `adr-writing`).
 
-```sql
-INSERT INTO todos (id, title, description, status) VALUES
-  ('feat-xxx-dev', 'Titre dev',  'Description précise : fichiers à créer/modifier, interfaces à respecter', 'pending'),
-  ('feat-xxx-qa',  'Titre QA',   'Tests à écrire : cas nominaux, cas d''erreur, composants à tester',       'pending'),
-  ('feat-xxx-doc', 'Titre Doc',  'Documentation à mettre à jour : README, Wiki, copilot-instructions.md',   'pending');
+## Intégrations externes
 
-INSERT INTO todo_deps (todo_id, depends_on) VALUES
-  ('feat-xxx-qa',  'feat-xxx-dev'),
-  ('feat-xxx-doc', 'feat-xxx-dev');
-```
+- **Serveur Domoticz** (API JSON HTTP) : contrat (URL, paramètres, codes retour) documenté dans `docs/API.md` ;
+  serveur externe, version non maîtrisée. Tout nouvel endpoint s'ajoute dans `app/enums/APIconstants.ts`
+  (`SERVICES_URL`, `SERVICES_PARAMS`) avant usage par 🔵 DEVon.
+- Configuration des URLs / authentification : `app/enums/APIconstants.ts` + variables d'environnement `.env`
+  (`EXPO_PUBLIC_DOMOTICZ_URL`, `EXPO_PUBLIC_DOMOTICZ_AUTH`, `EXPO_PUBLIC_MY_ENVIRONMENT`), `app.config.js`, `eas.json`.
+- Build / déploiement : EAS (ADR-010/011), CI GitHub Actions (`.github/workflows/`), SonarQube.
 
-Convention de nommage des IDs : `feat-<nom>-dev` / `feat-<nom>-qa` / `feat-<nom>-doc`.
+## Handoff vers ⚫ MAINa
 
-## Interactions avec le backend Domoticz
-
-- Les contrats d'API Domoticz (URL, paramètres, codes retour) sont documentés dans `docs/API.md`.
-- Les URLs des endpoints sont configurées dans `app/enums/APIconstants.ts` (enum `SERVICES_URL`) et les fichiers `.env`.
-- Tout nouvel endpoint doit être ajouté dans `APIconstants.ts` avant que l'agent DEVon puisse l'utiliser.
-
-## Agents du projet
-
-| Icône | Nom      | Fichier agent        | Rôle                                            |
-|-------|----------|----------------------|-------------------------------------------------|
-| 🔵    | DEVon    | `Devon.agent.md`     | Implémentation React Native / Expo / TypeScript |
-| 🟢    | QUALvin  | `Qalvin.agent.md`    | Tests unitaires (Jest 29 + Testing Library)     |
-| 🟣    | DOCly    | `Docly.agent.md`     | Documentation (README, Wiki, CHANGELOG)         |
-| 💰    | FINNops  | `FinnOps.agent.md`   | Analyse coûts IA + optimisation sessions        |
-
-## Règle d'index des plans (obligatoire)
-
-- Le fichier `.github/plans/README.md` est un **index synthétique** : il doit contenir uniquement la liste des plans et leur **statut global**.
-- Ne pas y afficher les statuts de phases.
-- Toute création de plan ou changement de statut global doit inclure, dans le même changement, la mise à jour de `.github/plans/README.md`.
-
+ARCos ne crée ni tâches ni plan. Il livre : analyse comparative (≥ 2 options) + recommandation, puis
+découpage **candidat** (tâches logiques + dépendances + effort) comme entrée du Plan d'Action.

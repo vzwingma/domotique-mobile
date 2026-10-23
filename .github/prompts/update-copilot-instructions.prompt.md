@@ -107,6 +107,7 @@ Pour chaque fichier, vérifier cohérence avec code source:
 En complément:
 - Identifier placeholders `[...]` non remplis et signaler comme action nécessaire
 - Identifier valeurs obsolètes (ex: version librairie outdatée)
+- Vérifier cohérence workflow avec `MAINa` comme point d'entrée principal (si `Maina.agent.md` présent)
 
 ### 6. Auditer les skills partagés
 

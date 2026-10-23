@@ -1,102 +1,52 @@
 ---
-description: Spécificités projet domoticz-mobile pour l'agent 🟢 QUALvin (qa)
+description: "Conventions de test du projet domoticz-mobile pour 🟢 QALvin : framework, commandes, emplacement des tests, mocks, seuil de couverture, cas à couvrir. Prioritaire sur le générique."
 applyTo: "**"
 ---
 
-# Spécificités projet — domoticz-mobile (QA)
+# Conventions projet — domoticz-mobile (tests)
 
-> Ce fichier est lu automatiquement par l'agent 🟢 QUALvin au démarrage.
-> Il contient uniquement les spécificités du projet `domoticz-mobile` (Application mobile React Native / Expo pour piloter Domoticz).
-
-## Workflow
-
-1. Consulte la table SQL `todos` pour les tâches `*-qa` dont les dépendances sont `done`.
-2. Passe le todo en `in_progress`.
-3. Écris les tests, exécute-les, vérifie la couverture.
-4. Passe en `done` si les tests passent, `blocked` avec description si échec bloquant.
-
-## Validation QA obligatoire
-
-- ✅ Vérification que les tests passent (`npm test`)
-- ✅ Vérification `expo-doctor` (`npm run validate:expo`) en plus des tests
-- ✅ Vérification TypeScript stricte (`npm run typecheck`) en plus des tests et d'Expo
+> Projet : `domoticz-mobile` — application mobile React Native / Expo (Android + Web) pour piloter un serveur Domoticz.
 
 ## Stack de test
 
-- **Jest 29** (preset `react-native`, voir `jest.config.js`) + **`@testing-library/react-native ^13.3.3`** pour les composants
-- **`@testing-library/jest-native ^5.4.3`** pour les assertions React Native (`toBeVisible`, `toHaveTextContent`, etc.)
-- **`react-test-renderer 19.2.0`** pour les snapshots
-- Setup global : `jest.setup.ts` (mocks AsyncStorage, expo-router, @expo/vector-icons)
-- Fichiers de test : `*.test.[tsx|ts]` dans `__tests__/` co-localisés avec le module testé
+- **Jest 29** (preset `react-native`, `jest.config.js`, alias `@/`) + `@testing-library/react-native ^13.3`,
+  `@testing-library/jest-native ^5.4` (assertions), `react-test-renderer` (snapshots)
+- Setup global : `jest.setup.ts` (mocks AsyncStorage, expo-router, `@expo/vector-icons`)
+- Fichiers de test : `*.test.ts(x)` dans des dossiers `__tests__/` co-localisés avec le module testé
+  (`app/**/__tests__/`, `components/__tests__/`, `hooks/__tests__/`)
 
 ## Commandes
 
 ```bash
-# Tous les tests (mode watch)
-npm test
-
-# Tous les tests en CI (sans watch, avec coverage)
-npm test -- --watchAll=false --coverage
-
-# Typecheck TypeScript (obligatoire QUALvin / CI)
-npm run typecheck
-
-# Un seul fichier de test
-npm test -- app/services/__tests__/ClientHTTP.service.test.ts
-
-# Un seul test par nom
-npm test -- --testNamePattern="doit appeler callDomoticz avec succès"
+npm test -- --watchAll=false                                    # tous les tests (`npm test` seul = watch)
+npm test -- --watchAll=false --coverage                         # mode CI avec couverture
+npm test -- --watchAll=false app/services/__tests__/ClientHTTP.service.test.ts   # un fichier
+npm test -- --watchAll=false --testNamePattern="<nom du test>"  # un test par nom
+npm run typecheck && npm run validate:expo                       # validations QA obligatoires en plus des tests
 ```
 
-Le rapport de couverture est généré dans `coverage/` (lu par SonarQube via `sonar-project.properties`).
+Rapport de couverture : `coverage/` (lu par SonarQube via `sonar-project.properties` ; contrôle CI 80 % informatif, ADR-009).
+**Seuil de couverture** : global ≥ 80 % ; cibles par couche : controllers 100 %, services ≥ 90 %,
+composants ≥ 70 %, modèles ≥ 85 %.
 
-## Ce qu'il faut tester
+## Mocks
 
-### Composants React Native
-
-```typescript
-import { render, fireEvent } from '@testing-library/react-native';
-import { DomoticzContext } from '@/app/services/DomoticzContextProvider';
-
-// Toujours mocker le Context si le composant l'utilise
-const mockContext = {
-  isConnected: true,
-  setIsConnected: jest.fn(),
-};
-
-test('doit afficher le libellé de l\'opération', () => {
-  const { getByText } = render(
-    <DomoticzContext.Provider value={mockContext as any}>
-      <MonComposant ... />
-    </DomoticzContext.Provider>
-  );
-  fireEvent.press(getByText('Action'));
-});
-```
-
-### Services
-
-```typescript
-// Mocker fetch pour ClientHTTP.service
-global.fetch = jest.fn(() => Promise.resolve({ status: 200, json: () => Promise.resolve(data) }));
-```
+- Réseau : `global.fetch = jest.fn(...)` pour `ClientHTTP.service`, ou `jest.mock` de
+  `@/app/services/ClientHTTP.service` dans les controllers ; dimensions (`useWindowDimensions` / `Dimensions`)
+  mockées pour les cas responsive
+- État partagé injecté : envelopper le composant dans `<DomoticzContext.Provider value={mockContext}>`
 
 ## Cas à couvrir systématiquement
 
-- **Cas nominal** : rendu correct avec données valides.
-- **Cas vide / null** : comportement quand les données sont absentes.
-- **Cas d'erreur HTTP** : 403 (déconnexion/réinitialisation du contexte), 404, 500.
-- **Interactions utilisateur** : clics, gestes (`fireEvent`).
-- **Responsive** : si `useWindowDimensions`/`Dimensions` est utilisé, mocker les dimensions.
+- **Nominal** : comportement correct avec données valides
+- **Vide / null** : données absentes ou partielles
+- **Erreurs** : HTTP 403 (déconnexion / réinitialisation du contexte), 404, 500 et comportement attendu
+- **Interactions** : `fireEvent` (press, slider) et appels `callDomoticz` attendus
+- **Responsive** : téléphone (< 600dp) inchangé, tablette paysage 2 colonnes
+- **Régression** : casser volontairement le code doit faire échouer au moins un test
 
-## Ce que tu ne fais PAS
+## Ce que QALvin ne fait PAS
 
-- Ne modifie pas les fichiers de production (`*.[tsx|ts]` hors `*.test.*`).
-- Ne mets pas à jour la documentation (rôle de 🟣 DOCly).
-- Ne prends pas de décisions sur l'architecture des tests sans validation de 🟠 ARCos.
-
-## Règle d'index des plans (obligatoire)
-
-- `.github/plans/README.md` est un index **plans + statut global** uniquement (pas de phases).
-- Si la phase QA que tu livres entraîne un changement de statut global du plan, synchronise `.github/plans/README.md` dans le même changement.
-
+- Modifier le code de production (hors fichiers de test).
+- Mettre à jour la documentation (rôle 🟣 DOCly).
+- Changer la stratégie de test globale sans validation 🟠 ARCos + 👤.

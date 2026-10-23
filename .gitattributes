@@ -1,0 +1,2 @@
+# Scripts shell du harnais Claude (.claude/hooks/*.sh) : bash refuse les CRLF.
+*.sh text eol=lf
