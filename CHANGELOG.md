@@ -9,6 +9,15 @@ et ce projet adhère à la [versioning sémantique](https://semver.org/spec/v2.0
 
 ## [Unreleased]
 
+### Added
+
+- **Affichage tablette — grille responsive** (Plan 003, [ADR 013](docs/adr/013-adaptation-responsive-tablette-grille-breakpoint.md)) : grilles 1/2/3 colonnes selon la largeur (`useResponsiveColumns`, seuils 600/840dp) sur Favoris, Lumières/Volets et Températures ; cadran Thermostat agrandi (240) en medium/expanded. Rendu téléphone inchangé.
+- **Tablette en paysage, onglets fusionnés** (Plan 004, [ADR 014](docs/adr/014-tablette-paysage-onglets-fusionnes.md)) :
+  - tablette (plus petit côté ≥ 600dp) verrouillée en paysage au démarrage via `expo-screen-orientation` ; téléphone toujours en portrait
+  - Lumières + Volets et Températures + Maison affichés côte à côte sur 2 colonnes (`MergedTabs`), ascenseur unique, boutons du groupe actifs ensemble, titre « Lumières & Volets » / « Températures & Maison »
+  - Favoris inchangé
+  - nouvelle dépendance native → rebuild des APK / dev-clients requis ([docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md))
+
 ### Changed
 
 - **Suppression du cache HTTP 30s** : `callDomoticz()` effectue désormais toujours un appel réseau direct — pas de cache côté client ([ADR 004](docs/adr/004-suppression-cache-http-et-rafraichissement-appstate.md))

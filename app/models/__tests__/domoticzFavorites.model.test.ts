@@ -51,18 +51,8 @@ describe('DomoticzFavorites', () => {
             expect(fav.isPopular).toBe(true);
         });
 
-        it('retourne false si nbOfUse < 5', () => {
-            const fav = makeFavorite({ nbOfUse: 4 });
-            expect(fav.isPopular).toBe(false);
-        });
-
-        it('retourne false si nbOfUse = 0', () => {
-            const fav = makeFavorite({ nbOfUse: 0 });
-            expect(fav.isPopular).toBe(false);
-        });
-
-        it('retourne false si nbOfUse = 1', () => {
-            const fav = makeFavorite({ nbOfUse: 1 });
+        it.each([4, 0, 1])('retourne false si nbOfUse = %i', (nbOfUse) => {
+            const fav = makeFavorite({ nbOfUse });
             expect(fav.isPopular).toBe(false);
         });
     });

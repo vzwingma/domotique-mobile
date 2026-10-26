@@ -2,7 +2,7 @@ import React, { JSX, Suspense, useCallback, useContext, useEffect, useRef, useSt
 
 import { Colors } from '@/app/enums/Colors';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ActivityIndicator, AppState, AppStateStatus, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, AppState, AppStateStatus, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Tabs } from '../enums/TabsEnums';
 import { TabBarItems } from '@/components/navigation/TabBarItem';
 import { ThemedText } from '@/components/ThemedText';
@@ -15,6 +15,9 @@ import { refreshDomoticzData } from '@/app/services/RefreshOrchestrator.service'
 import { runLatencyDiagnostic } from '@/app/services/ClientHTTP.service';
 import { generateTraceId } from '@/app/services/ErrorHandler.service';
 import { Logger } from '@/app/services/Logger.service';
+import { useTabletLayout } from '@/hooks/useTabletLayout';
+import { getMergedTabGroup, getTabTitle, isTabActive } from '@/app/services/TabGroups.service';
+import { MergedTabs, getMergedColumnWidth } from '@/app/components/mergedTabs.component';
 
 // T4.3 - Lazy-load screens for better performance
 const HomeScreen = React.lazy(() => import('.'));
@@ -23,6 +26,12 @@ const TabDomoticzDevices = React.lazy(() => import('./devices.tabs'));
 const TabDomoticzParametres = React.lazy(() => import('./parametrages.tab'));
 
 const REFRESH_COOLDOWN_MS = 5000;
+
+// Padding horizontal du contenu de page (cf. ParallaxScrollView `styles.content`)
+const PAGE_CONTENT_PADDING = 10;
+
+// Ordre des boutons de la barre d'onglets
+const TAB_BAR_ORDER: readonly Tabs[] = [Tabs.INDEX, Tabs.LUMIERES, Tabs.VOLETS, Tabs.TEMPERATURES, Tabs.MAISON];
 
 /**
  * Composant racine de l'application avec Profiler (T4.5).
@@ -40,6 +49,10 @@ export default function TabLayout() {
   const [tab, setTab] = useState(Tabs.INDEX);
   const appState = useRef(AppState.currentState);
   const lastRefreshAtMsRef = useRef<number>(0);
+
+  // Tablette paysage : onglets fusionnés deux à deux sur 2 colonnes (téléphone : toujours false)
+  const { isMergedLayout } = useTabletLayout();
+  const { width: windowWidth } = useWindowDimensions();
 
 
   /**
@@ -143,7 +156,7 @@ export default function TabLayout() {
     if (isLoading) {
       return <ActivityIndicator size={'large'} color={Colors.domoticz.color} />
     } else if (error === null) {
-      return showPanel(tab)
+      return showPanel(tab, isMergedLayout, getMergedColumnWidth(windowWidth, PAGE_CONTENT_PADDING))
     } else {
       return <ThemedText type="subtitle" style={{ color: 'red', marginTop: 50 }}>Erreur : {error.message}</ThemedText>
     }
@@ -154,8 +167,8 @@ export default function TabLayout() {
     <React.Profiler id="TabLayout" onRender={onRenderCallback}>
       <>
         <ParallaxScrollView
-          headerImage={getHeaderIcon(tab)}
-          headerTitle={tab.toString()}
+          headerImage={getHeaderIcon((isMergedLayout ? getMergedTabGroup(tab)?.[0] : undefined) ?? tab)}
+          headerTitle={getTabTitle(tab, isMergedLayout)}
           connectionState={getConnectionBadgeState()}
           setRefreshing={() => triggerRefresh('tab-switch')}>
 
@@ -168,11 +181,10 @@ export default function TabLayout() {
           {
             (!isLoading && error === null) ?
               <>
-                <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.INDEX} />
-                <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.LUMIERES} />
-                <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.VOLETS} />
-                <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.TEMPERATURES} />
-                <TabBarItems activeTab={tab} selectNewTab={selectNewTab} thisTab={Tabs.MAISON} />
+                {TAB_BAR_ORDER.map(thisTab => (
+                  <TabBarItems key={thisTab} activeTab={tab} selectNewTab={selectNewTab} thisTab={thisTab}
+                               isActive={isTabActive(tab, thisTab, isMergedLayout)} />
+                ))}
               </> : <></>
           }
         </View>
@@ -183,44 +195,52 @@ export default function TabLayout() {
 
 
 /**
- * Affiche le panneau de l'onglet sélectionné avec lazy-loading (T4.3)
+ * Affiche le panneau de l'onglet sélectionné avec lazy-loading (T4.3).
+ * En layout fusionné (tablette paysage), les onglets groupés sont affichés côte à côte sur 2 colonnes.
  *
  * @param tab L'onglet sélectionné
+ * @param isMergedLayout layout fusionné (tablette paysage)
+ * @param columnWidth largeur disponible d'une colonne en layout fusionné
  */
-function showPanel(tab: Tabs): JSX.Element {
+function showPanel(tab: Tabs, isMergedLayout: boolean = false, columnWidth?: number): JSX.Element {
   const fallback = <ActivityIndicator size={'large'} color={Colors.domoticz.color} />;
+  const group = isMergedLayout ? getMergedTabGroup(tab) : null;
 
+  if (group !== null) {
+    return (
+      <Suspense fallback={fallback}>
+        <MergedTabs columns={[
+          { tab: group[0], content: renderTabScreen(group[0], columnWidth) },
+          { tab: group[1], content: renderTabScreen(group[1], columnWidth) },
+        ]} />
+      </Suspense>
+    );
+  }
+  return (
+    <Suspense fallback={fallback}>
+      {renderTabScreen(tab)}
+    </Suspense>
+  );
+}
+
+/**
+ * Écran d'un onglet
+ *
+ * @param tab L'onglet
+ * @param availableWidth largeur disponible si l'écran n'occupe pas toute la fenêtre (défaut : largeur fenêtre)
+ */
+function renderTabScreen(tab: Tabs, availableWidth?: number): JSX.Element {
   switch (tab) {
     case Tabs.INDEX:
-      return (
-        <Suspense fallback={fallback}>
-          <HomeScreen />
-        </Suspense>
-      );
+      return <HomeScreen />;
     case Tabs.LUMIERES:
-      return (
-        <Suspense fallback={fallback}>
-          <TabDomoticzDevices dataType={DomoticzDeviceType.LUMIERE} />
-        </Suspense>
-      );
+      return <TabDomoticzDevices dataType={DomoticzDeviceType.LUMIERE} availableWidth={availableWidth} />;
     case Tabs.VOLETS:
-      return (
-        <Suspense fallback={fallback}>
-          <TabDomoticzDevices dataType={DomoticzDeviceType.VOLET} />
-        </Suspense>
-      );
+      return <TabDomoticzDevices dataType={DomoticzDeviceType.VOLET} availableWidth={availableWidth} />;
     case Tabs.TEMPERATURES:
-      return (
-        <Suspense fallback={fallback}>
-          <TabDomoticzTemperatures />
-        </Suspense>
-      );
+      return <TabDomoticzTemperatures availableWidth={availableWidth} />;
     case Tabs.MAISON:
-      return (
-        <Suspense fallback={fallback}>
-          <TabDomoticzParametres />
-        </Suspense>
-      );
+      return <TabDomoticzParametres />;
     default:
       return <ThemedText type="title" style={{ color: 'red' }}>404 - Page non définie</ThemedText>
   }

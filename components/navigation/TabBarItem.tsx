@@ -13,6 +13,7 @@ interface TabBarItemsProps {
     activeTab: Tabs; // active tab
     thisTab: Tabs; // this tab name
     selectNewTab: (_tab: Tabs) => void; // set active tab
+    isActive?: boolean; // surcharge de l'état actif (onglets groupés en layout fusionné). Défaut : activeTab === thisTab
 }
 
 /**
@@ -21,13 +22,14 @@ interface TabBarItemsProps {
  * @param activeTab le nom de l'onglet actif
  * @param thisTab this tab name
  * @param setTab fonction pour définir l'onglet actif
+ * @param isActive surcharge de l'état actif (défaut : activeTab === thisTab)
  */
-export function TabBarItems({ activeTab, thisTab, selectNewTab}: Readonly<TabBarItemsProps>) {
-    const iconName = getTabIconName(thisTab, activeTab === thisTab);
+export function TabBarItems({ activeTab, thisTab, selectNewTab, isActive = activeTab === thisTab }: Readonly<TabBarItemsProps>) {
+    const iconName = getTabIconName(thisTab, isActive);
 
     return <View style={tabStyles.tabsItem} onPointerDown={() => selectNewTab(thisTab)} onTouchEnd={() => selectNewTab(thisTab)}>
                 <TabBarIcon name={iconName}
-                             color={activeTab === thisTab ? Colors.domoticz.color : '#ffffff'} />
+                             color={isActive ? Colors.domoticz.color : '#ffffff'} />
                 <ThemedText type='tab'>{thisTab.toString()}</ThemedText>
             </View>;
   }

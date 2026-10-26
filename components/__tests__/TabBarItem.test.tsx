@@ -137,3 +137,38 @@ describe('TabBarItems - rendu sans crash pour chaque valeur de Tabs', () => {
     });
   });
 });
+
+// ─── Surcharge isActive (Plan 004 — onglets groupés en layout fusionné) ────────
+
+describe('TabBarItems - surcharge isActive', () => {
+  const selectNewTab = jest.fn();
+
+  function getIconProps(element: React.ReactElement) {
+    const { UNSAFE_getByType } = render(element);
+    return UNSAFE_getByType('MaterialCommunityIcons' as any).props;
+  }
+
+  it('isActive=true sur un onglet non sélectionné → couleur domoticz + icône pleine', () => {
+    const props = getIconProps(
+      <TabBarItems activeTab={Tabs.VOLETS} thisTab={Tabs.LUMIERES} selectNewTab={selectNewTab} isActive />
+    );
+    expect(props.color).toBe(Colors.domoticz.color);
+    expect(props.name).toBe('lightbulb');
+  });
+
+  it('isActive=false sur l\'onglet sélectionné → couleur blanche + icône outline', () => {
+    const props = getIconProps(
+      <TabBarItems activeTab={Tabs.MAISON} thisTab={Tabs.MAISON} selectNewTab={selectNewTab} isActive={false} />
+    );
+    expect(props.color).toBe('#ffffff');
+    expect(props.name).toBe('home-outline');
+  });
+
+  it('isActive non fourni → défaut activeTab === thisTab', () => {
+    const props = getIconProps(
+      <TabBarItems activeTab={Tabs.MAISON} thisTab={Tabs.MAISON} selectNewTab={selectNewTab} />
+    );
+    expect(props.color).toBe(Colors.domoticz.color);
+    expect(props.name).toBe('home');
+  });
+});

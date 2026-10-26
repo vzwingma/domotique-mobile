@@ -48,38 +48,16 @@ describe('DomoticzTemperature', () => {
     // ─── isOutdoor Getter ───────────────────────────────────────────────────────────
 
     describe('isOutdoor getter', () => {
-        it('détecte "Extérieur"', () => {
-            const temp = makeTemperature({ name: 'Extérieur' });
-            expect(temp.isOutdoor).toBe(true);
-        });
-
-        it('détecte "Exterieur" (sans accent)', () => {
-            const temp = makeTemperature({ name: 'Exterieur' });
-            expect(temp.isOutdoor).toBe(true);
-        });
-
-        it('détecte "Ext"', () => {
-            const temp = makeTemperature({ name: 'Capteur Ext' });
-            expect(temp.isOutdoor).toBe(true);
-        });
-
-        it('détecte "Outside"', () => {
-            const temp = makeTemperature({ name: 'Outside Temperature' });
-            expect(temp.isOutdoor).toBe(true);
-        });
-
-        it('détecte "Outdoor"', () => {
-            const temp = makeTemperature({ name: 'Outdoor Sensor' });
-            expect(temp.isOutdoor).toBe(true);
-        });
-
-        it('détecte "Dehors"', () => {
-            const temp = makeTemperature({ name: 'Temps Dehors' });
-            expect(temp.isOutdoor).toBe(true);
-        });
-
-        it('détecte "Terrasse"', () => {
-            const temp = makeTemperature({ name: 'Capteur Terrasse' });
+        it.each([
+            'Extérieur',
+            'Exterieur',
+            'Capteur Ext',
+            'Outside Temperature',
+            'Outdoor Sensor',
+            'Temps Dehors',
+            'Capteur Terrasse',
+        ])('détecte un nom extérieur : %s', (name) => {
+            const temp = makeTemperature({ name });
             expect(temp.isOutdoor).toBe(true);
         });
 
@@ -92,18 +70,8 @@ describe('DomoticzTemperature', () => {
             expect(temp3.isOutdoor).toBe(true);
         });
 
-        it('retourne false pour intérieur', () => {
-            const temp = makeTemperature({ name: 'Salon' });
-            expect(temp.isOutdoor).toBe(false);
-        });
-
-        it('retourne false pour chambre', () => {
-            const temp = makeTemperature({ name: 'Chambre' });
-            expect(temp.isOutdoor).toBe(false);
-        });
-
-        it('retourne false pour cuisine', () => {
-            const temp = makeTemperature({ name: 'Cuisine' });
+        it.each(['Salon', 'Chambre', 'Cuisine'])('retourne false pour %s', (name) => {
+            const temp = makeTemperature({ name });
             expect(temp.isOutdoor).toBe(false);
         });
     });
@@ -197,8 +165,8 @@ describe('DomoticzTemperature', () => {
         it('gère isActive true et false', () => {
             const active = makeTemperature({ isActive: true });
             const inactive = makeTemperature({ isActive: false });
-            expect(active.isActive === true).toBe(true);  // S'assurer qu'il y a bien true
-            expect(inactive.isActive === false).toBe(true); // S'assurer qu'il y a bien false
+            expect(active.isActive).toBe(true);
+            expect(inactive.isActive).toBe(false);
         });
     });
 

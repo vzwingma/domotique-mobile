@@ -1,7 +1,7 @@
 # Architecture domoticz-mobile
 
-**Document Version:** 4.0.0
-**Last Updated:** 2026-07-08
+**Document Version:** 4.2.0
+**Last Updated:** 2026-10-01
 **Audience:** Développeurs contribuant à l'application
 
 ---
@@ -13,13 +13,14 @@
 3. [Structure des dossiers](#-structure-des-dossiers)
 4. [Patterns & Conventions](#-patterns--conventions)
 5. [Écrans principaux](#-écrans-principaux)
-6. [Services](#-services)
-7. [Gestion d'État Global](#-gestion-détat-global)
-8. [Modèles de Données](#-modèles-de-données)
-9. [Énumérations & Constantes](#-énumérations--constantes)
-10. [Routing](#-routing)
-11. [CI/CD](#-cicd)
-12. [Meilleures Pratiques](#-meilleures-pratiques)
+6. [Responsive / Breakpoints](#-responsive--breakpoints)
+7. [Services](#-services)
+8. [Gestion d'État Global](#-gestion-détat-global)
+9. [Modèles de Données](#-modèles-de-données)
+10. [Énumérations & Constantes](#-énumérations--constantes)
+11. [Routing](#-routing)
+12. [CI/CD](#-cicd)
+13. [Meilleures Pratiques](#-meilleures-pratiques)
 
 ---
 
@@ -152,6 +153,7 @@ domoticz-mobile/
 │   │   ├── paramList.component.tsx
 │   │   ├── primaryIconAction.component.tsx
 │   │   ├── disconnectedState.component.tsx
+│   │   ├── mergedTabs.component.tsx  # Écran 2 colonnes (tablette paysage, voir § Responsive)
 │   │   └── __tests__/
 │   ├── controllers/                  # Controllers métier (*.controller.tsx)
 │   │   ├── index.controller.tsx      # Connexion initiale à Domoticz
@@ -167,6 +169,8 @@ domoticz-mobile/
 │   │   ├── FavoritesManager.service.ts   # Gestion favoris (AsyncStorage)
 │   │   ├── Validator.service.ts          # Validation des réponses/objets Domoticz
 │   │   ├── ErrorHandler.service.ts       # Typage erreurs (DomoticzError), traceId
+│   │   ├── OrientationLock.service.ts    # Détection tablette + verrou paysage (voir ADR-014)
+│   │   ├── TabGroups.service.ts          # Groupes d'onglets fusionnés (tablette paysage)
 │   │   ├── DomoticzContextProvider.tsx   # Provider + export du DomoticzContext
 │   │   └── __tests__/
 │   ├── models/                       # Modèles données (classes TypeScript, préfixe `domoticz`)
@@ -182,7 +186,7 @@ domoticz-mobile/
 │   │   ├── Colors.ts                 # Palette thème sombre + couleurs de groupe
 │   │   ├── DomoticzEnum.ts           # DomoticzStatus, DomoticzDeviceType, labels, tris
 │   │   └── TabsEnums.ts              # Enum des onglets (Tabs)
-│   └── _layout.tsx                   # Root layout avec DomoticzContextProvider
+│   └── _layout.tsx                   # Root layout avec DomoticzContextProvider + verrou orientation tablette
 ├── components/                       # Composants génériques réutilisables (hors app/)
 │   ├── ThemedText.tsx
 │   ├── AppHeader.tsx
@@ -202,6 +206,8 @@ domoticz-mobile/
 │   ├── useThemeColor.ts
 │   ├── useColorScheme.ts
 │   ├── useColorScheme.web.ts
+│   ├── useResponsiveColumns.ts       # Colonnes de grille par breakpoint (voir § Responsive / Breakpoints)
+│   ├── useTabletLayout.ts            # Tablette / layout fusionné paysage (voir § Responsive / Breakpoints)
 │   ├── AndroidToast.ts
 │   └── __tests__/
 ├── assets/                           # Ressources statiques
@@ -367,9 +373,10 @@ export default class DomoticzDevice {
 
 **Flux :**
 1. Charger tous les favoris depuis AsyncStorage (`FavoritesManager.service.ts`)
-2. Afficher cartes "action rapide" (max **7** favoris actifs)
+2. Afficher cartes "action rapide" (max **7** favoris actifs), en grille responsive (1/2/3 colonnes — voir [§ Responsive / Breakpoints](#-responsive--breakpoints))
 3. Chaque carte : 1 tap = action principale, bouton = action alternative
 4. Slider conditionnel disponible en mode `previewC`
+5. Message limite ("Seuls les 7 favoris...") affiché hors grille (largeur pleine)
 
 **Composants :** `FavoriteCard`, `PrimaryIconAction`
 
@@ -378,7 +385,7 @@ export default class DomoticzDevice {
 **Flux :**
 1. Charger équipements type `Light` ou `Blind` (`devices.controller.tsx`)
 2. Trier selon l'ordre métier (`DataUtils.service.ts`, `DomoticzLightsSort`/`DomoticzBlindsSort`)
-3. Afficher groupe/équipement individuel
+3. Afficher groupe/équipement individuel, en grille responsive (1/2/3 colonnes — voir [§ Responsive / Breakpoints](#-responsive--breakpoints))
 4. Contrôles : on/off, variateur (0-100%) pour les lumières ; slider + icônes open/close pour les volets
 5. État groupe : "Éteintes"/"Allumées"/"Mixte"/niveau% (lumières), "Ouvert"/"Fermé"/"Mixte" (volets)
 6. Confirmation modale pour les actions sur groupe de volets (nom contenant "Tous")
@@ -389,9 +396,10 @@ export default class DomoticzDevice {
 
 **Flux :**
 1. Charger capteurs température (`temperatures.controller.tsx`)
-2. Afficher température + état (Connecté/Déconnecté/Inconnu)
-3. Charger et afficher thermostats (`thermostats.controller.tsx`) avec point de consigne
+2. Afficher température + état (Connecté/Déconnecté/Inconnu), en grille responsive (1/2/3 colonnes — voir [§ Responsive / Breakpoints](#-responsive--breakpoints))
+3. Charger et afficher thermostats (`thermostats.controller.tsx`) avec point de consigne, dans une zone dédiée en tête d'écran, hors grille
 4. Contrôles thermostat : ±0,5°C
+5. Cadran thermostat agrandi aux breakpoints medium/expanded (`dialSize` — voir [§ Responsive / Breakpoints](#-responsive--breakpoints))
 
 **Composants :** `ViewDomoticzTemperature`, `ViewDomoticzThermostat`
 
@@ -404,6 +412,89 @@ export default class DomoticzDevice {
 4. Réinitialisation des favoris (`handleResetFavorites`)
 
 **Composants :** `ViewDomoticzParamList`
+
+---
+
+## 📐 Responsive / Breakpoints
+
+Support tablette (référence : Samsung Galaxy Tab S6, 10.5", portrait ~800-830dp / landscape ~1280-1300dp) sans dégrader le rendu mobile existant. Introduit par [ADR-013](./adr/013-adaptation-responsive-tablette-grille-breakpoint.md) (grille par breakpoint), complété par [ADR-014](./adr/014-tablette-paysage-onglets-fusionnes.md) (tablette en paysage, onglets fusionnés — voir [§ Tablette paysage](#tablette-paysage--onglets-fusionnés)).
+
+### `hooks/useResponsiveColumns.ts`
+
+Hook basé sur `useWindowDimensions()` (API React Native native — aucune dépendance ajoutée), avec seuils alignés sur les classes de taille **Material 3** :
+
+| Breakpoint | Largeur | Colonnes |
+|---|---|---|
+| `compact` | `<600dp` | 1 |
+| `medium` | `600-839dp` | 2 |
+| `expanded` | `>=840dp` | 3 |
+
+```typescript
+// hooks/useResponsiveColumns.ts
+export type ResponsiveBreakpoint = 'compact' | 'medium' | 'expanded';
+export type ResponsiveColumns = { columns: number; breakpoint: ResponsiveBreakpoint };
+
+export function useResponsiveColumns(availableWidth?: number): ResponsiveColumns { /* ... */ }
+```
+
+`availableWidth` (optionnel) remplace la largeur de fenêtre quand l'écran n'occupe qu'une partie de la fenêtre (colonne du layout fusionné tablette) ; sans argument, la largeur de fenêtre est utilisée.
+
+Réagit nativement aux changements de largeur (rotation Android, resize Web) sans reload, `useWindowDimensions()` déclenchant un re-render.
+
+Le hook expose aussi un helper `getGridCellStyle(gap, columns)` qui calcule le style de cellule de grille : technique **marge négative sur le conteneur + padding sur la cellule**, en `boxSizing: 'border-box'`. La largeur en `%` de chaque cellule (calculée sur le conteneur élargi par la marge négative `-gap/2`) inclut le padding, ce qui évite tout débordement ou décompte erroné de colonnes lors du passage à la ligne (`flexWrap`), quel que soit le nombre de colonnes ou d'éléments. Le conteneur associé doit porter `margin: -gap/2` (sur les 4 côtés) pour compenser ce padding.
+
+### Écrans concernés
+
+Les 3 écrans liste enveloppent leurs cartes dans une grille `flexDirection:'row', flexWrap:'wrap'` pilotée par `useResponsiveColumns` :
+
+| Écran | Fichier | Grille sur |
+|---|---|---|
+| Favoris | `app/(tabs)/index.tsx` | `FavoriteCard` (message limite "Seuls les 7 favoris..." conservé hors grille, `width:'100%'`) |
+| Lumières / Volets | `app/(tabs)/devices.tabs.tsx` | `DeviceCard` (via `ViewDomoticzDevice`) |
+| Températures | `app/(tabs)/temperatures.tab.tsx` | `ViewDomoticzTemperature` (capteurs uniquement — la zone Thermostat est séparée, en tête d'écran, hors grille) |
+
+`DeviceCard`, `FavoriteCard`, `ViewDomoticzTemperature` (composants synchronisés design system, cf. `.design-sync/NOTES.md`) ne sont **pas modifiés** dans leur logique interne — seul le conteneur/grille qui les enveloppe évolue.
+
+### Paramétrage `dialSize` du Thermostat
+
+`ViewDomoticzThermostat` (`app/components/thermostat.component.tsx`) expose une prop optionnelle `dialSize?: number` (défaut `180`, rétrocompatible pour tout appelant existant). Toute la géométrie du cadran (tactile et rendu — `trackR`, `trackW`, `knobR`, `touchToTemp`, `polarToXY`) est recalculée à partir de ce prop via un facteur `scale = dialSize / 180`, garantissant l'absence de désynchronisation entre la cible tactile et le rendu visuel à toute taille.
+
+`app/(tabs)/temperatures.tab.tsx` dérive `dialSize` du breakpoint courant : `180` en `compact`, `240` en `medium`/`expanded`.
+
+### Tablette paysage — onglets fusionnés
+
+Introduit par [ADR-014](./adr/014-tablette-paysage-onglets-fusionnes.md). Le téléphone n'est **pas concerné** (orientation, navigation, écrans inchangés).
+
+**Détection** (`app/services/OrientationLock.service.ts`, `hooks/useTabletLayout.ts`) :
+
+| Notion | Règle |
+|---|---|
+| Tablette | `isTabletScreen(w, h)` : plus petit côté ≥ 600dp (`TABLET_MIN_SMALLEST_WIDTH`, convention Android `sw600dp`, indépendante de l'orientation) |
+| Layout fusionné | `useTabletLayout().isMergedLayout` : tablette **et** fenêtre en paysage (`width > height`) |
+
+**Orientation** : `app.json` reste `"orientation": "portrait"`. `RootLayout` (`app/_layout.tsx`) appelle au montage `lockOrientationForDevice()` (`expo-screen-orientation`) : tablette Android → `lockAsync(OrientationLock.LANDSCAPE)` ; téléphone et Web → aucun appel. Erreurs loguées (`Logger.warn`), jamais propagées.
+
+**Groupes d'onglets** (`app/services/TabGroups.service.ts`, fonctions pures) :
+
+| Groupe (colonne gauche, droite) | Titre header |
+|---|---|
+| Lumières, Volets | « Lumières & Volets » |
+| Températures, Maison | « Températures & Maison » |
+| Favoris (aucun groupe) | « Favoris » — inchangé |
+
+- `getMergedTabGroup(tab)`, `isTabActive(activeTab, thisTab, isMergedLayout)`, `getTabTitle(tab, isMergedLayout)` ; hors layout fusionné, comportement strictement mono-onglet.
+- Barre d'onglets : 5 boutons conservés ; `TabBarItems` reçoit `isActive` (défaut `activeTab === thisTab`) → les 2 boutons d'un groupe sont actifs ensemble.
+
+**Écran fusionné** (`app/components/mergedTabs.component.tsx`) : `app/(tabs)/_layout.tsx` (`showPanel(tab, isMergedLayout, columnWidth)`) rend `MergedTabs` avec les 2 écrans existants côte à côte (colonnes `flex:1`, gap 10, sous-titre icône + libellé). Pas de hauteur fixe : **ascenseur unique de page** (`ParallaxScrollView`, pull-to-refresh conservé).
+
+Chaque colonne calcule sa grille sur sa demi-largeur : `getMergedColumnWidth(largeurFenêtre, 10)` = `(largeur − 2×10 − 10) / 2`, transmise en `availableWidth` à `devices.tabs.tsx` et `temperatures.tab.tsx`. Tab S6 paysage : 1280dp → 625dp → `medium` → 2 cartes par ligne, cadran Thermostat 240. `parametrages.tab.tsx` (pas de grille) s'adapte à la colonne sans modification.
+
+> Nouvelle dépendance native : rebuild natif requis — voir [docs/DEPLOIEMENT.md](./DEPLOIEMENT.md).
+
+### Hors périmètre
+
+- Mode tablette "maître-détail" (`NavigationRail` + panneau détail) — écarté, voir [ADR-013](./adr/013-adaptation-responsive-tablette-grille-breakpoint.md) § Alternatives considérées.
+- Défilement indépendant par colonne en layout fusionné — écarté, voir [ADR-014](./adr/014-tablette-paysage-onglets-fusionnes.md).
 
 ---
 
@@ -611,6 +702,7 @@ Les écrans sont chargés en **lazy loading** (`React.lazy`) depuis `app/(tabs)/
 
 `app/(tabs)/_layout.tsx` gère :
 - La `TabBar` personnalisée (`components/navigation/TabBarItem.tsx`, `TabBarIcon.tsx`, `TabHeaderIcon.tsx`)
+- Le layout fusionné tablette paysage (onglets groupés deux à deux sur 2 colonnes — voir [§ Tablette paysage](#tablette-paysage--onglets-fusionnés))
 - L'orchestration du rafraîchissement (changement d'onglet, retour au premier plan via `AppState`)
 - Le badge de connexion global (`ConnectionBadge.tsx`)
 
@@ -748,4 +840,4 @@ Co-authored-by: Contributor Name <email@example.com>
 ---
 
 **Document maintained by:** @vzwingma
-**Last reviewed:** 2026-07-08
+**Last reviewed:** 2026-10-01

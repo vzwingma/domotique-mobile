@@ -1,0 +1,14 @@
+name: Build Android Versions
+
+on:
+  push:
+    branches:
+      - 'feat/tab_layout'
+
+jobs:
+  build_android_V:
+    name: Build Android Version V
+    type: build
+    params:
+      platform: android
+      profile: previewV

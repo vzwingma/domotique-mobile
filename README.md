@@ -47,11 +47,12 @@ npx expo --version
 **Plateforme cible :** Android et Web (React Native via Expo)
 
 **Stack technologique :**
-- **Expo SDK** ~56.0.13
+- **Expo SDK** ~56.0.23
 - **React** 19.2.3
 - **React Native** 0.85.3
 - **TypeScript** strict mode
-- **expo-router** ~56.2.12
+- **expo-router** ~56.2.21
+- **expo-screen-orientation** ~56.0.5 (verrou paysage sur tablette)
 - **Jest** + jest-expo (tests)
 - **ESLint** 9.39.1 (flat config, `eslint.config.js` — seule source de vérité)
 
@@ -209,6 +210,7 @@ Le déploiement Android combine build automatique et scripts manuels :
 - **Preview automatique** : `previewV` → `previewC` construits à chaque push sur `main` (EAS Workflow natif).
 - **Development/Production/Submit** : scripts npm dédiés (`eas:build:development`, `eas:build:production`, `eas:submit`), déclenchés manuellement.
 - **Keystore de production** : géré exclusivement via `eas credentials` (EAS Credentials), jamais par un fichier committé dans le repo.
+- **Dépendances natives** : l'ajout d'un module natif (ex. `expo-screen-orientation`) impose de reconstruire les APK / dev-clients existants (`npm run android`, `eas build`).
 
 Procédure complète (y compris la gestion opérationnelle non-sensible du keystore) : **[docs/DEPLOIEMENT.md](./docs/DEPLOIEMENT.md)**.
 
@@ -222,6 +224,7 @@ Pour une documentation complète de l'architecture, des patterns utilisés, de l
 - **Routage :** Expo Router avec file-based routing
 - **HTTP :** Centralisé dans `ClientHTTP.service.ts` avec Basic Auth
 - **Patterns :** Controllers, Services, Models (avec TypeScript strict)
+- **Responsive :** grille 1/2/3 colonnes par breakpoint (`useResponsiveColumns`) et layout tablette paysage à onglets fusionnés (`useTabletLayout`, `TabGroups.service.ts`) — voir [§ Responsive / Breakpoints](./docs/ARCHITECTURE.md#-responsive--breakpoints)
 
 ## ✅ Tests
 
@@ -265,6 +268,24 @@ Pour plus de détails sur le setup Jest, les conventions de test, et les meilleu
 - Contrôle des thermostats (point de consigne ajustable par paliers de ±0,5°C, affichage distinct **Mesure / Consigne**)
 - Gestion des groupes d'équipements (indicateur "Mixte" pour niveaux incohérents)
 - Écran **Maison** : paramètres interactifs (présence, phase) via chips segmentés + section "À propos" (version app, version serveur Domoticz, statut connexion)
+- **Affichage adapté aux tablettes** (référence Samsung Galaxy Tab S6) — voir ci-dessous
+
+### 📱 Téléphone et tablette
+
+| | Téléphone | Tablette |
+|---|---|---|
+| Détection | plus petit côté d'écran < 600dp | plus petit côté d'écran ≥ 600dp |
+| Orientation | portrait (inchangé) | **paysage**, verrouillé au démarrage |
+| Favoris | 1 colonne | grille 3 colonnes |
+| Lumières / Volets | 2 onglets distincts, 1 colonne | **un seul écran** : Lumières et Volets côte à côte sur 2 colonnes |
+| Températures / Maison | 2 onglets distincts, 1 colonne | **un seul écran** : Températures et Maison côte à côte sur 2 colonnes |
+
+Sur tablette en paysage :
+- la barre d'onglets conserve ses 5 boutons, mais les boutons **Lumières + Volets** (et **Températures + Maison**) sont actifs/inactifs ensemble ; le titre devient « Lumières & Volets » / « Températures & Maison » ;
+- chaque colonne affiche sa propre grille (2 cartes par ligne) et le cadran du thermostat est agrandi ;
+- un ascenseur vertical unique fait défiler les 2 colonnes ensemble (le tirer-pour-rafraîchir est conservé).
+
+Une tablette en portrait (fenêtre Web haute, ou Android 16+ qui autorise la rotation sur grand écran) affiche les onglets séparément, en grille 2 colonnes. Décisions : [ADR-013](./docs/adr/013-adaptation-responsive-tablette-grille-breakpoint.md) (grille responsive), [ADR-014](./docs/adr/014-tablette-paysage-onglets-fusionnes.md) (paysage + onglets fusionnés).
 
 ### Composants UI principaux
 
@@ -280,6 +301,7 @@ Pour plus de détails sur le setup Jest, les conventions de test, et les meilleu
 | `TemperatureComponent`| `app/components/temperature.component.tsx` | Card compacte pour un capteur de température |
 | `ThermostatComponent` | `app/components/thermostat.component.tsx` | Contrôle de consigne thermostat avec boutons ±0,5°C |
 | `ParamListComponent` | `app/components/paramList.component.tsx` | Paramètres interactifs (présence, phase) via chips segmentés |
+| `MergedTabs` | `app/components/mergedTabs.component.tsx` | Écran fusionné tablette paysage : 2 onglets côte à côte sur 2 colonnes |
 
 ## 🤝 Contribution
 

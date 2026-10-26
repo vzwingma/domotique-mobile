@@ -6,9 +6,10 @@ import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Colors } from './enums/Colors';
 import { DomoticzContextProvider } from './services/DomoticzContextProvider';
+import { lockOrientationForDevice } from './services/OrientationLock.service';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+void SplashScreen.preventAutoHideAsync();
 
 /**
  * Layout de base
@@ -20,9 +21,15 @@ export default function RootLayout() {
     ...MaterialCommunityIcons.font,
   });
 
+  // Tablette : verrouillage paysage au démarrage (téléphone et Web inchangés)
+  // Promesse ignorée volontairement : le service logue ses erreurs et ne les propage jamais
+  useEffect(() => {
+    void lockOrientationForDevice();
+  }, []);
+
   useEffect(() => {
     if (loaded) {
-      SplashScreen.hideAsync();
+      void SplashScreen.hideAsync();
     }
   }, [loaded]);
 
