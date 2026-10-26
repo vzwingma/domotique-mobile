@@ -185,36 +185,15 @@ describe('paramList.component — labels Présence (T17)', () => {
 // QA05-3b : Labels Mode — mapping "Summer" → "Été"
 // =============================================================================
 describe('paramList.component — labels Mode (encodage)', () => {
-  it('affiche "Été" pour levelName "Summer" d\'un paramètre Mode', () => {
+  it.each(['Summer', 'summer'])('traduit levelName "%s" en "Été" pour un paramètre Mode', (levelName) => {
     const param = makeParameter({
       name: 'Mode',
       type: DomoticzDeviceType.PARAMETRE,
-      levelNames: ['Hiver', 'Summer'],
+      levelNames: ['Hiver', levelName],
       level: 0,
     });
-    const { getByText } = renderParam(param);
+    const { getByText, queryByText } = renderParam(param);
     expect(getByText('Été')).toBeTruthy();
-  });
-
-  it('affiche "Été" pour levelName "summer" (minuscules) d\'un paramètre Mode', () => {
-    const param = makeParameter({
-      name: 'Mode',
-      type: DomoticzDeviceType.PARAMETRE,
-      levelNames: ['Hiver', 'summer'],
-      level: 0,
-    });
-    const { getByText } = renderParam(param);
-    expect(getByText('Été')).toBeTruthy();
-  });
-
-  it("n'affiche pas \"Summer\" brut pour un paramètre Mode", () => {
-    const param = makeParameter({
-      name: 'Mode',
-      type: DomoticzDeviceType.PARAMETRE,
-      levelNames: ['Hiver', 'Summer'],
-      level: 0,
-    });
-    const { queryByText } = renderParam(param);
     expect(queryByText('Summer')).toBeNull();
   });
 

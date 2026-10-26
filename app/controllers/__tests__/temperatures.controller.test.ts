@@ -47,12 +47,16 @@ describe('loadDomoticzTemperatures', () => {
 
         expect(storeTempsData).toHaveBeenCalledWith(expect.any(Array));
         const temps: any[] = storeTempsData.mock.calls[0][0];
-        expect(temps.length).toBe(2);
+        expect(temps).toHaveLength(2);
     });
 
-    it('nettoie le préfixe "Temp+H - " du nom', async () => {
+    it.each([
+        { sourceName: 'Temp+H - Chambre', expectedName: 'Chambre' },
+        { sourceName: 'TempHumBaro', expectedName: 'Extérieur' },
+        { sourceName: 'Tydom Temperature', expectedName: 'Salon' },
+    ])('normalise le nom "$sourceName" en "$expectedName"', async ({ sourceName, expectedName }) => {
         mockCallDomoticz.mockResolvedValue({
-            result: [makeRawTemp({ Name: 'Temp+H - Chambre' })],
+            result: [makeRawTemp({ Name: sourceName })],
         });
         const storeTempsData = jest.fn();
 
@@ -60,33 +64,7 @@ describe('loadDomoticzTemperatures', () => {
         await new Promise(resolve => setTimeout(resolve, 0));
 
         const temps = storeTempsData.mock.calls[0][0];
-        expect(temps[0].name).toBe('Chambre');
-    });
-
-    it('remplace "TempHumBaro" par "Extérieur"', async () => {
-        mockCallDomoticz.mockResolvedValue({
-            result: [makeRawTemp({ Name: 'TempHumBaro' })],
-        });
-        const storeTempsData = jest.fn();
-
-        loadDomoticzTemperatures(storeTempsData);
-        await new Promise(resolve => setTimeout(resolve, 0));
-
-        const temps = storeTempsData.mock.calls[0][0];
-        expect(temps[0].name).toBe('Extérieur');
-    });
-
-    it('remplace "Tydom Temperature" par "Salon"', async () => {
-        mockCallDomoticz.mockResolvedValue({
-            result: [makeRawTemp({ Name: 'Tydom Temperature' })],
-        });
-        const storeTempsData = jest.fn();
-
-        loadDomoticzTemperatures(storeTempsData);
-        await new Promise(resolve => setTimeout(resolve, 0));
-
-        const temps = storeTempsData.mock.calls[0][0];
-        expect(temps[0].name).toBe('Salon');
+        expect(temps[0].name).toBe(expectedName);
     });
 
     it('filtre "Pi Temperature"', async () => {
