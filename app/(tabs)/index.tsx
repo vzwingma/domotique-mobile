@@ -9,6 +9,7 @@ import { FavoriteCard } from '../components/favoriteCard.component';
 import { ThemedText } from '@/components/ThemedText';
 import { StyleSheet, View } from 'react-native';
 import { useResponsiveColumns, getGridCellStyle } from '@/hooks/useResponsiveColumns';
+import { Logger } from '../services/Logger.service';
 
 // Règle métier explicite Favoris (F01-01) : l'écran rapide n'affiche jamais plus de 7 éléments.
 const FAVORITES_MAX_QUICK_ACTIONS = 7;
@@ -71,6 +72,8 @@ function getFavoritesDevicesFromCache(devicesData: DomoticzDevice[], setFavorite
       })
 
       setFavorites(favoriteDevices);
+    }).catch((error: unknown) => {
+      Logger.error('[Favorites] Erreur de chargement des favoris depuis le cache', error);
     });
   }
 }

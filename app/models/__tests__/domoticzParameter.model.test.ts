@@ -53,7 +53,7 @@ describe('DomoticzParameter', () => {
         it('initialise levelNames comme tableau vide par défaut', () => {
             const param = makeParameter({});
             expect(Array.isArray(param.levelNames)).toBe(true);
-            expect(param.levelNames.length).toBe(0);
+            expect(param.levelNames).toHaveLength(0);
         });
     });
 

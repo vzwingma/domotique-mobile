@@ -63,40 +63,14 @@ describe('DomoticzThermostat', () => {
     // ─── needsAdjustment Getter ────────────────────────────────────────────────────
 
     describe('needsAdjustment getter', () => {
-        it('retourne true si différence > 2°C (consigne > mesure)', () => {
-            const tstat = makeThermostat({
-                temp: 25, // consigne
-                data: '22', // mesure
-            });
-            // |25 - 22| = 3°C > 2°C
-            expect(tstat.needsAdjustment).toBe(true);
-        });
-
-        it('retourne true si différence > 2°C (consigne < mesure)', () => {
-            const tstat = makeThermostat({
-                temp: 20, // consigne
-                data: '23.5', // mesure
-            });
-            // |20 - 23.5| = 3.5°C > 2°C
-            expect(tstat.needsAdjustment).toBe(true);
-        });
-
-        it('retourne false si différence <= 2°C', () => {
-            const tstat = makeThermostat({
-                temp: 22, // consigne
-                data: '21', // mesure
-            });
-            // |22 - 21| = 1°C <= 2°C
-            expect(tstat.needsAdjustment).toBe(false);
-        });
-
-        it('retourne false si consigne = mesure', () => {
-            const tstat = makeThermostat({
-                temp: 22,
-                data: '22',
-            });
-            // |22 - 22| = 0°C
-            expect(tstat.needsAdjustment).toBe(false);
+        it.each([
+            { temp: 25, data: '22', expected: true },
+            { temp: 20, data: '23.5', expected: true },
+            { temp: 22, data: '21', expected: false },
+            { temp: 22, data: '22', expected: false },
+        ])('évalue needsAdjustment pour temp=$temp et mesure=$data', ({ temp, data, expected }) => {
+            const tstat = makeThermostat({ temp, data });
+            expect(tstat.needsAdjustment).toBe(expected);
         });
 
         it('retourne false si mesure non trouvée dans data', () => {
