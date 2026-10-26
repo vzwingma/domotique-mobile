@@ -34,38 +34,13 @@ describe('DomoticzConfig', () => {
     // ─── isOnline Getter ────────────────────────────────────────────────────────────
 
     describe('isOnline getter', () => {
-        it('retourne true si status contient "OK"', () => {
-            const config = makeConfig({ status: 'OK' });
+        it.each(['OK', 'ok', 'OK', 'Status: Ok'])('retourne true si status contient %s', (status) => {
+            const config = makeConfig({ status });
             expect(config.isOnline).toBe(true);
         });
 
-        it('retourne true si status = "ok" (minuscule)', () => {
-            const config = makeConfig({ status: 'ok' });
-            expect(config.isOnline).toBe(true);
-        });
-
-        it('retourne true si status = "OK" (majuscule)', () => {
-            const config = makeConfig({ status: 'OK' });
-            expect(config.isOnline).toBe(true);
-        });
-
-        it('retourne true si status contient "Ok"', () => {
-            const config = makeConfig({ status: 'Status: Ok' });
-            expect(config.isOnline).toBe(true);
-        });
-
-        it('retourne false si status ne contient pas "OK"', () => {
-            const config = makeConfig({ status: 'OFFLINE' });
-            expect(config.isOnline).toBe(false);
-        });
-
-        it('retourne false si status = "ERROR"', () => {
-            const config = makeConfig({ status: 'ERROR' });
-            expect(config.isOnline).toBe(false);
-        });
-
-        it('retourne false si status est vide', () => {
-            const config = makeConfig({ status: '' });
+        it.each(['OFFLINE', 'ERROR', ''])('retourne false pour status %s', (status) => {
+            const config = makeConfig({ status });
             expect(config.isOnline).toBe(false);
         });
     });

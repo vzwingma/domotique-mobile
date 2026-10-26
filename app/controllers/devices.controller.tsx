@@ -217,7 +217,7 @@ export function addActionForFavorite(device: DomoticzDevice | DomoticzThermostat
                 favoris[favoriteIndex].nbOfUse ??= 0;
                 favoris[favoriteIndex].nbOfUse += 1;
             }
-            saveFavoritesToStorage(favoris);
+            return saveFavoritesToStorage(favoris);
         }
     )
     .catch((e) => {

@@ -34,7 +34,7 @@ export function connectToDomoticz({setIsLoading, storeConnexionData, setError}: 
         return config;
       })
       .then(config => {
-        return Promise.resolve(storeConnexionData(config));
+        return storeConnexionData(config);
       })
       .then(() => setIsLoading(false))
       .catch((e) => {

@@ -2,6 +2,41 @@
 
 Système orchestré de 5 agents spécialisés pour structurer développement via Claude Code.
 
+<!-- claude-only -->
+## ⚙️ Configuration (frontmatter)
+
+| Agent | Modèle | Outils | Skills préchargés |
+|---|---|---|---|
+| ⚫ MAINa | `opus` | AskUserQuestion, Agent, SendMessage, Read, Grep, Glob, Edit, Write, Bash, TodoWrite, Skill | `conventions-orchestrator`, `plan-creation`, `gate-protocol` |
+| 🟠 ARCos | `opus` (`effort: high`) | Read, Grep, Glob, WebFetch, WebSearch, Skill — **lecture seule** | `conventions-architect`, `adr-writing`, `plan-phase-execution` |
+| 🔵 DEVon | `sonnet` | Read, Edit, Write, Bash, Grep, Glob, TodoWrite, Skill | `conventions-dev`, `plan-phase-execution` |
+| 🟢 QALvin | `sonnet` | Read, Edit, Write, Bash, Grep, Glob, TodoWrite, Skill | `conventions-qa`, `plan-phase-execution` |
+| 🟣 DOCly | `sonnet` | Read, Edit, Write, Grep, Glob, Skill | `conventions-doc`, `plan-phase-execution`, `adr-writing` |
+
+Sous-agents (ARCos, DEVon, QALvin, DOCly) : pas d'accès direct au 👤 → questions remontées dans une section `❓ Questions pour 👤`, relayées par MAINa au gate.
+
+**Frontières de rôle appliquées** par le hook `.claude/hooks/guard.sh` (config `role-boundaries.conf`) : DEVon n'écrit ni tests ni docs, QALvin n'écrit que des tests et rapports, DOCly que de la documentation, MAINa que les plans et le statut des ADR ; ARCos est en lecture seule par ses outils.
+<!-- /claude-only -->
+<!-- copilot-only
+## ⚙️ Configuration
+
+Modèle, outils et sous-agents autorisés : voir le frontmatter de chaque `*.agent.md`.
+
+### Périmètre vérifié
+
+Cette projection vise uniquement GitHub Copilot CLI. Versions observées : `1.0.99-0`, puis `1.0.99-1`.
+VS Code et cloud agent sont hors périmètre ; aucune affirmation de support ou de parité ne s'applique à ces
+surfaces.
+
+Les cinq profils sont générés depuis `.claude/`. Les outils sont dérivés par
+`scripts/copilot-mapping.psd1` ; ARCos reçoit `[read, search, web]`. Les alias source sont `opus` →
+`claude-opus-5.5` et `sonnet` → `claude-sonnet-5.5`. Le champ `agents` de MAINa est informatif et non vérifié.
+
+La CLI lit `.github/skills/` et `.claude/skills/` ; `.github/` gagne à nom identique. Le chargement est fait
+selon pertinence, non de façon déterministe : chaque profil porte une consigne explicite de chargement.
+Les conventions sont projetées en `.github/instructions/<rôle>.instructions.template.md`.
+-->
+
 ## 🎯 Agents
 
 ### ⚫ [MAINa](./Maina.agent.md) — Maître Orchestrateur
@@ -107,7 +142,7 @@ Rôle : Documentation après code + tests validés.
 2. `docs/ARCHITECTURE.md` (**obligatoire**)
 3. `docs/adr/` (décisions archi)
 4. `docs/` guides détaillés
-5. Instructions Copilot
+5. Instructions agents
 
 **Points clés** :
 - ✅ Tous exemples code testés
@@ -160,9 +195,25 @@ En cas doute → demander confirmation développeur.
 ```bash
 # Pour projet simple ou décision rapide
 @ARCos "Conçois architecture pour..."
-
-# Pour initiative complète
-@MAINa "Voici besoin : ..."
 ```
 
-Chaque agent lit automatiquement ses instructions projet au démarrage si présentes.
+<!-- claude-only -->
+```bash
+# Pour initiative complète : MAINa en agent principal (gates interactifs)
+claude --agent MAINa
+```
+<!-- /claude-only -->
+<!-- copilot-only
+```bash
+# Pour initiative complète : sélectionner l'agent MAINa dans le chat
+@MAINa "Voici besoin : ..."
+```
+-->
+
+<!-- claude-only -->
+Chaque agent Claude lit ses instructions projet au démarrage si présentes.
+<!-- /claude-only -->
+<!-- copilot-only
+Chaque profil Copilot suit les instructions projet générées et charge explicitement les skills demandées ;
+la sélection finale des skills reste déterminée par la pertinence de la CLI.
+<!-- /copilot-only -->

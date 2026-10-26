@@ -264,35 +264,17 @@ describe('IconDomoticzDevice — handleLumierePress', () => {
     expect(mockOnClickDeviceIcon).not.toHaveBeenCalled();
   });
 
-  it('groupe lumière status="Off" → verbe "allumer" dans le message Alert', () => {
-    const device = makeComponentDevice({ type: DomoticzDeviceType.LUMIERE, isGroup: true, status: 'Off', level: 0 });
+  it.each([
+    { status: 'Off', level: 0, verb: 'allumer' },
+    { status: 'On', level: 80, verb: 'éteindre' },
+    { status: 'On', level: 0, verb: 'allumer' },
+  ])('groupe lumière status=$status, level=$level → verbe "$verb"', ({ status, level, verb }) => {
+    const device = makeComponentDevice({ type: DomoticzDeviceType.LUMIERE, isGroup: true, status, level });
     const { getByTestId } = renderWithContext(<IconDomoticzDevice device={device} />);
     fireEvent.press(getByTestId('material-icon'));
     expect(alertSpy).toHaveBeenCalledWith(
       'Confirmation',
-      expect.stringContaining('allumer'),
-      expect.any(Array),
-    );
-  });
-
-  it('groupe lumière status="On", level>0 → verbe "éteindre" dans le message Alert', () => {
-    const device = makeComponentDevice({ type: DomoticzDeviceType.LUMIERE, isGroup: true, status: 'On', level: 80 });
-    const { getByTestId } = renderWithContext(<IconDomoticzDevice device={device} />);
-    fireEvent.press(getByTestId('material-icon'));
-    expect(alertSpy).toHaveBeenCalledWith(
-      'Confirmation',
-      expect.stringContaining('éteindre'),
-      expect.any(Array),
-    );
-  });
-
-  it('groupe lumière level=0 (status="On") → verbe "allumer" (level=0 prévaut sur status)', () => {
-    const device = makeComponentDevice({ type: DomoticzDeviceType.LUMIERE, isGroup: true, status: 'On', level: 0 });
-    const { getByTestId } = renderWithContext(<IconDomoticzDevice device={device} />);
-    fireEvent.press(getByTestId('material-icon'));
-    expect(alertSpy).toHaveBeenCalledWith(
-      'Confirmation',
-      expect.stringContaining('allumer'),
+      expect.stringContaining(verb),
       expect.any(Array),
     );
   });
