@@ -448,7 +448,7 @@ describe('DomoticzContextProvider', () => {
       });
       
       await waitFor(() => {
-        expect(contextValue.domoticzDevicesData.length).toBe(2);
+        expect(contextValue.domoticzDevicesData).toHaveLength(2);
         expect(contextValue.domoticzDevicesData[0].name).toBe('Device 1');
         expect(contextValue.domoticzDevicesData[1].name).toBe('Device 2');
       });
@@ -477,7 +477,7 @@ describe('DomoticzContextProvider', () => {
       });
       
       await waitFor(() => {
-        expect(contextValue.domoticzTemperaturesData.length).toBe(2);
+        expect(contextValue.domoticzTemperaturesData).toHaveLength(2);
         expect(contextValue.domoticzTemperaturesData[0].temp).toBe(20);
         expect(contextValue.domoticzTemperaturesData[1].temp).toBe(25);
       });
@@ -514,7 +514,7 @@ describe('DomoticzContextProvider', () => {
       });
       
       await waitFor(() => {
-        expect(contextValue.domoticzThermostatData.length).toBe(2);
+        expect(contextValue.domoticzThermostatData).toHaveLength(2);
         expect(contextValue.domoticzThermostatData[0].temp).toBe(20);
         expect(contextValue.domoticzThermostatData[1].temp).toBe(22);
       });
@@ -543,7 +543,7 @@ describe('DomoticzContextProvider', () => {
       });
       
       await waitFor(() => {
-        expect(contextValue.domoticzParametersData.length).toBe(2);
+        expect(contextValue.domoticzParametersData).toHaveLength(2);
         expect(contextValue.domoticzParametersData[0].name).toBe('Param 1');
         expect(contextValue.domoticzParametersData[1].name).toBe('Param 2');
       });
@@ -571,7 +571,7 @@ describe('DomoticzContextProvider', () => {
       });
       
       await waitFor(() => {
-        expect(contextValue.domoticzDevicesData.length).toBe(1);
+        expect(contextValue.domoticzDevicesData).toHaveLength(1);
       });
 
       // Second update
@@ -581,7 +581,7 @@ describe('DomoticzContextProvider', () => {
       });
       
       await waitFor(() => {
-        expect(contextValue.domoticzDevicesData.length).toBe(2);
+        expect(contextValue.domoticzDevicesData).toHaveLength(2);
       });
 
       // Third update
@@ -591,7 +591,7 @@ describe('DomoticzContextProvider', () => {
       });
       
       await waitFor(() => {
-        expect(contextValue.domoticzDevicesData.length).toBe(3);
+        expect(contextValue.domoticzDevicesData).toHaveLength(3);
       });
     });
 
@@ -634,9 +634,9 @@ describe('DomoticzContextProvider', () => {
       });
 
       await waitFor(() => {
-        expect(contextValue.domoticzDevicesData.length).toBe(3);
-        expect(contextValue.domoticzTemperaturesData.length).toBe(2);
-        expect(contextValue.domoticzParametersData.length).toBe(1);
+        expect(contextValue.domoticzDevicesData).toHaveLength(3);
+        expect(contextValue.domoticzTemperaturesData).toHaveLength(2);
+        expect(contextValue.domoticzParametersData).toHaveLength(1);
       });
     });
 
@@ -662,7 +662,7 @@ describe('DomoticzContextProvider', () => {
       });
       
       await waitFor(() => {
-        expect(contextValue.domoticzDevicesData.length).toBe(1);
+        expect(contextValue.domoticzDevicesData).toHaveLength(1);
       });
 
       // Then use functional setter to add more
@@ -675,7 +675,7 @@ describe('DomoticzContextProvider', () => {
       });
       
       await waitFor(() => {
-        expect(contextValue.domoticzDevicesData.length).toBe(2);
+        expect(contextValue.domoticzDevicesData).toHaveLength(2);
         expect(contextValue.domoticzDevicesData[0].idx).toBe(1);
         expect(contextValue.domoticzDevicesData[1].idx).toBe(2);
       });
@@ -814,7 +814,7 @@ describe('DomoticzContextProvider', () => {
       });
       
       await waitFor(() => {
-        expect(contextValue.domoticzDevicesData.length).toBe(100);
+        expect(contextValue.domoticzDevicesData).toHaveLength(100);
         expect(contextValue.domoticzDevicesData[0].name).toBe('Device 1');
         expect(contextValue.domoticzDevicesData[99].name).toBe('Device 100');
       });
@@ -845,7 +845,7 @@ describe('DomoticzContextProvider', () => {
       });
       
       await waitFor(() => {
-        expect(contextValue.domoticzDevicesData.length).toBe(2);
+        expect(contextValue.domoticzDevicesData).toHaveLength(2);
       });
 
       // Clear data
@@ -854,7 +854,7 @@ describe('DomoticzContextProvider', () => {
       });
       
       await waitFor(() => {
-        expect(contextValue.domoticzDevicesData.length).toBe(0);
+        expect(contextValue.domoticzDevicesData).toHaveLength(0);
         expect(contextValue.domoticzDevicesData).toEqual([]);
       });
     });
@@ -886,9 +886,9 @@ describe('DomoticzContextProvider', () => {
       });
       
       await waitFor(() => {
-        expect(contextValue.domoticzDevicesData.length).toBe(1);
-        expect(contextValue.domoticzTemperaturesData.length).toBe(1);
-        expect(contextValue.domoticzParametersData.length).toBe(1);
+        expect(contextValue.domoticzDevicesData).toHaveLength(1);
+        expect(contextValue.domoticzTemperaturesData).toHaveLength(1);
+        expect(contextValue.domoticzParametersData).toHaveLength(1);
       });
 
       const originalDevices = contextValue.domoticzDevicesData;
@@ -901,7 +901,7 @@ describe('DomoticzContextProvider', () => {
       });
       
       await waitFor(() => {
-        expect(contextValue.domoticzThermostatData.length).toBe(1);
+        expect(contextValue.domoticzThermostatData).toHaveLength(1);
       });
 
       // Other data should remain unchanged
@@ -962,7 +962,7 @@ describe('DomoticzContextProvider', () => {
       });
       
       await waitFor(() => {
-        expect(contextValue.domoticzDevicesData.length).toBe(2);
+        expect(contextValue.domoticzDevicesData).toHaveLength(2);
       });
 
       // Replace entire array
@@ -972,7 +972,7 @@ describe('DomoticzContextProvider', () => {
       });
       
       await waitFor(() => {
-        expect(contextValue.domoticzDevicesData.length).toBe(3);
+        expect(contextValue.domoticzDevicesData).toHaveLength(3);
         expect(contextValue.domoticzDevicesData[0].idx).toBe(10);
         expect(contextValue.domoticzDevicesData[2].idx).toBe(12);
       });
@@ -1014,10 +1014,10 @@ describe('DomoticzContextProvider', () => {
       const thermos: DomoticzThermostat[] = contextValue.domoticzThermostatData;
       const params: DomoticzParameter[] = contextValue.domoticzParametersData;
 
-      expect(devices instanceof Array).toBe(true);
-      expect(temps instanceof Array).toBe(true);
-      expect(thermos instanceof Array).toBe(true);
-      expect(params instanceof Array).toBe(true);
+      expect(devices).toBeInstanceOf(Array);
+      expect(temps).toBeInstanceOf(Array);
+      expect(thermos).toBeInstanceOf(Array);
+      expect(params).toBeInstanceOf(Array);
     });
 
     it('setter functions should accept correct types', async () => {
@@ -1097,7 +1097,7 @@ describe('DomoticzContextProvider', () => {
       });
       
       await waitFor(() => {
-        expect(contextValue.domoticzDevicesData.length).toBe(1);
+        expect(contextValue.domoticzDevicesData).toHaveLength(1);
       });
 
       // Render count should increase due to state update

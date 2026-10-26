@@ -306,39 +306,14 @@ describe('callDomoticz', () => {
       (console.error as jest.Mock).mockRestore();
     });
 
-    it('déclenche le diagnostic SSL en cas d\'erreur SSL spécifique', async () => {
+    it.each([
+      'SSL certificate problem',
+      'certificate chain incomplete',
+      'self-signed certificate not trusted',
+      'SSL handshake failed',
+    ])('déclenche le diagnostic pour une erreur SSL : %s', async (message) => {
       (globalThis.fetch as jest.Mock).mockRejectedValue(
-        new Error('SSL certificate problem')
-      );
-
-      await expect(callDomoticz(SERVICES_URL.GET_DEVICES)).rejects.toThrow();
-
-      // Le diagnostic SSL est lancé en arrière-plan (async)
-      // On vérife au moins que la première requête a échoué
-      expect(globalThis.fetch).toHaveBeenCalled();
-    });
-
-    it('détecte les erreurs SSL via le keyword "certificate"', async () => {
-      (globalThis.fetch as jest.Mock).mockRejectedValue(
-        new Error('certificate chain incomplete')
-      );
-
-      await expect(callDomoticz(SERVICES_URL.GET_DEVICES)).rejects.toThrow();
-      expect(globalThis.fetch).toHaveBeenCalled();
-    });
-
-    it('détecte les erreurs SSL via le keyword "trust"', async () => {
-      (globalThis.fetch as jest.Mock).mockRejectedValue(
-        new Error('self-signed certificate not trusted')
-      );
-
-      await expect(callDomoticz(SERVICES_URL.GET_DEVICES)).rejects.toThrow();
-      expect(globalThis.fetch).toHaveBeenCalled();
-    });
-
-    it('détecte les erreurs SSL via le keyword "handshake"', async () => {
-      (globalThis.fetch as jest.Mock).mockRejectedValue(
-        new Error('SSL handshake failed')
+        new Error(message)
       );
 
       await expect(callDomoticz(SERVICES_URL.GET_DEVICES)).rejects.toThrow();

@@ -9,7 +9,7 @@ import { DomoticzContextProvider } from './services/DomoticzContextProvider';
 import { lockOrientationForDevice } from './services/OrientationLock.service';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+void SplashScreen.preventAutoHideAsync();
 
 /**
  * Layout de base
@@ -29,7 +29,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (loaded) {
-      SplashScreen.hideAsync();
+      void SplashScreen.hideAsync();
     }
   }, [loaded]);
 

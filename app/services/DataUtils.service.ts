@@ -116,7 +116,10 @@ export function evaluateGroupLevelConsistency(device: DomoticzDevice, idsSubDevi
         //   - OFF          → 0
         //   - ON dimmer    → level (ex: 50)
         //   - ON switch    → 100  (level=0 pour un switch ONOFF allumé, on le normalise à 100)
-        const levelValues = subDevicesToEvaluate.map((d: DomoticzDevice) => d.status === DomoticzDeviceStatus.OFF ? 0 : (d.level > 0 ? d.level : 100));
+        const levelValues = subDevicesToEvaluate.map((d: DomoticzDevice) => {
+            if (d.status === DomoticzDeviceStatus.OFF) return 0;
+            return d.level > 0 ? d.level : 100;
+        });
         const uniqueLevels = levelValues.filter((value, index, arr) => arr.indexOf(value) === index);
 
         device.consistantLevel = uniqueLevels.length === 1;

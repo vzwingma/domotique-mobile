@@ -60,23 +60,27 @@ function stopWatchTimeout(traceId: string, startedAt: number): number {
  *   1. Connectivité HTTPS générale (google.com) → distingue SSL spécifique vs réseau global
  *   2. Accessibilité HTTP du host Domoticz → vérifie si le port est joignable
  */
-function runSSLDiagnostic(failedUrl: string): void {
-    fetch('https://www.google.com', { method: 'HEAD' })
-        .then(() => {
-            Logger.warn('[SSL Diagnostic] ✅ Internet HTTPS (google.com) OK — l\'erreur est spécifique au certificat Domoticz');
-            Logger.warn('[SSL Diagnostic]    Cause probable : certificat auto-signé non approuvé par le build actuel');
-            Logger.warn('[SSL Diagnostic]    → Vérifiez le build : npm run android:clean (rebuild natif force-clean)');
-            Logger.warn('[SSL Diagnostic]    → Logs Android natifs : npm run android:logs');
-        })
-        .catch(() => {
-            Logger.warn('[SSL Diagnostic] ❌ Internet HTTPS (google.com) ÉCHEC — problème réseau général');
-            if (failedUrl.startsWith('https://')) {
-                const httpUrl = failedUrl.replace('https://', 'http://');
-                fetch(httpUrl, { method: 'HEAD' })
-                    .then(() => Logger.warn('[SSL Diagnostic] ✅ Host Domoticz en HTTP accessible — le port HTTPS est bloqué ou le serveur n\'écoute pas'))
-                    .catch(() => Logger.warn('[SSL Diagnostic] ❌ Host Domoticz inaccessible — vérifiez réseau/Wi-Fi/pare-feu'));
-            }
-        });
+async function runSSLDiagnostic(failedUrl: string): Promise<void> {
+    try {
+        await fetch('https://www.google.com', { method: 'HEAD' });
+        Logger.warn('[SSL Diagnostic] ✅ Internet HTTPS (google.com) OK — l\'erreur est spécifique au certificat Domoticz');
+        Logger.warn('[SSL Diagnostic]    Cause probable : certificat auto-signé non approuvé par le build actuel');
+        Logger.warn('[SSL Diagnostic]    → Vérifiez le build : npm run android:clean (rebuild natif force-clean)');
+        Logger.warn('[SSL Diagnostic]    → Logs Android natifs : npm run android:logs');
+        return;
+    } catch {
+        Logger.warn('[SSL Diagnostic] ❌ Internet HTTPS (google.com) ÉCHEC — problème réseau général');
+    }
+
+    if (failedUrl.startsWith('https://')) {
+        const httpUrl = failedUrl.replace('https://', 'http://');
+        try {
+            await fetch(httpUrl, { method: 'HEAD' });
+            Logger.warn('[SSL Diagnostic] ✅ Host Domoticz en HTTP accessible — le port HTTPS est bloqué ou le serveur n\'écoute pas');
+        } catch {
+            Logger.warn('[SSL Diagnostic] ❌ Host Domoticz inaccessible — vérifiez réseau/Wi-Fi/pare-feu');
+        }
+    }
 }
 
 /**
@@ -193,7 +197,7 @@ function executeRequest(path: SERVICES_URL, fullURL: string): Promise<any> {
                             || (isHttps && errorMessage.includes('network request failed'));
             if (isSSLError) {
                 Logger.error("[WS traceId=" + traceId + "] < Erreur SSL/TLS sur " + fullURL, effectiveError);
-                runSSLDiagnostic(fullURL);
+                void runSSLDiagnostic(fullURL);
             } else {
                 Logger.error("[WS traceId=" + traceId + "] < Erreur lors de l'appel HTTP [" + fullURL + "]", effectiveError);
             }

@@ -122,37 +122,20 @@ describe('ErrorHandler.service', () => {
   // ─── Tests: API Errors ──────────────────────────────────────────────────────────
 
   describe('API Error Classification and Handling', () => {
-    it('should classify HTTP 401 error as authentication error', () => {
-      const apiError = new Error('HTTP 401: Unauthorized');
-      const result = handleError(apiError, 'auth', 'trace', mockShowToast);
+    it.each([
+      { status: 401, description: 'Unauthorized', expectedMessage: 'Authentification', context: 'auth', showToast: true },
+      { status: 403, description: 'Forbidden', expectedMessage: 'Authentification', context: 'context', showToast: false },
+      { status: 404, description: 'Not Found', expectedMessage: 'Ressource non trouvée', context: 'context', showToast: false },
+      { status: 500, description: 'Internal Server Error', expectedMessage: 'Erreur serveur', context: 'context', showToast: false },
+    ])('should classify HTTP $status error', ({ status, description, expectedMessage, context, showToast }) => {
+      const apiError = new Error(`HTTP ${status}: ${description}`);
+      const result = handleError(apiError, context, 'trace', mockShowToast);
 
       expect(result.errorType).toBe(ErrorType.API_ERROR);
-      expect(result.message).toContain('Authentification');
-      expect(mockShowToast).toHaveBeenCalledWith(result.message);
-    });
-
-    it('should classify HTTP 403 error as forbidden', () => {
-      const apiError = new Error('HTTP 403: Forbidden');
-      const result = handleError(apiError, 'context', 'trace', mockShowToast);
-
-      expect(result.errorType).toBe(ErrorType.API_ERROR);
-      expect(result.message).toContain('Authentification');
-    });
-
-    it('should classify HTTP 404 error as not found', () => {
-      const apiError = new Error('HTTP 404: Not Found');
-      const result = handleError(apiError, 'context', 'trace', mockShowToast);
-
-      expect(result.errorType).toBe(ErrorType.API_ERROR);
-      expect(result.message).toContain('Ressource non trouvée');
-    });
-
-    it('should classify HTTP 500 error as server error', () => {
-      const apiError = new Error('HTTP 500: Internal Server Error');
-      const result = handleError(apiError, 'context', 'trace', mockShowToast);
-
-      expect(result.errorType).toBe(ErrorType.API_ERROR);
-      expect(result.message).toContain('Erreur serveur');
+      expect(result.message).toContain(expectedMessage);
+      if (showToast) {
+        expect(mockShowToast).toHaveBeenCalledWith(result.message);
+      }
     });
 
     it('should classify Domoticz API status ERR as API error', () => {

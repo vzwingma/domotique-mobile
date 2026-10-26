@@ -347,8 +347,14 @@ describe('TabDomoticzParametres (Maison)', () => {
       expect(result).toBeDefined();
     });
 
-    it('should display connection status as "Connecté" when OK', () => {
-      const config = createMockConfig({ status: 'OK' });
+    it.each([
+      { status: 'OK', description: '"Connecté" when OK' },
+      { status: 'UPDATING', description: '"Synchronisation" when UPDATING' },
+      { status: 'ERROR', description: '"Erreur" when ERROR' },
+      { status: 'UNKNOWN', description: '"Déconnecté" for unknown status' },
+      { status: 'OK', description: 'raw status value in parentheses' },
+    ])('should display connection status $description', ({ status }) => {
+      const config = createMockConfig({ status });
       const contextValue = createMockContextValue([], config);
 
       const result = render(
@@ -358,63 +364,6 @@ describe('TabDomoticzParametres (Maison)', () => {
       );
 
       expect(result).toBeDefined();
-      // Status should show "Connecté"
-    });
-
-    it('should display connection status as "Synchronisation" when UPDATING', () => {
-      const config = createMockConfig({ status: 'UPDATING' });
-      const contextValue = createMockContextValue([], config);
-
-      const result = render(
-        <DomoticzContext.Provider value={contextValue}>
-          <TabDomoticzParametres />
-        </DomoticzContext.Provider>
-      );
-
-      expect(result).toBeDefined();
-      // Status should show "Synchronisation"
-    });
-
-    it('should display connection status as "Erreur" when ERROR', () => {
-      const config = createMockConfig({ status: 'ERROR' });
-      const contextValue = createMockContextValue([], config);
-
-      const result = render(
-        <DomoticzContext.Provider value={contextValue}>
-          <TabDomoticzParametres />
-        </DomoticzContext.Provider>
-      );
-
-      expect(result).toBeDefined();
-      // Status should show "Erreur"
-    });
-
-    it('should display connection status as "Déconnecté" for unknown status', () => {
-      const config = createMockConfig({ status: 'UNKNOWN' });
-      const contextValue = createMockContextValue([], config);
-
-      const result = render(
-        <DomoticzContext.Provider value={contextValue}>
-          <TabDomoticzParametres />
-        </DomoticzContext.Provider>
-      );
-
-      expect(result).toBeDefined();
-      // Status should show "Déconnecté"
-    });
-
-    it('should display raw status value in parentheses', () => {
-      const config = createMockConfig({ status: 'OK' });
-      const contextValue = createMockContextValue([], config);
-
-      const result = render(
-        <DomoticzContext.Provider value={contextValue}>
-          <TabDomoticzParametres />
-        </DomoticzContext.Provider>
-      );
-
-      expect(result).toBeDefined();
-      // Should show "(OK)" or status value
     });
   });
 
@@ -473,8 +422,12 @@ describe('TabDomoticzParametres (Maison)', () => {
   });
 
   describe('Connection Badge Colors', () => {
-    it('should display correct color for connected status', () => {
-      const config = createMockConfig({ status: 'OK' });
+    it.each([
+      { status: 'OK', description: 'connected' },
+      { status: 'UPDATING', description: 'syncing' },
+      { status: 'ERROR', description: 'error' },
+    ])('should display correct color for $description status', ({ status }) => {
+      const config = createMockConfig({ status });
       const contextValue = createMockContextValue([], config);
 
       const result = render(
@@ -482,37 +435,8 @@ describe('TabDomoticzParametres (Maison)', () => {
           <TabDomoticzParametres />
         </DomoticzContext.Provider>
       );
-
       expect(result).toBeDefined();
-      // Green color for connected
-    });
-
-    it('should display correct color for syncing status', () => {
-      const config = createMockConfig({ status: 'UPDATING' });
-      const contextValue = createMockContextValue([], config);
-
-      const result = render(
-        <DomoticzContext.Provider value={contextValue}>
-          <TabDomoticzParametres />
-        </DomoticzContext.Provider>
-      );
-
       expect(result).toBeDefined();
-      // Orange color for syncing
-    });
-
-    it('should display correct color for error status', () => {
-      const config = createMockConfig({ status: 'ERROR' });
-      const contextValue = createMockContextValue([], config);
-
-      const result = render(
-        <DomoticzContext.Provider value={contextValue}>
-          <TabDomoticzParametres />
-        </DomoticzContext.Provider>
-      );
-
-      expect(result).toBeDefined();
-      // Red color for error
     });
 
     it('should display correct color for disconnected status', () => {
@@ -772,4 +696,3 @@ describe('TabDomoticzParametres (Maison)', () => {
     });
   });
 });
-
