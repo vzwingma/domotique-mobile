@@ -1,102 +1,58 @@
 ---
-description: Spécificités projet domoticz-mobile pour l'agent 🟢 QUALvin (qa)
+description: "Conventions de tests de domoticz-mobile pour 🟢 QALvin : Jest, Testing Library, commandes, mocks, couverture et cas nominaux, erreurs et limites."
 applyTo: "**"
 ---
 
-# Spécificités projet — domoticz-mobile (QA)
-
-> Ce fichier est lu automatiquement par l'agent 🟢 QUALvin au démarrage.
-> Il contient uniquement les spécificités du projet `domoticz-mobile` (Application mobile React Native / Expo pour piloter Domoticz).
+# Conventions projet — domoticz-mobile (tests)
 
 ## Workflow
 
-1. Consulte la table SQL `todos` pour les tâches `*-qa` dont les dépendances sont `done`.
-2. Passe le todo en `in_progress`.
-3. Écris les tests, exécute-les, vérifie la couverture.
-4. Passe en `done` si les tests passent, `blocked` avec description si échec bloquant.
+1. Consulter les todos `*-qa` dont les dépendances sont terminées et passer la tâche choisie à `in_progress`.
+2. Écrire et exécuter des tests ciblés sur le code déjà livré et validé à Gate #2.
+3. Vérifier couverture et validations ci-dessous ; documenter les preuves dans le handoff.
+4. Passer le todo à `done` si les validations passent, ou `blocked` avec la cause si un blocage empêche la livraison.
 
-## Validation QA obligatoire
+## Stack et emplacement
 
-- ✅ Vérification que les tests passent (`npm test`)
-- ✅ Vérification `expo-doctor` (`npm run validate:expo`) en plus des tests
-- ✅ Vérification TypeScript stricte (`npm run typecheck`) en plus des tests et d'Expo
-
-## Stack de test
-
-- **Jest 29** (preset `react-native`, voir `jest.config.js`) + **`@testing-library/react-native ^13.3.3`** pour les composants
-- **`@testing-library/jest-native ^5.4.3`** pour les assertions React Native (`toBeVisible`, `toHaveTextContent`, etc.)
-- **`react-test-renderer 19.2.0`** pour les snapshots
-- Setup global : `jest.setup.ts` (mocks AsyncStorage, expo-router, @expo/vector-icons)
-- Fichiers de test : `*.test.[tsx|ts]` dans `__tests__/` co-localisés avec le module testé
+- Jest `29.7.0` avec `jest-expo` et Testing Library React Native `^13.3.3`.
+- `@testing-library/jest-native ^5.4.3` pour les assertions React Native ; `react-test-renderer 19.2.3` pour les snapshots.
+- Setup global : `jest.setup.ts` (mocks AsyncStorage, expo-router, `@expo/vector-icons`).
+- Fichiers `*.test.ts` / `*.test.tsx`, dans `__tests__/` ou co-localisés avec le module testé, selon le pattern existant.
 
 ## Commandes
 
 ```bash
-# Tous les tests (mode watch)
-npm test
-
-# Tous les tests en CI (sans watch, avec coverage)
+npm test -- --watchAll=false
 npm test -- --watchAll=false --coverage
-
-# Typecheck TypeScript (obligatoire QUALvin / CI)
+npm test -- --watchAll=false app/services/__tests__/ClientHTTP.service.test.ts
+npm test -- --watchAll=false --testNamePattern="doit appeler callDomoticz avec succès"
 npm run typecheck
-
-# Un seul fichier de test
-npm test -- app/services/__tests__/ClientHTTP.service.test.ts
-
-# Un seul test par nom
-npm test -- --testNamePattern="doit appeler callDomoticz avec succès"
+npm run validate:expo
 ```
 
-Le rapport de couverture est généré dans `coverage/` (lu par SonarQube via `sonar-project.properties`).
+La validation QA doit inclure tests, `npm run typecheck` et `npm run validate:expo`. Le rapport de couverture est généré dans `coverage/` et lu par SonarQube ; gate globale du projet : au moins 80 %. Viser au moins 80 % sur le code modifié.
 
-## Ce qu'il faut tester
+## Mocks
 
-### Composants React Native
+- Mocker les dépendances externes (réseau, AsyncStorage, modules natifs, timers) avec les mécanismes Jest et les mocks établis dans `jest.setup.ts`.
+- Injecter `DomoticzContext` avec un contexte mocké si le composant le consomme ; éviter les casts non typés quand un type de contexte peut être utilisé.
+- Mocker `fetch` pour les tests du service HTTP ; préférer des réponses qui respectent le contrat Domoticz.
+- Nettoyer les mocks et l'état partagé entre tests.
 
-```typescript
-import { render, fireEvent } from '@testing-library/react-native';
-import { DomoticzContext } from '@/app/services/DomoticzContextProvider';
+## Cas à couvrir
 
-// Toujours mocker le Context si le composant l'utilise
-const mockContext = {
-  isConnected: true,
-  setIsConnected: jest.fn(),
-};
+- **Nominal** : rendu ou résultat correct avec données valides.
+- **Vide / null** : données absentes, vides ou partielles.
+- **Erreurs** : erreurs réseau et HTTP 403 (déconnexion/réinitialisation), 404 et 500 ; vérifier le comportement attendu.
+- **Interactions** : actions utilisateur, gestes et appels associés.
+- **Responsive** : mocker `useWindowDimensions` / `Dimensions` quand utilisés.
+- **Régression** : chaque comportement important doit être protégé par un test qui échoue si ce comportement est cassé.
 
-test('doit afficher le libellé de l\'opération', () => {
-  const { getByText } = render(
-    <DomoticzContext.Provider value={mockContext as any}>
-      <MonComposant ... />
-    </DomoticzContext.Provider>
-  );
-  fireEvent.press(getByText('Action'));
-});
-```
+## Ce que QALvin ne fait pas
 
-### Services
+- Ne modifie pas le code de production ni la documentation.
+- Ne change pas la stratégie de test globale sans validation 🟠 ARCos et 👤.
 
-```typescript
-// Mocker fetch pour ClientHTTP.service
-global.fetch = jest.fn(() => Promise.resolve({ status: 200, json: () => Promise.resolve(data) }));
-```
+## Règle d'index des plans
 
-## Cas à couvrir systématiquement
-
-- **Cas nominal** : rendu correct avec données valides.
-- **Cas vide / null** : comportement quand les données sont absentes.
-- **Cas d'erreur HTTP** : 403 (déconnexion/réinitialisation du contexte), 404, 500.
-- **Interactions utilisateur** : clics, gestes (`fireEvent`).
-- **Responsive** : si `useWindowDimensions`/`Dimensions` est utilisé, mocker les dimensions.
-
-## Ce que tu ne fais PAS
-
-- Ne modifie pas les fichiers de production (`*.[tsx|ts]` hors `*.test.*`).
-- Ne mets pas à jour la documentation (rôle de 🟣 DOCly).
-- Ne prends pas de décisions sur l'architecture des tests sans validation de 🟠 ARCos.
-
-## Règle d'index des plans (obligatoire)
-
-- `.github/plans/README.md` est un index **plans + statut global** uniquement (pas de phases).
-- Si la phase QA que tu livres entraîne un changement de statut global du plan, synchronise `.github/plans/README.md` dans le même changement.
-
+`.github/plans/README.md` contient uniquement les plans et leur statut global. Si une phase QA change ce statut, synchroniser cet index dans le même changement.

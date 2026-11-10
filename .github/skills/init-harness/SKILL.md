@@ -17,8 +17,8 @@ Consignes de l'utilisateur (optionnel) : $ARGUMENTS
 - **Nouveau** : pas de `.github/copilot-instructions.md` → partir de `.github/copilot-instructions.template.md`.
 - **Existant** : `.github/copilot-instructions.md` présent → **conserver** ses sections projet, ne remplacer que les
   sections génériques (agents, workflow, plans) par celles du template.
-- **Ancien format** : fichiers `.github/instructions/*.instructions.md` présents → reprendre leurs valeurs
-  dans les conventions par rôle (étape 4), puis signaler à 👤 que ces fichiers peuvent être retirés.
+- **Instructions par rôle existantes** : les conserver comme source de vérité projet et les enrichir avec les
+  règles de rôle utiles ; ne pas les retirer après fusion.
 - **Plans dans `.github/plans/`** (ancien emplacement, chemin protégé : chaque écriture demande confirmation) →
   proposer `git mv .github/plans docs/plans` et mettre à jour les liens (ADR 004 du dépôt transverse).
 
@@ -42,9 +42,9 @@ Sources utiles : `README.md`, manifestes de dépendances, config lint/format, CI
 
 ## 4. Remplir les conventions par rôle
 
-Créer les fichiers d'instructions par rôle depuis les templates `.github/instructions/*.instructions.template.md` :
-`orchestrator`, `architect`, `dev`, `qa`, `doc` → `.github/instructions/<rôle>.instructions.md` (sans `.template`),
-puis remplir leurs placeholders avec les valeurs de l'étape 2.
+Créer ou mettre à jour les fichiers `.github/instructions/{orchestrator,architect,dev,qa,doc}.instructions.md`
+à partir des conventions vérifiées à l'étape 2 et des instructions existantes. Fusionner les consignes utiles,
+remplacer tout placeholder connu et ne pas dépendre de fichiers `*.instructions.template.md` qui peuvent être absents.
 
 La cible documentée est GitHub Copilot CLI uniquement ; VS Code et cloud agent sont hors périmètre. Les
 skills CLI sont chargées selon pertinence, sans sélection déterministe par rôle. Les profils générés
@@ -67,7 +67,7 @@ points à valider par 👤.
 ## ✅ Checklist
 
 - [ ] `.github/copilot-instructions.md` créé ou fusionné, sections génériques intactes
-- [ ] Conventions des 5 rôles remplies (placeholders restants listés)
+- [ ] Instructions des 5 rôles créées ou fusionnées ; placeholders restants listés
 - [ ] Commandes build/lint/test réelles renseignées
 - [ ] `docs/ARCHITECTURE.md` et `docs/adr/` présents
 - [ ] Aucune référence à un fichier inexistant

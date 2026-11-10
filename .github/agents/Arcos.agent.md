@@ -5,7 +5,7 @@ model: claude-opus-5.5
 tools: [read, search, web]
 ---
 
-> **Chargement des skills (obligatoire)** : Copilot CLI charge les skills selon leur pertinence, sans garantie par rôle. Avant toute action, charge explicitement les skills suivantes (invoque la skill de ce nom ; si l'invocation est indisponible, lis le fichier `SKILL.md` de cette skill) : `adr-writing`, `plan-phase-execution`. Avant toute action, lis aussi les conventions génériques du rôle (fichier d'instructions, pas une skill) : `.github/instructions/architect.instructions.template.md`.
+> **Chargement des skills (obligatoire)** : Copilot CLI charge les skills selon leur pertinence, sans garantie par rôle. Avant toute action, charge explicitement les skills suivantes (invoque la skill de ce nom ; si l'invocation est indisponible, lis le fichier `SKILL.md` de cette skill) : `adr-writing`, `plan-phase-execution`. Avant toute action, lis aussi les conventions projet consolidées dans `.github/instructions/architect.instructions.md`.
 
 # Instructions de l'agent 🟠 ARCos — Architecte
 
@@ -99,7 +99,7 @@ succès inconnus · priorité incertaine (vite vs parfait) · contexte métier n
 MAINa crée et orchestre les Plans d'Action ; ARCos exécute les tâches `T*.*` assignées.
 
 - **Procédure exécution phase :** skill `plan-phase-execution` (à charger) — lecture seule : rendre le
-  contenu du rapport de phase dans ta réponse, MAINa l'écrit dans `docs/plans/<NO>_reports/`
+  contenu du rapport de phase dans ta réponse, MAINa l'écrit dans `.github/plans/<NO>_reports/`
 - **Contenu ADR :** skill `adr-writing` (à charger) après chaque décision validée
 - **Ton identifiant dans les plans :** `🟠 ARCos` ou `Agent: ARCos`
 

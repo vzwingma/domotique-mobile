@@ -60,24 +60,22 @@ Créer `.github/copilot-instructions.md` en :
 3. Supprimant sections `[📌 À COMPLÉTER : ...]` si remplies
 4. Conservant sections génériques (agents, workflow, plans d'action, diagrammes)
 
-### 5. Générer les fichiers d'instructions agents
+### 5. Générer ou fusionner les fichiers d'instructions agents
 
-Lire 4 templates dans `.github/instructions/` du dépôt transverse :
-- `architect.instructions.template.md` — template instructions pour agent ARCos
-- `dev.instructions.template.md` — template instructions pour agent DEVon
-- `qa.instructions.template.md` — template instructions pour agent QUALvin
-- `doc.instructions.template.md` — template instructions pour agent DOCly
+Lire les instructions existantes dans `.github/instructions/` du projet cible pour les cinq rôles :
+`orchestrator`, `architect`, `dev`, `qa`, `doc`. Conserver leurs spécificités vérifiées, puis les compléter avec
+les conventions observées à l'étape 2. Ne pas dépendre de fichiers `*.instructions.template.md` ; s'ils existent,
+les utiliser uniquement comme référence complémentaire.
 
-Pour chaque fichier, remplir placeholders avec valeurs identifiées lors analyse (étape 2) :
-- `[NOM_DU_PROJET]` → nom projet
-- `[DESCRIPTION_COURTE_DU_PROJET]` → description courte (ex: frontend React/TypeScript)
-- Pour `dev.instructions.md` : stack, versions, fichiers constantes, service HTTP, dossiers conventions
-- Pour `qa.instructions.md` : framework test, commandes CI, chemins rapport couverture, noms contexts
-- Pour `doc.instructions.md` : chemin docs/ local, noms fichiers documentation, frameworks + versions pour `.puml`
-- Pour `architect.instructions.md` : couches projet, noms providers état, service HTTP, routing
+Vérifier notamment :
+- `dev.instructions.md` : stack, versions, fichiers de constantes, service HTTP, structure et commandes réelles
+- `qa.instructions.md` : framework, commandes CI, rapport de couverture, mocks et cas d'erreur
+- `doc.instructions.md` : chemins de documentation, diagrammes et versions maintenues
+- `architect.instructions.md` : couches, état partagé, service réseau, routing et intégrations
+- `orchestrator.instructions.md` : sources de contexte, plans persistés, gates et contenu des délégations
 
-Créer 4 fichiers dans `.github/instructions/` du projet cible (ou mettre à jour si existent déjà), nommés `architect.instructions.md`, `dev.instructions.md`, `qa.instructions.md`, `doc.instructions.md`.
-Si certaines valeurs non déterminables depuis code, conserver placeholders `[...]` et signaler explicitement.
+Créer ou mettre à jour les cinq fichiers dans `.github/instructions/`. Remplacer les placeholders déterminables ;
+signaler séparément toute valeur qui ne peut pas être vérifiée.
 
 ### 6. Auditer et enrichir (optionnel)
 
@@ -86,7 +84,7 @@ Si projet dispose autres fichiers référence (CONTRIBUTING.md, ARCHITECTURE.md,
 ## ✅ Checklist de Livraison
 
 - [ ] Fichier `.github/copilot-instructions.md` créé
-- [ ] Fichiers `.github/instructions/*.instructions.md` créés depuis templates `*.instructions.template.md` (4 fichiers : architect, dev, qa, doc)
+- [ ] Les cinq fichiers `.github/instructions/*.instructions.md` sont créés ou fusionnés avec les conventions réelles
 - [ ] Tous placeholders `[...]` remplacés par valeurs réelles
 - [ ] Placeholders critiques remplacés (minimum : NOM_DU_PROJET, stack technique)
 - [ ] Sections `[📌 À COMPLÉTER : ...]` supprimées ou complétées
