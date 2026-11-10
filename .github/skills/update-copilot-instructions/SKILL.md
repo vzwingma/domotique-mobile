@@ -83,7 +83,7 @@ Lire 4 fichiers suivants dans `.github/instructions/`:
 - `qa.instructions.md`
 - `doc.instructions.md`
 
-> Si un fichier est absent, le créer depuis le template correspondant dans `.github/instructions/` du dépôt transverse (`architect.instructions.template.md`, `dev.instructions.template.md`, `qa.instructions.template.md`, `doc.instructions.template.md`) et remplir les placeholders avec les valeurs du projet.
+> Si un fichier est absent, le proposer à la création à partir des conventions vérifiées dans le code et de la définition du rôle. Utiliser un template disponible uniquement comme référence complémentaire ; ne pas supposer qu'un fichier `*.instructions.template.md` existe.
 
 Pour chaque fichier, vérifier cohérence avec code source:
 - `dev.instructions.md`: versions librairies, noms fichiers constantes, chemins dossiers
@@ -132,7 +132,7 @@ Avant appliquer modifications:
    - Sections **validées** (conformes au code, aucun changement)
    - Vérification agents `.github/agents/*.agent.md` à version courante (v3.0+)
    - Vérification skills `.github/skills/*/SKILL.md` présents et cohérents avec `PLANS.md`
-   - Modifications proposées pour chaque fichier `.github/instructions/*.instructions.md` (créés depuis `*.instructions.template.md` si absents)
+   - Modifications proposées pour chaque fichier `.github/instructions/*.instructions.md` (créés depuis les conventions vérifiées si absents)
    - Signalement séparé placeholders non remplis vs valeurs obsolètes
 
 2. Attendre **validation 👤 Développeur humain** avant appliquer modifications.

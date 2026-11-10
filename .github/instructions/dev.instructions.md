@@ -1,22 +1,18 @@
 ---
-description: Spécificités projet domoticz-mobile pour l'agent 🔵 DEVon (dev)
+description: "Conventions de développement de domoticz-mobile pour 🔵 DEVon : React Native, Expo, TypeScript, structure, appels Domoticz, modèles et commandes de vérification."
 applyTo: "**"
 ---
 
-# Spécificités projet — domoticz-mobile (Dev)
-
-> Ce fichier est lu automatiquement par l'agent 🔵 DEVon au démarrage.
-> Il contient uniquement les spécificités du projet `domoticz-mobile` (Application mobile React Native / Expo pour piloter Domoticz).
+# Conventions projet — domoticz-mobile (développement)
 
 ## Workflow
 
-1. Consulte la table SQL `todos` pour trouver les tâches `owner = 'dev'` dont le statut est `pending` et sans dépendances bloquantes.
-2. Passe le todo en `in_progress` avant de commencer.
-3. Implémente la fonctionnalité en respectant les conventions ci-dessous.
-4. Passe le todo en `done` une fois le code prêt.
+1. Repérer le todo de développement `pending` sans dépendance bloquante et le passer à `in_progress`.
+2. Implémenter uniquement le périmètre validé dans le Plan d'Action.
+3. Vérifier typecheck, lint et tests existants ; consigner commandes et résultats dans le handoff.
+4. Passer le todo à `done` lorsque l'implémentation est prête pour Gate #2.
 
 ```sql
--- Trouver les tâches dev disponibles
 SELECT t.* FROM todos t
 WHERE t.status = 'pending'
 AND (t.id LIKE '%-dev' OR t.description LIKE '%owner: dev%')
@@ -29,70 +25,48 @@ AND NOT EXISTS (
 
 ## Stack technique
 
-- **React Native 0.85.3 / Expo ~56** – TypeScript strict, composants fonctionnels uniquement
-- **UI** : Composants React Native natifs (`View`, `Text`, `TouchableOpacity`, etc.) — aucune lib UI externe
-- **expo-router ~56.2.11** – Routage basé sur les fichiers, routes dans `app/(tabs)/_layout.tsx`
-- **Authentification** : Basic Auth via `EXPO_PUBLIC_DOMOTICZ_AUTH` (Base64) — ne pas manipuler dans les composants
-- **@react-native-community/slider** – Sliders (volets, niveaux lumineux)
-- **uuid ^14.0.0** – Génération de `traceId` pour les appels HTTP
+- **TypeScript strict**, React `19.2.3`, React Native `0.85.3`, Expo `~56.0.24` ; composants fonctionnels uniquement.
+- **Routage** : `expo-router ~56.2.22`, file-based dans `app/`.
+- **UI** : composants React Native natifs ; ne pas ajouter de bibliothèque UI.
+- **Auth** : Basic Auth configurée via `app.config.ts` et `EXPO_PUBLIC_DOMOTICZ_AUTH` ; ne pas manipuler les identifiants dans les composants.
+- **Bibliothèques existantes** : `@react-native-community/slider` pour les sliders ; `uuid ^14` pour les `traceId`.
+
+## Commandes de vérification
+
+```bash
+npm run typecheck
+npm run lint
+npm test -- --watchAll=false
+```
+
+Utiliser une commande de build uniquement si le plan ou le changement en requiert une. Le handoff indique les commandes réellement exécutées et leurs résultats.
+
+## Structure et nommage
+
+- Écrans Expo Router : `app/(tabs)/` ; composants métier : `app/components/*.component.tsx`.
+- Controllers : `app/controllers/*.controller.tsx` ; services : `app/services/*.service.ts`.
+- Modèles : classes dans `app/models/*.model.ts` ; constantes et enums dans `app/enums/`.
+- Tests `*.test.ts` / `*.test.tsx` : responsabilité de 🟢 QALvin.
 
 ## Conventions de code
 
-### Composants
+- Props de composants : `export type XxxProps`; composants fonctionnels typés ; styles avec `StyleSheet.create()`.
+- Utiliser `useMemo`, `useCallback` et `React.memo` selon les patterns existants ; garder l'UI responsive.
+- Les classes de modèles ont des propriétés explicites et immuables quand pertinent. État partagé via `DomoticzContextProvider`, état d'interface local via hooks React.
+- Controllers utilisent les callbacks du Context et les chaînes de promesses `.then().catch()` ; signaler les erreurs via `AndroidToast` selon les patterns existants.
+- Tous les appels réseau passent par `callDomoticz()` dans `ClientHTTP.service.ts`, jamais par `fetch` dans UI/controllers.
+- Constantes API : `app/enums/APIconstants.ts`; enums métier : `app/enums/DomoticzEnum.ts`; couleurs : `app/enums/Colors.ts`.
+- Ne jamais coder en dur une URL, une clé ou un secret.
 
-```typescript
-// Toujours : composant fonctionnel typé
-export const MonComposant: React.FC<MonComposantProps> = ({ prop1, prop2 }): JSX.Element => {
-  // ...
-};
-```
+Exemple d'appel : `callDomoticz(SERVICES_URL.GET_DEVICES)` ; ajouter les paramètres via `KeyValueParams` pour les substitutions d'endpoint.
 
-- Props typées sous la forme `export type XxxProps = { ... }` en tête du fichier `*.component.tsx`.
-- Sous-composants dans `app/components/`, styles via `StyleSheet.create()` en bas du fichier.
-- Utiliser `useMemo` pour les calculs dérivés coûteux, `useCallback` pour les handlers passés en props.
-- `React.memo` pour les composants fréquemment re-rendus (ex : `DeviceCard`, `FavoriteCard`).
-- Responsive via `StyleSheet.create()` avec dimensions relatives (pas de valeurs fixes codées en dur).
+## Ce que DEVon ne fait pas
 
-### Appels HTTP
+- Ne modifie ni n'écrit les tests ; rôle de 🟢 QALvin.
+- Ne met pas à jour README, `docs/`, wiki ou instructions d'agents ; rôle de 🟣 DOCly.
+- Ne prend pas de décision architecturale et n'ajoute pas de dépendance structurante sans décision 🟠 ARCos validée.
+- Ne corrige pas de problème préexistant sans lien direct avec l'implémentation.
 
-```typescript
-// Toujours passer par callDomoticz()
-import callDomoticz from '@/app/services/ClientHTTP.service';
-import { SERVICES_URL, SERVICES_PARAMS, KeyValueParams } from '@/app/enums/APIconstants';
+## Règle d'index des plans
 
-// Appel simple
-callDomoticz(SERVICES_URL.GET_DEVICES)
-  .then(data => { /* ... */ })
-  .catch(err => showToast(err.message, ToastDuration.SHORT));
-
-// Appel avec paramètres de remplacement (<IDX>, <CMD>, etc.)
-const params: KeyValueParams[] = [
-  { key: SERVICES_PARAMS.IDX, value: String(device.idx) },
-  { key: SERVICES_PARAMS.CMD, value: 'On' },
-];
-callDomoticz(SERVICES_URL.CMD_BLINDS_LIGHTS_ON_OFF, params);
-```
-
-### Modèles et état
-
-- Les classes de données vont dans `app/models/` (ex : `domoticzDevice.model.ts`).
-- L'état global via `useContext(DomoticzContext)` (importé depuis `app/services/DomoticzContextProvider`).
-- L'état local UI via `useState`.
-
-### Enums et constantes
-
-- Constantes techniques (URLs API, paramètres) dans `app/enums/APIconstants.ts`.
-- Enums métier (types d'appareils, statuts, labels) dans `app/enums/DomoticzEnum.ts`.
-- Couleurs dans `app/enums/Colors.ts`.
-- Ne pas hardcoder les URLs ou les clés API dans les composants.
-
-## Ce que tu ne fais PAS
-
-- Ne modifie pas les fichiers `*.test.[tsx|ts]` (rôle de 🟢 QUALvin).
-- Ne mets pas à jour `README.md`, les wikis, ni `copilot-instructions.md` (rôle de 🟣 DOCly).
-- Ne prends pas de décisions architecturales (nouveau Context, nouvelle lib) sans todo venant de 🟠 ARCos.
-
-## Règle d'index des plans (obligatoire)
-
-- `.github/plans/README.md` doit rester limité aux **plans + statut global** (sans détail de phases).
-- Si ton travail change le statut global d'un plan, mets à jour `.github/plans/README.md` dans le même changement.
+`.github/plans/README.md` liste les plans et leur statut global uniquement. Si l'implémentation change ce statut, mettre l'index à jour dans le même changement.
