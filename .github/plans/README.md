@@ -12,6 +12,7 @@ Cet index liste uniquement les plans et leur **statut global**.
 | AP | Fichier | Objectif | Statut global |
 |---|---|---|---|
 | AP-005 | [`005_optimisations_finops.plan.md`](./005_optimisations_finops.plan.md) | Optimisations FinOps : modèle DEVon Haiku, sync table modèles, compression copilot-instructions | ⏳ PLANIFIÉ |
+| AP-006 | [`006_echelle_segmentee_slider_volets.plan.md`](./006_echelle_segmentee_slider_volets.plan.md) | Échelle segmentée du slider des volets en previewV (issue #330) | 🔄 EN COURS |
 
 ---
 
@@ -34,4 +35,4 @@ Cet index liste uniquement les plans et leur **statut global**.
 
 ---
 
-**Dernière mise à jour :** 2026-06-01
+**Dernière mise à jour :** 2026-11-10
