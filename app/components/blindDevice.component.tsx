@@ -2,13 +2,14 @@ import React, { useContext, useState } from 'react';
 import Slider from '@react-native-community/slider';
 import DomoticzDevice from '@/app/models/domoticzDevice.model';
 import { getLevel, getStatusLabel, isDeviceOn, overrideNextValue, updateDeviceLevel } from '../controllers/devices.controller';
-import { Colors, getGroupColor } from '../enums/Colors';
+import { Colors, getGroupColor, PROFILE, PROFILES_ENV } from '../enums/Colors';
 import { DomoticzBlindsGroups , DomoticzSwitchType } from '../enums/DomoticzEnum';
 import { IconDomoticzDevice, performDevicePrimaryAction } from '@/components/IconDomoticzDevice';
 import { DomoticzContext } from '../services/DomoticzContextProvider';
 import { PrimaryIconAction } from './primaryIconAction.component';
 import { DeviceCard } from './deviceCard.component';
 import { stylesListsDevices } from './deviceRow.styles';
+import { SegmentedBlindSlider } from './segmentedBlindSlider.component';
 
 type ViewBlindDeviceProps = {
   device: DomoticzDevice;
@@ -36,7 +37,21 @@ export const ViewBlindDevice: React.FC<ViewBlindDeviceProps> = ({ device }) => {
     </PrimaryIconAction>
   );
 
-  const sliderComponent = isDimmable
+  const sliderComponent = isDimmable && PROFILE !== undefined && PROFILE === PROFILES_ENV.V
+    ? (
+      <SegmentedBlindSlider
+        accessibilityLabel={`Position volet ${device.name}`}
+        disabled={!device.isActive}
+        level={getLevel(device)}
+        onLevelChange={(value) => overrideNextValue(value, setNextValue)}
+        onSlideStart={() => setFlagLabel(true)}
+        onSlideEnd={() => {
+          updateDeviceLevel(device.idx, device, nextValue, setDomoticzDevicesData);
+          setFlagLabel(false);
+        }}
+      />
+    )
+    : isDimmable
     ? (
       <Slider
         disabled={!device.isActive}
