@@ -34,7 +34,7 @@ describe('DomoticzConfig', () => {
     // ─── isOnline Getter ────────────────────────────────────────────────────────────
 
     describe('isOnline getter', () => {
-        it.each(['OK', 'ok', 'OK', 'Status: Ok'])('retourne true si status contient %s', (status) => {
+        it.each(['OK', 'ok', 'Status: Ok'])('retourne true si status contient %s', (status) => {
             const config = makeConfig({ status });
             expect(config.isOnline).toBe(true);
         });
