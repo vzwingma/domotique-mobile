@@ -15,6 +15,7 @@
 | **Type** | [frontend / backend / fullstack / mobile / CLI / lib / API] |
 | **Stack principale** | [ex: React 18 + TypeScript, Spring Boot 3, Python FastAPI, etc.] |
 | **Plateforme cible** | [web / iOS / Android / desktop / serveur / etc.] |
+| **Cible Copilot vérifiée** | [GitHub Copilot CLI uniquement si vérifiée ; sinon « non vérifiée »] |
 | **Langue UI** | [Français / Anglais / etc.] |
 | **Statut** | [En développement / Stable / Legacy / En maintenance] |
 
@@ -121,7 +122,9 @@ Rapport de couverture : `[CHEMIN_RAPPORT_COVERAGE]`
 
 ## 📐 Conventions et Patterns
 
-> Résumé des conventions clés — pour le détail, voir `.github/copilot-instructions.md`.
+> Résumé des conventions clés — pour le détail, voir `.claude/CLAUDE.md` et les conventions par rôle.
+> Si GitHub Copilot CLI est vérifiée, la projection est générée vers `.github/` ; ne pas déduire de parité
+> pour VS Code ou cloud agent sans preuves propres.
 
 - **Nommage fichiers** : [ex: `*.component.tsx`, `*.service.ts`, `*.test.ts`]
 - **Nommage variables** : [ex: camelCase pour variables, PascalCase pour composants]
@@ -180,7 +183,7 @@ Pipeline CI/CD : [ex: GitHub Actions — voir `.github/workflows/`]
 ## 🔗 Ressources
 
 - **README** : [`README.md`](../README.md)
-- **Instructions Copilot** : [`.github/copilot-instructions.md`](../.github/copilot-instructions.md)
-- **Plans d'Action** : [`.github/plans/`](../.github/plans/)
+- **Instructions des agents** : [`.claude/CLAUDE.md`](../.claude/CLAUDE.md) (Copilot CLI : `.github/copilot-instructions.md`)
+- **Plans d'Action** : [`docs/plans/`](plans/)
 - **ADRs** : [`docs/adr/`](./adr/)
 - [**[LIEN_EXTERNE_1]**]([URL]) : [Description]
