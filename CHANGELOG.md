@@ -20,6 +20,9 @@ et ce projet adhère à la [versioning sémantique](https://semver.org/spec/v2.0
 
 ### Changed
 
+- **Version de l'application : 5.1.0**, synchronisée dans le manifeste npm et le lockfile ; la configuration Expo dérive cette version du manifeste. Aucun build ni publication n'est impliqué par ce changement.
+- **Slider des volets en previewV** (#330, [ADR 015](docs/adr/015-echelle-segmentee-slider-volets.md)) : échelle segmentée 0–10 %, 10–50 %, 50–100 % sur trois tiers égaux, sans graduations ni libellés sous la barre. Accessibilité en pourcentages conservée ; lumières, favoris et autres profils inchangés.
+
 - **Suppression du cache HTTP 30s** : `callDomoticz()` effectue désormais toujours un appel réseau direct — pas de cache côté client ([ADR 004](docs/adr/004-suppression-cache-http-et-rafraichissement-appstate.md))
   - Suppression de `CacheEntry`, `httpCache`, `isCacheValid`, `getCachedData`, `setCachedData`, `clearHttpCache` dans `ClientHTTP.service.ts`
   - Signature simplifiée : `callDomoticz(path, params?)` sans 3e argument `bypassCache`/`forceFresh`

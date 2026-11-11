@@ -103,13 +103,13 @@ describe('blindDevice : isolation des profils', () => {
     const colors = jest.requireMock<{ PROFILE: string; PROFILES_ENV: { V: string } }>('../../enums/Colors');
     expect(colors.PROFILE).toBe('previewV');
     expect(colors.PROFILES_ENV.V).toBe('previewV');
-    const { getByTestId, getByText } = renderDevice();
+    const { getByTestId, queryByText } = renderDevice();
     const slider = getByTestId('slider');
     expect(slider.props.minimumValue).toBe(0);
     expect(slider.props.maximumValue).toBe(1);
     expect(slider.props.step).toBe(0);
     expect(slider.props.value).toBeCloseTo(11 / 15, 12);
-    expect(getByText('10\u00a0%', { includeHiddenElements: true })).toBeTruthy();
+    expect(queryByText('10\u00a0%', { includeHiddenElements: true })).toBeNull();
   });
 
   it.each(['previewC', 'production', undefined])('garde le slider lineaire en profil %s', profile => {

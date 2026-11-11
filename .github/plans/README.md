@@ -12,7 +12,6 @@ Cet index liste uniquement les plans et leur **statut global**.
 | AP | Fichier | Objectif | Statut global |
 |---|---|---|---|
 | AP-005 | [`005_optimisations_finops.plan.md`](./005_optimisations_finops.plan.md) | Optimisations FinOps : modèle DEVon Haiku, sync table modèles, compression copilot-instructions | ⏳ PLANIFIÉ |
-| AP-006 | [`006_echelle_segmentee_slider_volets.plan.md`](./006_echelle_segmentee_slider_volets.plan.md) | Échelle segmentée du slider des volets en previewV (issue #330) | 🔄 EN COURS |
 
 ---
 
@@ -24,6 +23,7 @@ Cet index liste uniquement les plans et leur **statut global**.
 | AP-002 | [`002_typescript_ci_remediation.plan.md`](./002_typescript_ci_remediation.plan.md) | Remédiation CI TypeScript (`tsc --noEmit`) | ✅ COMPLÉTÉ |
 | AP-003 | [`003_sonarcloud_remediation.plan.md`](./003_sonarcloud_remediation.plan.md) | Remédiation SonarCloud (Reliability + Maintainability) | ✅ COMPLÉTÉ |
 | AP-004 | [`004_fix_race_condition_post_commande.plan.md`](./004_fix_race_condition_post_commande.plan.md) | Fix race condition affichage état post-commande (volet/lumière/thermostat) | ✅ COMPLÉTÉ |
+| AP-006 | [`006_echelle_segmentee_slider_volets.plan.md`](./006_echelle_segmentee_slider_volets.plan.md) | Échelle segmentée du slider des volets en previewV (issue #330) | ✅ COMPLÉTÉ |
 
 ---
 

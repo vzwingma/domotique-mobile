@@ -2,7 +2,7 @@
 
 **Document :** `.github/plans/006_echelle_segmentee_slider_volets.plan.md`
 **Date de création :** 2026-11-10
-**Statut :** 🔄 En cours
+**Statut :** ✅ Complété
 **Objectif Prioritaire :** MEDIUM
 **Issue :** [#330](https://github.com/vzwingma/domotique-mobile/issues/330)
 **ADR associé :** `docs/adr/015-echelle-segmentee-slider-volets.md` — `Proposée` → `Acceptée` au Gate #1
@@ -11,6 +11,12 @@
 ---
 
 ## 🎯 Objectif Global
+
+> **Ajustement 👤 du 2026-11-11 :** recette QA confirmée correcte.
+> Retirer les graduations et étiquettes visibles sous le slider ; conserver
+> l'échelle segmentée, le périmètre previewV/volets et l'accessibilité en pourcentages.
+> Cet ajustement remplace les exigences de graduations et de calibration
+> `TRACK_INSET` dans les tâches ci-dessous.
 
 Permettre un réglage fin des volets entre 0 % et 10 % tout en gardant un accès rapide à 0 / 50 / 100 %, via un slider à échelle segmentée non-linéaire.
 
@@ -71,7 +77,7 @@ Formules (niveau `p` en %, position `t` ∈ [0,1]) :
   - Ne pas modifier le controller.
 - **Acceptation :** comportement hors previewV identique à l'existant ; en previewV, glisser à ~73 % de course envoie 60 %.
 
-### Phase 2 — Tests & recette — 🔄 En cours
+### Phase 2 — Tests & recette — ✅ Validée
 **Contexte :** après Gate #2. Les mocks de tests déclarent `PROFILES_ENV: { C: 'previewC' }` (à étendre avec `V`). Les assertions de slider dans `blindDevice.component.test.tsx` (min/max/step) ne doivent changer que pour le cas previewV.
 **Agent responsable :** 🟢 QALvin
 **Critères de réussite :**
@@ -102,7 +108,7 @@ Formules (niveau `p` en %, position `t` ∈ [0,1]) :
 - **Couvrir :** alignement des graduations (calage de `TRACK_INSET`), réglage 1–9 % atteignable, TalkBack annonce en %, hauteur de carte acceptable (grille tablette).
 - **Acceptation :** constat consigné dans le rapport de phase ; écart d'alignement ≤ ~1 px après calage, sinon retour AJUSTER vers DEVon.
 
-### Phase 3 — Documentation & clôture — ⏳ Planifié
+### Phase 3 — Documentation & clôture — ✅ Validée
 **Contexte :** après Gate #3.
 **Agent responsable :** 🟣 DOCly
 **Critères de réussite :**
@@ -165,5 +171,5 @@ Phase 3 (docs)  → Gate #4
 | #0 | 2026-11-10 | Choix de solution | ✅ GO | Option A ; volets + previewV uniquement (pas previewC, pas favoris/lumières) ; ADR-015 ; échelle linéaire par morceaux 0/10/50/100 fixe |
 | #1 | 2026-11-10 | Validation plan | ✅ GO | Gate #1 approuvé par 👤 ; ADR-015 passée à Acceptée ; Phase 1 lancée |
 | #2 | 2026-11-10 | Validation code | ✅ GO | Code approuvé par 👤 ; revue corrigée ; typecheck/lint verts ; 47 suites et 1 018 tests verts hors worktrees imbriqués ; lancement QA |
-| #3 | — | Validation tests | ⏳ En attente | — |
-| #4 | — | Validation documentation / clôture | ⏳ En attente | — |
+| #3 | 2026-11-11 | Validation tests et recette | ✅ GO | Recette humaine validée ; graduations retirées sur demande ; 37 tests ciblés, typecheck et lint verts ; documentation autorisée |
+| #4 | 2026-11-11 | Validation documentation / clôture | ✅ GO | Documentation approuvée par 👤 ; AP-006 clôturé ; ADR-015 Acceptée |
