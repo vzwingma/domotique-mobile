@@ -259,6 +259,7 @@ domoticz-mobile/
 | `ViewDomoticzDevice` | `device.component.tsx` | Orchestrateur : dispatcher vers lumière ou volet selon le type |
 | `ViewLightDevice` | `lightDevice.component.tsx` | Rendu + contrôle lumière (on/off, slider, état groupe) |
 | `ViewBlindDevice` | `blindDevice.component.tsx` | Rendu + contrôle volet (slider, état groupe, confirmation modale) |
+| `SegmentedBlindSlider` | `segmentedBlindSlider.component.tsx` | Slider volet segmenté en previewV ; conversion interne 0–1, callbacks et accessibilité en pourcentages ; sans graduations visibles |
 | `DeviceCard` | `deviceCard.component.tsx` | Carte générique (header + body + action buttons) |
 | `FavoriteCard` | `favoriteCard.component.tsx` | Carte "action rapide" (1 tap, slider conditionnel) |
 | `PrimaryIconAction` | `primaryIconAction.component.tsx` | Bouton icône avec label |
@@ -391,6 +392,17 @@ export default class DomoticzDevice {
 6. Confirmation modale pour les actions sur groupe de volets (nom contenant "Tous")
 
 **Composants :** `ViewDomoticzDevice`, `ViewLightDevice`, `ViewBlindDevice`, `DeviceCard`
+
+**Échelle des volets en previewV** ([ADR 015](adr/015-echelle-segmentee-slider-volets.md)) :
+`ViewBlindDevice` sélectionne `SegmentedBlindSlider` lorsque `PROFILE === PROFILES_ENV.V`.
+Le service pur `app/services/BlindLevelScale.service.ts` convertit les niveaux en
+positions normalisées : 0–10 %, 10–50 % et 50–100 % occupent chacun un tiers de course.
+Ainsi, 60 % correspond à environ 73,33 % de la course. Le slider natif reste continu
+(`step=0`) ; les callbacks émettent des pourcentages entiers arrondis.
+Aucune graduation ni étiquette n'est affichée sous la barre. L'annonce accessible
+reste en pourcentages et suit les mises à jour du niveau.
+Les controllers et l'API restent inchangés ; les sliders des lumières, des favoris
+et des profils autres que previewV restent linéaires.
 
 ### Températures (`app/(tabs)/temperatures.tab.tsx`)
 

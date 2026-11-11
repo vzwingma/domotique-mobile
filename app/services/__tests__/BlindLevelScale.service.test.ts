@@ -1,4 +1,4 @@
-import { BLIND_SCALE_TICKS, levelToPosition, positionToLevel } from '../BlindLevelScale.service';
+import { levelToPosition, positionToLevel } from '../BlindLevelScale.service';
 
 describe('BlindLevelScale', () => {
   it.each([
@@ -48,12 +48,4 @@ describe('BlindLevelScale', () => {
     expect(positionToLevel(value)).toBe(0);
   });
 
-  it('definit quatre reperes aux tiers de la course', () => {
-    expect(BLIND_SCALE_TICKS).toEqual([
-      { position: 0, label: '0\u00a0%' },
-      { position: 1 / 3, label: '10\u00a0%' },
-      { position: 2 / 3, label: '50\u00a0%' },
-      { position: 1, label: '100\u00a0%' },
-    ]);
-  });
 });

@@ -264,6 +264,7 @@ Pour plus de détails sur le setup Jest, les conventions de test, et les meilleu
 - Écran **Favoris** orienté actions rapides : cartes 1 tap (action principale + bouton), slider conditionnel disponible en mode `previewC`, limité aux **7 favoris actifs** les plus utilisés
 - Affichage et contrôle des lumières (on/off, variateur) avec labels métier "Allumé"/"Éteint" et état synthétique pour les groupes ("Éteintes" / "Allumées" / "Mixte" / niveau%)
 - Gestion des volets/stores (ouverture/fermeture via slider et clic icône) avec labels "Ouvert"/"Fermé" ; confirmation modale pour les actions sur groupe de volets (nom contenant "Tous")
+- En **previewV uniquement**, le slider des volets utilise trois tiers de course : **0–10 %**, **10–50 %**, **50–100 %**, pour un réglage fin de l'entrebâillement. Aucun repère ni libellé supplémentaire sous la barre ; accessibilité en pourcentages conservée. Lumières, favoris et autres profils inchangés ([ADR 015](docs/adr/015-echelle-segmentee-slider-volets.md)).
 - Consultation des capteurs de température avec indicateurs "Déconnecté"/"Inconnu" pour les capteurs inactifs
 - Contrôle des thermostats (point de consigne ajustable par paliers de ±0,5°C, affichage distinct **Mesure / Consigne**)
 - Gestion des groupes d'équipements (indicateur "Mixte" pour niveaux incohérents)

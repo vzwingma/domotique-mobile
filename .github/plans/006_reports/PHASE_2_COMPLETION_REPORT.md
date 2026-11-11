@@ -4,9 +4,18 @@
 **Responsable Agent :** 🟢 QALvin ; reprise directe par ⚫ MAINa après blocage des outils du sous-agent
 **Date Début :** 2026-11-10
 **Dernière validation :** 2026-11-10
-**Statut :** 🔄 Tests automatisés terminés — recette Android humaine en attente
+**Statut :** ✅ VALIDÉE — Gate #3 GO le 2026-11-11
 
 ## Tâches
+
+### Retour de recette et ajustement du 2026-11-11
+
+- 👤 confirme la validation QA correcte, avec demande de retirer graduations et libellés visibles.
+- Graduations, textes, styles et constantes associés supprimés ; échelle et annonce accessible préservées.
+- Tests adaptés pour vérifier l'absence de libellés visibles et conserver les conversions/profils/commandes.
+- Validation après ajustement : **3 suites, 37 tests réussis** ; `npm run typecheck` et `npm run lint` réussis.
+- Le retrait de piste et sa calibration ne sont plus applicables.
+- Les chiffres de couverture et de suite globale ci-dessous correspondent à la validation initiale avant cet ajustement.
 
 - T2.1 : ✅ tests exhaustifs du module de conversion ; couverture 100 %.
 - T2.2 : ✅ tests du slider segmenté et resynchronisation du niveau ; couverture 100 %.

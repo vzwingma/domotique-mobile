@@ -2,7 +2,7 @@
 import React from 'react';
 import type { SliderProps } from '@react-native-community/slider';
 import { fireEvent, render } from '@testing-library/react-native';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { SegmentedBlindSlider, SegmentedBlindSliderProps } from '../segmentedBlindSlider.component';
 
 jest.mock('@react-native-community/slider', () => {
@@ -39,16 +39,10 @@ describe('SegmentedBlindSlider', () => {
     });
   });
 
-  it('positionne les quatre graduations et affiche leurs etiquettes', () => {
-    const { getByText } = render(<SegmentedBlindSlider {...makeProps()} />);
-    ['0\u00a0%', '10\u00a0%', '50\u00a0%', '100\u00a0%'].forEach((label, index) => {
-      let tick = getByText(label, { includeHiddenElements: true }).parent;
-      while (tick && StyleSheet.flatten(tick.props.style)?.left === undefined) {
-        tick = tick.parent;
-      }
-      expect(tick).not.toBeNull();
-      expect(StyleSheet.flatten(tick!.props.style).left).toBe(`${index / 3 * 100}%`);
-    });
+  it('ne rend aucun libelle ni graduation sous le slider', () => {
+    const { UNSAFE_queryAllByType, getByTestId } = render(<SegmentedBlindSlider {...makeProps()} />);
+    expect(UNSAFE_queryAllByType(Text)).toHaveLength(0);
+    expect(getByTestId('slider').parent!.children).toHaveLength(1);
   });
 
   it('emet des pourcentages entiers sans doublon et actualise l accessibilite', () => {
@@ -86,8 +80,8 @@ describe('SegmentedBlindSlider', () => {
     expect(props.onSlideEnd).toHaveBeenCalledTimes(1);
   });
 
-  it('desactive le slider et masque les graduations pour un appareil inactif', () => {
-    const { getByTestId, getByText } = render(
+  it('desactive le slider pour un appareil inactif', () => {
+    const { getByTestId } = render(
       <SegmentedBlindSlider {...makeProps({ disabled: true, level: 0.1 })} />,
     );
     const slider = getByTestId('slider');
@@ -95,12 +89,5 @@ describe('SegmentedBlindSlider', () => {
     expect(StyleSheet.flatten(slider.props.style).opacity).toBe(0);
     expect(slider.props.value).toBe(0);
     expect(slider.props.accessibilityValue.now).toBe(0);
-    let ticks = getByText('0\u00a0%', { includeHiddenElements: true }).parent;
-    while (ticks && ticks.props.importantForAccessibility !== 'no-hide-descendants') {
-      ticks = ticks.parent;
-    }
-    expect(ticks).not.toBeNull();
-    expect(StyleSheet.flatten(ticks!.props.style).opacity).toBe(0);
-    expect(ticks!.props.accessibilityElementsHidden).toBe(true);
   });
 });

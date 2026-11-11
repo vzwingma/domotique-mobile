@@ -8,6 +8,13 @@
 
 ## Contexte
 
+> **Amendement validé par 👤 le 2026-11-11 après recette QA :**
+> supprimer les graduations et libellés visibles sous le slider.
+> L'échelle 0/10/50/100 reste linéaire par morceaux, exclusivement pour les volets
+> en previewV. L'annonce accessible reste en pourcentages.
+> Les mentions de graduations, retrait de piste et hauteur supplémentaire ci-dessous
+> décrivent la proposition initiale et ne s'appliquent plus au rendu final.
+
 Le slider de volets (`blindDevice.component.tsx`) est un `@react-native-community/slider` **linéaire 0–100 %**. Les positions d'usage courantes d'un volet sont 0 %, 50 % et 100 %, mais le besoin exprimé dans l'issue #330 est de pouvoir **régler finement la zone 0–10 %** (entrebâillement), que la course linéaire rend trop peu précise : 10 % de la valeur n'occupent que 10 % de la course.
 
 Besoin : une **échelle segmentée non linéaire** sur la course normalisée [0..1], découpée en 3 tiers égaux :
@@ -36,7 +43,7 @@ Détail :
 1. **Service pur `BlindLevelScale.service.ts`** :
    - `levelToPosition(level)` : pourcentage → position [0..1] ;
    - `positionToLevel(position)` : position → pourcentage entier (`Math.round`, borné à 0..100) ;
-   - `BLIND_SCALE_TICKS` : graduations (étiquettes et positions 0, 1/3, 2/3, 1).
+   - Aucune constante de graduations : les repères visibles ont été retirés après recette humaine.
 2. **Formules** (p = niveau en %, t = position) :
    - tiers 1 (0 ≤ p ≤ 10) : `t = p / 30` ;
    - tiers 2 (10 < p ≤ 50) : `t = 1/3 + (p − 10) / 120` ;
@@ -44,7 +51,7 @@ Détail :
    Sens inverse : jonctions `t <= 1/3 → 10 %` et `t <= 2/3 → 50 %` (comparaisons `<=`).
 3. **Seuils fixes** `[0, 10, 50, 100]` écrits dans le code, **non configurables**.
 4. **Aller-retour exact** : pour les 101 entiers 0..100, `positionToLevel(levelToPosition(n)) === n`.
-5. **Composant `segmentedBlindSlider.component.tsx`** : props en **pourcentage entier** (`level`, `disabled`, `onLevelChange`, `onSlideStart`, `onSlideEnd`, `accessibilityLabel`). Il affiche le slider et, dessous, une ligne de graduations alignée par une constante `TRACK_INSET` (à caler sur appareil). Il **dédoublonne** les émissions sur le pourcentage arrondi (pas d'événement tant que le % entier ne change pas) et fournit `accessibilityValue` en pourcentage.
+5. **Composant `segmentedBlindSlider.component.tsx`** : props en **pourcentage entier** (`level`, `disabled`, `onLevelChange`, `onSlideStart`, `onSlideEnd`, `accessibilityLabel`). Il affiche uniquement le slider, sans graduations ni libellés visibles. Il **dédoublonne** les émissions sur le pourcentage arrondi et fournit `accessibilityValue` en pourcentage, resynchronisé lorsque le niveau reçu change.
 6. **Frontière en % entier** : `devices.controller.tsx` et l'API Domoticz restent inchangés.
 7. **Périmètre** (décision 👤) :
    - **volets uniquement** (`blindDevice.component.tsx`) ;
@@ -88,9 +95,9 @@ Détail :
 
 ### Négatives / compromis
 
-- Graduations dessinées dans une `View` séparée : leur alignement dépend du retrait natif de la piste, donc **risque visuel Android/iOS** et calage de `TRACK_INSET` sur appareil.
+- Aucun calage de graduations n'est nécessaire dans le rendu final, les repères ayant été supprimés après recette.
 - **Écart d'échelle volontaire** entre volets (segmentée, en `previewV`) et lumières (linéaire) tant que l'extension n'est pas décidée.
-- **+12 à 14 px de hauteur** de carte pour la ligne de graduations.
+- Aucune hauteur supplémentaire pour une ligne de graduations dans le rendu final.
 - **Incrément en fin de course** : le pas 99 → 100 % n'occupe que 0,67 % de la course (1/150), donc moins aisé à atteindre précisément en tiers 3.
 - **Accessibilité** : l'annonce doit rester en pourcentage (et non en position 0–1) ; elle repose sur `accessibilityValue` fourni par le composant, à vérifier sur lecteur d'écran.
 - Une bascule vers l'option B reste possible si l'alignement des graduations devient une exigence.
